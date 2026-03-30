@@ -1,0 +1,162 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Retirement Calculator - Free Online Tool",
+  description: "Plan your retirement with our free calculator. Estimate projected savings, monthly retirement income, and years to retire based on your contributions and expected returns.",
+  canonical: finance_retirement_url,
+  og: {
+    title: "Retirement Calculator - Free Online Tool | CalcWise",
+    description: "Plan your retirement with our free calculator. Estimate projected savings, monthly retirement income, and years to retire based on your contributions and expected returns.",
+    url: finance_retirement_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Retirement Calculator", url: finance_retirement_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much money do I need to retire?", answer: "The amount you need depends on your desired retirement lifestyle, expected expenses, and how long you plan to be retired. A common rule of thumb is to save 25 times your expected annual expenses, which aligns with the 4% withdrawal rule. Our calculator helps you project your savings based on your current contributions and expected investment returns." },
+  { question: "What is the 4% rule for retirement?", answer: "The 4% rule suggests that retirees can withdraw 4% of their retirement savings in the first year of retirement and adjust for inflation each subsequent year without running out of money for at least 30 years. For example, if you have $1,000,000 saved, you could withdraw $40,000 per year." },
+  { question: "When should I start saving for retirement?", answer: "The earlier you start saving, the more time your money has to grow through compound interest. Starting in your 20s gives your investments decades to compound, meaning even small monthly contributions can grow into substantial retirement funds. Delaying by just 10 years can require nearly double the monthly contribution to reach the same goal." },
+  { question: "How does compound interest affect my retirement savings?", answer: "Compound interest means you earn returns not only on your original contributions but also on the accumulated interest from previous years. Over 30-40 years, compounding can multiply your total contributions several times over, which is why starting early and maintaining consistent contributions is so powerful for retirement planning." },
+  { question: "Should I contribute more to retirement as I get older?", answer: "Yes, increasing your contributions as your income grows is a smart strategy. Many financial advisors recommend saving 10-15% of your gross income for retirement. If you started late, you may need to save a higher percentage to catch up. Take advantage of employer matching programs and catch-up contribution limits available after age 50." }
+]) %>
+
+<%= calculator_schema(
+  name: "Retirement Calculator",
+  description: "Calculate your projected retirement savings, estimated monthly retirement income, and years until retirement based on current savings, monthly contributions, and expected rate of return.",
+  url: finance_retirement_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Retirement Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-6"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Retirement Calculator</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">Estimate how much you will have saved by retirement and what monthly income your nest egg can provide.</p>
+
+    <div data-controller="retirement-calculator" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="current-age" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Age</label>
+            <input type="number" id="current-age" min="18" max="80" step="1" value="30" placeholder="e.g. 30"
+              data-retirement-calculator-target="currentAge"
+              data-action="input->retirement-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="retirement-age" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Retirement Age</label>
+            <input type="number" id="retirement-age" min="30" max="100" step="1" value="65" placeholder="e.g. 65"
+              data-retirement-calculator-target="retirementAge"
+              data-action="input->retirement-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="current-savings" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Savings ($)</label>
+            <input type="number" id="current-savings" min="0" step="1000" value="50000" placeholder="e.g. 50000"
+              data-retirement-calculator-target="currentSavings"
+              data-action="input->retirement-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="monthly-contribution" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monthly Contribution ($)</label>
+            <input type="number" id="monthly-contribution" min="0" step="50" value="500" placeholder="e.g. 500"
+              data-retirement-calculator-target="monthlyContribution"
+              data-action="input->retirement-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="rate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expected Annual Return (%)</label>
+            <input type="number" id="rate" min="0" max="30" step="0.1" value="7" placeholder="e.g. 7"
+              data-retirement-calculator-target="rate"
+              data-action="input->retirement-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+        </div>
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Years to Retire</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-retirement-calculator-target="yearsToRetire">35</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Projected Savings</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-retirement-calculator-target="projectedSavings">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Estimated Monthly Income</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-retirement-calculator-target="monthlyIncome">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->retirement-calculator#copy" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Retirement Calculator</h2>
+      <p>Planning for retirement is one of the most important financial decisions you will ever make, and our retirement calculator makes it straightforward to see where you stand. Start by entering your current age and the age at which you plan to retire. The difference between these two numbers determines your investment horizon, which is the number of years your money has to grow before you need to start withdrawing.</p>
+
+      <p>Next, enter your current retirement savings. This includes all retirement accounts such as 401(k), IRA, Roth IRA, and any other investment accounts dedicated to retirement. Then, input the amount you contribute each month. If your employer offers a matching contribution, include that in your monthly figure, as it significantly accelerates your savings growth.</p>
+
+      <p>The expected annual return represents the average yearly growth rate you anticipate on your investments. Historically, a diversified stock portfolio has returned approximately 7-10% annually before inflation. A more conservative estimate of 6-7% accounts for inflation and provides a realistic projection. If you hold a mix of stocks and bonds, you might use a lower figure such as 5-6%.</p>
+
+      <p>The calculator uses the future value of an annuity formula combined with compound growth on your existing savings to project your total retirement nest egg. The estimated monthly income is then derived using the 4% safe withdrawal rule, which divides your total savings by 300 to give a sustainable monthly income that should last through a 30-year retirement. This approach is widely recommended by financial planners because it balances income needs against the risk of outliving your savings.</p>
+
+      <p>Keep in mind that this calculator provides estimates based on consistent contributions and a fixed rate of return. Real-world results will vary based on market fluctuations, changes in your contribution levels, and inflation. Consider revisiting your plan annually to adjust your assumptions and stay on track toward your retirement goals. Working with a qualified financial advisor can also help you create a more comprehensive plan that accounts for Social Security benefits, pension income, healthcare costs, and tax implications.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Retirement Savings Formula</h2>
+      <p>The projected savings are calculated using two components. First, the future value of your current savings with compound interest:</p>
+      <p><strong>FV = PV x (1 + r/12)^(n x 12)</strong></p>
+      <p>Where PV is your current savings, r is the annual interest rate, and n is the number of years until retirement.</p>
+      <p>Second, the future value of your monthly contributions as an annuity:</p>
+      <p><strong>FV = PMT x [((1 + r/12)^(n x 12) - 1) / (r/12)]</strong></p>
+      <p>Where PMT is your monthly contribution. The total projected savings is the sum of both values. The estimated monthly retirement income uses the 4% rule: total savings multiplied by 0.04, divided by 12.</p>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>How much money do I need to retire?</h3>
+      <p>The amount you need depends on your desired retirement lifestyle, expected expenses, and how long you plan to be retired. A common rule of thumb is to save 25 times your expected annual expenses, which aligns with the 4% withdrawal rule. Our calculator helps you project your savings based on your current contributions and expected investment returns.</p>
+
+      <h3>What is the 4% rule for retirement?</h3>
+      <p>The 4% rule suggests that retirees can withdraw 4% of their retirement savings in the first year of retirement and adjust for inflation each subsequent year without running out of money for at least 30 years. For example, if you have $1,000,000 saved, you could withdraw $40,000 per year.</p>
+
+      <h3>When should I start saving for retirement?</h3>
+      <p>The earlier you start saving, the more time your money has to grow through compound interest. Starting in your 20s gives your investments decades to compound, meaning even small monthly contributions can grow into substantial retirement funds. Delaying by just 10 years can require nearly double the monthly contribution to reach the same goal.</p>
+
+      <h3>How does compound interest affect my retirement savings?</h3>
+      <p>Compound interest means you earn returns not only on your original contributions but also on the accumulated interest from previous years. Over 30-40 years, compounding can multiply your total contributions several times over, which is why starting early and maintaining consistent contributions is so powerful for retirement planning.</p>
+
+      <h3>Should I contribute more to retirement as I get older?</h3>
+      <p>Yes, increasing your contributions as your income grows is a smart strategy. Many financial advisors recommend saving 10-15% of your gross income for retirement. If you started late, you may need to save a higher percentage to catch up. Take advantage of employer matching programs and catch-up contribution limits available after age 50.</p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Investment Calculator", description: "Calculate how your investments will grow over time with compound interest.", path: finance_investment_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Savings Goal Calculator", description: "Figure out how much you need to save each month to reach your financial goal.", path: finance_savings_goal_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Compound Interest Calculator", description: "See the power of compound interest on your savings and investments.", path: finance_compound_interest_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

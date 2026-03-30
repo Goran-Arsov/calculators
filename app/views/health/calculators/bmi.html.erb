@@ -1,0 +1,167 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "BMI Calculator - Free Body Mass Index Tool",
+  description: "Calculate your Body Mass Index (BMI) instantly with our free online calculator. Supports both metric and imperial units. Find out your weight category and healthy weight range.",
+  canonical: health_bmi_url,
+  og: {
+    title: "BMI Calculator - Free Body Mass Index Tool | CalcWise",
+    description: "Calculate your Body Mass Index (BMI) instantly. Supports metric and imperial units. Find your weight category and healthy weight range.",
+    url: health_bmi_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "BMI Calculator", url: health_bmi_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is BMI and how is it calculated?", answer: "BMI (Body Mass Index) is a simple measure of body fat based on your weight and height. It is calculated by dividing your weight in kilograms by the square of your height in meters (kg/m2). For imperial units, the formula is (weight in pounds / height in inches squared) x 703." },
+  { question: "What is a healthy BMI range?", answer: "A healthy BMI for most adults is between 18.5 and 24.9. A BMI below 18.5 is considered underweight, 25 to 29.9 is overweight, and 30 or above is classified as obese. However, BMI does not account for muscle mass, bone density, or body composition." },
+  { question: "Is BMI accurate for athletes and muscular people?", answer: "BMI can overestimate body fat in athletes and people with high muscle mass because it does not distinguish between muscle and fat. A bodybuilder may have a high BMI but low body fat. For such individuals, body fat percentage or waist-to-hip ratio may be more useful measurements." },
+  { question: "Does BMI differ by age and gender?", answer: "The standard BMI formula is the same for all adults regardless of age and gender. However, interpretation may vary — women tend to have more body fat than men at the same BMI, and older adults may have more body fat than younger adults. For children and teens, BMI is interpreted using age- and sex-specific percentiles." },
+  { question: "What should I do if my BMI is outside the healthy range?", answer: "If your BMI is outside the healthy range, consult with a healthcare professional before making changes. They can assess your overall health, consider factors BMI does not capture, and recommend a personalized plan involving diet, exercise, or medical intervention as needed." }
+]) %>
+
+<%= calculator_schema(
+  name: "BMI Calculator",
+  description: "Calculate your Body Mass Index (BMI) and find out your weight category and healthy weight range.",
+  url: health_bmi_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "BMI Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-6"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">BMI Calculator</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">Calculate your Body Mass Index and find out whether your weight falls within a healthy range.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="bmi-calculator" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unit System</label>
+            <select data-bmi-calculator-target="unitSystem" data-action="change->bmi-calculator#updateLabels" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <option value="metric">Metric (kg, cm)</option>
+              <option value="imperial">Imperial (lbs, in)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-bmi-calculator-target="weightLabel">Weight (kg)</label>
+            <input type="number" data-bmi-calculator-target="weight" data-action="input->bmi-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="70" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-bmi-calculator-target="heightLabel">Height (cm)</label>
+            <input type="number" data-bmi-calculator-target="height" data-action="input->bmi-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="175" step="0.1" min="0">
+          </div>
+        </div>
+        <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Your BMI</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="bmi">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Category</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="category">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Healthy Weight Min</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="healthyMin">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Healthy Weight Max</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="healthyMax">—</span>
+            </div>
+          </div>
+          <button data-action="click->bmi-calculator#copy" class="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the BMI Calculator</h2>
+      <p>
+        Our free BMI calculator makes it easy to check your Body Mass Index in seconds. Start by selecting your preferred unit system — metric (kilograms and centimeters) or imperial (pounds and inches). Then enter your weight and height. The calculator instantly displays your BMI value, your weight category according to WHO standards, and the healthy weight range for your height. No buttons to press and no page reloads — results update as you type.
+      </p>
+      <p>
+        BMI is widely used by healthcare professionals as a quick screening tool to identify potential weight-related health risks. While it is not a diagnostic tool on its own, it provides a useful starting point for conversations about nutrition, exercise, and overall wellness. Tracking your BMI over time can help you monitor trends and stay motivated toward your health goals.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding BMI Categories</h2>
+      <p>
+        The World Health Organization classifies BMI into four main categories for adults. A BMI below 18.5 is considered <strong>underweight</strong>, which may indicate malnutrition, an eating disorder, or other health concerns. A BMI between 18.5 and 24.9 falls in the <strong>normal weight</strong> range, generally associated with the lowest health risk. A BMI from 25.0 to 29.9 is classified as <strong>overweight</strong>, and a BMI of 30.0 or above is classified as <strong>obese</strong>. Obesity is further subdivided into Class I (30-34.9), Class II (35-39.9), and Class III (40 and above).
+      </p>
+
+      <h3>The BMI Formula Explained</h3>
+      <p>
+        In metric units, BMI is calculated as your weight in kilograms divided by the square of your height in meters: <strong>BMI = weight (kg) / height (m)<sup>2</sup></strong>. For imperial units, the formula is <strong>BMI = (weight (lbs) / height (in)<sup>2</sup>) x 703</strong>. The multiplication factor of 703 converts the imperial measurement to match the metric scale. Both formulas produce the same result when the inputs represent the same physical measurements.
+      </p>
+
+      <h3>Limitations of BMI</h3>
+      <p>
+        BMI is a useful population-level screening tool, but it has important limitations at the individual level. It does not distinguish between muscle mass and fat mass, so athletes and bodybuilders often receive misleadingly high readings. It also does not account for fat distribution — abdominal fat carries greater health risk than fat stored in the hips or thighs. Age, sex, and ethnicity can also influence the relationship between BMI and actual body fat percentage. For a more complete picture, consider pairing BMI with other measurements such as waist circumference, body fat percentage, or waist-to-hip ratio.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is BMI and how is it calculated?</h3>
+      <p>
+        BMI (Body Mass Index) is a simple measure of body fat based on your weight and height. It is calculated by dividing your weight in kilograms by the square of your height in meters (kg/m<sup>2</sup>). For imperial units, the formula is (weight in pounds / height in inches squared) x 703.
+      </p>
+
+      <h3>What is a healthy BMI range?</h3>
+      <p>
+        A healthy BMI for most adults is between 18.5 and 24.9. A BMI below 18.5 is considered underweight, 25 to 29.9 is overweight, and 30 or above is classified as obese. However, BMI does not account for muscle mass, bone density, or body composition.
+      </p>
+
+      <h3>Is BMI accurate for athletes and muscular people?</h3>
+      <p>
+        BMI can overestimate body fat in athletes and people with high muscle mass because it does not distinguish between muscle and fat. A bodybuilder may have a high BMI but low body fat. For such individuals, body fat percentage or waist-to-hip ratio may be more useful measurements.
+      </p>
+
+      <h3>Does BMI differ by age and gender?</h3>
+      <p>
+        The standard BMI formula is the same for all adults regardless of age and gender. However, interpretation may vary — women tend to have more body fat than men at the same BMI, and older adults may have more body fat than younger adults. For children and teens, BMI is interpreted using age- and sex-specific percentiles.
+      </p>
+
+      <h3>What should I do if my BMI is outside the healthy range?</h3>
+      <p>
+        If your BMI is outside the healthy range, consult with a healthcare professional before making changes. They can assess your overall health, consider factors BMI does not capture, and recommend a personalized plan involving diet, exercise, or medical intervention as needed.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Body Fat Calculator", description: "Estimate your body fat percentage using the U.S. Navy method.", path: health_body_fat_path, icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+      { name: "Salary Calculator", description: "Convert between hourly, daily, weekly, biweekly, monthly, and annual salary.", path: finance_salary_path, icon_path: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

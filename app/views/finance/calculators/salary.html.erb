@@ -1,0 +1,170 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Salary Calculator - Free Online Tool",
+  description: "Convert your salary between hourly, daily, weekly, biweekly, monthly, and annual amounts. Compare pay across different time periods with our free salary calculator.",
+  canonical: finance_salary_url,
+  og: {
+    title: "Salary Calculator - Free Online Tool | CalcWise",
+    description: "Convert your salary between hourly, daily, weekly, biweekly, monthly, and annual amounts. Compare pay across different time periods with our free salary calculator.",
+    url: finance_salary_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Salary Calculator", url: finance_salary_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I convert my hourly wage to an annual salary?", answer: "To convert an hourly wage to an annual salary, multiply your hourly rate by the number of hours you work per week, then multiply by 52 weeks per year. For example, if you earn $25 per hour and work 40 hours per week, your annual salary is $25 x 40 x 52 = $52,000." },
+  { question: "How many work hours are in a year?", answer: "A standard work year consists of 2,080 hours, based on 40 hours per week for 52 weeks. However, this does not account for paid time off, holidays, or sick days. The actual number of working hours varies depending on your schedule and employer policies." },
+  { question: "What is the difference between gross and net salary?", answer: "Gross salary is your total earnings before any deductions, while net salary (take-home pay) is what you receive after taxes, insurance premiums, retirement contributions, and other deductions. This calculator shows gross salary conversions. Your net pay will be lower depending on your tax bracket and benefit elections." },
+  { question: "How do I calculate my biweekly paycheck?", answer: "To calculate your biweekly paycheck from an annual salary, divide the annual amount by 26 pay periods. For example, a $60,000 annual salary results in a biweekly gross paycheck of approximately $2,307.69. From an hourly rate, multiply your rate by hours per week and then by 2." },
+  { question: "Is a biweekly pay schedule the same as semi-monthly?", answer: "No, they are different. Biweekly pay means you are paid every two weeks, resulting in 26 paychecks per year. Semi-monthly pay means you are paid twice per month (often the 1st and 15th), resulting in 24 paychecks per year. Biweekly paychecks are slightly smaller but you receive two extra paychecks per year." }
+]) %>
+
+<%= calculator_schema(
+  name: "Salary Calculator",
+  description: "Convert salary amounts between hourly, daily, weekly, biweekly, monthly, and annual time periods. Supports custom hours per week for accurate calculations.",
+  url: finance_salary_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Salary Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-6"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Salary Calculator</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">Convert your pay between hourly, daily, weekly, biweekly, monthly, and annual amounts to understand your true earning potential.</p>
+
+    <div data-controller="salary-calculator" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pay Amount ($)</label>
+            <input type="number" id="amount" min="0" step="0.01" value="60000" placeholder="e.g. 60000"
+              data-salary-calculator-target="amount"
+              data-action="input->salary-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="pay-type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pay Period</label>
+            <select id="pay-type"
+              data-salary-calculator-target="type"
+              data-action="change->salary-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <option value="hourly">Hourly</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Biweekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="annual" selected>Annual</option>
+            </select>
+          </div>
+          <div>
+            <label for="hours-per-week" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hours per Week</label>
+            <input type="number" id="hours-per-week" min="1" max="168" step="0.5" value="40" placeholder="e.g. 40"
+              data-salary-calculator-target="hoursPerWeek"
+              data-action="input->salary-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+        </div>
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Hourly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-salary-calculator-target="hourly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Daily</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-salary-calculator-target="daily">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Weekly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-salary-calculator-target="weekly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Biweekly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-salary-calculator-target="biweekly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Monthly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-salary-calculator-target="monthly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Annual</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-salary-calculator-target="annual">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->salary-calculator#copy" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Salary Calculator</h2>
+      <p>Understanding your pay across different time periods is essential for budgeting, comparing job offers, and making informed financial decisions. Our salary calculator instantly converts any pay amount into its equivalent across all major pay periods: hourly, daily, weekly, biweekly, monthly, and annual.</p>
+
+      <p>To get started, enter your pay amount in the input field. Then select the pay period that corresponds to the amount you entered. If you entered your annual salary, select "Annual." If you know your hourly rate, select "Hourly." The calculator supports all six common pay periods, so you can start from whichever one you know.</p>
+
+      <p>The hours per week field is crucial for accurate conversions. The default is 40 hours, which represents a standard full-time work week. If you work part-time, overtime, or non-standard hours, adjust this number accordingly. For example, if you regularly work 45 hours per week, entering that value will give you a more accurate hourly rate when converting from an annual salary.</p>
+
+      <p>This calculator is especially useful when comparing job offers that are quoted in different pay periods. One employer might offer $75,000 annually while another offers $38 per hour. Without converting to the same basis, it is difficult to make a fair comparison. Our tool makes this conversion instant. Similarly, freelancers and contractors who charge hourly rates can quickly see what their annual equivalent income would be, helping with financial planning and tax preparation.</p>
+
+      <p>The conversions are based on standard assumptions: 52 weeks per year, 26 biweekly periods per year, and 12 months per year. Daily pay is calculated by dividing weekly pay by 5 working days. These are the most commonly used conventions for salary calculations in the United States and many other countries. Keep in mind that these are gross (before-tax) figures. Your actual take-home pay will be lower after federal income tax, state income tax, Social Security, Medicare, and any voluntary deductions like health insurance or retirement contributions.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Salary Conversion Formulas</h2>
+      <p>All conversions start by computing the annual salary. From there, each time period is derived:</p>
+      <ul>
+        <li><strong>From Hourly:</strong> Annual = Hourly Rate x Hours per Week x 52</li>
+        <li><strong>From Daily:</strong> Annual = Daily Rate x 5 x 52</li>
+        <li><strong>From Weekly:</strong> Annual = Weekly Rate x 52</li>
+        <li><strong>From Biweekly:</strong> Annual = Biweekly Rate x 26</li>
+        <li><strong>From Monthly:</strong> Annual = Monthly Rate x 12</li>
+      </ul>
+      <p>Once the annual salary is known, it can be divided to obtain any other period: hourly (divide by hours per week x 52), daily (divide by 260), weekly (divide by 52), biweekly (divide by 26), or monthly (divide by 12).</p>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>How do I convert my hourly wage to an annual salary?</h3>
+      <p>To convert an hourly wage to an annual salary, multiply your hourly rate by the number of hours you work per week, then multiply by 52 weeks per year. For example, if you earn $25 per hour and work 40 hours per week, your annual salary is $25 x 40 x 52 = $52,000.</p>
+
+      <h3>How many work hours are in a year?</h3>
+      <p>A standard work year consists of 2,080 hours, based on 40 hours per week for 52 weeks. However, this does not account for paid time off, holidays, or sick days. The actual number of working hours varies depending on your schedule and employer policies.</p>
+
+      <h3>What is the difference between gross and net salary?</h3>
+      <p>Gross salary is your total earnings before any deductions, while net salary (take-home pay) is what you receive after taxes, insurance premiums, retirement contributions, and other deductions. This calculator shows gross salary conversions. Your net pay will be lower depending on your tax bracket and benefit elections.</p>
+
+      <h3>How do I calculate my biweekly paycheck?</h3>
+      <p>To calculate your biweekly paycheck from an annual salary, divide the annual amount by 26 pay periods. For example, a $60,000 annual salary results in a biweekly gross paycheck of approximately $2,307.69. From an hourly rate, multiply your rate by hours per week and then by 2.</p>
+
+      <h3>Is a biweekly pay schedule the same as semi-monthly?</h3>
+      <p>No, they are different. Biweekly pay means you are paid every two weeks, resulting in 26 paychecks per year. Semi-monthly pay means you are paid twice per month (often the 1st and 15th), resulting in 24 paychecks per year. Biweekly paychecks are slightly smaller but you receive two extra paychecks per year.</p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payments based on your salary and home price.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
+      { name: "Loan Calculator", description: "Figure out monthly loan payments and see how they fit your salary.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Investment Calculator", description: "See how investing a portion of your salary can grow over time.", path: finance_investment_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

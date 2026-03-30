@@ -1,0 +1,64 @@
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static targets = ["weight", "height", "unitSystem", "bmi", "category", "healthyMin", "healthyMax",
+                     "weightLabel", "heightLabel"]
+
+  connect() {
+    this.updateLabels()
+  }
+
+  updateLabels() {
+    const unit = this.unitSystemTarget.value
+    this.weightLabelTarget.textContent = unit === "imperial" ? "Weight (lbs)" : "Weight (kg)"
+    this.heightLabelTarget.textContent = unit === "imperial" ? "Height (inches)" : "Height (cm)"
+    this.calculate()
+  }
+
+  calculate() {
+    const weight = parseFloat(this.weightTarget.value) || 0
+    const height = parseFloat(this.heightTarget.value) || 0
+    const unit = this.unitSystemTarget.value
+
+    if (weight <= 0 || height <= 0) {
+      this.clearResults()
+      return
+    }
+
+    let bmi
+    if (unit === "imperial") {
+      bmi = (weight / (height * height)) * 703
+    } else {
+      const heightM = height / 100
+      bmi = weight / (heightM * heightM)
+    }
+
+    let category
+    if (bmi < 18.5) category = "Underweight"
+    else if (bmi < 25) category = "Normal weight"
+    else if (bmi < 30) category = "Overweight"
+    else category = "Obese"
+
+    let heightM = unit === "imperial" ? height * 0.0254 : height / 100
+    let factor = unit === "imperial" ? 2.205 : 1
+    const healthyMin = 18.5 * heightM * heightM * factor
+    const healthyMax = 24.9 * heightM * heightM * factor
+
+    this.bmiTarget.textContent = bmi.toFixed(1)
+    this.categoryTarget.textContent = category
+    this.healthyMinTarget.textContent = healthyMin.toFixed(1)
+    this.healthyMaxTarget.textContent = healthyMax.toFixed(1)
+  }
+
+  clearResults() {
+    this.bmiTarget.textContent = "0"
+    this.categoryTarget.textContent = "—"
+    this.healthyMinTarget.textContent = "0"
+    this.healthyMaxTarget.textContent = "0"
+  }
+
+  copy() {
+    const text = `BMI: ${this.bmiTarget.textContent}\nCategory: ${this.categoryTarget.textContent}`
+    navigator.clipboard.writeText(text)
+  }
+}

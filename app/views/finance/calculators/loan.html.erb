@@ -1,0 +1,164 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Loan Calculator - Free Online Tool",
+  description: "Calculate monthly loan payments, total interest, and total cost for any type of loan. Free loan calculator with instant results — personal, auto, or student loans.",
+  canonical: finance_loan_url,
+  og: {
+    title: "Loan Calculator - Free Online Tool | CalcWise",
+    description: "Calculate monthly loan payments, total interest, and total cost for any type of loan. Free loan calculator with instant results.",
+    url: finance_loan_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Loan Calculator", url: finance_loan_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do you calculate monthly loan payments?", answer: "Monthly loan payments are calculated using the amortization formula: M = P[r(1+r)^n] / [(1+r)^n - 1], where P is the loan amount, r is the monthly interest rate (annual rate divided by 12), and n is the total number of payments. This formula applies to any fixed-rate installment loan." },
+  { question: "What factors affect loan interest rates?", answer: "Loan interest rates are influenced by your credit score, income and debt-to-income ratio, loan amount and term, collateral (secured vs. unsecured), current market conditions, and the type of loan. Higher credit scores and shorter loan terms generally qualify for lower rates." },
+  { question: "Is it better to choose a shorter or longer loan term?", answer: "A shorter loan term means higher monthly payments but less total interest paid. A longer term lowers your monthly payment but costs more overall. Choose based on what monthly payment fits your budget while minimizing total interest when possible." },
+  { question: "What is the difference between secured and unsecured loans?", answer: "Secured loans are backed by collateral such as a car or house, which the lender can seize if you default. Unsecured loans like personal loans and credit cards have no collateral, so they typically carry higher interest rates to compensate for the added lender risk." },
+  { question: "Can I pay off a loan early to save on interest?", answer: "Yes, paying off a loan early can save significant money on interest. However, some lenders charge prepayment penalties. Check your loan agreement before making extra payments. If there is no penalty, even small additional monthly payments can reduce your total cost substantially." }
+]) %>
+
+<%= calculator_schema(
+  name: "Loan Calculator",
+  description: "Calculate monthly loan payments, total interest, and total cost for any type of loan.",
+  url: finance_loan_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Loan Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-6"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Loan Calculator</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">Calculate monthly payments, total interest, and the overall cost for any type of loan.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="loan-calculator" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Loan Amount ($)</label>
+            <input type="number" data-loan-calculator-target="amount" data-action="input->loan-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="25000" step="500" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Annual Interest Rate (%)</label>
+            <input type="number" data-loan-calculator-target="rate" data-action="input->loan-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="7.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Loan Term (Years)</label>
+            <input type="number" data-loan-calculator-target="years" data-action="input->loan-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="5" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->loan-calculator#copy" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Loan Calculator</h2>
+      <p>
+        Our free loan calculator works for any type of fixed-rate installment loan, whether it is a personal loan, auto loan, student loan, or any other borrowing. Enter the total loan amount, the annual interest rate, and the repayment term in years. The calculator instantly computes your monthly payment, the total amount you will pay over the life of the loan, the total interest cost, and the number of payments required to pay off the balance.
+      </p>
+      <p>
+        Before taking on debt, it is important to understand the true cost of borrowing. The total interest you pay depends heavily on both the interest rate and the loan term. A slightly lower rate or shorter term can save you hundreds or even thousands of dollars. Use this calculator to compare different scenarios and find the loan terms that best fit your financial situation.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Loan Payment Formula</h2>
+      <p>
+        Fixed-rate loan payments use the standard amortization formula: <strong>M = P[r(1+r)<sup>n</sup>] / [(1+r)<sup>n</sup> - 1]</strong>, where <em>M</em> is the monthly payment, <em>P</em> is the principal (loan amount), <em>r</em> is the monthly interest rate (annual rate divided by 12), and <em>n</em> is the total number of payments. Each monthly payment covers the interest accrued that month plus a portion of the principal. Early in the loan, most of the payment goes toward interest; over time, more goes toward paying down the principal.
+      </p>
+
+      <h3>Understanding Loan Types</h3>
+      <p>
+        Personal loans are typically unsecured and carry interest rates from 6% to 36%, depending on creditworthiness. Auto loans are secured by the vehicle and usually range from 4% to 12%. Student loans can be federal (fixed rates set by the government) or private (variable or fixed, based on credit). Each loan type has different terms and qualification criteria, but the payment calculation works the same way for all fixed-rate installment loans.
+      </p>
+
+      <h3>Strategies for Reducing Loan Costs</h3>
+      <p>
+        The most effective way to reduce loan costs is to improve your credit score before applying, as even a one-point improvement can lower your rate. Making a larger down payment on secured loans reduces the principal and total interest. Choosing the shortest affordable loan term saves money over time. Additionally, making biweekly payments instead of monthly results in one extra payment per year, which can shave months off your loan and save meaningful interest.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do you calculate monthly loan payments?</h3>
+      <p>
+        Monthly loan payments are calculated using the amortization formula: M = P[r(1+r)<sup>n</sup>] / [(1+r)<sup>n</sup> - 1], where P is the loan amount, r is the monthly interest rate (annual rate divided by 12), and n is the total number of payments. This formula applies to any fixed-rate installment loan.
+      </p>
+
+      <h3>What factors affect loan interest rates?</h3>
+      <p>
+        Loan interest rates are influenced by your credit score, income and debt-to-income ratio, loan amount and term, collateral (secured vs. unsecured), current market conditions, and the type of loan. Higher credit scores and shorter loan terms generally qualify for lower rates.
+      </p>
+
+      <h3>Is it better to choose a shorter or longer loan term?</h3>
+      <p>
+        A shorter loan term means higher monthly payments but less total interest paid. A longer term lowers your monthly payment but costs more overall. Choose based on what monthly payment fits your budget while minimizing total interest when possible.
+      </p>
+
+      <h3>What is the difference between secured and unsecured loans?</h3>
+      <p>
+        Secured loans are backed by collateral such as a car or house, which the lender can seize if you default. Unsecured loans like personal loans and credit cards have no collateral, so they typically carry higher interest rates to compensate for the added lender risk.
+      </p>
+
+      <h3>Can I pay off a loan early to save on interest?</h3>
+      <p>
+        Yes, paying off a loan early can save significant money on interest. However, some lenders charge prepayment penalties. Check your loan agreement before making extra payments. If there is no penalty, even small additional monthly payments can reduce your total cost substantially.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment and total interest.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Debt Payoff Calculator", description: "Find out when you'll be debt-free and how much interest you'll pay.", path: finance_debt_payoff_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Investment Calculator", description: "Project the future value of your investments with regular contributions.", path: finance_investment_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

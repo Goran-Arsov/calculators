@@ -1,0 +1,156 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Savings Goal Calculator - Free Online Tool",
+  description: "Calculate how much you need to save each month to reach your financial goal. Factor in your timeline, interest rate, and current savings to build a clear savings plan.",
+  canonical: finance_savings_goal_url,
+  og: {
+    title: "Savings Goal Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how much you need to save each month to reach your financial goal. Factor in your timeline, interest rate, and current savings to build a clear savings plan.",
+    url: finance_savings_goal_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Savings Goal Calculator", url: finance_savings_goal_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much should I save each month?", answer: "The amount you should save each month depends on your financial goal, timeline, and any existing savings. A popular guideline is the 50/30/20 rule, which suggests allocating 20% of your after-tax income to savings. Use our calculator to determine the exact monthly amount needed for your specific goal by entering the target amount, timeline, and expected interest rate." },
+  { question: "What is a good interest rate for savings?", answer: "High-yield savings accounts currently offer rates between 4-5% APY, while traditional savings accounts offer much less at 0.01-0.50%. Certificates of deposit (CDs) may offer slightly higher rates for locking in your money. For longer-term goals, investing in index funds has historically returned 7-10% annually, though with more risk." },
+  { question: "Should I pay off debt or save money first?", answer: "If you have high-interest debt (such as credit card debt above 15%), it is generally better to pay that off first, as the interest you are paying likely exceeds what you would earn on savings. However, it is wise to maintain a small emergency fund of at least $1,000 while paying off debt. Once high-interest debt is cleared, shift focus to building savings." },
+  { question: "How does compound interest help me reach my savings goal faster?", answer: "Compound interest earns you returns on both your original deposits and on the interest already accumulated. The longer your savings timeline, the more compound interest works in your favor. Even at a modest 4% interest rate, compounding can reduce the monthly amount you need to save by 10-20% compared to saving without any interest." },
+  { question: "What if I already have some savings toward my goal?", answer: "Enter your current savings in the calculator and it will account for the growth of that existing balance plus your future monthly contributions. Having a head start means you need lower monthly contributions to reach the same goal, since your existing savings will also earn compound interest over the remaining time period." }
+]) %>
+
+<%= calculator_schema(
+  name: "Savings Goal Calculator",
+  description: "Calculate the monthly savings needed to reach a financial goal based on your target amount, timeline, expected interest rate, and current savings balance.",
+  url: finance_savings_goal_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Savings Goal Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-6"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Savings Goal Calculator</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">Determine exactly how much you need to save each month to reach any financial goal on your chosen timeline.</p>
+
+    <div data-controller="savings-goal-calculator" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="goal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Savings Goal ($)</label>
+            <input type="number" id="goal" min="0" step="1000" value="50000" placeholder="e.g. 50000"
+              data-savings-goal-calculator-target="goal"
+              data-action="input->savings-goal-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="years" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time Frame (Years)</label>
+            <input type="number" id="years" min="1" max="50" step="1" value="5" placeholder="e.g. 5"
+              data-savings-goal-calculator-target="years"
+              data-action="input->savings-goal-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="rate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expected Annual Return (%)</label>
+            <input type="number" id="rate" min="0" max="30" step="0.1" value="4.5" placeholder="e.g. 4.5"
+              data-savings-goal-calculator-target="rate"
+              data-action="input->savings-goal-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="current-savings" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Savings ($)</label>
+            <input type="number" id="current-savings" min="0" step="500" value="5000" placeholder="e.g. 5000"
+              data-savings-goal-calculator-target="currentSavings"
+              data-action="input->savings-goal-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+        </div>
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Monthly Savings Needed</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-savings-goal-calculator-target="monthlySavings">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Total Contributions</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-savings-goal-calculator-target="totalContributions">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Interest Earned</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-savings-goal-calculator-target="totalInterest">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->savings-goal-calculator#copy" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Savings Goal Calculator</h2>
+      <p>Whether you are saving for a down payment on a house, building an emergency fund, planning a dream vacation, or setting aside money for a major purchase, our savings goal calculator helps you create a concrete, actionable plan. Instead of guessing how much to set aside each month, you can calculate the exact amount needed to reach your target on schedule.</p>
+
+      <p>Start by entering your savings goal, which is the total amount you want to accumulate. This could be any amount, from a few thousand dollars for an emergency fund to hundreds of thousands for a home down payment. Next, set your time frame in years. Be realistic about your timeline but also consider that extending it by even one year can noticeably reduce the monthly contribution required.</p>
+
+      <p>The expected annual return reflects the interest or investment returns you expect to earn on your savings. For a high-yield savings account, this might be 4-5%. For a conservative investment portfolio, you might use 5-7%. For a more aggressive stock-heavy portfolio, 8-10% is reasonable over long time horizons, though it comes with more volatility. If you plan to keep the money in a regular savings account, use a rate close to 0.5%.</p>
+
+      <p>If you already have money set aside toward this goal, enter it in the current savings field. The calculator accounts for the compound growth of this existing balance, which reduces the monthly amount you need to contribute. Even a modest head start can make a meaningful difference, especially over longer time frames where compound interest has more time to work.</p>
+
+      <p>The results show three key figures. The monthly savings needed tells you exactly what to budget each month. Total contributions shows how much of the final goal comes from your own deposits (including the initial savings). Interest earned reveals how much compound interest contributes to your goal, essentially free money earned on your savings over time. By comparing these numbers, you can see the tangible benefit of earning interest versus simply stuffing money under a mattress. Experiment with different rates and timelines to find the combination that works best for your financial situation and budget constraints.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Savings Goal Formula</h2>
+      <p>The calculator first determines the future value of your current savings using compound interest:</p>
+      <p><strong>FV_current = Current Savings x (1 + r/12)^(n x 12)</strong></p>
+      <p>Where r is the annual interest rate and n is the number of years. The remaining amount needed is:</p>
+      <p><strong>Remaining = Goal - FV_current</strong></p>
+      <p>The required monthly payment is then calculated using the future value of an annuity formula, solved for the payment:</p>
+      <p><strong>PMT = Remaining x (r/12) / ((1 + r/12)^(n x 12) - 1)</strong></p>
+      <p>If the interest rate is zero, the monthly savings simply equals the remaining amount divided by the total number of months. Total contributions equal the monthly payment times the number of months plus the initial savings. Interest earned is the goal amount minus total contributions.</p>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>How much should I save each month?</h3>
+      <p>The amount you should save each month depends on your financial goal, timeline, and any existing savings. A popular guideline is the 50/30/20 rule, which suggests allocating 20% of your after-tax income to savings. Use our calculator to determine the exact monthly amount needed for your specific goal by entering the target amount, timeline, and expected interest rate.</p>
+
+      <h3>What is a good interest rate for savings?</h3>
+      <p>High-yield savings accounts currently offer rates between 4-5% APY, while traditional savings accounts offer much less at 0.01-0.50%. Certificates of deposit (CDs) may offer slightly higher rates for locking in your money. For longer-term goals, investing in index funds has historically returned 7-10% annually, though with more risk.</p>
+
+      <h3>Should I pay off debt or save money first?</h3>
+      <p>If you have high-interest debt (such as credit card debt above 15%), it is generally better to pay that off first, as the interest you are paying likely exceeds what you would earn on savings. However, it is wise to maintain a small emergency fund of at least $1,000 while paying off debt. Once high-interest debt is cleared, shift focus to building savings.</p>
+
+      <h3>How does compound interest help me reach my savings goal faster?</h3>
+      <p>Compound interest earns you returns on both your original deposits and on the interest already accumulated. The longer your savings timeline, the more compound interest works in your favor. Even at a modest 4% interest rate, compounding can reduce the monthly amount you need to save by 10-20% compared to saving without any interest.</p>
+
+      <h3>What if I already have some savings toward my goal?</h3>
+      <p>Enter your current savings in the calculator and it will account for the growth of that existing balance plus your future monthly contributions. Having a head start means you need lower monthly contributions to reach the same goal, since your existing savings will also earn compound interest over the remaining time period.</p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Retirement Calculator", description: "Plan for retirement by projecting your savings growth and estimated income.", path: finance_retirement_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Compound Interest Calculator", description: "Visualize how compound interest grows your savings over time.", path: finance_compound_interest_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "Investment Calculator", description: "Calculate potential returns on your investments over any time period.", path: finance_investment_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

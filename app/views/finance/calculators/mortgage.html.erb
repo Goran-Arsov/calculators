@@ -1,0 +1,164 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Mortgage Calculator - Free Online Tool",
+  description: "Calculate your monthly mortgage payment, total interest, and total cost of your home loan. Free mortgage calculator with instant results — no sign-up required.",
+  canonical: finance_mortgage_url,
+  og: {
+    title: "Mortgage Calculator - Free Online Tool | CalcWise",
+    description: "Calculate your monthly mortgage payment, total interest, and total cost of your home loan. Free mortgage calculator with instant results.",
+    url: finance_mortgage_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Mortgage Calculator", url: finance_mortgage_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is a monthly mortgage payment calculated?", answer: "A monthly mortgage payment is calculated using the formula M = P[r(1+r)^n] / [(1+r)^n - 1], where P is the principal loan amount, r is the monthly interest rate (annual rate divided by 12), and n is the total number of monthly payments (years times 12)." },
+  { question: "What is a good mortgage interest rate?", answer: "A good mortgage interest rate depends on current market conditions, your credit score, and loan type. Generally, rates between 3% and 7% are common for fixed-rate mortgages. Check with multiple lenders to find the best rate for your situation." },
+  { question: "How much house can I afford?", answer: "A common guideline is that your monthly mortgage payment should not exceed 28% of your gross monthly income. Factor in property taxes, insurance, and HOA fees in addition to the principal and interest payment." },
+  { question: "What is the difference between a 15-year and 30-year mortgage?", answer: "A 15-year mortgage has higher monthly payments but significantly lower total interest paid. A 30-year mortgage offers lower monthly payments but costs more in total interest over the life of the loan." },
+  { question: "Should I make extra payments on my mortgage?", answer: "Making extra payments can save you thousands in interest and help you pay off your mortgage sooner. Even small additional monthly payments can reduce your loan term by several years. Check that your lender has no prepayment penalties first." }
+]) %>
+
+<%= calculator_schema(
+  name: "Mortgage Calculator",
+  description: "Calculate your monthly mortgage payment, total interest, and total cost of your home loan.",
+  url: finance_mortgage_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Mortgage Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-6"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Mortgage Calculator</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">Estimate your monthly mortgage payment, total interest, and overall cost of your home loan.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="mortgage-calculator" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Home Price ($)</label>
+            <input type="number" data-mortgage-calculator-target="principal" data-action="input->mortgage-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="300000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Annual Interest Rate (%)</label>
+            <input type="number" data-mortgage-calculator-target="rate" data-action="input->mortgage-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="6.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Loan Term (Years)</label>
+            <input type="number" data-mortgage-calculator-target="years" data-action="input->mortgage-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="30" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->mortgage-calculator#copy" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Mortgage Calculator</h2>
+      <p>
+        Our free mortgage calculator helps you estimate the cost of financing a home before you commit to a loan. Simply enter the total home price (or the loan amount after your down payment), your expected annual interest rate, and the loan term in years. The calculator instantly shows your monthly payment, total amount paid over the life of the loan, and the total interest cost.
+      </p>
+      <p>
+        Understanding your mortgage payment is the first step toward responsible home buying. Most financial advisors recommend keeping your housing costs, including mortgage, taxes, and insurance, below 28% of your gross monthly income. Use this calculator to experiment with different price points and loan terms to find a payment that fits your budget comfortably.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Mortgage Payment Formula</h2>
+      <p>
+        Monthly mortgage payments are calculated using the standard amortization formula: <strong>M = P[r(1+r)<sup>n</sup>] / [(1+r)<sup>n</sup> - 1]</strong>, where <em>P</em> is the principal loan amount, <em>r</em> is the monthly interest rate (annual rate divided by 12), and <em>n</em> is the total number of payments (years multiplied by 12). This formula ensures each payment covers both interest and a portion of the principal, gradually paying down your balance to zero by the end of the term.
+      </p>
+
+      <h3>Fixed-Rate vs. Adjustable-Rate Mortgages</h3>
+      <p>
+        This calculator models a fixed-rate mortgage, where the interest rate stays the same for the entire loan term. Fixed-rate loans offer predictable monthly payments, making budgeting straightforward. Adjustable-rate mortgages (ARMs) start with a lower rate that can change periodically after an initial fixed period. While ARMs may save money in the short term, they carry the risk of higher payments if rates increase.
+      </p>
+
+      <h3>Tips for Getting a Better Mortgage Rate</h3>
+      <p>
+        Your credit score is the single biggest factor in the rate you qualify for. Aim for a score above 740 for the best rates. Making a larger down payment, typically 20% or more, eliminates private mortgage insurance (PMI) and may secure a lower rate. Shopping around with at least three to five lenders can also save you thousands over the life of the loan. Consider buying discount points if you plan to stay in the home long term, as each point typically reduces your rate by 0.25%.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is a monthly mortgage payment calculated?</h3>
+      <p>
+        A monthly mortgage payment is calculated using the formula M = P[r(1+r)<sup>n</sup>] / [(1+r)<sup>n</sup> - 1], where P is the principal loan amount, r is the monthly interest rate (annual rate divided by 12), and n is the total number of monthly payments (years times 12).
+      </p>
+
+      <h3>What is a good mortgage interest rate?</h3>
+      <p>
+        A good mortgage interest rate depends on current market conditions, your credit score, and loan type. Generally, rates between 3% and 7% are common for fixed-rate mortgages. Check with multiple lenders to find the best rate for your situation.
+      </p>
+
+      <h3>How much house can I afford?</h3>
+      <p>
+        A common guideline is that your monthly mortgage payment should not exceed 28% of your gross monthly income. Factor in property taxes, insurance, and HOA fees in addition to the principal and interest payment.
+      </p>
+
+      <h3>What is the difference between a 15-year and 30-year mortgage?</h3>
+      <p>
+        A 15-year mortgage has higher monthly payments but significantly lower total interest paid. A 30-year mortgage offers lower monthly payments but costs more in total interest over the life of the loan.
+      </p>
+
+      <h3>Should I make extra payments on my mortgage?</h3>
+      <p>
+        Making extra payments can save you thousands in interest and help you pay off your mortgage sooner. Even small additional monthly payments can reduce your loan term by several years. Check that your lender has no prepayment penalties first.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Compound Interest Calculator", description: "See how your money grows over time with compound interest.", path: finance_compound_interest_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Investment Calculator", description: "Project the future value of your investments with regular contributions.", path: finance_investment_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

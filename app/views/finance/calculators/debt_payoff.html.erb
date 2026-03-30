@@ -1,0 +1,150 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Debt Payoff Calculator - Free Online Tool",
+  description: "Calculate how long it will take to pay off your debt and how much interest you will pay. Enter your balance, interest rate, and monthly payment to see your payoff timeline.",
+  canonical: finance_debt_payoff_url,
+  og: {
+    title: "Debt Payoff Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how long it will take to pay off your debt and how much interest you will pay. Enter your balance, interest rate, and monthly payment to see your payoff timeline.",
+    url: finance_debt_payoff_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Debt Payoff Calculator", url: finance_debt_payoff_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How long will it take to pay off my debt?", answer: "The time to pay off your debt depends on your outstanding balance, interest rate, and monthly payment amount. Use our calculator to enter these values and instantly see the number of months and years needed to become debt-free. Higher monthly payments significantly reduce both payoff time and total interest paid." },
+  { question: "What is the debt avalanche method?", answer: "The debt avalanche method involves paying the minimum on all debts while directing extra payments toward the debt with the highest interest rate first. Once that debt is paid off, you move to the next highest rate. This approach minimizes total interest paid over time and is mathematically the most efficient strategy." },
+  { question: "How much interest will I pay over the life of my debt?", answer: "Total interest depends on your balance, interest rate, and how quickly you pay it off. Our calculator shows you the total amount paid and total interest charged. Even small increases in monthly payments can save thousands in interest by shortening your payoff timeline." },
+  { question: "Should I pay more than the minimum payment?", answer: "Yes, paying more than the minimum is almost always beneficial. Minimum payments are designed to keep you in debt longer, maximizing the interest the lender collects. Even an extra $50-100 per month can shave years off your payoff timeline and save substantial amounts in interest charges." },
+  { question: "What happens if my payment is too low to cover interest?", answer: "If your monthly payment is less than the monthly interest charge, your balance will actually grow over time rather than shrink. This is called negative amortization. Our calculator will alert you if your payment is insufficient to make progress on the principal balance." }
+]) %>
+
+<%= calculator_schema(
+  name: "Debt Payoff Calculator",
+  description: "Calculate how long it will take to pay off your debt, the total amount you will pay, and how much of that goes to interest based on your balance, rate, and monthly payment.",
+  url: finance_debt_payoff_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Debt Payoff Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-6"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Debt Payoff Calculator</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">Find out how long it will take to pay off your debt and see the total interest you will pay over the life of the loan.</p>
+
+    <div data-controller="debt-payoff-calculator" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="balance" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Balance ($)</label>
+            <input type="number" id="balance" min="0" step="100" value="15000" placeholder="e.g. 15000"
+              data-debt-payoff-calculator-target="balance"
+              data-action="input->debt-payoff-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="rate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Annual Interest Rate (%)</label>
+            <input type="number" id="rate" min="0" max="50" step="0.1" value="18.9" placeholder="e.g. 18.9"
+              data-debt-payoff-calculator-target="rate"
+              data-action="input->debt-payoff-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+          <div>
+            <label for="monthly-payment" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monthly Payment ($)</label>
+            <input type="number" id="monthly-payment" min="0" step="10" value="400" placeholder="e.g. 400"
+              data-debt-payoff-calculator-target="monthlyPayment"
+              data-action="input->debt-payoff-calculator#calculate"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+          </div>
+        </div>
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Months to Pay Off</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-debt-payoff-calculator-target="monthsToPayoff">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Years to Pay Off</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-debt-payoff-calculator-target="yearsToPayoff">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Total Amount Paid</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-debt-payoff-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Total Interest Paid</span>
+              <span class="text-lg font-bold text-red-600 dark:text-red-400" data-debt-payoff-calculator-target="totalInterest">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->debt-payoff-calculator#copy" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Debt Payoff Calculator</h2>
+      <p>Getting out of debt starts with understanding exactly where you stand and how long the journey will take. Our debt payoff calculator gives you a clear picture of your debt elimination timeline so you can plan effectively and stay motivated. Whether you are dealing with credit card debt, a personal loan, a car loan, or any other type of installment debt, this tool helps you see the full picture.</p>
+
+      <p>Begin by entering your current outstanding balance. This is the total amount you currently owe on the debt. Next, enter the annual interest rate, which you can find on your most recent statement or by logging into your account online. Credit cards typically charge between 15-25% APR, while personal loans and auto loans usually range from 5-15%.</p>
+
+      <p>Then enter the monthly payment you plan to make. This should be at least the minimum required payment, but ideally more. The calculator instantly shows you how many months it will take to pay off the debt completely, converts that to years for easier comprehension, and reveals the total amount you will pay including interest. The total interest figure is especially eye-opening, as it shows how much the debt truly costs beyond the original balance.</p>
+
+      <p>One of the most powerful ways to use this calculator is to experiment with different payment amounts. Try increasing your monthly payment by $50 or $100 and see how dramatically it reduces both your payoff timeline and total interest. For example, on a $15,000 credit card balance at 18.9% APR, increasing your payment from $300 to $500 per month can save you years of payments and thousands of dollars in interest charges.</p>
+
+      <p>If the calculator shows that your payment does not cover the monthly interest charges, you will need to increase your payment amount. When your payment is less than the interest accruing each month, your balance will actually grow rather than shrink, trapping you in a cycle of increasing debt. Our calculator helps you identify this situation so you can take corrective action immediately.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Debt Payoff Formula</h2>
+      <p>The number of months to pay off a debt is calculated using the following formula:</p>
+      <p><strong>N = -log(1 - (B x r/12) / PMT) / log(1 + r/12)</strong></p>
+      <p>Where N is the number of months, B is the current balance, r is the annual interest rate as a decimal, and PMT is the monthly payment. The total amount paid is simply N multiplied by PMT, and the total interest is the total paid minus the original balance.</p>
+      <p>This formula only works when the monthly payment exceeds the monthly interest charge (B x r/12). If the payment is too low, the debt will never be paid off.</p>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>How long will it take to pay off my debt?</h3>
+      <p>The time to pay off your debt depends on your outstanding balance, interest rate, and monthly payment amount. Use our calculator to enter these values and instantly see the number of months and years needed to become debt-free. Higher monthly payments significantly reduce both payoff time and total interest paid.</p>
+
+      <h3>What is the debt avalanche method?</h3>
+      <p>The debt avalanche method involves paying the minimum on all debts while directing extra payments toward the debt with the highest interest rate first. Once that debt is paid off, you move to the next highest rate. This approach minimizes total interest paid over time and is mathematically the most efficient strategy.</p>
+
+      <h3>How much interest will I pay over the life of my debt?</h3>
+      <p>Total interest depends on your balance, interest rate, and how quickly you pay it off. Our calculator shows you the total amount paid and total interest charged. Even small increases in monthly payments can save thousands in interest by shortening your payoff timeline.</p>
+
+      <h3>Should I pay more than the minimum payment?</h3>
+      <p>Yes, paying more than the minimum is almost always beneficial. Minimum payments are designed to keep you in debt longer, maximizing the interest the lender collects. Even an extra $50-100 per month can shave years off your payoff timeline and save substantial amounts in interest charges.</p>
+
+      <h3>What happens if my payment is too low to cover interest?</h3>
+      <p>If your monthly payment is less than the monthly interest charge, your balance will actually grow over time rather than shrink. This is called negative amortization. Our calculator will alert you if your payment is insufficient to make progress on the principal balance.</p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Loan Calculator", description: "Calculate monthly payments, total interest, and amortization for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payments and total cost of homeownership.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
+      { name: "Savings Goal Calculator", description: "Determine how much you need to save monthly to reach your financial goal.", path: finance_savings_goal_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,169 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Investment Calculator - Free Online Tool",
+  description: "Project the future value of your investments with regular monthly contributions. See how your portfolio grows over time with compound returns — free, no sign-up.",
+  canonical: finance_investment_url,
+  og: {
+    title: "Investment Calculator - Free Online Tool | CalcWise",
+    description: "Project the future value of your investments with regular monthly contributions. See how your portfolio grows over time with compound returns.",
+    url: finance_investment_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Investment Calculator", url: finance_investment_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does an investment calculator work?", answer: "An investment calculator projects the future value of your money by applying compound growth to your initial investment and any regular monthly contributions. It uses the compound interest formula adjusted for periodic additions: FV = P(1 + r/n)^(nt) + PMT[((1 + r/n)^(nt) - 1) / (r/n)], where P is the initial investment, PMT is the monthly contribution, r is the annual return rate, n is compounding frequency, and t is years." },
+  { question: "What is a realistic annual return rate for investments?", answer: "The historical average annual return of the S&P 500 is approximately 10% before inflation, or about 7% after inflation. However, returns vary significantly by asset class. Bonds typically return 4-6%, while more aggressive portfolios may target higher returns with greater risk. A balanced portfolio might expect 6-8% annually over the long term." },
+  { question: "How much should I invest each month?", answer: "A common guideline is to invest at least 15-20% of your gross income for retirement. However, the right amount depends on your financial goals, timeline, existing savings, and other obligations. Start with whatever you can afford and increase contributions over time, especially when you receive raises." },
+  { question: "What is dollar-cost averaging?", answer: "Dollar-cost averaging is the strategy of investing a fixed amount at regular intervals regardless of market conditions. By investing consistently, you buy more shares when prices are low and fewer when prices are high, which can lower your average cost per share over time and reduce the impact of market volatility." },
+  { question: "Should I invest a lump sum or spread it out over time?", answer: "Research shows that lump-sum investing outperforms dollar-cost averaging about two-thirds of the time because markets tend to rise over time. However, dollar-cost averaging reduces the risk of investing everything at a market peak and can be easier psychologically. If you receive regular income, consistent monthly investing is a practical and effective approach." }
+]) %>
+
+<%= calculator_schema(
+  name: "Investment Calculator",
+  description: "Project the future value of your investments with an initial deposit and regular monthly contributions.",
+  url: finance_investment_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Investment Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-6"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Investment Calculator</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">Project how your investments grow over time with an initial deposit and regular monthly contributions.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="investment-calculator" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial Investment ($)</label>
+            <input type="number" data-investment-calculator-target="initial" data-action="input->investment-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="10000" step="500" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Monthly Contribution ($)</label>
+            <input type="number" data-investment-calculator-target="monthly" data-action="input->investment-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="500" step="50" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Expected Annual Return (%)</label>
+            <input type="number" data-investment-calculator-target="rate" data-action="input->investment-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="7" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Investment Period (Years)</label>
+            <input type="number" data-investment-calculator-target="years" data-action="input->investment-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="20" step="1" min="1" max="100">
+          </div>
+        </div>
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Future Value</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-investment-calculator-target="futureValue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Contributions</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-investment-calculator-target="totalContributions">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Investment Growth</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-investment-calculator-target="totalGrowth">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->investment-calculator#copy" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Investment Calculator</h2>
+      <p>
+        This investment calculator shows you the projected growth of your portfolio over time, accounting for both an initial lump-sum investment and recurring monthly contributions. Enter your starting amount, how much you plan to add each month, your expected annual rate of return, and the number of years you intend to invest. The calculator instantly displays the future value of your portfolio, total contributions, and the growth earned through compound returns.
+      </p>
+      <p>
+        Building wealth through investing is a marathon, not a sprint. Consistent monthly contributions, combined with the power of compound growth, can turn modest savings into a substantial portfolio over time. This calculator helps you set realistic expectations and plan your investment strategy based on your goals and timeline.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Investment Growth Formula</h2>
+      <p>
+        The future value of an investment with regular contributions is calculated using two components. The growth of the initial investment uses <strong>FV<sub>initial</sub> = P(1 + r/12)<sup>12t</sup></strong>, where <em>P</em> is the initial investment, <em>r</em> is the annual return rate, and <em>t</em> is the number of years. The growth of monthly contributions uses the future value of an annuity formula: <strong>FV<sub>contributions</sub> = PMT x [((1 + r/12)<sup>12t</sup> - 1) / (r/12)]</strong>. The total future value is the sum of both components.
+      </p>
+
+      <h3>The Power of Starting Early</h3>
+      <p>
+        Consider two investors: one starts at age 25 investing $500 per month, and another starts at age 35 with the same amount. Assuming a 7% annual return, by age 65 the early starter has approximately $1.2 million, while the late starter has about $567,000. The ten-year head start — representing $60,000 in additional contributions — results in over $600,000 more in total wealth. Time is the most valuable asset in investing.
+      </p>
+
+      <h3>Choosing the Right Return Rate Estimate</h3>
+      <p>
+        The return rate you enter should reflect your portfolio allocation and risk tolerance. A portfolio heavily weighted toward stocks might use 8-10% based on historical averages. A balanced mix of stocks and bonds might use 6-7%. Conservative bond-heavy portfolios might use 4-5%. Remember that past performance does not guarantee future results, and it is wise to use conservative estimates when planning for important financial goals like retirement.
+      </p>
+
+      <h3>Regular Contributions Matter More Than You Think</h3>
+      <p>
+        Many investors underestimate the impact of regular monthly contributions. Even without an initial lump sum, investing $500 per month at 7% annually grows to over $260,000 in 20 years and more than $610,000 in 30 years. Of that 30-year total, only $180,000 comes from your contributions — the remaining $430,000 is pure compound growth. Automating monthly investments removes the temptation to time the market and builds discipline.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does an investment calculator work?</h3>
+      <p>
+        An investment calculator projects the future value of your money by applying compound growth to your initial investment and any regular monthly contributions. It combines the compound interest formula for the lump sum with the future value of an annuity formula for recurring deposits.
+      </p>
+
+      <h3>What is a realistic annual return rate for investments?</h3>
+      <p>
+        The historical average annual return of the S&P 500 is approximately 10% before inflation, or about 7% after inflation. However, returns vary significantly by asset class. Bonds typically return 4-6%, while a balanced portfolio might expect 6-8% annually over the long term.
+      </p>
+
+      <h3>How much should I invest each month?</h3>
+      <p>
+        A common guideline is to invest at least 15-20% of your gross income for retirement. However, the right amount depends on your goals, timeline, and financial obligations. Start with whatever you can afford and increase contributions over time, especially when you receive raises.
+      </p>
+
+      <h3>What is dollar-cost averaging?</h3>
+      <p>
+        Dollar-cost averaging is the strategy of investing a fixed amount at regular intervals regardless of market conditions. By investing consistently, you buy more shares when prices are low and fewer when prices are high, which can lower your average cost per share over time.
+      </p>
+
+      <h3>Should I invest a lump sum or spread it out over time?</h3>
+      <p>
+        Research shows that lump-sum investing outperforms dollar-cost averaging about two-thirds of the time because markets tend to rise over time. However, dollar-cost averaging reduces the risk of investing everything at a market peak and can be easier psychologically. If you receive regular income, consistent monthly investing is a practical and effective approach.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Compound Interest Calculator", description: "See how your money grows over time with compound interest.", path: finance_compound_interest_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Retirement Calculator", description: "Plan your retirement savings and estimate your monthly retirement income.", path: finance_retirement_path, icon_path: "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" },
+      { name: "Savings Goal Calculator", description: "Calculate how much you need to save monthly to reach your financial goal.", path: finance_savings_goal_path, icon_path: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

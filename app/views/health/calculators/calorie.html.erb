@@ -1,0 +1,197 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Calorie Calculator - Free Daily Calorie Needs Tool",
+  description: "Calculate your daily calorie needs with our free calorie calculator. Estimates BMR and TDEE based on your age, sex, weight, height, and activity level. Includes goals for weight loss and gain.",
+  canonical: health_calorie_url,
+  og: {
+    title: "Calorie Calculator - Free Daily Calorie Needs Tool | CalcWise",
+    description: "Calculate your daily calorie needs. Estimates BMR and TDEE based on age, sex, weight, height, and activity level.",
+    url: health_calorie_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Calorie Calculator", url: health_calorie_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many calories do I need per day?", answer: "Daily calorie needs vary based on age, sex, weight, height, and activity level. The average adult woman needs approximately 1,600 to 2,400 calories per day, while the average adult man needs approximately 2,000 to 3,000. Use a TDEE calculator to get a personalized estimate." },
+  { question: "What is the difference between BMR and TDEE?", answer: "BMR (Basal Metabolic Rate) is the number of calories your body burns at complete rest to maintain basic life functions like breathing and circulation. TDEE (Total Daily Energy Expenditure) is your BMR multiplied by an activity factor that accounts for all physical activity throughout the day." },
+  { question: "How many calories should I eat to lose weight?", answer: "A safe rate of weight loss is 0.5 to 1 kg (1 to 2 lbs) per week, which requires a daily deficit of approximately 500 to 1,000 calories below your TDEE. It is generally not recommended to eat fewer than 1,200 calories per day for women or 1,500 for men without medical supervision." },
+  { question: "What is the Mifflin-St Jeor equation?", answer: "The Mifflin-St Jeor equation is considered the most accurate formula for estimating BMR. For men: BMR = (10 x weight in kg) + (6.25 x height in cm) - (5 x age) + 5. For women: BMR = (10 x weight in kg) + (6.25 x height in cm) - (5 x age) - 161." },
+  { question: "Does exercise increase the number of calories I need?", answer: "Yes, physical activity increases your total daily energy expenditure. The more intense and frequent your exercise, the more calories you burn. Activity multipliers range from 1.2 for sedentary individuals to 1.9 for very active people who exercise intensely six or seven days per week." }
+]) %>
+
+<%= calculator_schema(
+  name: "Calorie Calculator",
+  description: "Estimate your daily calorie needs based on age, sex, weight, height, and activity level. Includes BMR, TDEE, and weight goal targets.",
+  url: health_calorie_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Calorie Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-6"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2">Calorie Calculator</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">Estimate your daily calorie needs for maintenance, weight loss, or weight gain based on your personal stats and activity level.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="calorie-calculator" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unit System</label>
+            <select data-calorie-calculator-target="unitSystem" data-action="change->calorie-calculator#updateLabels" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <option value="metric">Metric (kg, cm)</option>
+              <option value="imperial">Imperial (lbs, in)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Age (years)</label>
+            <input type="number" data-calorie-calculator-target="age" data-action="input->calorie-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="30" step="1" min="1" max="120">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sex</label>
+            <select data-calorie-calculator-target="sex" data-action="change->calorie-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-calorie-calculator-target="weightLabel">Weight (kg)</label>
+            <input type="number" data-calorie-calculator-target="weight" data-action="input->calorie-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="70" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" data-calorie-calculator-target="heightLabel">Height (cm)</label>
+            <input type="number" data-calorie-calculator-target="height" data-action="input->calorie-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="175" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Activity Level</label>
+            <select data-calorie-calculator-target="activityLevel" data-action="change->calorie-calculator#calculate" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <option value="sedentary">Sedentary (little or no exercise)</option>
+              <option value="light">Light (exercise 1-3 days/week)</option>
+              <option value="moderate">Moderate (exercise 3-5 days/week)</option>
+              <option value="active">Active (exercise 6-7 days/week)</option>
+              <option value="very_active">Very Active (intense exercise daily)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Basal Metabolic Rate</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-calorie-calculator-target="bmr">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Maintenance (TDEE)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-calorie-calculator-target="tdee">— cal</span>
+            </div>
+            <hr class="border-green-200 dark:border-green-800">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mild Weight Loss (-0.25 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="mildLoss">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weight Loss (-0.5 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="weightLoss">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mild Weight Gain (+0.25 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="mildGain">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weight Gain (+0.5 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="weightGain">— cal</span>
+            </div>
+          </div>
+          <button data-action="click->calorie-calculator#copy" class="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Calorie Calculator</h2>
+      <p>
+        This calorie calculator uses the Mifflin-St Jeor equation, widely regarded as the most accurate formula for estimating daily energy needs. Select your unit system, then enter your age, sex, weight, and height. Choose the activity level that best describes your typical week. The calculator instantly provides your Basal Metabolic Rate (BMR) — the calories your body burns at rest — and your Total Daily Energy Expenditure (TDEE), which includes the energy used during physical activity. You will also see suggested calorie targets for mild and moderate weight loss or weight gain.
+      </p>
+      <p>
+        Knowing your TDEE is the foundation of any nutrition plan. Whether you want to lose fat, build muscle, or simply maintain your current weight, your daily calorie intake relative to your TDEE determines the outcome. A consistent deficit leads to weight loss, a surplus supports muscle growth, and matching your TDEE maintains your current composition.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding BMR and TDEE</h2>
+      <p>
+        Your Basal Metabolic Rate represents the minimum energy your body requires to sustain vital functions — breathing, circulating blood, regulating temperature, and repairing cells. It typically accounts for 60 to 75 percent of your total daily calorie burn. Your TDEE builds on BMR by adding the thermic effect of food (energy used to digest meals, roughly 10% of intake), non-exercise activity thermogenesis (NEAT, such as walking, fidgeting, and household chores), and deliberate exercise. Together, these components determine how many calories you actually use each day.
+      </p>
+
+      <h3>Activity Level Multipliers</h3>
+      <p>
+        The activity level you select applies a multiplier to your BMR to estimate TDEE. Sedentary individuals (desk job, minimal exercise) use a factor of 1.2. Light activity (one to three workouts per week) uses 1.375. Moderate activity (three to five sessions) uses 1.55. Active individuals (six to seven days of exercise) use 1.725, and very active people (intense daily training or a physically demanding job) use 1.9. Choosing the right level is critical for accuracy — most people overestimate their activity, so when in doubt, select one level lower.
+      </p>
+
+      <h3>Calorie Targets for Weight Goals</h3>
+      <p>
+        To lose approximately 0.5 kg (about 1 lb) per week, you need a daily deficit of roughly 500 calories below your TDEE. For a gentler approach, a 250-calorie deficit produces about 0.25 kg of loss per week and is easier to sustain long-term. For weight gain, adding 250 to 500 calories above your TDEE supports muscle growth when combined with resistance training. Extreme deficits below 1,200 calories for women or 1,500 for men can slow metabolism, cause nutrient deficiencies, and should only be undertaken with medical guidance.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many calories do I need per day?</h3>
+      <p>
+        Daily calorie needs vary based on age, sex, weight, height, and activity level. The average adult woman needs approximately 1,600 to 2,400 calories per day, while the average adult man needs approximately 2,000 to 3,000. Use a TDEE calculator to get a personalized estimate.
+      </p>
+
+      <h3>What is the difference between BMR and TDEE?</h3>
+      <p>
+        BMR (Basal Metabolic Rate) is the number of calories your body burns at complete rest to maintain basic life functions like breathing and circulation. TDEE (Total Daily Energy Expenditure) is your BMR multiplied by an activity factor that accounts for all physical activity throughout the day.
+      </p>
+
+      <h3>How many calories should I eat to lose weight?</h3>
+      <p>
+        A safe rate of weight loss is 0.5 to 1 kg (1 to 2 lbs) per week, which requires a daily deficit of approximately 500 to 1,000 calories below your TDEE. It is generally not recommended to eat fewer than 1,200 calories per day for women or 1,500 for men without medical supervision.
+      </p>
+
+      <h3>What is the Mifflin-St Jeor equation?</h3>
+      <p>
+        The Mifflin-St Jeor equation is considered the most accurate formula for estimating BMR. For men: BMR = (10 x weight in kg) + (6.25 x height in cm) - (5 x age) + 5. For women: BMR = (10 x weight in kg) + (6.25 x height in cm) - (5 x age) - 161.
+      </p>
+
+      <h3>Does exercise increase the number of calories I need?</h3>
+      <p>
+        Yes, physical activity increases your total daily energy expenditure. The more intense and frequent your exercise, the more calories you burn. Activity multipliers range from 1.2 for sedentary individuals to 1.9 for very active people who exercise intensely six or seven days per week.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Body Fat Calculator", description: "Estimate your body fat percentage using the U.S. Navy method.", path: health_body_fat_path, icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+      { name: "Salary Calculator", description: "Convert between hourly, daily, weekly, biweekly, monthly, and annual salary.", path: finance_salary_path, icon_path: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
