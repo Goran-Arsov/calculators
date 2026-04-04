@@ -1,4 +1,6 @@
 class BlogController < ApplicationController
+  before_action :set_cache_headers
+
   def index
     @posts = BlogPost.published.recent.by_category(params[:category])
 
@@ -31,5 +33,11 @@ class BlogController < ApplicationController
         site_name: "CalcWise"
       }
     )
+  end
+
+  private
+
+  def set_cache_headers
+    expires_in 30.minutes, public: true
   end
 end

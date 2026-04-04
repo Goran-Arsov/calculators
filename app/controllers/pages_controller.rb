@@ -1,4 +1,6 @@
 class PagesController < ApplicationController
+  before_action :set_cache_headers
+
   def privacy_policy
     set_meta_tags(
       title: "Privacy Policy",
@@ -21,5 +23,11 @@ class PagesController < ApplicationController
       description: "CalcWise provides free, accurate online calculators for finance, math, and health. Learn more about our mission.",
       canonical: about_url
     )
+  end
+
+  private
+
+  def set_cache_headers
+    expires_in 1.day, public: true
   end
 end

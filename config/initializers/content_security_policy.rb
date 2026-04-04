@@ -4,26 +4,32 @@
 # See the Securing Rails Applications Guide for more information:
 # https://guides.rubyonrails.org/security.html#content-security-policy-header
 
-# Rails.application.configure do
-#   config.content_security_policy do |policy|
-#     policy.default_src :self, :https
-#     policy.font_src    :self, :https, :data
-#     policy.img_src     :self, :https, :data
-#     policy.object_src  :none
-#     policy.script_src  :self, :https
-#     policy.style_src   :self, :https
-#     # Specify URI for violation reports
-#     # policy.report_uri "/csp-violation-report-endpoint"
-#   end
-#
-#   # Generate session nonces for permitted importmap, inline scripts, and inline styles.
-#   config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
-#   config.content_security_policy_nonce_directives = %w(script-src style-src)
-#
-#   # Automatically add `nonce` to `javascript_tag`, `javascript_include_tag`, and `stylesheet_link_tag`
-#   # if the corresponding directives are specified in `content_security_policy_nonce_directives`.
-#   # config.content_security_policy_nonce_auto = true
-#
-#   # Report violations without enforcing the policy.
-#   # config.content_security_policy_report_only = true
-# end
+Rails.application.configure do
+  config.content_security_policy do |policy|
+    policy.default_src :self, :https
+    policy.font_src    :self, :https, :data, "fonts.gstatic.com"
+    policy.img_src     :self, :https, :data, "pagead2.googlesyndication.com", "www.googletagmanager.com"
+    policy.object_src  :none
+    policy.script_src  :self, :https, :unsafe_inline, :unsafe_eval,
+                       "pagead2.googlesyndication.com",
+                       "adservice.google.com",
+                       "www.googletagmanager.com",
+                       "www.google-analytics.com",
+                       "partner.googleadservices.com",
+                       "tpc.googlesyndication.com",
+                       "www.google.com"
+    policy.style_src   :self, :https, :unsafe_inline, "fonts.googleapis.com"
+    policy.frame_src   :self, "googleads.g.doubleclick.net",
+                       "tpc.googlesyndication.com",
+                       "www.google.com"
+    policy.connect_src :self, :https,
+                       "pagead2.googlesyndication.com",
+                       "www.google-analytics.com",
+                       "www.googletagmanager.com",
+                       "adservice.google.com"
+  end
+
+  # Report violations without enforcing — enable this first to find issues,
+  # then switch to enforcing mode once clean.
+  config.content_security_policy_report_only = true
+end

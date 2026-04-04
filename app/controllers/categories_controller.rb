@@ -2,6 +2,7 @@ class CategoriesController < ApplicationController
   include CalculatorHelper
 
   def show
+    expires_in 1.hour, public: true
     @slug = params[:category]
     @category = ALL_CATEGORIES[@slug]
     raise ActionController::RoutingError, "Not Found" unless @category
