@@ -1,0 +1,159 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Projectile Motion Calculator - Free Online Tool",
+  description: "Calculate range, maximum height, flight time, and more for projectile motion. Enter initial velocity, launch angle, and height for instant results — no sign-up required.",
+  canonical: physics_projectile_motion_url,
+  og: {
+    title: "Projectile Motion Calculator - Free Online Tool | CalcWise",
+    description: "Calculate range, maximum height, flight time, and more for projectile motion. Enter initial velocity, launch angle, and height for instant results.",
+    url: physics_projectile_motion_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Projectile Motion Calculator", url: physics_projectile_motion_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are the main projectile motion equations?", answer: "The key equations are: Range R = (v^2 * sin(2*theta)) / g, Maximum Height H = (v^2 * sin^2(theta)) / (2*g), and Flight Time T = (2*v*sin(theta)) / g, where v is initial velocity, theta is the launch angle, and g is gravitational acceleration (9.81 m/s^2). These assume launch and landing at the same height with no air resistance." },
+  { question: "What is the optimal angle for maximum range?", answer: "When launching and landing at the same height, 45 degrees gives the maximum range. This is because the range formula includes sin(2*theta), which reaches its maximum value of 1 at theta = 45 degrees. However, when launching from an elevated position, the optimal angle is less than 45 degrees." },
+  { question: "How does air resistance affect projectile motion?", answer: "Air resistance (drag) reduces both the range and maximum height of a projectile. It causes the trajectory to become asymmetric, with a steeper descent than ascent. The optimal launch angle shifts below 45 degrees, and the actual range can be significantly less than the ideal calculation predicts, especially at high velocities." },
+  { question: "How does initial height affect projectile motion?", answer: "Launching from an initial height above the landing surface increases both the range and the total flight time. The projectile has extra time to travel horizontally while falling the additional vertical distance. The optimal launch angle also decreases slightly below 45 degrees when launching from an elevated position." },
+  { question: "What are real-world examples of projectile motion?", answer: "Common examples include a basketball shot, a soccer goal kick, a baseball throw, water from a garden hose, a golf drive, fireworks, and long jump athletics. Military applications include artillery and missile trajectories. In all cases, air resistance and spin effects cause deviations from ideal parabolic motion." }
+]) %>
+
+<%= calculator_schema(
+  name: "Projectile Motion Calculator",
+  description: "Calculate range, maximum height, flight time, and velocity components for projectile motion given initial velocity, launch angle, and height.",
+  url: physics_projectile_motion_url,
+  category: "EducationalApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Projectile Motion Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Projectile Motion Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate range, maximum height, flight time, and velocity components for any projectile given its initial velocity, launch angle, and height.</p>
+
+    <div data-controller="projectile-motion-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Initial Velocity (m/s)</label>
+            <input type="number" data-projectile-motion-calculator-target="velocity" data-action="input->projectile-motion-calculator#calculate" class="w-full" placeholder="20" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Launch Angle (degrees)</label>
+            <input type="number" data-projectile-motion-calculator-target="angle" data-action="input->projectile-motion-calculator#calculate" class="w-full" placeholder="45" step="any" min="0" max="90">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Initial Height (m)</label>
+            <input type="number" data-projectile-motion-calculator-target="height" data-action="input->projectile-motion-calculator#calculate" class="w-full" placeholder="0" step="any" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Range (m)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-projectile-motion-calculator-target="resultRange">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Height (m)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-projectile-motion-calculator-target="resultMaxHeight">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Flight Time (s)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-projectile-motion-calculator-target="resultFlightTime">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Time to Peak (s)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-projectile-motion-calculator-target="resultTimeToPeak">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Horizontal Velocity (m/s)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-projectile-motion-calculator-target="resultHorizontalV">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Vertical Velocity (m/s)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-projectile-motion-calculator-target="resultVerticalV">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->projectile-motion-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Projectile Motion Calculator</h2>
+      <p>Enter the initial velocity in meters per second, the launch angle in degrees, and optionally the initial height in meters. The calculator instantly computes the range, maximum height, total flight time, time to reach the peak, and the horizontal and vertical components of the initial velocity. All results update in real time as you type, so you can quickly experiment with different values to see how each parameter affects the trajectory.</p>
+
+      <p>This tool is ideal for physics students solving homework problems, engineers designing launch systems, athletes analyzing throwing or kicking angles, and anyone curious about how objects move through the air under the influence of gravity.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Projectile Motion Equations</h2>
+      <p>Projectile motion is governed by the following fundamental equations, which assume constant gravitational acceleration and no air resistance:</p>
+      <ul>
+        <li><strong>Range:</strong> R = (v * cos(theta) * (v * sin(theta) + sqrt((v * sin(theta))^2 + 2 * g * h))) / g</li>
+        <li><strong>Maximum Height:</strong> H = h + (v^2 * sin^2(theta)) / (2 * g)</li>
+        <li><strong>Flight Time:</strong> T = (v * sin(theta) + sqrt((v * sin(theta))^2 + 2 * g * h)) / g</li>
+        <li><strong>Time to Peak:</strong> t_peak = (v * sin(theta)) / g</li>
+        <li><strong>Horizontal Velocity:</strong> v_x = v * cos(theta)</li>
+        <li><strong>Vertical Velocity:</strong> v_y = v * sin(theta)</li>
+      </ul>
+      <p>Here, v is the initial velocity, theta is the launch angle, g is gravitational acceleration (9.81 m/s^2), and h is the initial height above the landing surface.</p>
+
+      <h3>The Optimal 45-Degree Angle</h3>
+      <p>When a projectile is launched and lands at the same height (h = 0), the range simplifies to R = (v^2 * sin(2 * theta)) / g. The sine function reaches its maximum value of 1 when 2 * theta = 90 degrees, meaning theta = 45 degrees. This makes 45 degrees the optimal launch angle for maximum horizontal distance on flat ground. Angles equally above and below 45 degrees (for example, 30 and 60 degrees) produce the same range but with different trajectories: the lower angle gives a flatter, faster path, while the higher angle gives a taller, slower arc.</p>
+
+      <h3>Effect of Initial Height</h3>
+      <p>Launching from an elevated position increases both the flight time and the range because the projectile has additional vertical distance to fall before reaching the ground. When initial height is greater than zero, the optimal angle for maximum range shifts below 45 degrees. The higher the launch point relative to the landing surface, the lower the optimal angle becomes. This is why shot putters release at angles closer to 37-42 degrees rather than 45 degrees, accounting for the release height above the ground.</p>
+
+      <h3>Air Resistance and Real-World Considerations</h3>
+      <p>In reality, air resistance (drag) significantly affects projectile motion, especially at high velocities. Drag force is proportional to the square of the velocity and depends on the object's shape, size, and surface texture. The effects include a reduced range and maximum height compared to ideal calculations, an asymmetric trajectory where the descent is steeper than the ascent, an optimal launch angle that shifts below 45 degrees even on flat ground, and terminal velocity limiting how fast an object falls. For sports like baseball and golf, spin also plays a major role through the Magnus effect, causing curved trajectories that deviate from simple parabolic paths.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What are the main projectile motion equations?</h3>
+      <p>The key equations are: Range R = (v^2 * sin(2*theta)) / g, Maximum Height H = (v^2 * sin^2(theta)) / (2*g), and Flight Time T = (2*v*sin(theta)) / g, where v is initial velocity, theta is the launch angle, and g is gravitational acceleration (9.81 m/s^2). These assume launch and landing at the same height with no air resistance.</p>
+
+      <h3>What is the optimal angle for maximum range?</h3>
+      <p>When launching and landing at the same height, 45 degrees gives the maximum range. This is because the range formula includes sin(2*theta), which reaches its maximum value of 1 at theta = 45 degrees. However, when launching from an elevated position, the optimal angle is less than 45 degrees.</p>
+
+      <h3>How does air resistance affect projectile motion?</h3>
+      <p>Air resistance (drag) reduces both the range and maximum height of a projectile. It causes the trajectory to become asymmetric, with a steeper descent than ascent. The optimal launch angle shifts below 45 degrees, and the actual range can be significantly less than the ideal calculation predicts, especially at high velocities.</p>
+
+      <h3>How does initial height affect projectile motion?</h3>
+      <p>Launching from an initial height above the landing surface increases both the range and the total flight time. The projectile has extra time to travel horizontally while falling the additional vertical distance. The optimal launch angle also decreases slightly below 45 degrees when launching from an elevated position.</p>
+
+      <h3>What are real-world examples of projectile motion?</h3>
+      <p>Common examples include a basketball shot, a soccer goal kick, a baseball throw, water from a garden hose, a golf drive, fireworks, and long jump athletics. Military applications include artillery and missile trajectories. In all cases, air resistance and spin effects cause deviations from ideal parabolic motion.</p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Velocity Calculator", description: "Calculate speed, distance, or time using the fundamental velocity equation.", path: physics_velocity_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Force Calculator", description: "Calculate force, mass, or acceleration using Newton's second law (F = ma).", path: physics_force_path, icon_path: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" },
+      { name: "Kinetic Energy Calculator", description: "Calculate kinetic energy, mass, or velocity using KE = 1/2 mv^2.", path: physics_kinetic_energy_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

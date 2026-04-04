@@ -23,6 +23,15 @@ Rails.application.routes.draw do
     get "exponent-calculator", to: "calculators#exponent", as: :exponent
   end
 
+  # Physics calculators
+  namespace :physics do
+    get "velocity-calculator", to: "calculators#velocity", as: :velocity
+    get "force-calculator", to: "calculators#force", as: :force
+    get "kinetic-energy-calculator", to: "calculators#kinetic_energy", as: :kinetic_energy
+    get "ohms-law-calculator", to: "calculators#ohms_law", as: :ohms_law
+    get "projectile-motion-calculator", to: "calculators#projectile_motion", as: :projectile_motion
+  end
+
   # Health calculators
   namespace :health do
     get "bmi-calculator", to: "calculators#bmi", as: :bmi
@@ -45,7 +54,7 @@ Rails.application.routes.draw do
 
   # Category landing pages (must be last to avoid catching other routes)
   get ":category", to: "categories#show", as: :category,
-      constraints: { category: /finance|math|health/ }
+      constraints: { category: /finance|math|physics|health/ }
 
   root "home#index"
 end

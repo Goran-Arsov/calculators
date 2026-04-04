@@ -17,6 +17,13 @@ import AreaCalculatorController from "controllers/area_calculator_controller"
 import CircumferenceCalculatorController from "controllers/circumference_calculator_controller"
 import ExponentCalculatorController from "controllers/exponent_calculator_controller"
 
+// Physics calculators
+import VelocityCalculatorController from "controllers/velocity_calculator_controller"
+import ForceCalculatorController from "controllers/force_calculator_controller"
+import KineticEnergyCalculatorController from "controllers/kinetic_energy_calculator_controller"
+import OhmsLawCalculatorController from "controllers/ohms_law_calculator_controller"
+import ProjectileMotionCalculatorController from "controllers/projectile_motion_calculator_controller"
+
 // Health calculators
 import BmiCalculatorController from "controllers/bmi_calculator_controller"
 import CalorieCalculatorController from "controllers/calorie_calculator_controller"
@@ -42,6 +49,13 @@ application.register("fraction-calculator", FractionCalculatorController)
 application.register("area-calculator", AreaCalculatorController)
 application.register("circumference-calculator", CircumferenceCalculatorController)
 application.register("exponent-calculator", ExponentCalculatorController)
+
+// Physics
+application.register("velocity-calculator", VelocityCalculatorController)
+application.register("force-calculator", ForceCalculatorController)
+application.register("kinetic-energy-calculator", KineticEnergyCalculatorController)
+application.register("ohms-law-calculator", OhmsLawCalculatorController)
+application.register("projectile-motion-calculator", ProjectileMotionCalculatorController)
 
 // Health
 application.register("bmi-calculator", BmiCalculatorController)

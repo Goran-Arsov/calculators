@@ -18,6 +18,14 @@ module CalculatorHelper
     { name: "Exponent Calculator", slug: "exponent-calculator", path: :math_exponent_path, description: "Calculate the result of raising a number to any power.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
   ].freeze
 
+  PHYSICS_CALCULATORS = [
+    { name: "Velocity Calculator", slug: "velocity-calculator", path: :physics_velocity_path, description: "Calculate speed, distance, or time using the fundamental velocity equation.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+    { name: "Force Calculator", slug: "force-calculator", path: :physics_force_path, description: "Calculate force, mass, or acceleration using Newton's second law (F = ma).", icon_path: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" },
+    { name: "Kinetic Energy Calculator", slug: "kinetic-energy-calculator", path: :physics_kinetic_energy_path, description: "Calculate kinetic energy, mass, or velocity using KE = 1/2 mv².", icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+    { name: "Ohm's Law Calculator", slug: "ohms-law-calculator", path: :physics_ohms_law_path, description: "Calculate voltage, current, or resistance using Ohm's law (V = IR).", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+    { name: "Projectile Motion Calculator", slug: "projectile-motion-calculator", path: :physics_projectile_motion_path, description: "Calculate range, max height, and flight time for projectile motion.", icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+  ].freeze
+
   HEALTH_CALCULATORS = [
     { name: "BMI Calculator", slug: "bmi-calculator", path: :health_bmi_path, description: "Calculate your Body Mass Index and find out your weight category.", icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
     { name: "Calorie Calculator", slug: "calorie-calculator", path: :health_calorie_path, description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
@@ -34,6 +42,11 @@ module CalculatorHelper
       title: "Math Calculators",
       description: "Free math calculators for percentages, fractions, area, circumference, and exponents. Get instant answers with step-by-step solutions.",
       calculators: MATH_CALCULATORS
+    },
+    "physics" => {
+      title: "Physics Calculators",
+      description: "Free physics calculators for velocity, force, energy, electricity, and projectile motion. Solve physics problems instantly with clear formulas and results.",
+      calculators: PHYSICS_CALCULATORS
     },
     "health" => {
       title: "Health Calculators",
