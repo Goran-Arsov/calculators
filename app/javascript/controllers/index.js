@@ -90,6 +90,7 @@ import CookingConverterController from "controllers/cooking_converter_controller
 import DarkModeController from "controllers/dark_mode_controller"
 import NavbarController from "controllers/navbar_controller"
 import CalculatorSearchController from "controllers/calculator_search_controller"
+import CookieConsentController from "controllers/cookie_consent_controller"
 
 // Finance
 application.register("mortgage-calculator", MortgageCalculatorController)
@@ -181,3 +182,4 @@ application.register("cooking-converter", CookingConverterController)
 application.register("dark-mode", DarkModeController)
 application.register("navbar", NavbarController)
 application.register("calculator-search", CalculatorSearchController)
+application.register("cookie-consent", CookieConsentController)

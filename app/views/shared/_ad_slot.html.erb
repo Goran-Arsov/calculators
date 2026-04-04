@@ -1,33 +1,40 @@
-<div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>">
-  <%#
-    Uncomment after AdSense approval:
+<%# Ad slot — renders AdSense unit when enabled, placeholder when not %>
+<% above_fold = %w[leaderboard].include?(slot) %>
+<% is_anchor = slot == "anchor" %>
+<% is_multiplex = slot == "multiplex" %>
+<% is_sidebar = slot == "sidebar" %>
 
-    if slot == "anchor"
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-XXXXXXXX"
-           data-ad-slot="YYYYYYYY"
+<% if adsense_enabled? %>
+  <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>"<%= " style=\"min-height:90px\"".html_safe unless is_anchor %>>
+    <ins class="adsbygoogle"
+         style="display:block<%= ';min-height:250px' if is_sidebar %>"
+         data-ad-client="<%= adsense_pub_id %>"
+         data-ad-slot="<%= ad_slot_id(slot) %>"
+         <% if is_multiplex %>
+           data-ad-format="autorelaxed"
+         <% elsif is_anchor %>
            data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-    elsif slot == "multiplex"
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-XXXXXXXX"
-           data-ad-slot="YYYYYYYY"
-           data-ad-format="autorelaxed"></ins>
-    else
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-XXXXXXXX"
-           data-ad-slot="YYYYYYYY"
+           data-full-width-responsive="true"
+         <% elsif is_sidebar %>
+           data-ad-format="vertical"
+         <% else %>
            data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-    end
+           data-full-width-responsive="true"
+         <% end %>
+         <% unless above_fold %>data-ad-layout-key=""
+         loading="lazy"<% end %>></ins>
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  %>
-  <% unless slot == "anchor" %>
-    <div class="bg-gray-100/50 dark:bg-gray-800/50 rounded-xl p-4 text-center text-xs text-gray-300 dark:text-gray-600 min-h-[90px] flex items-center justify-center border border-dashed border-gray-200 dark:border-gray-700">
-      Ad Space
+  </div>
+<% else %>
+  <%# Placeholder for development — mimics real ad sizes to test layout %>
+  <% unless is_anchor %>
+    <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>">
+      <div class="bg-gray-100/50 dark:bg-gray-800/30 rounded-xl text-center text-xs text-gray-300 dark:text-gray-600 flex items-center justify-center border border-dashed border-gray-200/60 dark:border-gray-700/60
+        <%= 'p-4 min-h-[90px]' unless is_sidebar %>
+        <%= 'p-4 min-h-[250px]' if is_sidebar %>
+        <%= 'p-4 min-h-[120px]' if is_multiplex %>">
+        Ad
+      </div>
     </div>
   <% end %>
-</div>
+<% end %>
