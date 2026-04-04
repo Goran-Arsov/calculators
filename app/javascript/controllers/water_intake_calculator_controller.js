@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["weight", "exercise", "resultLiters", "resultGlasses", "resultMl"]
+  static targets = ["weight", "exercise", "liters", "glasses", "ml"]
 
   calculate() {
     const weight = parseFloat(this.weightTarget.value) || 0
@@ -18,15 +18,24 @@ export default class extends Controller {
     const totalMl = totalLiters * 1000
     const glasses = totalMl / 250
 
-    this.resultLitersTarget.textContent = this.fmt(totalLiters)
-    this.resultGlassesTarget.textContent = Math.round(glasses)
-    this.resultMlTarget.textContent = Math.round(totalMl).toLocaleString()
+    this.litersTarget.textContent = `${this.fmt(totalLiters)} L`
+    this.glassesTarget.textContent = Math.round(glasses)
+    this.mlTarget.textContent = `${Math.round(totalMl).toLocaleString()} mL`
   }
 
   clearResults() {
-    this.resultLitersTarget.textContent = "0"
-    this.resultGlassesTarget.textContent = "0"
-    this.resultMlTarget.textContent = "0"
+    this.litersTarget.textContent = "— L"
+    this.glassesTarget.textContent = "—"
+    this.mlTarget.textContent = "— mL"
+  }
+
+  copy() {
+    const text = [
+      `Liters: ${this.litersTarget.textContent}`,
+      `Glasses (250 mL): ${this.glassesTarget.textContent}`,
+      `Milliliters: ${this.mlTarget.textContent}`
+    ].join("\n")
+    navigator.clipboard.writeText(text)
   }
 
   fmt(n) {

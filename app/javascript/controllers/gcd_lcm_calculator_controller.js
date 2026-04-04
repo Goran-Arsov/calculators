@@ -1,15 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["a", "b", "resultGcd", "resultLcm"]
+  static targets = ["a", "b", "gcd", "lcm"]
 
   calculate() {
     const a = parseInt(this.aTarget.value)
     const b = parseInt(this.bTarget.value)
 
     if (isNaN(a) || isNaN(b) || a === 0 || b === 0) {
-      this.resultGcdTarget.textContent = "—"
-      this.resultLcmTarget.textContent = "—"
+      this.gcdTarget.textContent = "—"
+      this.lcmTarget.textContent = "—"
       return
     }
 
@@ -18,8 +18,8 @@ export default class extends Controller {
     const gcdVal = this.gcd(absA, absB)
     const lcmVal = (absA * absB) / gcdVal
 
-    this.resultGcdTarget.textContent = this.fmt(gcdVal)
-    this.resultLcmTarget.textContent = this.fmt(lcmVal)
+    this.gcdTarget.textContent = this.fmt(gcdVal)
+    this.lcmTarget.textContent = this.fmt(lcmVal)
   }
 
   gcd(a, b) {
@@ -34,10 +34,9 @@ export default class extends Controller {
     return n.toFixed(4).replace(/\.?0+$/, "")
   }
 
-  copy(event) {
-    const card = event.target.closest("[data-card]")
-    const label = card.dataset.card
-    const result = card.querySelector("[data-result]")
-    navigator.clipboard.writeText(`${label}: ${result.textContent}`)
+  copy() {
+    const gcd = this.gcdTarget.textContent
+    const lcm = this.lcmTarget.textContent
+    navigator.clipboard.writeText(`GCD: ${gcd}\nLCM: ${lcm}`)
   }
 }

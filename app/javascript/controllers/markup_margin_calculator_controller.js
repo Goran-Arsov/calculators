@@ -6,7 +6,7 @@ export default class extends Controller {
     "marginIn", "resultMarkupFromMargin"
   ]
 
-  calcMargin() {
+  calcMarginFromMarkup() {
     const markup = parseFloat(this.markupInTarget.value)
     if (!isNaN(markup) && markup > -100) {
       const margin = (markup / (100 + markup)) * 100
@@ -16,7 +16,7 @@ export default class extends Controller {
     }
   }
 
-  calcMarkup() {
+  calcMarkupFromMargin() {
     const margin = parseFloat(this.marginInTarget.value)
     if (!isNaN(margin) && margin < 100) {
       const markup = (margin / (100 - margin)) * 100

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["a", "b", "c", "resultDiscriminant", "resultX1", "resultX2", "resultVertex"]
+  static targets = ["a", "b", "c", "discriminant", "x1", "x2", "vertex"]
 
   calculate() {
     const a = parseFloat(this.aTarget.value)
@@ -14,41 +14,41 @@ export default class extends Controller {
     }
 
     if (a === 0) {
-      this.resultDiscriminantTarget.textContent = "—"
-      this.resultX1Target.textContent = "a cannot be 0"
-      this.resultX2Target.textContent = "—"
-      this.resultVertexTarget.textContent = "—"
+      this.discriminantTarget.textContent = "—"
+      this.x1Target.textContent = "a cannot be 0"
+      this.x2Target.textContent = "—"
+      this.vertexTarget.textContent = "—"
       return
     }
 
     const discriminant = b * b - 4 * a * c
-    this.resultDiscriminantTarget.textContent = this.fmt(discriminant)
+    this.discriminantTarget.textContent = this.fmt(discriminant)
 
     if (discriminant >= 0) {
       const sqrtD = Math.sqrt(discriminant)
       const x1 = (-b + sqrtD) / (2 * a)
       const x2 = (-b - sqrtD) / (2 * a)
-      this.resultX1Target.textContent = this.fmt(x1)
-      this.resultX2Target.textContent = this.fmt(x2)
+      this.x1Target.textContent = this.fmt(x1)
+      this.x2Target.textContent = this.fmt(x2)
     } else {
       const realPart = -b / (2 * a)
       const imagPart = Math.sqrt(Math.abs(discriminant)) / (2 * a)
       const real = this.fmt(realPart)
       const imag = this.fmt(Math.abs(imagPart))
-      this.resultX1Target.textContent = `${real} + ${imag}i`
-      this.resultX2Target.textContent = `${real} - ${imag}i`
+      this.x1Target.textContent = `${real} + ${imag}i`
+      this.x2Target.textContent = `${real} - ${imag}i`
     }
 
     const vertexX = -b / (2 * a)
     const vertexY = a * vertexX * vertexX + b * vertexX + c
-    this.resultVertexTarget.textContent = `(${this.fmt(vertexX)}, ${this.fmt(vertexY)})`
+    this.vertexTarget.textContent = `(${this.fmt(vertexX)}, ${this.fmt(vertexY)})`
   }
 
   clearResults() {
-    this.resultDiscriminantTarget.textContent = "—"
-    this.resultX1Target.textContent = "—"
-    this.resultX2Target.textContent = "—"
-    this.resultVertexTarget.textContent = "—"
+    this.discriminantTarget.textContent = "—"
+    this.x1Target.textContent = "—"
+    this.x2Target.textContent = "—"
+    this.vertexTarget.textContent = "—"
   }
 
   fmt(n) {
@@ -56,10 +56,11 @@ export default class extends Controller {
     return n.toFixed(4).replace(/\.?0+$/, "")
   }
 
-  copy(event) {
-    const card = event.target.closest("[data-card]")
-    const label = card.dataset.card
-    const result = card.querySelector("[data-result]")
-    navigator.clipboard.writeText(`${label}: ${result.textContent}`)
+  copy() {
+    const d = this.discriminantTarget.textContent
+    const x1 = this.x1Target.textContent
+    const x2 = this.x2Target.textContent
+    const v = this.vertexTarget.textContent
+    navigator.clipboard.writeText(`Discriminant: ${d}\nx1: ${x1}\nx2: ${x2}\nVertex: ${v}`)
   }
 }

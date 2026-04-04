@@ -9,12 +9,20 @@ export default class extends Controller {
     const depth = parseFloat(this.depthTarget.value) || 0
 
     const area = length * width
-    const cubicYards = length * width * (depth / 12) / 27
+    const cubicYards = (length * width * depth) / 324
     const tons = cubicYards * 1.4
 
-    this.resultAreaTarget.textContent = this.fmt(area)
+    this.resultAreaTarget.textContent = `${this.fmt(area)} sq ft`
     this.resultCubicYardsTarget.textContent = this.fmt(cubicYards)
     this.resultTonsTarget.textContent = this.fmt(tons)
+  }
+
+  copy() {
+    const area = this.resultAreaTarget.textContent
+    const cubicYards = this.resultCubicYardsTarget.textContent
+    const tons = this.resultTonsTarget.textContent
+    const text = `Gravel & Mulch Estimate:\nArea: ${area}\nCubic Yards: ${cubicYards}\nTons (Gravel): ${tons}`
+    navigator.clipboard.writeText(text)
   }
 
   fmt(n) {

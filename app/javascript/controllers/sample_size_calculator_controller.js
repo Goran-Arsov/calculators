@@ -1,22 +1,22 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["confidence", "margin", "proportion", "resultSampleSize", "resultZScore"]
+  static targets = ["confidence", "marginOfError", "proportion", "sampleSize", "zScore"]
 
   calculate() {
     const confidenceLevel = parseFloat(this.confidenceTarget.value)
-    const marginOfError = parseFloat(this.marginTarget.value)
+    const marginOfError = parseFloat(this.marginOfErrorTarget.value)
     const proportion = parseFloat(this.proportionTarget.value)
 
     if (isNaN(confidenceLevel) || isNaN(marginOfError) || isNaN(proportion)) {
-      this.resultSampleSizeTarget.textContent = "—"
-      this.resultZScoreTarget.textContent = "—"
+      this.sampleSizeTarget.textContent = "—"
+      this.zScoreTarget.textContent = "—"
       return
     }
 
     if (marginOfError <= 0) {
-      this.resultSampleSizeTarget.textContent = "Margin must be > 0"
-      this.resultZScoreTarget.textContent = "—"
+      this.sampleSizeTarget.textContent = "Margin must be > 0"
+      this.zScoreTarget.textContent = "—"
       return
     }
 
@@ -24,8 +24,8 @@ export default class extends Controller {
     const z = zScores[confidenceLevel]
 
     if (!z) {
-      this.resultSampleSizeTarget.textContent = "—"
-      this.resultZScoreTarget.textContent = "—"
+      this.sampleSizeTarget.textContent = "—"
+      this.zScoreTarget.textContent = "—"
       return
     }
 
@@ -33,8 +33,8 @@ export default class extends Controller {
     const e = marginOfError / 100
     const n = (z * z * p * (1 - p)) / (e * e)
 
-    this.resultZScoreTarget.textContent = z
-    this.resultSampleSizeTarget.textContent = this.fmt(Math.ceil(n))
+    this.zScoreTarget.textContent = z
+    this.sampleSizeTarget.textContent = this.fmt(Math.ceil(n))
   }
 
   fmt(n) {
@@ -42,10 +42,9 @@ export default class extends Controller {
     return n.toFixed(4).replace(/\.?0+$/, "")
   }
 
-  copy(event) {
-    const card = event.target.closest("[data-card]")
-    const label = card.dataset.card
-    const result = card.querySelector("[data-result]")
-    navigator.clipboard.writeText(`${label}: ${result.textContent}`)
+  copy() {
+    const sampleSize = this.sampleSizeTarget.textContent
+    const zScore = this.zScoreTarget.textContent
+    navigator.clipboard.writeText(`Sample Size: ${sampleSize}\nZ-Score: ${zScore}`)
   }
 }

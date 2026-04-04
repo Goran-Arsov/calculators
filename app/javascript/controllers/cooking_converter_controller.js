@@ -1,19 +1,21 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["conversion", "input", "result"]
+  static targets = ["conversion", "input", "result", "fromUnit", "toUnit"]
 
   static conversions = {
-    cups_ml:    { factor: 236.588, label: "mL" },
-    ml_cups:    { factor: 1 / 236.588, label: "cups" },
-    tbsp_ml:    { factor: 14.787, label: "mL" },
-    ml_tbsp:    { factor: 1 / 14.787, label: "tbsp" },
-    tsp_ml:     { factor: 4.929, label: "mL" },
-    ml_tsp:     { factor: 1 / 4.929, label: "tsp" },
-    oz_g:       { factor: 28.3495, label: "g" },
-    g_oz:       { factor: 1 / 28.3495, label: "oz" },
-    cups_tbsp:  { factor: 16, label: "tbsp" },
-    tbsp_tsp:   { factor: 3, label: "tsp" }
+    cups_ml:    { factor: 236.588, from: "cups", to: "mL" },
+    ml_cups:    { factor: 1 / 236.588, from: "mL", to: "cups" },
+    tbsp_ml:    { factor: 14.787, from: "tbsp", to: "mL" },
+    ml_tbsp:    { factor: 1 / 14.787, from: "mL", to: "tbsp" },
+    tsp_ml:     { factor: 4.929, from: "tsp", to: "mL" },
+    ml_tsp:     { factor: 1 / 4.929, from: "mL", to: "tsp" },
+    oz_g:       { factor: 28.3495, from: "oz", to: "g" },
+    g_oz:       { factor: 1 / 28.3495, from: "g", to: "oz" },
+    cups_tbsp:  { factor: 16, from: "cups", to: "tbsp" },
+    tbsp_tsp:   { factor: 3, from: "tbsp", to: "tsp" },
+    lb_kg:      { factor: 0.453592, from: "lb", to: "kg" },
+    kg_lb:      { factor: 2.20462, from: "kg", to: "lb" }
   }
 
   convert() {
@@ -26,9 +28,12 @@ export default class extends Controller {
       return
     }
 
+    if (this.hasFromUnitTarget) this.fromUnitTarget.textContent = conv.from
+    if (this.hasToUnitTarget) this.toUnitTarget.textContent = conv.to
+
     const result = input * conv.factor
 
-    this.resultTarget.textContent = this.fmt(result) + " " + conv.label
+    this.resultTarget.textContent = this.fmt(result) + " " + conv.to
   }
 
   fmt(n) {

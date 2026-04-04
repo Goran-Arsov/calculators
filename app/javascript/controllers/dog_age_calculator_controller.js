@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["dogAge", "size", "resultHumanAge"]
+  static targets = ["dogAge", "size", "humanAge"]
 
   static sizeAdjustment = {
     small: -2,
@@ -14,15 +14,26 @@ export default class extends Controller {
     const size = this.sizeTarget.value
 
     if (dogAge <= 0) {
-      this.resultHumanAgeTarget.textContent = "0"
+      this.humanAgeTarget.textContent = "— years"
       return
     }
 
-    const baseAge = 16 * Math.log(dogAge) + 31
-    const adjustment = this.constructor.sizeAdjustment[size] || 0
-    const humanAge = baseAge + adjustment
+    let humanAge
+    if (dogAge <= 1) {
+      humanAge = 15 * dogAge
+    } else {
+      humanAge = 16 * Math.log(dogAge) + 31
+    }
 
-    this.resultHumanAgeTarget.textContent = this.fmt(Math.max(0, humanAge))
+    const adjustment = this.constructor.sizeAdjustment[size] || 0
+    humanAge += adjustment
+
+    this.humanAgeTarget.textContent = `${this.fmt(Math.max(0, humanAge))} years`
+  }
+
+  copy() {
+    const text = `Human Age Equivalent: ${this.humanAgeTarget.textContent}`
+    navigator.clipboard.writeText(text)
   }
 
   fmt(n) {

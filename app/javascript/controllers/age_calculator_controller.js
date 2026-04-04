@@ -43,6 +43,18 @@ export default class extends Controller {
     this.resultNextBirthdayTarget.textContent = this.fmt(daysUntilNext) + " days"
   }
 
+  copy() {
+    const years = this.resultYearsTarget.textContent
+    const months = this.resultMonthsTarget.textContent
+    const days = this.resultDaysTarget.textContent
+    const totalDays = this.resultTotalDaysTarget.textContent
+    const nextBirthday = this.resultNextBirthdayTarget.textContent
+
+    const text = `Age: ${years} years, ${months} months, ${days} days\nTotal Days: ${totalDays}\nNext Birthday: ${nextBirthday}`
+
+    navigator.clipboard.writeText(text)
+  }
+
   fmt(n) {
     return Number(n).toLocaleString("en-US")
   }

@@ -2,13 +2,13 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "distForCost", "mpgForCost", "priceForCost", "resultCost",
+    "distanceForCost", "mpgForCost", "priceForCost", "resultCost",
     "budgetForDist", "mpgForDist", "priceForDist", "resultDistance",
-    "distForMpg", "budgetForMpg", "priceForMpgR", "resultMpgNeeded"
+    "distanceForMpg", "budgetForMpg", "priceForMpg", "resultMpg"
   ]
 
   calcCost() {
-    const dist = parseFloat(this.distForCostTarget.value) || 0
+    const dist = parseFloat(this.distanceForCostTarget.value) || 0
     const mpg = parseFloat(this.mpgForCostTarget.value) || 0
     const price = parseFloat(this.priceForCostTarget.value) || 0
 
@@ -27,14 +27,14 @@ export default class extends Controller {
     this.resultDistanceTarget.textContent = this.fmt(distance)
   }
 
-  calcMpgNeeded() {
-    const dist = parseFloat(this.distForMpgTarget.value) || 0
+  calcMpg() {
+    const dist = parseFloat(this.distanceForMpgTarget.value) || 0
     const budget = parseFloat(this.budgetForMpgTarget.value) || 0
-    const price = parseFloat(this.priceForMpgRTarget.value) || 0
+    const price = parseFloat(this.priceForMpgTarget.value) || 0
 
     const mpgNeeded = budget > 0 && price > 0 ? dist / (budget / price) : 0
 
-    this.resultMpgNeededTarget.textContent = this.fmt(mpgNeeded)
+    this.resultMpgTarget.textContent = this.fmt(mpgNeeded)
   }
 
   fmt(n) {

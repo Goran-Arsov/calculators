@@ -8,16 +8,27 @@ export default class extends Controller {
     const height = parseFloat(this.heightTarget.value) || 6
     const spacing = parseFloat(this.spacingTarget.value) || 8
 
-    const posts = Math.ceil(length / spacing) + 1
-    const sections = posts - 1
-    const railsPerSection = height > 6 ? 3 : 2
+    const posts = length > 0 ? Math.ceil(length / spacing) + 1 : 0
+    const sections = Math.max(posts - 1, 0)
+    const railsPerSection = height >= 5 ? 3 : 2
     const rails = sections * railsPerSection
-    const pickets = Math.ceil(length / 0.5)
+    const picketWidth = 3.5 / 12
+    const picketsPerSection = spacing > 0 ? Math.ceil(spacing / picketWidth) : 0
+    const pickets = picketsPerSection * sections
 
     this.resultPostsTarget.textContent = this.fmt(posts)
     this.resultRailsTarget.textContent = this.fmt(rails)
     this.resultPicketsTarget.textContent = this.fmt(pickets)
     this.resultSectionsTarget.textContent = this.fmt(sections)
+  }
+
+  copy() {
+    const posts = this.resultPostsTarget.textContent
+    const rails = this.resultRailsTarget.textContent
+    const pickets = this.resultPicketsTarget.textContent
+    const sections = this.resultSectionsTarget.textContent
+    const text = `Fence Estimate:\nPosts: ${posts}\nRails: ${rails}\nPickets: ${pickets}\nSections: ${sections}`
+    navigator.clipboard.writeText(text)
   }
 
   fmt(n) {

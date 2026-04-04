@@ -1,12 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["calories", "goal", "resultProtein", "resultCarbs", "resultFat"]
+  static targets = ["calories", "goal", "protein", "carbs", "fat"]
 
   static ratios = {
     maintain: { protein: 30, carbs: 40, fat: 30 },
-    cut:      { protein: 40, carbs: 30, fat: 30 },
-    bulk:     { protein: 25, carbs: 50, fat: 25 }
+    cut:      { protein: 40, carbs: 35, fat: 25 },
+    bulk:     { protein: 30, carbs: 45, fat: 25 }
   }
 
   static calsPerGram = {
@@ -31,15 +31,24 @@ export default class extends Controller {
     const carbsGrams = (calories * ratio.carbs / 100) / cpg.carbs
     const fatGrams = (calories * ratio.fat / 100) / cpg.fat
 
-    this.resultProteinTarget.textContent = this.fmt(proteinGrams)
-    this.resultCarbsTarget.textContent = this.fmt(carbsGrams)
-    this.resultFatTarget.textContent = this.fmt(fatGrams)
+    this.proteinTarget.textContent = `${this.fmt(proteinGrams)} g`
+    this.carbsTarget.textContent = `${this.fmt(carbsGrams)} g`
+    this.fatTarget.textContent = `${this.fmt(fatGrams)} g`
   }
 
   clearResults() {
-    this.resultProteinTarget.textContent = "0"
-    this.resultCarbsTarget.textContent = "0"
-    this.resultFatTarget.textContent = "0"
+    this.proteinTarget.textContent = "— g"
+    this.carbsTarget.textContent = "— g"
+    this.fatTarget.textContent = "— g"
+  }
+
+  copy() {
+    const text = [
+      `Protein: ${this.proteinTarget.textContent}`,
+      `Carbs: ${this.carbsTarget.textContent}`,
+      `Fat: ${this.fatTarget.textContent}`
+    ].join("\n")
+    navigator.clipboard.writeText(text)
   }
 
   fmt(n) {

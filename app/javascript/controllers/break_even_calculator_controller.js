@@ -1,11 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["fixedCosts", "price", "variableCost", "resultUnits", "resultRevenue"]
+  static targets = ["fixedCosts", "pricePerUnit", "variableCost", "resultUnits", "resultRevenue"]
 
   calculate() {
     const fixedCosts = parseFloat(this.fixedCostsTarget.value) || 0
-    const price = parseFloat(this.priceTarget.value) || 0
+    const price = parseFloat(this.pricePerUnitTarget.value) || 0
     const variableCost = parseFloat(this.variableCostTarget.value) || 0
 
     if (fixedCosts <= 0 || price <= 0 || price <= variableCost) {
@@ -26,9 +26,10 @@ export default class extends Controller {
     return n.toFixed(4).replace(/\.?0+$/, "")
   }
 
-  copy(event) {
-    const card = event.target.closest("[data-card]")
-    const result = card.querySelector("[data-result]")
-    navigator.clipboard.writeText(`${card.dataset.card}: ${result.textContent}`)
+  copy() {
+    const units = this.resultUnitsTarget.textContent
+    const revenue = this.resultRevenueTarget.textContent
+    const text = `Break-Even Units: ${units}\nBreak-Even Revenue: ${revenue}`
+    navigator.clipboard.writeText(text)
   }
 }

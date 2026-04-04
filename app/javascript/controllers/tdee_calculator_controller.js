@@ -1,14 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["weight", "height", "age", "gender", "activity", "resultBmr", "resultTdee"]
+  static targets = ["weight", "height", "age", "gender", "activityLevel", "bmr", "tdee"]
 
   static activityMultipliers = {
     sedentary: 1.2,
     light: 1.375,
     moderate: 1.55,
     active: 1.725,
-    very_active: 1.9
+    extra: 1.9
   }
 
   calculate() {
@@ -16,7 +16,7 @@ export default class extends Controller {
     const height = parseFloat(this.heightTarget.value) || 0
     const age = parseFloat(this.ageTarget.value) || 0
     const gender = this.genderTarget.value
-    const activity = this.activityTarget.value
+    const activity = this.activityLevelTarget.value
 
     if (weight <= 0 || height <= 0 || age <= 0) {
       this.clearResults()
@@ -33,16 +33,21 @@ export default class extends Controller {
     const multiplier = this.constructor.activityMultipliers[activity] || 1.2
     const tdee = bmr * multiplier
 
-    this.resultBmrTarget.textContent = this.fmt(bmr)
-    this.resultTdeeTarget.textContent = this.fmt(tdee)
+    this.bmrTarget.textContent = `${this.fmt(bmr)} cal`
+    this.tdeeTarget.textContent = `${this.fmt(tdee)} cal`
   }
 
   clearResults() {
-    this.resultBmrTarget.textContent = "0"
-    this.resultTdeeTarget.textContent = "0"
+    this.bmrTarget.textContent = "— cal"
+    this.tdeeTarget.textContent = "— cal"
   }
 
   fmt(n) {
     return Math.round(n).toLocaleString()
+  }
+
+  copy() {
+    const text = `BMR: ${this.bmrTarget.textContent}\nTDEE: ${this.tdeeTarget.textContent}`
+    navigator.clipboard.writeText(text)
   }
 }

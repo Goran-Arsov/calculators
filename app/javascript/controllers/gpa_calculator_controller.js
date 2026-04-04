@@ -7,25 +7,17 @@ export default class extends Controller {
     "resultGpa", "resultTotalCredits", "resultQualityPoints"
   ]
 
-  static gradePoints = {
-    "A": 4.0, "A-": 3.7,
-    "B+": 3.3, "B": 3.0, "B-": 2.7,
-    "C+": 2.3, "C": 2.0, "C-": 1.7,
-    "D+": 1.3, "D": 1.0,
-    "F": 0.0
-  }
-
   calculate() {
     let totalCredits = 0
     let totalQualityPoints = 0
 
     for (let i = 1; i <= 6; i++) {
-      const grade = this[`grade${i}Target`].value
+      const gradeValue = this[`grade${i}Target`].value
       const credits = parseFloat(this[`credits${i}Target`].value) || 0
 
-      if (grade && credits > 0) {
-        const points = this.constructor.gradePoints[grade]
-        if (points !== undefined) {
+      if (gradeValue !== "" && credits > 0) {
+        const points = parseFloat(gradeValue)
+        if (!isNaN(points)) {
           totalQualityPoints += points * credits
           totalCredits += credits
         }
@@ -37,6 +29,16 @@ export default class extends Controller {
     this.resultGpaTarget.textContent = this.fmt(gpa)
     this.resultTotalCreditsTarget.textContent = this.fmt(totalCredits)
     this.resultQualityPointsTarget.textContent = this.fmt(totalQualityPoints)
+  }
+
+  copy() {
+    const gpa = this.resultGpaTarget.textContent
+    const totalCredits = this.resultTotalCreditsTarget.textContent
+    const qualityPoints = this.resultQualityPointsTarget.textContent
+
+    const text = `GPA: ${gpa}\nTotal Credits: ${totalCredits}\nQuality Points: ${qualityPoints}`
+
+    navigator.clipboard.writeText(text)
   }
 
   fmt(n) {

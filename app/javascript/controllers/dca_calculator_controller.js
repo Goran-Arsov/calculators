@@ -1,11 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["monthly", "rate", "years", "resultFutureValue", "resultTotalInvested", "resultTotalReturn"]
+  static targets = ["monthlyInvestment", "annualReturn", "years", "resultFutureValue", "resultTotalInvested", "resultTotalReturn"]
 
   calculate() {
-    const monthly = parseFloat(this.monthlyTarget.value) || 0
-    const annualRate = parseFloat(this.rateTarget.value) / 100
+    const monthly = parseFloat(this.monthlyInvestmentTarget.value) || 0
+    const annualRate = parseFloat(this.annualReturnTarget.value) / 100
     const years = parseInt(this.yearsTarget.value) || 0
 
     if (monthly <= 0 || years <= 0 || isNaN(annualRate)) {
@@ -38,9 +38,11 @@ export default class extends Controller {
     return n.toFixed(4).replace(/\.?0+$/, "")
   }
 
-  copy(event) {
-    const card = event.target.closest("[data-card]")
-    const result = card.querySelector("[data-result]")
-    navigator.clipboard.writeText(`${card.dataset.card}: ${result.textContent}`)
+  copy() {
+    const futureValue = this.resultFutureValueTarget.textContent
+    const totalInvested = this.resultTotalInvestedTarget.textContent
+    const totalReturn = this.resultTotalReturnTarget.textContent
+    const text = `Future Value: ${futureValue}\nTotal Invested: ${totalInvested}\nTotal Return: ${totalReturn}`
+    navigator.clipboard.writeText(text)
   }
 }

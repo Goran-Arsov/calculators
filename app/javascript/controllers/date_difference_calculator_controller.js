@@ -32,6 +32,17 @@ export default class extends Controller {
     this.resultYearsTarget.textContent = this.fmt(Math.abs(years))
   }
 
+  copy() {
+    const days = this.resultDaysTarget.textContent
+    const weeks = this.resultWeeksTarget.textContent
+    const months = this.resultMonthsTarget.textContent
+    const years = this.resultYearsTarget.textContent
+
+    const text = `Days: ${days}\nWeeks: ${weeks}\nMonths: ${months}\nYears: ${years}`
+
+    navigator.clipboard.writeText(text)
+  }
+
   fmt(n) {
     return Number(n).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 })
   }

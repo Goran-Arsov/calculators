@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["lastPeriod", "resultDueDate", "resultConception", "resultWeeks", "resultTrimester"]
+  static targets = ["lastPeriod", "dueDate", "conceptionDate", "weeksPregnant", "trimester"]
 
   calculate() {
     const lastPeriodValue = this.lastPeriodTarget.value
@@ -38,19 +38,29 @@ export default class extends Controller {
       trimester = "Past due date"
     }
 
-    this.resultDueDateTarget.textContent = this.fmtDate(dueDate)
-    this.resultConceptionTarget.textContent = this.fmtDate(conceptionDate)
-    this.resultWeeksTarget.textContent = diffDays >= 0
+    this.dueDateTarget.textContent = this.fmtDate(dueDate)
+    this.conceptionDateTarget.textContent = this.fmtDate(conceptionDate)
+    this.weeksPregnantTarget.textContent = diffDays >= 0
       ? `${weeksPregnant} weeks, ${daysRemainder} days`
       : "—"
-    this.resultTrimesterTarget.textContent = trimester
+    this.trimesterTarget.textContent = trimester
   }
 
   clearResults() {
-    this.resultDueDateTarget.textContent = "—"
-    this.resultConceptionTarget.textContent = "—"
-    this.resultWeeksTarget.textContent = "—"
-    this.resultTrimesterTarget.textContent = "—"
+    this.dueDateTarget.textContent = "—"
+    this.conceptionDateTarget.textContent = "—"
+    this.weeksPregnantTarget.textContent = "—"
+    this.trimesterTarget.textContent = "—"
+  }
+
+  copy() {
+    const text = [
+      `Due Date: ${this.dueDateTarget.textContent}`,
+      `Conception Date: ${this.conceptionDateTarget.textContent}`,
+      `Weeks Pregnant: ${this.weeksPregnantTarget.textContent}`,
+      `Trimester: ${this.trimesterTarget.textContent}`
+    ].join("\n")
+    navigator.clipboard.writeText(text)
   }
 
   fmtDate(date) {
