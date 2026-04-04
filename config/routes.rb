@@ -108,6 +108,8 @@ Rails.application.routes.draw do
   get "privacy-policy", to: "pages#privacy_policy", as: :privacy_policy
   get "terms-of-service", to: "pages#terms_of_service", as: :terms_of_service
   get "about", to: "pages#about", as: :about
+  get "contact", to: "pages#contact", as: :contact
+  get "disclaimer", to: "pages#disclaimer", as: :disclaimer
 
   # SEO
   get "sitemap.xml", to: "sitemap#show", defaults: { format: :xml }

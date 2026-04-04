@@ -30,6 +30,8 @@ class SitemapController < ApplicationController
     @urls << { loc: about_url, changefreq: "monthly", priority: "0.5" }
     @urls << { loc: privacy_policy_url, changefreq: "yearly", priority: "0.3" }
     @urls << { loc: terms_of_service_url, changefreq: "yearly", priority: "0.3" }
+    @urls << { loc: contact_url, changefreq: "yearly", priority: "0.4" }
+    @urls << { loc: disclaimer_url, changefreq: "yearly", priority: "0.3" }
 
     respond_to do |format|
       format.xml
