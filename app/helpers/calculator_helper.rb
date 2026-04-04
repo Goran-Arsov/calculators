@@ -14,7 +14,7 @@ module CalculatorHelper
     { name: "Percentage Calculator", slug: "percentage-calculator", path: :math_percentage_path, description: "Calculate percentages, percentage change, and percentage of a number.", icon_path: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14" },
     { name: "Fraction Calculator", slug: "fraction-calculator", path: :math_fraction_path, description: "Add, subtract, multiply, and divide fractions with step-by-step solutions.", icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" },
     { name: "Area Calculator", slug: "area-calculator", path: :math_area_path, description: "Calculate the area of common shapes including rectangles, circles, and triangles.", icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" },
-    { name: "Circumference Calculator", slug: "circumference-calculator", path: :math_circumference_path, description: "Calculate the circumference and area of a circle from radius or diameter.", icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20z" },
+    { name: "Circle Calculator", slug: "circumference-calculator", path: :math_circumference_path, description: "Calculate the circumference and area of a circle from radius or diameter.", icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20z" },
     { name: "Exponent Calculator", slug: "exponent-calculator", path: :math_exponent_path, description: "Calculate the result of raising a number to any power.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
   ].freeze
 

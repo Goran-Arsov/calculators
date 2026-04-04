@@ -23,7 +23,7 @@ module Math
     test "should get circumference" do
       get math_circumference_url
       assert_response :success
-      assert_select "h1", /Circumference Calculator/
+      assert_select "h1", /Circle Calculator/
     end
 
     test "should get exponent" do
