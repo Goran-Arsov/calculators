@@ -1,0 +1,179 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pregnancy Week Calculator - Free Gestational Age Tracker",
+  description: "Track your pregnancy week by week with our free calculator. Enter your due date or last menstrual period to see your current week, trimester, days remaining, and baby size comparison.",
+  canonical: health_pregnancy_week_url,
+  og: {
+    title: "Pregnancy Week Calculator - Free Gestational Age Tracker | CalcWise",
+    description: "Track your pregnancy week by week. See your current gestational week, trimester, days remaining, and baby size comparison.",
+    url: health_pregnancy_week_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Pregnancy Week Calculator", url: health_pregnancy_week_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate what week of pregnancy I am?", answer: "Pregnancy weeks are counted from the first day of your last menstrual period (LMP). Divide the number of days since your LMP by 7 to get your current week. For example, if 168 days have passed since your LMP, you are 24 weeks pregnant (168 / 7 = 24). If you know your due date instead, subtract 280 days from it to estimate your LMP, then count forward to today." },
+  { question: "What trimester am I in based on my week?", answer: "The first trimester covers weeks 1 through 13, during which the baby's major organs begin forming. The second trimester spans weeks 14 through 27, when the baby grows rapidly and movements become noticeable. The third trimester runs from week 28 through week 40, when the baby gains significant weight and prepares for birth." },
+  { question: "How accurate is counting pregnancy weeks from LMP?", answer: "Counting from LMP is the standard clinical method and is accurate for women with regular 28-day cycles. It may be off by 1-2 weeks for women with irregular cycles. A first-trimester ultrasound can confirm or adjust gestational age. The LMP method adds approximately 2 weeks before actual conception occurred." },
+  { question: "What size is my baby at each week of pregnancy?", answer: "Baby size grows dramatically throughout pregnancy. At week 8, your baby is about the size of a raspberry. By week 12, it is the size of a lime. At week 20, a banana. By week 28, an eggplant. At week 36, a honeydew melon. And by week 40 at full term, your baby is roughly the size of a watermelon. These comparisons refer to length in early weeks and weight in later weeks." },
+  { question: "Is it normal for pregnancy to last longer than 40 weeks?", answer: "Yes, 40 weeks is an estimate and only about 5% of babies arrive on their exact due date. A pregnancy between 39 and 40 weeks 6 days is considered full term. Late term is 41 weeks through 41 weeks 6 days. Post-term is 42 weeks and beyond. Your healthcare provider will typically discuss induction options if pregnancy extends past 41 weeks." }
+]) %>
+
+<%= calculator_schema(
+  name: "Pregnancy Week Calculator",
+  description: "Calculate your current pregnancy week, trimester, days remaining, and baby size comparison based on your due date or last menstrual period.",
+  url: health_pregnancy_week_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Pregnancy Week Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pregnancy Week Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter your due date or last menstrual period to find out exactly how far along you are, which trimester you are in, and how your baby compares in size.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="pregnancy-week-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Calculate From</label>
+            <select data-pregnancy-week-calculator-target="inputMode" data-action="change->pregnancy-week-calculator#toggleMode" class="w-full">
+              <option value="lmp">Last Menstrual Period (LMP)</option>
+              <option value="due_date">Due Date</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">First Day of Last Period</label>
+            <input type="date" data-pregnancy-week-calculator-target="lmpDate" data-action="input->pregnancy-week-calculator#calculate" class="w-full">
+          </div>
+          <div class="input-group hidden">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Due Date</label>
+            <input type="date" data-pregnancy-week-calculator-target="dueDate" data-action="input->pregnancy-week-calculator#calculate" class="w-full">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Current Week</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-pregnancy-week-calculator-target="currentWeek">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Trimester</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-pregnancy-week-calculator-target="trimester">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Due Date</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-pregnancy-week-calculator-target="dueDateResult">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Days Remaining</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-pregnancy-week-calculator-target="daysRemaining">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Complete</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-pregnancy-week-calculator-target="percentComplete">&mdash;</span>
+            </div>
+            <div class="mt-3">
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                <div data-pregnancy-week-calculator-target="progressBar" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="baby-size-display hidden mt-4 p-4 bg-white/60 dark:bg-gray-800/60 rounded-xl text-center">
+              <p class="text-sm font-semibold text-blue-700 dark:text-blue-300" data-pregnancy-week-calculator-target="babySize"></p>
+            </div>
+          </div>
+          <button data-action="click->pregnancy-week-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Pregnancy Week Calculator</h2>
+      <p>
+        Our free pregnancy week calculator helps you determine exactly where you are in your pregnancy journey. You can calculate from either your last menstrual period (LMP) date or your known due date. Simply select your preferred input method, enter the date, and the calculator instantly shows your current gestational week and day, which trimester you are in, your estimated due date, days remaining, percentage of pregnancy completed with a visual progress bar, and a fun size comparison showing how big your baby is right now. All results update in real time as you change the date — no forms to submit and no page reloads.
+      </p>
+      <p>
+        Whether you just found out you are pregnant or you are well into your third trimester, knowing your exact gestational week helps you track prenatal milestones, schedule appropriate screenings, prepare for upcoming changes in your body, and communicate clearly with your healthcare provider about where you are in your pregnancy.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Gestational Age</h2>
+      <p>
+        Gestational age is measured from the first day of your last menstrual period, even though conception typically occurs about two weeks later during ovulation. This means that during "week 1" and "week 2" of pregnancy, you are not actually pregnant yet — these weeks account for the time between your period and ovulation. Actual embryonic development begins around week 3, when fertilization occurs. This dating convention is universally used by obstetricians and is the basis for all prenatal screening schedules and developmental timelines.
+      </p>
+
+      <h3>Week-by-Week Baby Size Comparisons</h3>
+      <p>
+        Tracking your baby's growth through familiar size comparisons is one of the most popular ways to visualize pregnancy progress. During the first trimester, your baby grows from the size of a poppy seed (week 4) to a plum (week 12). In the second trimester, growth accelerates from a lemon (week 13) through a banana (week 20) to a rutabaga (week 27). The third trimester brings the most dramatic size increase, from an eggplant (week 28) through a pineapple (week 33) to a full-sized watermelon at week 40. These comparisons are approximate and based on average measurements — every baby develops at a slightly different rate.
+      </p>
+
+      <h3>Development Milestones by Trimester</h3>
+      <p>
+        The <strong>first trimester (weeks 1-13)</strong> is the period of most critical development. By week 5, the heart begins beating. By week 8, all major organs have started forming. By week 12, the baby can make small movements, and the risk of miscarriage drops significantly. Common symptoms for the mother include morning sickness, fatigue, breast tenderness, and frequent urination. The <strong>second trimester (weeks 14-27)</strong> is often called the "golden period" because early symptoms typically ease. The baby's sex can usually be determined by week 18-20 ultrasound. Quickening, or first felt movements, typically occurs between weeks 16 and 25. The baby develops fingerprints, can hear sounds, and opens its eyes by week 26. The <strong>third trimester (weeks 28-40)</strong> focuses on rapid weight gain and lung maturation. The baby typically settles into a head-down position by weeks 32-36. Braxton Hicks contractions may begin. The lungs are considered mature by week 37, and the baby gains about half a pound per week in the final month.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate what week of pregnancy I am?</h3>
+      <p>
+        Pregnancy weeks are counted from the first day of your last menstrual period (LMP). Divide the number of days since your LMP by 7 to get your current week. For example, if 168 days have passed since your LMP, you are 24 weeks pregnant (168 / 7 = 24). If you know your due date instead, subtract 280 days from it to estimate your LMP, then count forward to today.
+      </p>
+
+      <h3>What trimester am I in based on my week?</h3>
+      <p>
+        The first trimester covers weeks 1 through 13, during which the baby's major organs begin forming. The second trimester spans weeks 14 through 27, when the baby grows rapidly and movements become noticeable. The third trimester runs from week 28 through week 40, when the baby gains significant weight and prepares for birth.
+      </p>
+
+      <h3>How accurate is counting pregnancy weeks from LMP?</h3>
+      <p>
+        Counting from LMP is the standard clinical method and is accurate for women with regular 28-day cycles. It may be off by 1-2 weeks for women with irregular cycles. A first-trimester ultrasound can confirm or adjust gestational age. The LMP method adds approximately 2 weeks before actual conception occurred.
+      </p>
+
+      <h3>What size is my baby at each week of pregnancy?</h3>
+      <p>
+        Baby size grows dramatically throughout pregnancy. At week 8, your baby is about the size of a raspberry. By week 12, it is the size of a lime. At week 20, a banana. By week 28, an eggplant. At week 36, a honeydew melon. And by week 40 at full term, your baby is roughly the size of a watermelon. These comparisons refer to length in early weeks and weight in later weeks.
+      </p>
+
+      <h3>Is it normal for pregnancy to last longer than 40 weeks?</h3>
+      <p>
+        Yes, 40 weeks is an estimate and only about 5% of babies arrive on their exact due date. A pregnancy between 39 and 40 weeks 6 days is considered full term. Late term is 41 weeks through 41 weeks 6 days. Post-term is 42 weeks and beyond. Your healthcare provider will typically discuss induction options if pregnancy extends past 41 weeks.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Pregnancy Due Date Calculator", description: "Calculate your estimated due date, conception date, and current trimester.", path: health_pregnancy_due_date_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

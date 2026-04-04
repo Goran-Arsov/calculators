@@ -18,6 +18,13 @@ import RentVsBuyCalculatorController from "controllers/rent_vs_buy_calculator_co
 import DividendYieldCalculatorController from "controllers/dividend_yield_calculator_controller"
 import DcaCalculatorController from "controllers/dca_calculator_controller"
 import SolarSavingsCalculatorController from "controllers/solar_savings_calculator_controller"
+import TaxBracketCalculatorController from "controllers/tax_bracket_calculator_controller"
+import AutoLoanCalculatorController from "controllers/auto_loan_calculator_controller"
+import CreditCardPayoffCalculatorController from "controllers/credit_card_payoff_calculator_controller"
+import NetWorthCalculatorController from "controllers/net_worth_calculator_controller"
+import HomeAffordabilityCalculatorController from "controllers/home_affordability_calculator_controller"
+import BusinessLoanCalculatorController from "controllers/business_loan_calculator_controller"
+import CurrencyConverterCalculatorController from "controllers/currency_converter_calculator_controller"
 
 // Math calculators
 import PercentageCalculatorController from "controllers/percentage_calculator_controller"
@@ -59,6 +66,8 @@ import WaterIntakeCalculatorController from "controllers/water_intake_calculator
 import SleepCalculatorController from "controllers/sleep_calculator_controller"
 import OneRepMaxCalculatorController from "controllers/one_rep_max_calculator_controller"
 import DogAgeCalculatorController from "controllers/dog_age_calculator_controller"
+import PregnancyWeekCalculatorController from "controllers/pregnancy_week_calculator_controller"
+import DogFoodCalculatorController from "controllers/dog_food_calculator_controller"
 
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
@@ -100,6 +109,13 @@ application.register("rent-vs-buy-calculator", RentVsBuyCalculatorController)
 application.register("dividend-yield-calculator", DividendYieldCalculatorController)
 application.register("dca-calculator", DcaCalculatorController)
 application.register("solar-savings-calculator", SolarSavingsCalculatorController)
+application.register("tax-bracket-calculator", TaxBracketCalculatorController)
+application.register("auto-loan-calculator", AutoLoanCalculatorController)
+application.register("credit-card-payoff-calculator", CreditCardPayoffCalculatorController)
+application.register("net-worth-calculator", NetWorthCalculatorController)
+application.register("home-affordability-calculator", HomeAffordabilityCalculatorController)
+application.register("business-loan-calculator", BusinessLoanCalculatorController)
+application.register("currency-converter-calculator", CurrencyConverterCalculatorController)
 
 // Math
 application.register("percentage-calculator", PercentageCalculatorController)
@@ -141,6 +157,8 @@ application.register("water-intake-calculator", WaterIntakeCalculatorController)
 application.register("sleep-calculator", SleepCalculatorController)
 application.register("one-rep-max-calculator", OneRepMaxCalculatorController)
 application.register("dog-age-calculator", DogAgeCalculatorController)
+application.register("pregnancy-week-calculator", PregnancyWeekCalculatorController)
+application.register("dog-food-calculator", DogFoodCalculatorController)
 
 // Construction
 application.register("paint-calculator", PaintCalculatorController)

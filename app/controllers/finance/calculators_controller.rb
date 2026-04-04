@@ -19,6 +19,13 @@ module Finance
     def dividend_yield; end
     def dca; end
     def solar_savings; end
+    def tax_bracket; end
+    def auto_loan; end
+    def credit_card_payoff; end
+    def net_worth; end
+    def home_affordability; end
+    def business_loan; end
+    def currency_converter; end
 
     private
 

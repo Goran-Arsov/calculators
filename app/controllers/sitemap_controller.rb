@@ -1,4 +1,6 @@
 class SitemapController < ApplicationController
+  include CalculatorHelper
+
   def show
     @urls = []
 
@@ -6,31 +8,17 @@ class SitemapController < ApplicationController
     @urls << { loc: root_url, changefreq: "weekly", priority: "1.0" }
 
     # Category pages
-    %w[finance math health].each do |cat|
+    ALL_CATEGORIES.each_key do |cat|
       @urls << { loc: category_url(cat), changefreq: "weekly", priority: "0.9" }
     end
 
-    # Finance calculators
-    @urls << { loc: finance_mortgage_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: finance_compound_interest_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: finance_loan_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: finance_investment_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: finance_retirement_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: finance_debt_payoff_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: finance_salary_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: finance_savings_goal_url, changefreq: "monthly", priority: "0.8" }
-
-    # Math calculators
-    @urls << { loc: math_percentage_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: math_fraction_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: math_area_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: math_circumference_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: math_exponent_url, changefreq: "monthly", priority: "0.8" }
-
-    # Health calculators
-    @urls << { loc: health_bmi_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: health_calorie_url, changefreq: "monthly", priority: "0.8" }
-    @urls << { loc: health_body_fat_url, changefreq: "monthly", priority: "0.8" }
+    # All calculators from every category
+    ALL_CATEGORIES.each_value do |category|
+      category[:calculators].each do |calc|
+        url_helper = calc[:path].to_s.sub(/_path\z/, "_url")
+        @urls << { loc: send(url_helper), changefreq: "monthly", priority: "0.8" }
+      end
+    end
 
     # Blog posts
     BlogPost.published.recent.each do |post|

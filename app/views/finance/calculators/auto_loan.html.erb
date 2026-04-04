@@ -1,0 +1,187 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Auto Loan Calculator - Free Car Payment Estimator",
+  description: "Calculate your monthly car payment, total interest, and total cost including sales tax, down payment, and trade-in value. Free auto loan calculator with instant results.",
+  canonical: finance_auto_loan_url,
+  og: {
+    title: "Auto Loan Calculator - Free Car Payment Estimator | CalcWise",
+    description: "Calculate your monthly car payment, total interest, and total cost including sales tax, down payment, and trade-in value. Free auto loan calculator with instant results.",
+    url: finance_auto_loan_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Auto Loan Calculator", url: finance_auto_loan_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is a monthly car payment calculated?", answer: "A monthly car payment is calculated using the standard amortization formula applied to the financed amount. The financed amount is the vehicle price plus sales tax, minus your down payment and trade-in value. The formula is M = P[r(1+r)^n] / [(1+r)^n - 1], where P is the loan amount, r is the monthly interest rate, and n is the number of monthly payments." },
+  { question: "What is a good interest rate for an auto loan?", answer: "A good auto loan interest rate depends on your credit score, the loan term, and whether the car is new or used. As of 2024, excellent credit borrowers can expect rates from 4% to 6% for new cars and 5% to 8% for used cars. Rates above 10% are generally considered high, and rates above 15% suggest it may be worth improving your credit before financing." },
+  { question: "How does a trade-in value affect my car loan?", answer: "A trade-in reduces the amount you need to finance. For example, if you buy a $30,000 car and trade in a vehicle worth $8,000, you only need to finance $22,000 (plus applicable taxes, minus any down payment). In most states, the trade-in also reduces the taxable amount of the purchase, providing additional savings on sales tax." },
+  { question: "Should I choose a longer or shorter auto loan term?", answer: "A shorter loan term (24-48 months) means higher monthly payments but significantly less total interest paid. A longer term (60-84 months) lowers your monthly payment but increases total interest costs and the risk of being underwater on the loan. Choose the shortest term with a monthly payment you can comfortably afford." },
+  { question: "How much should I put down on a car?", answer: "Financial experts recommend a down payment of at least 20% for a new car and 10% for a used car. A larger down payment reduces your loan amount, lowers monthly payments, reduces total interest, and helps you avoid being upside down on the loan, where you owe more than the car is worth." }
+]) %>
+
+<%= calculator_schema(
+  name: "Auto Loan Calculator",
+  description: "Calculate your monthly car payment, total interest, and total cost including sales tax, down payment, and trade-in value.",
+  url: finance_auto_loan_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Auto Loan Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Auto Loan Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your monthly car payment, total interest, and total cost with down payment, trade-in, and sales tax included.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="auto-loan-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Vehicle Price ($)</label>
+            <input type="number" data-auto-loan-calculator-target="vehiclePrice" data-action="input->auto-loan-calculator#calculate" class="w-full" placeholder="35000" step="500" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Down Payment ($)</label>
+            <input type="number" data-auto-loan-calculator-target="downPayment" data-action="input->auto-loan-calculator#calculate" class="w-full" placeholder="5000" step="500" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Trade-in Value ($)</label>
+            <input type="number" data-auto-loan-calculator-target="tradeInValue" data-action="input->auto-loan-calculator#calculate" class="w-full" placeholder="3000" step="500" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sales Tax Rate (%)</label>
+            <input type="number" data-auto-loan-calculator-target="salesTaxRate" data-action="input->auto-loan-calculator#calculate" class="w-full" placeholder="6.25" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Interest Rate (%)</label>
+            <input type="number" data-auto-loan-calculator-target="rate" data-action="input->auto-loan-calculator#calculate" class="w-full" placeholder="6.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Months)</label>
+            <select data-auto-loan-calculator-target="termMonths" data-action="change->auto-loan-calculator#calculate" class="w-full">
+              <option value="24">24 months (2 years)</option>
+              <option value="36">36 months (3 years)</option>
+              <option value="48">48 months (4 years)</option>
+              <option value="60" selected>60 months (5 years)</option>
+              <option value="72">72 months (6 years)</option>
+              <option value="84">84 months (7 years)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Loan Amount</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-auto-loan-calculator-target="loanAmount">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sales Tax</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-auto-loan-calculator-target="salesTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-auto-loan-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-red-600 dark:text-red-400" data-auto-loan-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Cost</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-auto-loan-calculator-target="totalCost">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->auto-loan-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Auto Loan Calculator</h2>
+      <p>
+        Our free auto loan calculator helps you estimate the true cost of financing a vehicle before you visit the dealership. Enter the vehicle price, your down payment, trade-in value, local sales tax rate, the loan interest rate, and your preferred loan term in months. The calculator instantly computes your loan amount after tax and credits, your monthly payment, total interest charges, and the total cost of owning the vehicle. This gives you a clear picture of what you can afford and helps you negotiate confidently.
+      </p>
+      <p>
+        Knowing your numbers before shopping is one of the most important steps in the car-buying process. Dealerships often focus on monthly payment rather than total cost, which can lead to longer loan terms and thousands of dollars in additional interest. By running the numbers yourself, you can compare financing options, understand the impact of different down payments, and avoid costly mistakes.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Auto Loan Costs</h2>
+      <p>
+        The total cost of an auto loan includes more than just the sticker price. Sales tax, which varies by state and locality from 0% to over 10%, is added to the purchase price (often reduced by the trade-in value). The financed amount is the vehicle price plus tax, minus your down payment and trade-in. Interest accrues on this financed amount over the loan term. A seemingly small difference in interest rate, such as 5% versus 7%, can mean hundreds or thousands of dollars in extra cost over a 60-month loan.
+      </p>
+
+      <h3>Choosing the Right Loan Term</h3>
+      <p>
+        Auto loans typically range from 24 to 84 months. Shorter terms mean higher monthly payments but dramatically lower total interest. For example, a $30,000 loan at 6% costs about $2,790 in interest over 36 months but $5,640 over 72 months. Additionally, longer loans increase the risk of negative equity, where you owe more than the car is worth. Experts generally recommend keeping auto loans at 60 months or less for new vehicles and 48 months or less for used vehicles.
+      </p>
+
+      <h3>The Role of Down Payment and Trade-in</h3>
+      <p>
+        A larger down payment reduces the amount financed, lowering both your monthly payment and total interest. Trading in your current vehicle serves a similar function and, in many states, also reduces the taxable purchase price. Financial advisors recommend putting at least 20% down on a new car to avoid being upside down on the loan from day one, since new cars lose significant value in the first year of ownership.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is a monthly car payment calculated?</h3>
+      <p>
+        A monthly car payment is calculated using the standard amortization formula applied to the financed amount. The financed amount is the vehicle price plus sales tax, minus your down payment and trade-in value. The formula is M = P[r(1+r)<sup>n</sup>] / [(1+r)<sup>n</sup> - 1], where P is the loan amount, r is the monthly interest rate, and n is the number of monthly payments.
+      </p>
+
+      <h3>What is a good interest rate for an auto loan?</h3>
+      <p>
+        A good auto loan interest rate depends on your credit score, the loan term, and whether the car is new or used. As of 2024, excellent credit borrowers can expect rates from 4% to 6% for new cars and 5% to 8% for used cars. Rates above 10% are generally considered high, and rates above 15% suggest it may be worth improving your credit before financing.
+      </p>
+
+      <h3>How does a trade-in value affect my car loan?</h3>
+      <p>
+        A trade-in reduces the amount you need to finance. For example, if you buy a $30,000 car and trade in a vehicle worth $8,000, you only need to finance $22,000 (plus applicable taxes, minus any down payment). In most states, the trade-in also reduces the taxable amount of the purchase, providing additional savings on sales tax.
+      </p>
+
+      <h3>Should I choose a longer or shorter auto loan term?</h3>
+      <p>
+        A shorter loan term (24-48 months) means higher monthly payments but significantly less total interest paid. A longer term (60-84 months) lowers your monthly payment but increases total interest costs and the risk of being underwater on the loan. Choose the shortest term with a monthly payment you can comfortably afford.
+      </p>
+
+      <h3>How much should I put down on a car?</h3>
+      <p>
+        Financial experts recommend a down payment of at least 20% for a new car and 10% for a used car. A larger down payment reduces your loan amount, lowers monthly payments, reduces total interest, and helps you avoid being upside down on the loan, where you owe more than the car is worth.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Loan Calculator", description: "Calculate monthly loan payments, total interest, and total cost for any type of loan.", path: finance_loan_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Credit Card Payoff Calculator", description: "Find out how long it will take to pay off your credit card balance.", path: finance_credit_card_payoff_path, icon_path: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" },
+      { name: "Debt Payoff Calculator", description: "Find out when you'll be debt-free and how much interest you'll pay.", path: finance_debt_payoff_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -21,6 +21,13 @@ Rails.application.routes.draw do
     get "dividend-yield-calculator", to: "calculators#dividend_yield", as: :dividend_yield
     get "dca-calculator", to: "calculators#dca", as: :dca
     get "solar-savings-calculator", to: "calculators#solar_savings", as: :solar_savings
+    get "tax-bracket-calculator", to: "calculators#tax_bracket", as: :tax_bracket
+    get "auto-loan-calculator", to: "calculators#auto_loan", as: :auto_loan
+    get "credit-card-payoff-calculator", to: "calculators#credit_card_payoff", as: :credit_card_payoff
+    get "net-worth-calculator", to: "calculators#net_worth", as: :net_worth
+    get "home-affordability-calculator", to: "calculators#home_affordability", as: :home_affordability
+    get "business-loan-calculator", to: "calculators#business_loan", as: :business_loan
+    get "currency-converter", to: "calculators#currency_converter", as: :currency_converter
   end
 
   # Math calculators
@@ -68,6 +75,8 @@ Rails.application.routes.draw do
     get "sleep-calculator", to: "calculators#sleep", as: :sleep
     get "one-rep-max-calculator", to: "calculators#one_rep_max", as: :one_rep_max
     get "dog-age-calculator", to: "calculators#dog_age", as: :dog_age
+    get "pregnancy-week-calculator", to: "calculators#pregnancy_week", as: :pregnancy_week
+    get "dog-food-calculator", to: "calculators#dog_food", as: :dog_food
   end
 
   # Construction calculators

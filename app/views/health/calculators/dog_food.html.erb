@@ -1,0 +1,177 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Dog Food Calculator - Free Daily Feeding Guide",
+  description: "Calculate how much food to feed your dog daily with our free calculator. Get personalized feeding amounts based on your dog's weight, age, activity level, and food calorie density.",
+  canonical: health_dog_food_url,
+  og: {
+    title: "Dog Food Calculator - Free Daily Feeding Guide | CalcWise",
+    description: "Calculate how much food to feed your dog daily. Personalized feeding amounts based on weight, age, and activity level.",
+    url: health_dog_food_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Dog Food Calculator", url: health_dog_food_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much food should I feed my dog per day?", answer: "The amount depends on your dog's weight, age, activity level, and the calorie density of the food. A general approach uses the Resting Energy Requirement (RER) formula: 70 times body weight in kilograms raised to the 0.75 power. This base number is then multiplied by an activity factor (1.0 to 3.0) to get daily calorie needs. Divide by the food's calories per cup to determine portions. Most adult dogs do well on 1 to 3 cups per day split into two meals." },
+  { question: "How do I calculate my dog's calorie needs?", answer: "Start with the Resting Energy Requirement: RER = 70 x (weight in kg ^ 0.75). Then multiply by an activity factor: 1.2 for low activity, 1.4 for normal adult dogs, 1.6 for active dogs, 2.0 for very active or working dogs, and 2.0-3.0 for growing puppies. For example, a 30 lb (13.6 kg) normal adult dog needs about 70 x 13.6^0.75 x 1.4 = approximately 700 calories per day." },
+  { question: "Should I feed my dog once or twice a day?", answer: "Most veterinarians recommend feeding adult dogs twice a day, splitting their daily food into morning and evening meals. Puppies under 6 months may need three meals per day. Twice-daily feeding helps maintain stable blood sugar levels, reduces the risk of bloat (especially in large breeds), and provides a predictable routine. Some small breed dogs prone to hypoglycemia may benefit from more frequent, smaller meals." },
+  { question: "How do I find the calorie content of my dog's food?", answer: "The calorie content is listed on the dog food packaging, usually stated as kilocalories (kcal) per cup or per kilogram. Look for the section titled 'Calorie Content' or 'Metabolizable Energy' on the bag or can. Dry kibble typically ranges from 300 to 500 kcal per cup. If you cannot find it on the package, check the manufacturer's website or contact them directly." },
+  { question: "Do puppies need more food than adult dogs?", answer: "Puppies need significantly more calories per pound of body weight than adult dogs because they are growing rapidly. A puppy's energy requirement is typically 2 to 3 times their resting energy requirement, compared to 1.2 to 1.6 times for adult dogs. However, puppies should be fed age-appropriate puppy food that is nutrient-dense, and portions should be adjusted monthly as they grow. Overfeeding puppies, especially large breeds, can lead to developmental orthopedic problems." }
+]) %>
+
+<%= calculator_schema(
+  name: "Dog Food Calculator",
+  description: "Calculate your dog's daily food requirements based on weight, age category, activity level, and food calorie density.",
+  url: health_dog_food_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Dog Food Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Dog Food Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find out exactly how much to feed your dog each day based on their weight, age, activity level, and food calorie density.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="dog-food-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Dog's Weight (lbs)</label>
+            <input type="number" data-dog-food-calculator-target="weight" data-action="input->dog-food-calculator#calculate" class="w-full" placeholder="30" step="0.5" min="0" max="350">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Activity Level</label>
+            <select data-dog-food-calculator-target="activityLevel" data-action="change->dog-food-calculator#calculate" class="w-full">
+              <option value="low">Low (mostly resting)</option>
+              <option value="normal" selected>Normal (daily walks)</option>
+              <option value="active">Active (regular exercise)</option>
+              <option value="very_active">Very Active (working / sporting dog)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Age Category</label>
+            <select data-dog-food-calculator-target="ageCategory" data-action="change->dog-food-calculator#calculate" class="w-full">
+              <option value="puppy">Puppy (under 1 year)</option>
+              <option value="adult" selected>Adult (1-7 years)</option>
+              <option value="senior">Senior (7+ years)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Food Calorie Density (kcal/cup)</label>
+            <input type="number" data-dog-food-calculator-target="kcalPerCup" data-action="input->dog-food-calculator#calculate" class="w-full" placeholder="350" value="350" step="10" min="1">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Daily Calories</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-dog-food-calculator-target="dailyCalories">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cups Per Day</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-dog-food-calculator-target="cupsPerDay">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Per Meal (2x/day)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-dog-food-calculator-target="perMeal">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Resting Energy (RER)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-dog-food-calculator-target="rer">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->dog-food-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Dog Food Calculator</h2>
+      <p>
+        Our free dog food calculator determines your dog's daily calorie needs and converts them into practical cup-based feeding portions. Enter your dog's weight in pounds, select their activity level and age category, and optionally adjust the calorie density of their food (found on the food packaging, typically 300-500 kcal per cup for dry kibble). The calculator instantly displays daily calorie requirements, cups of food per day, and the amount per meal assuming two feedings per day. Results update in real time as you adjust any input, with no buttons to click or pages to reload.
+      </p>
+      <p>
+        Feeding the right amount is one of the most important aspects of responsible dog ownership. Overfeeding leads to obesity, which is the number one health problem in domestic dogs and shortens life expectancy by up to two years. Underfeeding can cause nutritional deficiencies, muscle wasting, and weakened immunity. This calculator gives you a science-based starting point that you can fine-tune with your veterinarian.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Science Behind the Calculation</h2>
+      <p>
+        The calculator uses the Resting Energy Requirement (RER) formula recommended by veterinary nutritionists: RER equals 70 multiplied by the dog's body weight in kilograms raised to the 0.75 power. This allometric scaling formula accounts for the fact that metabolic rate does not increase linearly with body size — smaller dogs have higher metabolic rates per pound than larger dogs. The RER represents the baseline energy a dog needs at rest for essential functions like breathing, circulation, and cell maintenance.
+      </p>
+
+      <h3>Activity and Life Stage Multipliers</h3>
+      <p>
+        The RER is then multiplied by a factor that accounts for activity level and life stage. <strong>Low activity dogs</strong> that spend most of their time resting use a multiplier of 1.0-1.2. <strong>Normal adult dogs</strong> with daily walks use 1.4. <strong>Active dogs</strong> that exercise regularly use 1.6. <strong>Very active or working dogs</strong>, such as sled dogs, herding dogs, or sporting dogs, may need a multiplier of 2.0 or higher. <strong>Puppies</strong> require significantly more energy for growth, with multipliers of 2.0-3.0 depending on their age and growth phase. <strong>Senior dogs</strong> typically need less energy due to reduced activity and slower metabolism, using multipliers of 1.0-1.2.
+      </p>
+
+      <h3>Adjusting for Your Dog's Individual Needs</h3>
+      <p>
+        The calculated amount is a starting point, not a rigid prescription. Monitor your dog's body condition score over 2-4 weeks after adjusting food amounts. You should be able to feel your dog's ribs with light pressure but not see them prominently. A visible waist when viewed from above and a slight abdominal tuck when viewed from the side indicate a healthy weight. If your dog is gaining weight, reduce the food by 10 percent. If losing weight, increase by 10 percent. Spayed and neutered dogs may need 10-20 percent fewer calories than intact dogs. Dogs recovering from illness or surgery may temporarily need more. Always consult your veterinarian for dogs with specific health conditions such as diabetes, kidney disease, or food allergies.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much food should I feed my dog per day?</h3>
+      <p>
+        The amount depends on your dog's weight, age, activity level, and the calorie density of the food. A general approach uses the Resting Energy Requirement (RER) formula: 70 times body weight in kilograms raised to the 0.75 power. This base number is then multiplied by an activity factor (1.0 to 3.0) to get daily calorie needs. Divide by the food's calories per cup to determine portions. Most adult dogs do well on 1 to 3 cups per day split into two meals.
+      </p>
+
+      <h3>How do I calculate my dog's calorie needs?</h3>
+      <p>
+        Start with the Resting Energy Requirement: RER = 70 x (weight in kg ^ 0.75). Then multiply by an activity factor: 1.2 for low activity, 1.4 for normal adult dogs, 1.6 for active dogs, 2.0 for very active or working dogs, and 2.0-3.0 for growing puppies. For example, a 30 lb (13.6 kg) normal adult dog needs about 70 x 13.6^0.75 x 1.4 = approximately 700 calories per day.
+      </p>
+
+      <h3>Should I feed my dog once or twice a day?</h3>
+      <p>
+        Most veterinarians recommend feeding adult dogs twice a day, splitting their daily food into morning and evening meals. Puppies under 6 months may need three meals per day. Twice-daily feeding helps maintain stable blood sugar levels, reduces the risk of bloat (especially in large breeds), and provides a predictable routine. Some small breed dogs prone to hypoglycemia may benefit from more frequent, smaller meals.
+      </p>
+
+      <h3>How do I find the calorie content of my dog's food?</h3>
+      <p>
+        The calorie content is listed on the dog food packaging, usually stated as kilocalories (kcal) per cup or per kilogram. Look for the section titled "Calorie Content" or "Metabolizable Energy" on the bag or can. Dry kibble typically ranges from 300 to 500 kcal per cup. If you cannot find it on the package, check the manufacturer's website or contact them directly.
+      </p>
+
+      <h3>Do puppies need more food than adult dogs?</h3>
+      <p>
+        Puppies need significantly more calories per pound of body weight than adult dogs because they are growing rapidly. A puppy's energy requirement is typically 2 to 3 times their resting energy requirement, compared to 1.2 to 1.6 times for adult dogs. However, puppies should be fed age-appropriate puppy food that is nutrient-dense, and portions should be adjusted monthly as they grow. Overfeeding puppies, especially large breeds, can lead to developmental orthopedic problems.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Dog Age Calculator", description: "Convert your dog's age to human years, adjusted for breed size.", path: health_dog_age_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Calorie Calculator", description: "Estimate your own daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

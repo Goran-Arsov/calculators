@@ -1,0 +1,198 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Credit Card Payoff Calculator - Pay Off Debt Faster",
+  description: "Calculate how long it will take to pay off your credit card and how much interest you will pay. See your payoff date, total cost, and month-by-month amortization schedule.",
+  canonical: finance_credit_card_payoff_url,
+  og: {
+    title: "Credit Card Payoff Calculator - Pay Off Debt Faster | CalcWise",
+    description: "Calculate how long it will take to pay off your credit card and how much interest you will pay. See your payoff date, total cost, and month-by-month amortization schedule.",
+    url: finance_credit_card_payoff_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Credit Card Payoff Calculator", url: finance_credit_card_payoff_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How long will it take to pay off my credit card?", answer: "The time to pay off your credit card depends on your balance, APR, and monthly payment. For example, a $5,000 balance at 20% APR with a $200 monthly payment takes about 32 months and costs roughly $1,360 in interest. Our calculator shows you the exact timeline and total cost based on your specific numbers." },
+  { question: "How much interest will I pay on my credit card?", answer: "Total credit card interest depends on your balance, APR, and how quickly you pay it off. Credit card interest compounds monthly on the remaining balance. A $10,000 balance at 22% APR with $300 monthly payments results in approximately $3,400 in total interest over 45 months. Increasing your payment to $500 per month reduces total interest to about $1,700." },
+  { question: "What happens if I only make minimum payments?", answer: "Making only minimum payments, typically 1-3% of the balance, means it can take decades to pay off your credit card. For a $5,000 balance at 20% APR, minimum payments of 2% ($100 initially, declining over time) could take over 30 years to pay off and cost more than $8,000 in interest alone, more than the original balance." },
+  { question: "Should I pay off the card with the highest rate or lowest balance first?", answer: "The debt avalanche method (highest rate first) saves the most money in total interest. The debt snowball method (lowest balance first) provides quicker psychological wins. Mathematically, the avalanche method is superior, but many people find the snowball method more motivating, which helps them stick with the payoff plan." },
+  { question: "How does credit card APR work?", answer: "APR (Annual Percentage Rate) is the yearly interest rate charged on outstanding balances. Credit card interest is typically calculated daily by dividing the APR by 365 and multiplying by your average daily balance, then charged monthly. A 24% APR means approximately 2% per month on your remaining balance, though the daily calculation method can result in slightly more interest over a year." }
+]) %>
+
+<%= calculator_schema(
+  name: "Credit Card Payoff Calculator",
+  description: "Calculate how long it will take to pay off your credit card balance, see the total interest you will pay, your payoff date, and a month-by-month amortization schedule.",
+  url: finance_credit_card_payoff_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Credit Card Payoff Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Credit Card Payoff Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">See exactly how long it will take to pay off your credit card balance, how much interest you will pay, and your projected payoff date with a full amortization schedule.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="credit-card-payoff-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Balance ($)</label>
+            <input type="number" data-credit-card-payoff-calculator-target="balance" data-action="input->credit-card-payoff-calculator#calculate" class="w-full" placeholder="5000" step="100" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">APR (%)</label>
+            <input type="number" data-credit-card-payoff-calculator-target="apr" data-action="input->credit-card-payoff-calculator#calculate" class="w-full" placeholder="20.99" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Payment ($)</label>
+            <input type="number" data-credit-card-payoff-calculator-target="monthlyPayment" data-action="input->credit-card-payoff-calculator#calculate" class="w-full" placeholder="200" step="10" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Months to Payoff</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-credit-card-payoff-calculator-target="monthsToPayoff">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Years to Payoff</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-credit-card-payoff-calculator-target="yearsToPayoff">0.0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-red-600 dark:text-red-400" data-credit-card-payoff-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Amount Paid</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-credit-card-payoff-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Payoff Date</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-credit-card-payoff-calculator-target="payoffDate">--</span>
+            </div>
+          </div>
+          <button data-action="click->credit-card-payoff-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+
+      <%# Amortization schedule %>
+      <div class="mt-8">
+        <button data-action="click->credit-card-payoff-calculator#toggleSchedule" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          Show Amortization Schedule
+        </button>
+        <div data-credit-card-payoff-calculator-target="scheduleSection" class="hidden mt-4">
+          <div class="overflow-x-auto max-h-96 overflow-y-auto">
+            <table class="w-full text-left">
+              <thead class="sticky top-0 bg-white dark:bg-gray-900">
+                <tr class="border-b border-gray-200 dark:border-gray-700">
+                  <th class="py-2.5 pr-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Month</th>
+                  <th class="py-2.5 pr-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Payment</th>
+                  <th class="py-2.5 pr-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Principal</th>
+                  <th class="py-2.5 pr-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Interest</th>
+                  <th class="py-2.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Balance</th>
+                </tr>
+              </thead>
+              <tbody data-credit-card-payoff-calculator-target="scheduleBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Credit Card Payoff Calculator</h2>
+      <p>
+        This free credit card payoff calculator helps you understand exactly when you will be debt-free and how much that debt will ultimately cost you. Enter your current credit card balance, the annual percentage rate (APR) listed on your statement, and the fixed monthly payment you plan to make. The calculator instantly shows the number of months to payoff, total interest charges, total amount paid, and your projected payoff date. You can also expand the amortization schedule to see a month-by-month breakdown of how each payment is split between principal and interest.
+      </p>
+      <p>
+        Credit card debt is one of the most expensive forms of borrowing, with average APRs exceeding 20% in 2024. Understanding your payoff timeline is the first step toward a concrete debt elimination plan. By experimenting with different payment amounts, you can see how even a modest increase in your monthly payment dramatically reduces both the time to payoff and the total interest charged. This calculator works for any revolving credit balance, including store cards and lines of credit.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The True Cost of Credit Card Debt</h2>
+      <p>
+        Credit card interest compounds on your remaining balance each month. Because the minimum payment is typically only 1% to 3% of the balance, most of your minimum payment goes toward interest rather than reducing the principal. This creates a cycle where it can take decades to pay off even moderate balances. For a $10,000 balance at 22% APR, making only the minimum payment of $200 per month results in approximately $5,840 in total interest over 79 months. Doubling the payment to $400 per month cuts the interest to approximately $2,240 and the timeline to 31 months.
+      </p>
+
+      <h3>Why Your Payment Amount Matters More Than You Think</h3>
+      <p>
+        The relationship between payment size and payoff speed is not linear. Small increases in payment have an outsized effect because more of each payment goes toward principal, which reduces the balance faster and therefore reduces future interest charges. This compounding effect means that an extra $50 or $100 per month can save hundreds or thousands of dollars in interest and shave months or years off your payoff timeline. Our calculator makes this easy to see by letting you adjust the payment amount and instantly compare the results.
+      </p>
+
+      <h3>Strategies for Paying Off Credit Card Debt Faster</h3>
+      <p>
+        Beyond increasing your monthly payment, several strategies can accelerate your debt payoff. Balance transfer cards with 0% introductory APR offers let you pay down principal without accruing interest for 12 to 21 months, though transfer fees of 3% to 5% apply. Debt consolidation loans may offer lower rates than credit cards, simplifying multiple payments into one. The debt avalanche method directs extra payments toward the highest-rate card first, minimizing total interest, while the debt snowball method targets the smallest balance first for motivational quick wins.
+      </p>
+
+      <h3>Understanding Minimum Payments</h3>
+      <p>
+        Credit card companies set minimum payments low for a reason: it maximizes the interest they collect. A typical minimum payment is the greater of a flat dollar amount (often $25) or a percentage of the balance (usually 1% to 3%). As your balance decreases, so does the minimum payment, extending the payoff timeline indefinitely. The Credit CARD Act of 2009 requires issuers to disclose on each statement how long it would take to pay off the balance with minimum payments and how much you would pay, but many cardholders do not review this information. Our calculator provides this analysis instantly with more detail and flexibility.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How long will it take to pay off my credit card?</h3>
+      <p>
+        The time to pay off your credit card depends on your balance, APR, and monthly payment. For example, a $5,000 balance at 20% APR with a $200 monthly payment takes about 32 months and costs roughly $1,360 in interest. Our calculator shows you the exact timeline and total cost based on your specific numbers.
+      </p>
+
+      <h3>How much interest will I pay on my credit card?</h3>
+      <p>
+        Total credit card interest depends on your balance, APR, and how quickly you pay it off. Credit card interest compounds monthly on the remaining balance. A $10,000 balance at 22% APR with $300 monthly payments results in approximately $3,400 in total interest over 45 months. Increasing your payment to $500 per month reduces total interest to about $1,700.
+      </p>
+
+      <h3>What happens if I only make minimum payments?</h3>
+      <p>
+        Making only minimum payments, typically 1-3% of the balance, means it can take decades to pay off your credit card. For a $5,000 balance at 20% APR, minimum payments of 2% ($100 initially, declining over time) could take over 30 years to pay off and cost more than $8,000 in interest alone, more than the original balance.
+      </p>
+
+      <h3>Should I pay off the card with the highest rate or lowest balance first?</h3>
+      <p>
+        The debt avalanche method (highest rate first) saves the most money in total interest. The debt snowball method (lowest balance first) provides quicker psychological wins. Mathematically, the avalanche method is superior, but many people find the snowball method more motivating, which helps them stick with the payoff plan.
+      </p>
+
+      <h3>How does credit card APR work?</h3>
+      <p>
+        APR (Annual Percentage Rate) is the yearly interest rate charged on outstanding balances. Credit card interest is typically calculated daily by dividing the APR by 365 and multiplying by your average daily balance, then charged monthly. A 24% APR means approximately 2% per month on your remaining balance, though the daily calculation method can result in slightly more interest over a year.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Debt Payoff Calculator", description: "Find out when you'll be debt-free and how much interest you'll pay.", path: finance_debt_payoff_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Loan Calculator", description: "Calculate monthly loan payments, total interest, and total cost for any type of loan.", path: finance_loan_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Auto Loan Calculator", description: "Calculate your monthly car payment including sales tax and trade-in.", path: finance_auto_loan_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

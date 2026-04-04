@@ -67,5 +67,17 @@ module Health
       assert_response :success
       assert_select "h1", /Dog Age/
     end
+
+    test "should get pregnancy_week" do
+      get health_pregnancy_week_url
+      assert_response :success
+      assert_select "h1", /Pregnancy Week/
+    end
+
+    test "should get dog_food" do
+      get health_dog_food_url
+      assert_response :success
+      assert_select "h1", /Dog Food/
+    end
   end
 end

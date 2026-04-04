@@ -13,6 +13,8 @@ module Health
     def sleep; end
     def one_rep_max; end
     def dog_age; end
+    def pregnancy_week; end
+    def dog_food; end
 
     private
 

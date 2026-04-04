@@ -113,5 +113,117 @@ module Finance
       get finance_mortgage_url
       assert_select "script[type='application/ld+json']"
     end
+
+    test "should get tax_bracket" do
+      get finance_tax_bracket_url
+      assert_response :success
+      assert_select "h1", /Tax Bracket/
+    end
+
+    test "tax_bracket page has meta description" do
+      get finance_tax_bracket_url
+      assert_select "meta[name='description']"
+    end
+
+    test "tax_bracket page has breadcrumb schema" do
+      get finance_tax_bracket_url
+      assert_select "script[type='application/ld+json']"
+    end
+
+    test "should get auto_loan" do
+      get finance_auto_loan_url
+      assert_response :success
+      assert_select "h1", /Auto Loan/
+    end
+
+    test "auto_loan page has meta description" do
+      get finance_auto_loan_url
+      assert_select "meta[name='description']"
+    end
+
+    test "auto_loan page has breadcrumb schema" do
+      get finance_auto_loan_url
+      assert_select "script[type='application/ld+json']"
+    end
+
+    test "should get credit_card_payoff" do
+      get finance_credit_card_payoff_url
+      assert_response :success
+      assert_select "h1", /Credit Card Payoff/
+    end
+
+    test "credit_card_payoff page has meta description" do
+      get finance_credit_card_payoff_url
+      assert_select "meta[name='description']"
+    end
+
+    test "credit_card_payoff page has breadcrumb schema" do
+      get finance_credit_card_payoff_url
+      assert_select "script[type='application/ld+json']"
+    end
+
+    test "should get net_worth" do
+      get finance_net_worth_url
+      assert_response :success
+      assert_select "h1", /Net Worth/
+    end
+
+    test "net_worth page has meta description" do
+      get finance_net_worth_url
+      assert_select "meta[name='description']"
+    end
+
+    test "net_worth page has breadcrumb schema" do
+      get finance_net_worth_url
+      assert_select "script[type='application/ld+json']"
+    end
+
+    test "should get home_affordability" do
+      get finance_home_affordability_url
+      assert_response :success
+      assert_select "h1", /Home Affordability/
+    end
+
+    test "home_affordability page has meta description" do
+      get finance_home_affordability_url
+      assert_select "meta[name='description']"
+    end
+
+    test "home_affordability page has breadcrumb schema" do
+      get finance_home_affordability_url
+      assert_select "script[type='application/ld+json']"
+    end
+
+    test "should get business_loan" do
+      get finance_business_loan_url
+      assert_response :success
+      assert_select "h1", /Business Loan/
+    end
+
+    test "business_loan page has meta description" do
+      get finance_business_loan_url
+      assert_select "meta[name='description']"
+    end
+
+    test "business_loan page has breadcrumb schema" do
+      get finance_business_loan_url
+      assert_select "script[type='application/ld+json']"
+    end
+
+    test "should get currency_converter" do
+      get finance_currency_converter_url
+      assert_response :success
+      assert_select "h1", /Currency/
+    end
+
+    test "currency_converter page has meta description" do
+      get finance_currency_converter_url
+      assert_select "meta[name='description']"
+    end
+
+    test "currency_converter page has breadcrumb schema" do
+      get finance_currency_converter_url
+      assert_select "script[type='application/ld+json']"
+    end
   end
 end

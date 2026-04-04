@@ -1,0 +1,182 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Business Loan Calculator - Free Online Tool",
+  description: "Calculate monthly payments, total interest, origination fees, and effective APR for business loans. Free business loan calculator with instant results.",
+  canonical: finance_business_loan_url,
+  og: {
+    title: "Business Loan Calculator - Free Online Tool | CalcWise",
+    description: "Calculate monthly payments, total interest, origination fees, and effective APR for business loans. Free business loan calculator with instant results.",
+    url: finance_business_loan_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Business Loan Calculator", url: finance_business_loan_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is an origination fee on a business loan?", answer: "An origination fee is a one-time upfront charge by the lender for processing the loan, typically ranging from 1% to 6% of the loan amount. For example, a 3% origination fee on a $100,000 loan costs $3,000. This fee is usually deducted from the loan proceeds at closing, meaning you receive less than the full loan amount but still repay the full amount plus interest." },
+  { question: "What is the difference between interest rate and effective APR?", answer: "The interest rate is the annual cost of borrowing expressed as a percentage of the loan principal. The effective APR (Annual Percentage Rate) includes the interest rate plus all fees and costs, such as origination fees, giving you a more accurate picture of the true cost of borrowing. The APR is always equal to or higher than the stated interest rate when fees are involved." },
+  { question: "How long are typical business loan terms?", answer: "Business loan terms vary by type. SBA loans can range from 5 to 25 years. Traditional bank term loans typically run 3 to 10 years. Short-term online business loans may be as short as 3 months to 3 years. Equipment financing often matches the useful life of the equipment, usually 3 to 7 years. The right term depends on the loan purpose and your cash flow." },
+  { question: "What credit score do I need for a business loan?", answer: "Credit requirements vary by lender type. SBA loans typically require a personal credit score of 680 or higher. Traditional bank loans often require 700+. Online lenders may approve borrowers with scores as low as 500-600 but charge higher interest rates. Building both personal and business credit before applying helps you secure better terms and lower rates." },
+  { question: "Can I pay off a business loan early?", answer: "Most business loans allow early repayment, but some include prepayment penalties. SBA loans originated after 2020 have minimal prepayment penalties. Many online lenders charge remaining interest even with early payoff. Always review the loan agreement for prepayment terms. If there is no penalty, making extra payments can significantly reduce total interest costs." }
+]) %>
+
+<%= calculator_schema(
+  name: "Business Loan Calculator",
+  description: "Calculate monthly payments, total interest, origination fees, and effective APR for business loans.",
+  url: finance_business_loan_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Business Loan Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Business Loan Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate monthly payments, total interest, origination fees, and effective APR for any business loan.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="business-loan-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Amount ($)</label>
+            <input type="number" data-business-loan-calculator-target="amount" data-action="input->business-loan-calculator#calculate" class="w-full" placeholder="100000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-business-loan-calculator-target="rate" data-action="input->business-loan-calculator#calculate" class="w-full" placeholder="8.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-business-loan-calculator-target="years" data-action="input->business-loan-calculator#calculate" class="w-full" placeholder="5" step="1" min="1" max="30">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Origination Fee (%)</label>
+            <input type="number" data-business-loan-calculator-target="originationFee" data-action="input->business-loan-calculator#calculate" class="w-full" placeholder="2.0" step="0.1" min="0">
+            <p class="text-xs text-gray-400 mt-1">One-time upfront fee charged by the lender (typically 1-6%)</p>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-business-loan-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-business-loan-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Repaid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-business-loan-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Origination Fee</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-business-loan-calculator-target="originationFeeAmount">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-600 dark:text-gray-400">Total Cost (incl. fees)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-business-loan-calculator-target="totalCost">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Effective APR</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-business-loan-calculator-target="effectiveAPR">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-business-loan-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->business-loan-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Business Loan Calculator</h2>
+      <p>
+        Our free business loan calculator helps entrepreneurs and business owners understand the true cost of borrowing before signing a loan agreement. Enter the loan amount, annual interest rate, loan term in years, and the origination fee percentage. The calculator instantly computes your monthly payment, total interest, total repayment amount, origination fee in dollars, total cost including all fees, the effective APR, and the number of payments required.
+      </p>
+      <p>
+        Unlike a basic loan calculator, this tool accounts for the origination fee, which is a common and often overlooked cost in business lending. The origination fee is deducted from your loan proceeds upfront, meaning you receive less money than the stated loan amount but still owe payments on the full amount. The effective APR reflects this by showing the true annual cost of borrowing after accounting for all fees.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Business Loan Costs</h2>
+      <p>
+        The total cost of a business loan goes beyond the interest rate. Origination fees, which typically range from 1% to 6% of the loan amount, are charged upfront by the lender to cover loan processing, underwriting, and administration costs. On a $200,000 loan with a 3% origination fee, that is an additional $6,000 in costs. The effective APR calculation in this tool accounts for this fee, giving you a single number that represents the true annual cost of the loan for comparison purposes.
+      </p>
+
+      <h3>Types of Business Loans</h3>
+      <p>
+        SBA loans backed by the Small Business Administration offer competitive rates, typically from 5% to 10%, with terms up to 25 years. Traditional bank term loans usually range from 4% to 13% for 1 to 10 years. Online lenders offer faster approvals but higher rates, often 7% to 30%, for shorter terms. Equipment financing uses the purchased equipment as collateral, resulting in lower rates. Lines of credit provide flexible access to funds and are ideal for managing cash flow fluctuations.
+      </p>
+
+      <h3>How to Get the Best Business Loan Rate</h3>
+      <p>
+        To qualify for the lowest business loan rates, focus on building strong business and personal credit scores, maintaining at least two years of business history, demonstrating consistent revenue and profitability, preparing thorough financial documentation including tax returns and financial statements, and comparing offers from multiple lenders. Even a small reduction in interest rate can save thousands over the life of a business loan, making it worthwhile to shop around and negotiate.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is an origination fee on a business loan?</h3>
+      <p>
+        An origination fee is a one-time upfront charge by the lender for processing the loan, typically ranging from 1% to 6% of the loan amount. For example, a 3% origination fee on a $100,000 loan costs $3,000. This fee is usually deducted from the loan proceeds at closing, meaning you receive less than the full loan amount but still repay the full amount plus interest.
+      </p>
+
+      <h3>What is the difference between interest rate and effective APR?</h3>
+      <p>
+        The interest rate is the annual cost of borrowing expressed as a percentage of the loan principal. The effective APR (Annual Percentage Rate) includes the interest rate plus all fees and costs, such as origination fees, giving you a more accurate picture of the true cost of borrowing. The APR is always equal to or higher than the stated interest rate when fees are involved.
+      </p>
+
+      <h3>How long are typical business loan terms?</h3>
+      <p>
+        Business loan terms vary by type. SBA loans can range from 5 to 25 years. Traditional bank term loans typically run 3 to 10 years. Short-term online business loans may be as short as 3 months to 3 years. Equipment financing often matches the useful life of the equipment, usually 3 to 7 years. The right term depends on the loan purpose and your cash flow.
+      </p>
+
+      <h3>What credit score do I need for a business loan?</h3>
+      <p>
+        Credit requirements vary by lender type. SBA loans typically require a personal credit score of 680 or higher. Traditional bank loans often require 700 or above. Online lenders may approve borrowers with scores as low as 500 to 600 but charge higher interest rates. Building both personal and business credit before applying helps you secure better terms and lower rates.
+      </p>
+
+      <h3>Can I pay off a business loan early?</h3>
+      <p>
+        Most business loans allow early repayment, but some include prepayment penalties. SBA loans originated after 2020 have minimal prepayment penalties. Many online lenders charge remaining interest even with early payoff. Always review the loan agreement for prepayment terms. If there is no penalty, making extra payments can significantly reduce total interest costs.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Break-Even Calculator", description: "Find out how many units you need to sell to cover costs.", path: finance_break_even_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "ROI Calculator", description: "Calculate return on investment for any business decision.", path: finance_roi_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

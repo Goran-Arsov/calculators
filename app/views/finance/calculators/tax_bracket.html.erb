@@ -1,0 +1,185 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Tax Bracket Calculator 2024 - Federal Income Tax Estimator",
+  description: "Calculate your 2024 federal income tax using official IRS tax brackets. See your total tax, effective tax rate, marginal rate, and a detailed bracket-by-bracket breakdown for all filing statuses.",
+  canonical: finance_tax_bracket_url,
+  og: {
+    title: "Tax Bracket Calculator 2024 - Federal Income Tax Estimator | CalcWise",
+    description: "Calculate your 2024 federal income tax using official IRS tax brackets. See your total tax, effective tax rate, marginal rate, and a detailed bracket-by-bracket breakdown.",
+    url: finance_tax_bracket_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Tax Bracket Calculator", url: finance_tax_bracket_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are the 2024 federal tax brackets?", answer: "For 2024, the federal income tax has seven brackets: 10%, 12%, 22%, 24%, 32%, 35%, and 37%. The income ranges for each bracket depend on your filing status. For example, a single filer pays 10% on the first $11,600 of taxable income, 12% on income from $11,601 to $47,150, and so on up to 37% on income over $609,350." },
+  { question: "What is the difference between marginal and effective tax rate?", answer: "Your marginal tax rate is the rate applied to the last dollar you earned and corresponds to your highest tax bracket. Your effective tax rate is the average rate you actually pay across all your income. Because the U.S. uses a progressive tax system, your effective rate is always lower than your marginal rate unless all of your income falls within the lowest bracket." },
+  { question: "How does filing status affect my tax bracket?", answer: "Your filing status determines the income thresholds for each bracket. Married Filing Jointly has the widest brackets, meaning more income is taxed at lower rates. Head of Household brackets are wider than Single but narrower than MFJ. Married Filing Separately uses the same thresholds as Single." },
+  { question: "What is taxable income vs. gross income?", answer: "Gross income is all income you receive before any deductions. Taxable income is what remains after subtracting the standard or itemized deductions, plus any above-the-line deductions like IRA contributions. The tax brackets apply only to your taxable income, not your gross income." },
+  { question: "How can I lower my effective tax rate?", answer: "You can lower your effective tax rate by maximizing pre-tax retirement contributions (401k, Traditional IRA), claiming all eligible deductions and credits, contributing to a Health Savings Account (HSA) if eligible, harvesting capital losses to offset gains, and making charitable contributions if you itemize deductions." }
+]) %>
+
+<%= calculator_schema(
+  name: "Tax Bracket Calculator",
+  description: "Calculate your 2024 federal income tax, effective tax rate, marginal rate, and see a detailed bracket-by-bracket breakdown for Single, Married Filing Jointly, Married Filing Separately, and Head of Household filing statuses.",
+  url: finance_tax_bracket_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Tax Bracket Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Tax Bracket Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your 2024 federal income tax using official IRS brackets. See your total tax, effective rate, marginal rate, and a full bracket-by-bracket breakdown.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="tax-bracket-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Filing Status</label>
+            <select data-tax-bracket-calculator-target="filingStatus" data-action="change->tax-bracket-calculator#calculate" class="w-full">
+              <option value="">Select filing status</option>
+              <option value="single">Single</option>
+              <option value="married_filing_jointly">Married Filing Jointly</option>
+              <option value="married_filing_separately">Married Filing Separately</option>
+              <option value="head_of_household">Head of Household</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Taxable Income ($)</label>
+            <input type="number" data-tax-bracket-calculator-target="income" data-action="input->tax-bracket-calculator#calculate" class="w-full" placeholder="85000" step="100" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Federal Tax</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tax-bracket-calculator-target="totalTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Effective Tax Rate</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tax-bracket-calculator-target="effectiveRate">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Marginal Tax Rate</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tax-bracket-calculator-target="marginalRate">0%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">After-Tax Income</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-tax-bracket-calculator-target="afterTaxIncome">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->tax-bracket-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+
+      <%# Bracket breakdown table %>
+      <div class="mt-8">
+        <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Bracket Breakdown</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th class="py-2.5 pr-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Rate</th>
+                <th class="py-2.5 pr-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Income Range</th>
+                <th class="py-2.5 pr-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Taxable</th>
+                <th class="py-2.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Tax</th>
+              </tr>
+            </thead>
+            <tbody data-tax-bracket-calculator-target="breakdownBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Tax Bracket Calculator</h2>
+      <p>
+        This free tax bracket calculator estimates your 2024 federal income tax based on the official IRS tax brackets. Start by selecting your filing status, then enter your taxable income. The calculator instantly computes your total federal tax liability, your effective tax rate, your marginal tax rate, and how much income falls into each bracket. This tool uses the progressive tax system, meaning each portion of your income is taxed at the rate for the bracket it falls into, not at a single flat rate.
+      </p>
+      <p>
+        Understanding your tax bracket is essential for financial planning. Your marginal rate tells you how much additional income will be taxed, which is critical when evaluating raises, bonuses, side income, or investment returns. Your effective rate gives you a realistic picture of the overall percentage of income you actually pay to the federal government, which is always lower than or equal to your marginal rate.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>2024 Federal Tax Brackets Explained</h2>
+      <p>
+        The U.S. federal income tax system is progressive, meaning the tax rate increases as income rises. For 2024, there are seven tax brackets: 10%, 12%, 22%, 24%, 32%, 35%, and 37%. Each bracket applies only to the income within its specified range. For example, if you are a single filer earning $85,000, you do not pay 22% on the entire $85,000. Instead, you pay 10% on the first $11,600, 12% on income from $11,601 to $47,150, and 22% on the remainder from $47,151 to $85,000. This layered approach is what makes the effective rate significantly lower than the marginal rate.
+      </p>
+
+      <h3>Filing Status and Bracket Width</h3>
+      <p>
+        Your filing status directly determines which set of bracket thresholds applies. Married Filing Jointly has the widest brackets, which means more income is taxed at lower rates. This is sometimes called the marriage bonus. Head of Household, available to unmarried individuals who pay more than half the cost of maintaining a home for a qualifying person, offers wider brackets than Single but narrower than MFJ. Married Filing Separately uses the narrowest brackets, identical to Single thresholds, and is usually only advantageous in specific circumstances such as income-driven student loan repayment plans or liability separation.
+      </p>
+
+      <h3>Strategies to Reduce Your Tax Burden</h3>
+      <p>
+        The most effective way to lower your taxes is to reduce your taxable income. Contributing the maximum to employer-sponsored 401(k) plans, Traditional IRAs, or Health Savings Accounts lowers your taxable income dollar for dollar. If your income is near a bracket threshold, even a small additional deduction can shift income from a higher bracket to a lower one. Tax-loss harvesting, charitable giving, and timing income and deductions strategically can also have meaningful impacts. For high-income earners, consulting a tax professional can uncover opportunities that general advice cannot.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What are the 2024 federal tax brackets?</h3>
+      <p>
+        For 2024, the federal income tax has seven brackets: 10%, 12%, 22%, 24%, 32%, 35%, and 37%. The income ranges for each bracket depend on your filing status. For example, a single filer pays 10% on the first $11,600 of taxable income, 12% on income from $11,601 to $47,150, and so on up to 37% on income over $609,350.
+      </p>
+
+      <h3>What is the difference between marginal and effective tax rate?</h3>
+      <p>
+        Your marginal tax rate is the rate applied to the last dollar you earned and corresponds to your highest tax bracket. Your effective tax rate is the average rate you actually pay across all your income. Because the U.S. uses a progressive tax system, your effective rate is always lower than your marginal rate unless all of your income falls within the lowest bracket.
+      </p>
+
+      <h3>How does filing status affect my tax bracket?</h3>
+      <p>
+        Your filing status determines the income thresholds for each bracket. Married Filing Jointly has the widest brackets, meaning more income is taxed at lower rates. Head of Household brackets are wider than Single but narrower than MFJ. Married Filing Separately uses the same thresholds as Single.
+      </p>
+
+      <h3>What is taxable income vs. gross income?</h3>
+      <p>
+        Gross income is all income you receive before any deductions. Taxable income is what remains after subtracting the standard or itemized deductions, plus any above-the-line deductions like IRA contributions. The tax brackets apply only to your taxable income, not your gross income.
+      </p>
+
+      <h3>How can I lower my effective tax rate?</h3>
+      <p>
+        You can lower your effective tax rate by maximizing pre-tax retirement contributions (401k, Traditional IRA), claiming all eligible deductions and credits, contributing to a Health Savings Account (HSA) if eligible, harvesting capital losses to offset gains, and making charitable contributions if you itemize deductions.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Salary Calculator", description: "Convert between hourly, weekly, biweekly, monthly, and annual salary.", path: finance_salary_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Investment Calculator", description: "Project the future value of your investments with regular contributions.", path: finance_investment_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Retirement Calculator", description: "Estimate how much you need to save for a comfortable retirement.", path: finance_retirement_path, icon_path: "M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

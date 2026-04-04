@@ -68,6 +68,25 @@ module SeoHelper
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end
 
+  def howto_schema(name:, description:, steps:, total_time: nil)
+    schema = {
+      "@context" => "https://schema.org",
+      "@type" => "HowTo",
+      "name" => name,
+      "description" => description,
+      "step" => steps.each_with_index.map do |step, index|
+        {
+          "@type" => "HowToStep",
+          "position" => index + 1,
+          "name" => step[:name],
+          "text" => step[:text]
+        }
+      end
+    }
+    schema["totalTime"] = total_time if total_time
+    tag.script(schema.to_json.html_safe, type: "application/ld+json")
+  end
+
   def calculator_schema(name:, description:, url:, category:)
     schema = {
       "@context" => "https://schema.org",
