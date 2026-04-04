@@ -17,7 +17,7 @@ module Finance
       return { valid: false, errors: @errors } if @errors.any?
 
       taxable_amount = @vehicle_price - @trade_in_value
-      sales_tax = [taxable_amount * @sales_tax_rate, 0].max
+      sales_tax = [ taxable_amount * @sales_tax_rate, 0 ].max
       loan_amount = @vehicle_price + sales_tax - @down_payment - @trade_in_value
 
       monthly_rate = @annual_rate / 12.0

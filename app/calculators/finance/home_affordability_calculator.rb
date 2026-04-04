@@ -30,7 +30,7 @@ module Finance
       max_housing_from_backend = max_total_debt_payment - @monthly_debts
 
       # Available monthly payment for housing is the lesser constraint
-      available_for_housing = [max_housing_payment, max_housing_from_backend].min
+      available_for_housing = [ max_housing_payment, max_housing_from_backend ].min
       available_for_housing = 0.0 if available_for_housing < 0
 
       # Deduct estimated monthly property tax and insurance

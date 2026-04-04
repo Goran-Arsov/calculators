@@ -14,16 +14,16 @@ module Math
       return { valid: false, errors: @errors } if @errors.any?
 
       result = case @mode
-               when "of"
+      when "of"
                  # What is X% of Y?
                  @value * @percentage / 100.0
-               when "is_what_percent"
+      when "is_what_percent"
                  # X is what % of Y?
                  (@value / @percentage) * 100.0
-               when "change"
+      when "change"
                  # Percentage change from X to Y
                  ((@percentage - @value) / @value.abs) * 100.0
-               end
+      end
 
       {
         valid: true,

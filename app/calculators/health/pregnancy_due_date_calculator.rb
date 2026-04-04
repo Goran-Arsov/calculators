@@ -4,7 +4,7 @@ module Health
 
     GESTATION_DAYS = 280
     CONCEPTION_OFFSET_DAYS = 14
-    TRIMESTER_WEEKS = [13, 27, 40].freeze
+    TRIMESTER_WEEKS = [ 13, 27, 40 ].freeze
 
     def initialize(last_period_date:)
       @last_period_date = parse_date(last_period_date)

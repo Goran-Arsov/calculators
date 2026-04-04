@@ -24,7 +24,7 @@ module Health
       weeks = total_days / 7
       days = total_days % 7
       days_remaining = (due - today).to_i
-      percentage_complete = [(total_days.to_f / GESTATION_DAYS * 100).round(1), 100.0].min
+      percentage_complete = [ (total_days.to_f / GESTATION_DAYS * 100).round(1), 100.0 ].min
 
       {
         valid: true,
@@ -33,7 +33,7 @@ module Health
         trimester: determine_trimester(weeks),
         due_date: due,
         lmp_date: lmp,
-        days_remaining: [days_remaining, 0].max,
+        days_remaining: [ days_remaining, 0 ].max,
         percentage_complete: percentage_complete
       }
     end

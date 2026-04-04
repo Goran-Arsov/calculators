@@ -95,8 +95,8 @@ class BlogPostTest < ActiveSupport::TestCase
     new_post = BlogPost.create!(title: "New", slug: "new", body: "b", excerpt: "e", published_at: 1.day.ago)
     mid = BlogPost.create!(title: "Mid", slug: "mid", body: "b", excerpt: "e", published_at: 2.days.ago)
 
-    ordered = BlogPost.recent.where(id: [old.id, new_post.id, mid.id])
-    assert_equal [new_post, mid, old], ordered.to_a
+    ordered = BlogPost.recent.where(id: [ old.id, new_post.id, mid.id ])
+    assert_equal [ new_post, mid, old ], ordered.to_a
   end
 
   # --- Instance methods ---

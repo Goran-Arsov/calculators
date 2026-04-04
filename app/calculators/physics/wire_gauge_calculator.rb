@@ -37,8 +37,8 @@ module Physics
       "32"   => { diameter_mm: 0.202,  area_mm2: 0.0320, resistance_ohm_per_km: 538.3,  ampacity_a: 0.091 },
       "34"   => { diameter_mm: 0.160,  area_mm2: 0.0201, resistance_ohm_per_km: 856.0,  ampacity_a: 0.057 },
       "36"   => { diameter_mm: 0.127,  area_mm2: 0.0127, resistance_ohm_per_km: 1361.0, ampacity_a: 0.036 },
-      "38"   => { diameter_mm: 0.101,  area_mm2: 0.00797,resistance_ohm_per_km: 2164.0, ampacity_a: 0.022 },
-      "40"   => { diameter_mm: 0.0799, area_mm2: 0.00501,resistance_ohm_per_km: 3441.0, ampacity_a: 0.014 }
+      "38"   => { diameter_mm: 0.101,  area_mm2: 0.00797, resistance_ohm_per_km: 2164.0, ampacity_a: 0.022 },
+      "40"   => { diameter_mm: 0.0799, area_mm2: 0.00501, resistance_ohm_per_km: 3441.0, ampacity_a: 0.014 }
     }.freeze
 
     GAUGE_ORDER = %w[0000 000 00 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 22 24 26 28 30 32 34 36 38 40].freeze

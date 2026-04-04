@@ -23,14 +23,14 @@ module Finance
 
       while remaining > 0.01 && months < MAX_MONTHS
         interest_charge = remaining * monthly_rate
-        payment = [@monthly_payment, remaining + interest_charge].min
+        payment = [ @monthly_payment, remaining + interest_charge ].min
         principal_paid = payment - interest_charge
 
         # If payment does not cover interest, debt grows forever
         if principal_paid <= 0 && months > 0
           return {
             valid: false,
-            errors: ["Monthly payment of #{format('$%.2f', @monthly_payment)} does not cover the monthly interest of #{format('$%.2f', interest_charge)}. Increase your payment to at least #{format('$%.2f', interest_charge + 0.01)} to make progress."]
+            errors: [ "Monthly payment of #{format('$%.2f', @monthly_payment)} does not cover the monthly interest of #{format('$%.2f', interest_charge)}. Increase your payment to at least #{format('$%.2f', interest_charge + 0.01)} to make progress." ]
           }
         end
 

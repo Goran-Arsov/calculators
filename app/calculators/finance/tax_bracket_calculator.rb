@@ -67,20 +67,20 @@ module Finance
 
         taxable_in_bracket = if @income > bracket_max
                                bracket_max - bracket_min + 1
-                             else
+        else
                                remaining
-                             end
+        end
 
         # For the first bracket, the width is max - min + 1 (e.g., 0..11600 = 11601)
         # But we need to handle the first bracket specially since min is 0
         bracket_width = if bracket_min == 0
                           bracket_max + 1
-                        else
+        else
                           bracket_max - bracket_min + 1
-                        end
+        end
         bracket_width = bracket_width.infinite? ? remaining : bracket_width
 
-        taxable_in_bracket = [remaining, bracket_width].min
+        taxable_in_bracket = [ remaining, bracket_width ].min
         tax_in_bracket = taxable_in_bracket * rate
 
         breakdown << {

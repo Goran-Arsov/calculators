@@ -13,19 +13,19 @@ module Physics
       return { valid: false, errors: @errors } if @errors.any?
 
       result = case @mode
-               when "power_to_db"
+      when "power_to_db"
                  db = 10 * ::Math.log10(@value)
                  { db: db.round(4), ratio: @value, mode_label: "Power Ratio to dB" }
-               when "db_to_power"
+      when "db_to_power"
                  ratio = 10**(@value / 10.0)
                  { db: @value, ratio: ratio.round(6), mode_label: "dB to Power Ratio" }
-               when "voltage_to_db"
+      when "voltage_to_db"
                  db = 20 * ::Math.log10(@value)
                  { db: db.round(4), ratio: @value, mode_label: "Voltage Ratio to dB" }
-               when "db_to_voltage"
+      when "db_to_voltage"
                  ratio = 10**(@value / 20.0)
                  { db: @value, ratio: ratio.round(6), mode_label: "dB to Voltage Ratio" }
-               end
+      end
 
       result.merge(valid: true)
     end

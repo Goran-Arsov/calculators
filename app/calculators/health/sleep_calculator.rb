@@ -4,7 +4,7 @@ module Health
 
     CYCLE_MINUTES = 90
     FALL_ASLEEP_MINUTES = 15
-    CYCLE_COUNTS = [6, 5, 4, 3].freeze
+    CYCLE_COUNTS = [ 6, 5, 4, 3 ].freeze
     MODES = %w[wake_time bed_time].freeze
 
     def initialize(mode:, time:)
