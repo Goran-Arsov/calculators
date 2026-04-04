@@ -139,6 +139,55 @@ module CalculatorHelper
       .map { |c| c.merge(path: resolve_calculator_path(c)) }
   end
 
+  # Maps calculator slugs to relevant blog post slugs for cross-linking
+  CALCULATOR_BLOG_MAP = {
+    "mortgage-calculator" => %w[how-to-calculate-monthly-mortgage-payment 15-year-vs-30-year-mortgage how-much-house-can-i-afford],
+    "compound-interest-calculator" => %w[compound-interest-explained dollar-cost-averaging-strategy],
+    "loan-calculator" => %w[how-to-calculate-monthly-mortgage-payment small-business-loan-guide],
+    "investment-calculator" => %w[compound-interest-explained dollar-cost-averaging-strategy how-to-calculate-roi],
+    "retirement-calculator" => %w[compound-interest-explained dollar-cost-averaging-strategy],
+    "debt-payoff-calculator" => %w[how-to-pay-off-credit-card-debt],
+    "savings-goal-calculator" => %w[compound-interest-explained],
+    "roi-calculator" => %w[how-to-calculate-roi dividend-investing-yield-income],
+    "profit-margin-calculator" => %w[break-even-analysis-guide],
+    "break-even-calculator" => %w[break-even-analysis-guide],
+    "rent-vs-buy-calculator" => %w[renting-vs-buying-complete-comparison how-much-house-can-i-afford],
+    "dividend-yield-calculator" => %w[dividend-investing-yield-income how-to-calculate-roi],
+    "dca-calculator" => %w[dollar-cost-averaging-strategy compound-interest-explained],
+    "tax-bracket-calculator" => %w[how-tax-brackets-work],
+    "auto-loan-calculator" => %w[auto-loan-tips-best-car-payment],
+    "credit-card-payoff-calculator" => %w[how-to-pay-off-credit-card-debt],
+    "net-worth-calculator" => %w[how-to-calculate-net-worth],
+    "home-affordability-calculator" => %w[how-much-house-can-i-afford renting-vs-buying-complete-comparison 15-year-vs-30-year-mortgage],
+    "business-loan-calculator" => %w[small-business-loan-guide break-even-analysis-guide],
+    "markup-margin-calculator" => %w[break-even-analysis-guide],
+    "bmi-calculator" => %w[bmi-chart-what-your-score-means body-fat-percentage-guide],
+    "calorie-calculator" => %w[how-to-calculate-tdee-lose-weight],
+    "body-fat-calculator" => %w[body-fat-percentage-guide bmi-chart-what-your-score-means],
+    "tdee-calculator" => %w[how-to-calculate-tdee-lose-weight],
+    "macro-calculator" => %w[how-to-calculate-tdee-lose-weight],
+    "pace-calculator" => %w[running-pace-calculator-guide],
+    "pregnancy-due-date-calculator" => %w[pregnancy-week-by-week-guide],
+    "pregnancy-week-calculator" => %w[pregnancy-week-by-week-guide],
+    "dog-age-calculator" => %w[how-much-to-feed-dog],
+    "dog-food-calculator" => %w[how-much-to-feed-dog],
+    "percentage-calculator" => %w[percentage-calculations-guide],
+    "area-calculator" => %w[how-to-calculate-area-any-shape],
+    "unit-converter" => %w[unit-conversion-complete-guide],
+    "paint-calculator" => %w[how-much-paint-do-i-need],
+    "concrete-calculator" => %w[how-much-concrete-do-i-need],
+    "tip-calculator" => %w[tip-calculator-guide-how-much],
+    "gpa-calculator" => %w[gpa-calculator-guide],
+    "electricity-cost-calculator" => %w[electricity-cost-calculator-guide],
+    "fuel-cost-calculator" => %w[electricity-cost-calculator-guide]
+  }.freeze
+
+  def related_blog_posts(calculator_slug, limit: 3)
+    slugs = CALCULATOR_BLOG_MAP[calculator_slug] || []
+    return [] if slugs.empty?
+    BlogPost.published.where(slug: slugs).limit(limit)
+  end
+
   def all_calculators_json
     ALL_CATEGORIES.flat_map do |category_slug, category|
       category[:calculators].map do |calc|

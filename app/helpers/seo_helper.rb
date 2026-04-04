@@ -87,6 +87,47 @@ module SeoHelper
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end
 
+  def website_schema(url:, search_url:)
+    schema = {
+      "@context" => "https://schema.org",
+      "@type" => "WebSite",
+      "name" => "CalcWise",
+      "url" => url,
+      "description" => "Free online calculators for finance, math, physics, health, construction, and everyday life.",
+      "potentialAction" => {
+        "@type" => "SearchAction",
+        "target" => {
+          "@type" => "EntryPoint",
+          "urlTemplate" => "#{search_url}?q={search_term_string}"
+        },
+        "query-input" => "required name=search_term_string"
+      }
+    }
+    tag.script(schema.to_json.html_safe, type: "application/ld+json")
+  end
+
+  def article_schema(title:, description:, url:, published_at:, image: nil)
+    schema = {
+      "@context" => "https://schema.org",
+      "@type" => "Article",
+      "headline" => title,
+      "description" => description,
+      "url" => url,
+      "datePublished" => published_at.iso8601,
+      "publisher" => {
+        "@type" => "Organization",
+        "name" => "CalcWise",
+        "url" => default_domain
+      },
+      "mainEntityOfPage" => {
+        "@type" => "WebPage",
+        "@id" => url
+      }
+    }
+    schema["image"] = image if image
+    tag.script(schema.to_json.html_safe, type: "application/ld+json")
+  end
+
   def calculator_schema(name:, description:, url:, category:)
     schema = {
       "@context" => "https://schema.org",

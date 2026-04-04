@@ -4,6 +4,13 @@
   { name: @post.title, url: blog_post_url(@post.slug) }
 ]) %>
 
+<%= article_schema(
+  title: @post.title,
+  description: @post.meta_description.presence || @post.excerpt,
+  url: blog_post_url(@post.slug),
+  published_at: @post.published_at
+) %>
+
 <%= render "shared/breadcrumbs", items: [
   { name: "Home", url: root_path },
   { name: "Blog", url: blog_path },
@@ -33,12 +40,24 @@
     <%# In-content ad below article %>
     <div class="mt-8"><%= render "shared/ad_slot", slot: "in_content" %></div>
 
+    <%# Related calculators for this blog post's category %>
+    <% if @post.category.present? %>
+      <% blog_calcs = calculators_for_category(@post.category).sample(4).map { |c| c.merge(path: resolve_calculator_path(c)) } %>
+      <%= render "shared/blog_related_calculators", calculators: blog_calcs %>
+    <% end %>
+
+    <%# Newsletter signup %>
+    <%= render "shared/newsletter_signup" %>
+
     <%# Multiplex ad — recommended content style grid %>
     <div class="mt-8"><%= render "shared/ad_slot", slot: "multiplex" %></div>
   </div>
 
   <div class="hidden lg:block">
-    <div class="sticky top-24">
+    <div class="sticky top-24 space-y-6">
+      <%# Popular calculators sidebar %>
+      <%= render "shared/sidebar_popular" %>
+      <%# Sidebar ad %>
       <%= render "shared/ad_slot", slot: "sidebar" %>
     </div>
   </div>
