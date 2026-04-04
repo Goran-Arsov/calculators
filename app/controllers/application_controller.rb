@@ -4,4 +4,23 @@ class ApplicationController < ActionController::Base
 
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
+
+  before_action :set_default_meta_tags
+
+  private
+
+  def set_default_meta_tags
+    domain = ENV.fetch("DOMAIN", request.base_url)
+    set_meta_tags(
+      og: {
+        image: "#{domain}/og-image.png",
+        site_name: "CalcWise"
+      },
+      twitter: {
+        card: "summary_large_image",
+        site: "@calcwise",
+        image: "#{domain}/og-image.png"
+      }
+    )
+  end
 end
