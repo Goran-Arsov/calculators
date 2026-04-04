@@ -1,0 +1,171 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Discount Calculator - Free Online Tool",
+  description: "Calculate sale prices, savings, and discount percentages instantly. Find the final price after a discount or determine the discount percentage between two prices.",
+  canonical: everyday_discount_url,
+  og: {
+    title: "Discount Calculator - Free Online Tool | CalcWise",
+    description: "Calculate sale prices, savings, and discount percentages instantly. Find the final price after a discount or determine the discount percentage.",
+    url: everyday_discount_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Discount Calculator", url: everyday_discount_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate the sale price after a discount?", answer: "Multiply the original price by the discount percentage divided by 100 to find the savings amount. Subtract the savings from the original price to get the sale price. For example, 25% off a $80 item: $80 x 0.25 = $20 savings, so the sale price is $80 - $20 = $60." },
+  { question: "How do I calculate the discount percentage?", answer: "Subtract the sale price from the original price to find the savings. Divide the savings by the original price and multiply by 100 to get the discount percentage. For example, if an item originally costs $120 and is on sale for $90: ($120 - $90) / $120 x 100 = 25% discount." },
+  { question: "How do stacked discounts work?", answer: "Stacked discounts are applied sequentially, not added together. For example, a 20% discount followed by an additional 10% off does not equal 30% off. Instead, you first take 20% off the original price, then take 10% off the reduced price. A $100 item with 20% then 10% off would be $100 x 0.80 x 0.90 = $72, not $70." },
+  { question: "Is a bigger discount always a better deal?", answer: "Not necessarily. Compare the final price, not just the discount percentage. A 50% discount on an overpriced item may still cost more than a 20% discount on a competitively priced alternative. Also check the quality, warranty, and total cost including shipping before deciding solely based on the discount percentage." },
+  { question: "How do I calculate savings on multiple items?", answer: "Calculate the discount for each item individually and add up the savings. Or calculate the total original price and total sale price, then subtract to find total savings. Our calculator works for individual items, but you can run it multiple times for a multi-item purchase." }
+]) %>
+
+<%= calculator_schema(
+  name: "Discount Calculator",
+  description: "Calculate sale prices and savings from a discount percentage, or find the discount percentage between an original and sale price.",
+  url: everyday_discount_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Discount Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Discount Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find the sale price after a discount or determine the discount percentage between two prices.</p>
+
+    <div data-controller="discount-calculator" class="space-y-5 mb-8">
+      <%# Card 1: Find Sale Price %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">$</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Find Sale Price</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Original Price ($)</label>
+            <input type="number" data-discount-calculator-target="priceA" data-action="input->discount-calculator#calcSalePrice" class="w-full" placeholder="100.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Discount (%)</label>
+            <input type="number" data-discount-calculator-target="discountPercent" data-action="input->discount-calculator#calcSalePrice" class="w-full" placeholder="25" step="0.1" min="0" max="100">
+          </div>
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Sale Price</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-discount-calculator-target="resultSalePrice">&mdash;</span>
+          </div>
+          <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">You Save</span>
+            <span class="text-lg font-bold text-green-600 dark:text-green-400" data-discount-calculator-target="resultSavingsA">&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 2: Find Discount Percentage %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">%</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Find Discount %</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Original Price ($)</label>
+            <input type="number" data-discount-calculator-target="originalB" data-action="input->discount-calculator#calcDiscountPercent" class="w-full" placeholder="120.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sale Price ($)</label>
+            <input type="number" data-discount-calculator-target="salePriceB" data-action="input->discount-calculator#calcDiscountPercent" class="w-full" placeholder="90.00" step="0.01" min="0">
+          </div>
+          <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Discount</span>
+            <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400" data-discount-calculator-target="resultDiscountPercent">&mdash;</span>
+          </div>
+          <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">You Save</span>
+            <span class="text-lg font-bold text-green-600 dark:text-green-400" data-discount-calculator-target="resultSavingsB">&mdash;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Discount Calculator</h2>
+      <p>
+        This calculator handles two common discount scenarios. The first card calculates the sale price when you know the original price and discount percentage. Enter the original price and the discount, and you instantly see the final sale price and how much you save. The second card works in reverse: enter the original and sale prices, and the calculator determines the discount percentage and total savings.
+      </p>
+      <p>
+        Whether you are shopping online, comparing deals during a sale event, or negotiating a price, knowing the exact discount and savings helps you make informed purchasing decisions. Both modes update in real time as you type, so there is no waiting for results.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Discount Formulas</h2>
+      <p>
+        The sale price formula is straightforward: <strong>Sale Price = Original Price - (Original Price x Discount % / 100)</strong>. To find the discount percentage: <strong>Discount % = ((Original Price - Sale Price) / Original Price) x 100</strong>. The savings in both cases is simply the difference between the original price and the sale price.
+      </p>
+
+      <h3>Understanding Stacked and Compound Discounts</h3>
+      <p>
+        Retailers sometimes offer multiple discounts on the same item, such as a store-wide sale plus a coupon code. These discounts are applied sequentially, not added together. A 30% off sale plus an extra 15% coupon does not equal 45% off. Instead, the first discount reduces the price, and the second discount is applied to the already-reduced price. For a $100 item: $100 x 0.70 = $70 after the first discount, then $70 x 0.85 = $59.50 after the coupon. The effective discount is 40.5%, not 45%.
+      </p>
+
+      <h3>Smart Shopping Tips</h3>
+      <p>
+        Always compare the final price, not just the discount percentage. A 60% off clearance item from an expensive retailer may still cost more than a 20% off item from a budget store. Check price history on comparison websites before assuming a sale price is actually a good deal. Some retailers inflate the original price before marking it down, making the discount appear larger than it truly is. Setting a budget before shopping and using this calculator to verify savings helps you spend wisely.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate the sale price after a discount?</h3>
+      <p>
+        Multiply the original price by the discount percentage divided by 100 to find the savings amount. Subtract the savings from the original price to get the sale price. For example, 25% off a $80 item: $80 x 0.25 = $20 savings, so the sale price is $80 - $20 = $60.
+      </p>
+
+      <h3>How do I calculate the discount percentage?</h3>
+      <p>
+        Subtract the sale price from the original price to find the savings. Divide the savings by the original price and multiply by 100 to get the discount percentage. For example, if an item originally costs $120 and is on sale for $90: ($120 - $90) / $120 x 100 = 25% discount.
+      </p>
+
+      <h3>How do stacked discounts work?</h3>
+      <p>
+        Stacked discounts are applied sequentially, not added together. For example, a 20% discount followed by an additional 10% off does not equal 30% off. Instead, you first take 20% off the original price, then take 10% off the reduced price. A $100 item with 20% then 10% off would be $100 x 0.80 x 0.90 = $72, not $70.
+      </p>
+
+      <h3>Is a bigger discount always a better deal?</h3>
+      <p>
+        Not necessarily. Compare the final price, not just the discount percentage. A 50% discount on an overpriced item may still cost more than a 20% discount on a competitively priced alternative. Also check the quality, warranty, and total cost including shipping before deciding solely based on the discount percentage.
+      </p>
+
+      <h3>How do I calculate savings on multiple items?</h3>
+      <p>
+        Calculate the discount for each item individually and add up the savings. Or calculate the total original price and total sale price, then subtract to find total savings. Our calculator works for individual items, but you can run it multiple times for a multi-item purchase.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Gas Mileage Calculator", description: "Calculate fuel efficiency in MPG or L/100km for any vehicle.", path: everyday_gas_mileage_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Fuel Cost Calculator", description: "Estimate fuel cost for trips based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -7,7 +7,16 @@ module CalculatorHelper
     { name: "Retirement Calculator", slug: "retirement-calculator", path: :finance_retirement_path, description: "Plan your retirement savings and estimate your monthly retirement income.", icon_path: "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" },
     { name: "Debt Payoff Calculator", slug: "debt-payoff-calculator", path: :finance_debt_payoff_path, description: "Find out when you'll be debt-free and how much interest you'll pay.", icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
     { name: "Salary Calculator", slug: "salary-calculator", path: :finance_salary_path, description: "Convert between hourly, daily, weekly, biweekly, monthly, and annual salary.", icon_path: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" },
-    { name: "Savings Goal Calculator", slug: "savings-goal-calculator", path: :finance_savings_goal_path, description: "Calculate how much you need to save monthly to reach your financial goal.", icon_path: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" }
+    { name: "Savings Goal Calculator", slug: "savings-goal-calculator", path: :finance_savings_goal_path, description: "Calculate how much you need to save monthly to reach your financial goal.", icon_path: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" },
+    { name: "ROI Calculator", slug: "roi-calculator", path: :finance_roi_path, description: "Calculate return on investment as a percentage from cost and gain.", icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+    { name: "Profit Margin Calculator", slug: "profit-margin-calculator", path: :finance_profit_margin_path, description: "Calculate gross and net profit margin from revenue and costs.", icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+    { name: "Inflation Calculator", slug: "inflation-calculator", path: :finance_inflation_path, description: "Calculate how inflation erodes purchasing power over time.", icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+    { name: "Break-Even Calculator", slug: "break-even-calculator", path: :finance_break_even_path, description: "Calculate the break-even point in units and revenue for your business.", icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+    { name: "Markup vs Margin Calculator", slug: "markup-margin-calculator", path: :finance_markup_margin_path, description: "Convert between markup percentage and profit margin percentage.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+    { name: "Rent vs Buy Calculator", slug: "rent-vs-buy-calculator", path: :finance_rent_vs_buy_path, description: "Compare the total cost of renting versus buying a home over time.", icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+    { name: "Dividend Yield Calculator", slug: "dividend-yield-calculator", path: :finance_dividend_yield_path, description: "Calculate dividend yield, annual income, and yield on cost for stocks.", icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+    { name: "DCA Calculator", slug: "dca-calculator", path: :finance_dca_path, description: "See how dollar cost averaging builds wealth with regular investments over time.", icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+    { name: "Solar Savings Calculator", slug: "solar-savings-calculator", path: :finance_solar_savings_path, description: "Estimate how much money solar panels can save on your electricity bills.", icon_path: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" }
   ].freeze
 
   MATH_CALCULATORS = [
@@ -15,7 +24,13 @@ module CalculatorHelper
     { name: "Fraction Calculator", slug: "fraction-calculator", path: :math_fraction_path, description: "Add, subtract, multiply, and divide fractions with step-by-step solutions.", icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" },
     { name: "Area Calculator", slug: "area-calculator", path: :math_area_path, description: "Calculate the area of common shapes including rectangles, circles, and triangles.", icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" },
     { name: "Circle Calculator", slug: "circumference-calculator", path: :math_circumference_path, description: "Calculate the circumference and area of a circle from radius or diameter.", icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20z" },
-    { name: "Exponent Calculator", slug: "exponent-calculator", path: :math_exponent_path, description: "Calculate the result of raising a number to any power.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    { name: "Exponent Calculator", slug: "exponent-calculator", path: :math_exponent_path, description: "Calculate the result of raising a number to any power.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+    { name: "Pythagorean Theorem Calculator", slug: "pythagorean-theorem-calculator", path: :math_pythagorean_path, description: "Calculate the missing side of a right triangle using a² + b² = c².", icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+    { name: "Quadratic Equation Solver", slug: "quadratic-equation-calculator", path: :math_quadratic_path, description: "Solve ax² + bx + c = 0 and find real or complex roots.", icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+    { name: "Standard Deviation Calculator", slug: "standard-deviation-calculator", path: :math_standard_deviation_path, description: "Calculate mean, standard deviation, and variance from a set of numbers.", icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+    { name: "GCD & LCM Calculator", slug: "gcd-lcm-calculator", path: :math_gcd_lcm_path, description: "Find the greatest common divisor and least common multiple of two numbers.", icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" },
+    { name: "Sample Size Calculator", slug: "sample-size-calculator", path: :math_sample_size_path, description: "Calculate the required sample size for surveys and experiments.", icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+    { name: "Aspect Ratio Calculator", slug: "aspect-ratio-calculator", path: :math_aspect_ratio_path, description: "Calculate aspect ratio, resize dimensions, and convert between formats.", icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" }
   ].freeze
 
   PHYSICS_CALCULATORS = [
@@ -30,24 +45,52 @@ module CalculatorHelper
     { name: "Electricity Cost Calculator", slug: "electricity-cost-calculator", path: :physics_electricity_cost_path, description: "Calculate your electricity bill from power usage, time, and rate — or solve for any variable.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
     { name: "Wire Gauge Calculator", slug: "wire-gauge-calculator", path: :physics_wire_gauge_path, description: "Look up AWG wire diameter, cross-section area, resistance, and max ampacity.", icon_path: "M4 6h16M4 12h16M4 18h7" },
     { name: "Decibel Calculator", slug: "decibel-calculator", path: :physics_decibel_path, description: "Convert between decibels and power or voltage ratios, and add dB levels.", icon_path: "M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5.586V18.414a1 1 0 01-1.707.707L5.586 15z" },
-    { name: "Wavelength & Frequency Calculator", slug: "wavelength-frequency-calculator", path: :physics_wavelength_frequency_path, description: "Calculate wavelength, frequency, period, or energy of electromagnetic waves.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    { name: "Wavelength & Frequency Calculator", slug: "wavelength-frequency-calculator", path: :physics_wavelength_frequency_path, description: "Calculate wavelength, frequency, period, or energy of electromagnetic waves.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+    { name: "Planet Weight Calculator", slug: "planet-weight-calculator", path: :physics_planet_weight_path, description: "See how much you would weigh on Mars, Jupiter, the Moon, and other planets.", icon_path: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
   ].freeze
 
   HEALTH_CALCULATORS = [
     { name: "BMI Calculator", slug: "bmi-calculator", path: :health_bmi_path, description: "Calculate your Body Mass Index and find out your weight category.", icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
     { name: "Calorie Calculator", slug: "calorie-calculator", path: :health_calorie_path, description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
-    { name: "Body Fat Calculator", slug: "body-fat-calculator", path: :health_body_fat_path, description: "Estimate your body fat percentage using the U.S. Navy method.", icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" }
+    { name: "Body Fat Calculator", slug: "body-fat-calculator", path: :health_body_fat_path, description: "Estimate your body fat percentage using the U.S. Navy method.", icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+    { name: "Pregnancy Due Date Calculator", slug: "pregnancy-due-date-calculator", path: :health_pregnancy_due_date_path, description: "Calculate your estimated due date based on your last menstrual period.", icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+    { name: "TDEE Calculator", slug: "tdee-calculator", path: :health_tdee_path, description: "Calculate your Total Daily Energy Expenditure based on activity level.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+    { name: "Macro Calculator", slug: "macro-calculator", path: :health_macro_path, description: "Calculate your daily protein, carbs, and fat targets based on your goals.", icon_path: "M4 6h16M4 12h8m-8 6h16" },
+    { name: "Pace Calculator", slug: "pace-calculator", path: :health_pace_path, description: "Calculate running or walking pace, time, or distance.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+    { name: "Water Intake Calculator", slug: "water-intake-calculator", path: :health_water_intake_path, description: "Calculate how much water you should drink daily based on your weight and activity.", icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
+    { name: "Sleep Calculator", slug: "sleep-calculator", path: :health_sleep_path, description: "Find optimal bedtime or wake-up time based on 90-minute sleep cycles.", icon_path: "M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" },
+    { name: "One Rep Max Calculator", slug: "one-rep-max-calculator", path: :health_one_rep_max_path, description: "Estimate your one-rep max from the weight and reps of a working set.", icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+    { name: "Dog Age Calculator", slug: "dog-age-calculator", path: :health_dog_age_path, description: "Convert dog years to human years using the scientifically accurate logarithmic formula.", icon_path: "M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905a3.61 3.61 0 01-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" }
+  ].freeze
+
+  CONSTRUCTION_CALCULATORS = [
+    { name: "Paint Calculator", slug: "paint-calculator", path: :construction_paint_path, description: "Calculate how many gallons of paint you need for a room or surface.", icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
+    { name: "Flooring Calculator", slug: "flooring-calculator", path: :construction_flooring_path, description: "Calculate how much flooring material you need for any room.", icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+    { name: "Concrete Calculator", slug: "concrete-calculator", path: :construction_concrete_path, description: "Calculate cubic yards of concrete needed for slabs, footings, and columns.", icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
+    { name: "Gravel & Mulch Calculator", slug: "gravel-mulch-calculator", path: :construction_gravel_mulch_path, description: "Calculate cubic yards and tons of gravel, mulch, or soil for landscaping.", icon_path: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" },
+    { name: "Fence Calculator", slug: "fence-calculator", path: :construction_fence_path, description: "Calculate the number of posts, rails, and pickets needed for a fence.", icon_path: "M4 6h16M4 12h16M4 18h7" }
+  ].freeze
+
+  EVERYDAY_CALCULATORS = [
+    { name: "Tip Calculator", slug: "tip-calculator", path: :everyday_tip_path, description: "Calculate tip amount and total bill, with options to split between people.", icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+    { name: "Discount Calculator", slug: "discount-calculator", path: :everyday_discount_path, description: "Calculate sale price, savings amount, and discount percentage.", icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" },
+    { name: "Age Calculator", slug: "age-calculator", path: :everyday_age_path, description: "Calculate exact age in years, months, and days from a birth date.", icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+    { name: "Date Difference Calculator", slug: "date-difference-calculator", path: :everyday_date_difference_path, description: "Calculate the number of days, weeks, and months between two dates.", icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+    { name: "Gas Mileage Calculator", slug: "gas-mileage-calculator", path: :everyday_gas_mileage_path, description: "Calculate fuel economy in MPG or L/100km from distance and fuel used.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+    { name: "Fuel Cost Calculator", slug: "fuel-cost-calculator", path: :everyday_fuel_cost_path, description: "Calculate total fuel cost for a trip based on distance, fuel economy, and gas price.", icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+    { name: "GPA Calculator", slug: "gpa-calculator", path: :everyday_gpa_path, description: "Calculate your GPA from grades and credit hours.", icon_path: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" },
+    { name: "Cooking Converter", slug: "cooking-converter", path: :everyday_cooking_converter_path, description: "Convert between cups, tablespoons, teaspoons, milliliters, ounces, and grams.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" }
   ].freeze
 
   ALL_CATEGORIES = {
     "finance" => {
       title: "Finance Calculators",
-      description: "Free financial calculators for mortgage, loans, investments, retirement planning, and more. Make smarter money decisions with accurate calculations.",
+      description: "Free financial calculators for mortgage, loans, investments, retirement planning, ROI, and more. Make smarter money decisions with accurate calculations.",
       calculators: FINANCE_CALCULATORS
     },
     "math" => {
       title: "Math Calculators",
-      description: "Free math calculators for percentages, fractions, area, circumference, and exponents. Get instant answers with step-by-step solutions.",
+      description: "Free math calculators for percentages, fractions, area, statistics, and algebra. Get instant answers with step-by-step solutions.",
       calculators: MATH_CALCULATORS
     },
     "physics" => {
@@ -56,9 +99,19 @@ module CalculatorHelper
       calculators: PHYSICS_CALCULATORS
     },
     "health" => {
-      title: "Health Calculators",
-      description: "Free health calculators for BMI, calories, and body fat percentage. Track your health metrics with accurate, science-based tools.",
+      title: "Health & Fitness Calculators",
+      description: "Free health calculators for BMI, calories, macros, TDEE, pace, sleep cycles, and more. Track your health metrics with science-based tools.",
       calculators: HEALTH_CALCULATORS
+    },
+    "construction" => {
+      title: "Construction Calculators",
+      description: "Free construction calculators for paint, flooring, concrete, gravel, and fencing. Estimate materials and costs before your next project.",
+      calculators: CONSTRUCTION_CALCULATORS
+    },
+    "everyday" => {
+      title: "Everyday Calculators",
+      description: "Free everyday calculators for tips, discounts, age, dates, fuel, GPA, and cooking conversions. Quick answers for daily life.",
+      calculators: EVERYDAY_CALCULATORS
     }
   }.freeze
 

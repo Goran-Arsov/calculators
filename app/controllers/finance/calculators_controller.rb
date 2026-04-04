@@ -10,6 +10,15 @@ module Finance
     def debt_payoff; end
     def salary; end
     def savings_goal; end
+    def roi; end
+    def profit_margin; end
+    def inflation; end
+    def break_even; end
+    def markup_margin; end
+    def rent_vs_buy; end
+    def dividend_yield; end
+    def dca; end
+    def solar_savings; end
 
     private
 

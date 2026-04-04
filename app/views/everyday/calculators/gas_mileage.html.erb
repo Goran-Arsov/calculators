@@ -1,0 +1,163 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Gas Mileage Calculator - Free Online Tool",
+  description: "Calculate your vehicle's fuel efficiency in MPG or L/100km. Enter distance traveled and fuel used to get instant gas mileage results — free and easy to use.",
+  canonical: everyday_gas_mileage_url,
+  og: {
+    title: "Gas Mileage Calculator - Free Online Tool | CalcWise",
+    description: "Calculate your vehicle's fuel efficiency in MPG or L/100km. Enter distance traveled and fuel used to get instant gas mileage results.",
+    url: everyday_gas_mileage_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Gas Mileage Calculator", url: everyday_gas_mileage_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate my car's MPG?", answer: "Divide the total miles driven by the total gallons of fuel used. For example, if you drove 300 miles and used 10 gallons of gas, your fuel efficiency is 300 / 10 = 30 MPG. For the most accurate result, fill your tank completely, reset your trip odometer, drive normally, then fill up again and note the gallons added." },
+  { question: "What is a good MPG for a car?", answer: "The average fuel economy for new passenger cars in the US is about 25-30 MPG. Compact cars often achieve 30-40 MPG, hybrids can reach 40-60 MPG, and electric vehicles have equivalent MPGe ratings over 100. Trucks and SUVs typically range from 15-25 MPG. A 'good' MPG depends on your vehicle class." },
+  { question: "How do I convert MPG to L/100km?", answer: "Divide 235.215 by the MPG value to get L/100km. For example, 30 MPG equals 235.215 / 30 = 7.84 L/100km. This conversion works because 1 US gallon equals 3.78541 liters and 1 mile equals 1.60934 kilometers." },
+  { question: "What factors affect fuel efficiency?", answer: "Key factors include driving speed (highway cruising is more efficient than city stop-and-go), tire pressure (underinflated tires increase rolling resistance), vehicle weight and cargo, air conditioning use, driving habits (aggressive acceleration and braking waste fuel), and vehicle maintenance (dirty air filters and old spark plugs reduce efficiency)." },
+  { question: "Is L/100km better or worse when the number is lower?", answer: "Lower is better for L/100km. It means your vehicle uses fewer liters of fuel to travel 100 kilometers, indicating higher efficiency. This is the opposite of MPG, where higher is better. A fuel-efficient car might use 5-7 L/100km, while a large SUV might use 12-15 L/100km." }
+]) %>
+
+<%= calculator_schema(
+  name: "Gas Mileage Calculator",
+  description: "Calculate fuel efficiency in MPG (miles per gallon) or L/100km (liters per 100 kilometers) from distance and fuel used.",
+  url: everyday_gas_mileage_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Gas Mileage Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Gas Mileage Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your vehicle's fuel efficiency in MPG or L/100km by entering the distance traveled and fuel consumed.</p>
+
+    <div data-controller="gas-mileage-calculator" class="space-y-5 mb-8">
+      <%# Card 1: MPG %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">MI</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Miles per Gallon (MPG)</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance (miles)</label>
+            <input type="number" data-gas-mileage-calculator-target="distanceMiles" data-action="input->gas-mileage-calculator#calcMpg" class="w-full" placeholder="300" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fuel (gallons)</label>
+            <input type="number" data-gas-mileage-calculator-target="fuelGallons" data-action="input->gas-mileage-calculator#calcMpg" class="w-full" placeholder="10" step="0.01" min="0">
+          </div>
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">MPG</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-gas-mileage-calculator-target="resultMpg">&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 2: L/100km %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">KM</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Liters per 100 km (L/100km)</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance (km)</label>
+            <input type="number" data-gas-mileage-calculator-target="distanceKm" data-action="input->gas-mileage-calculator#calcLper100km" class="w-full" placeholder="500" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fuel (liters)</label>
+            <input type="number" data-gas-mileage-calculator-target="fuelLiters" data-action="input->gas-mileage-calculator#calcLper100km" class="w-full" placeholder="40" step="0.01" min="0">
+          </div>
+          <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">L/100km</span>
+            <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400" data-gas-mileage-calculator-target="resultLper100km">&mdash;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Gas Mileage Calculator</h2>
+      <p>
+        This calculator offers two modes for calculating fuel efficiency. Use the first card if you measure in miles and gallons (common in the US) to get your result in miles per gallon (MPG). Use the second card if you measure in kilometers and liters (common in Europe, Canada, and most other countries) to get your result in liters per 100 kilometers (L/100km).
+      </p>
+      <p>
+        For the most accurate reading, fill your gas tank completely and reset your trip odometer. Drive normally until you need to refuel. At the next fill-up, note the number of gallons or liters added and the trip odometer reading. Enter these values into the calculator for a precise fuel efficiency measurement. Repeat over multiple fill-ups and average the results for a representative figure.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Fuel Efficiency Formulas</h2>
+      <p>
+        The MPG formula is simple: <strong>MPG = Distance (miles) / Fuel (gallons)</strong>. Higher values mean better fuel economy. The L/100km formula is: <strong>L/100km = (Fuel in liters / Distance in km) x 100</strong>. Unlike MPG, lower values indicate better efficiency. To convert between the two, use <strong>L/100km = 235.215 / MPG</strong> and <strong>MPG = 235.215 / L/100km</strong>.
+      </p>
+
+      <h3>Factors That Affect Gas Mileage</h3>
+      <p>
+        Driving speed has a major impact on fuel efficiency. Most vehicles achieve peak efficiency between 45 and 65 mph. Above 65 mph, aerodynamic drag increases significantly, reducing fuel economy. Aggressive driving habits like rapid acceleration, hard braking, and speeding can lower MPG by 15-33% on the highway. Keeping tires properly inflated, using the recommended motor oil grade, and performing regular maintenance all help maintain optimal fuel efficiency.
+      </p>
+
+      <h3>Improving Your Fuel Economy</h3>
+      <p>
+        Simple changes can make a meaningful difference. Remove excess weight from your vehicle, as every 100 pounds of extra weight reduces fuel economy by about 1%. Use cruise control on the highway for steady speed. Avoid idling for extended periods, since idling gets zero miles per gallon. Plan trips to combine errands and reduce total driving distance. In hot weather, use the air conditioning at highway speeds (lower drag than open windows) but open windows at low city speeds to save the AC compressor workload.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate my car's MPG?</h3>
+      <p>
+        Divide the total miles driven by the total gallons of fuel used. For example, if you drove 300 miles and used 10 gallons of gas, your fuel efficiency is 300 / 10 = 30 MPG. For the most accurate result, fill your tank completely, reset your trip odometer, drive normally, then fill up again and note the gallons added.
+      </p>
+
+      <h3>What is a good MPG for a car?</h3>
+      <p>
+        The average fuel economy for new passenger cars in the US is about 25-30 MPG. Compact cars often achieve 30-40 MPG, hybrids can reach 40-60 MPG, and electric vehicles have equivalent MPGe ratings over 100. Trucks and SUVs typically range from 15-25 MPG. A "good" MPG depends on your vehicle class.
+      </p>
+
+      <h3>How do I convert MPG to L/100km?</h3>
+      <p>
+        Divide 235.215 by the MPG value to get L/100km. For example, 30 MPG equals 235.215 / 30 = 7.84 L/100km. This conversion works because 1 US gallon equals 3.78541 liters and 1 mile equals 1.60934 kilometers.
+      </p>
+
+      <h3>What factors affect fuel efficiency?</h3>
+      <p>
+        Key factors include driving speed (highway cruising is more efficient than city stop-and-go), tire pressure (underinflated tires increase rolling resistance), vehicle weight and cargo, air conditioning use, driving habits (aggressive acceleration and braking waste fuel), and vehicle maintenance (dirty air filters and old spark plugs reduce efficiency).
+      </p>
+
+      <h3>Is L/100km better or worse when the number is lower?</h3>
+      <p>
+        Lower is better for L/100km. It means your vehicle uses fewer liters of fuel to travel 100 kilometers, indicating higher efficiency. This is the opposite of MPG, where higher is better. A fuel-efficient car might use 5-7 L/100km, while a large SUV might use 12-15 L/100km.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Fuel Cost Calculator", description: "Estimate the fuel cost for any trip based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

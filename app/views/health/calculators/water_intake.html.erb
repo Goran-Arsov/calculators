@@ -1,0 +1,156 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Water Intake Calculator - Free Daily Hydration Tool",
+  description: "Calculate your recommended daily water intake with our free calculator. Enter your weight and exercise duration to get personalized hydration targets in liters, glasses, and milliliters.",
+  canonical: health_water_intake_url,
+  og: {
+    title: "Water Intake Calculator - Free Daily Hydration Tool | CalcWise",
+    description: "Calculate your recommended daily water intake. Personalized hydration targets based on your weight and exercise level.",
+    url: health_water_intake_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Water Intake Calculator", url: health_water_intake_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much water should I drink per day?", answer: "A general guideline is to drink approximately 35 mL of water per kilogram of body weight per day. For a 70 kg person, that is about 2.45 liters. However, needs increase with exercise, hot weather, high altitude, and certain health conditions. The popular 8 glasses per day recommendation (about 2 liters) is a reasonable minimum for most adults." },
+  { question: "Does exercise affect how much water I need?", answer: "Yes, exercise significantly increases your water needs. For every 30 minutes of exercise, you should add approximately 350 mL (about 12 oz) of water to your daily intake. Intense exercise in hot conditions may require even more. Proper hydration before, during, and after exercise is essential for performance and recovery." },
+  { question: "What are the signs of dehydration?", answer: "Common signs of dehydration include thirst, dark yellow urine, dry mouth, fatigue, headache, dizziness, and reduced urine output. Mild dehydration (1-2% body weight loss) can impair concentration and physical performance. Severe dehydration can cause rapid heartbeat, confusion, and requires immediate medical attention." },
+  { question: "Can I drink too much water?", answer: "Yes, drinking excessive amounts of water in a short period can lead to hyponatremia (water intoxication), where sodium levels in the blood become dangerously low. This is rare but can occur during extreme endurance events. A safe approach is to drink steadily throughout the day rather than consuming large volumes at once, and to listen to your thirst signals." },
+  { question: "Do other beverages count toward my daily water intake?", answer: "Yes, most beverages contribute to your daily fluid intake, including tea, coffee, milk, and juice. While caffeine has a mild diuretic effect, the net hydration from caffeinated beverages is still positive. Water-rich foods like fruits, vegetables, and soups also contribute. However, plain water remains the best choice as it is calorie-free and readily absorbed." }
+]) %>
+
+<%= calculator_schema(
+  name: "Water Intake Calculator",
+  description: "Calculate your recommended daily water intake based on your body weight and exercise duration.",
+  url: health_water_intake_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Water Intake Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Water Intake Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find out how much water you should drink daily based on your body weight and exercise level.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="water-intake-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Weight (kg)</label>
+            <input type="number" data-water-intake-calculator-target="weight" data-action="input->water-intake-calculator#calculate" class="w-full" placeholder="70" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Exercise (minutes per day)</label>
+            <input type="number" data-water-intake-calculator-target="exercise" data-action="input->water-intake-calculator#calculate" class="w-full" placeholder="30" step="1" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Liters</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-water-intake-calculator-target="liters">— L</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Glasses (250 mL)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-water-intake-calculator-target="glasses">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Milliliters</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-water-intake-calculator-target="ml">— mL</span>
+            </div>
+          </div>
+          <button data-action="click->water-intake-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Water Intake Calculator</h2>
+      <p>
+        Our free water intake calculator provides a personalized daily hydration recommendation based on two key factors: your body weight and how much you exercise. Enter your weight in kilograms and the number of minutes you exercise per day. The calculator instantly displays your recommended daily water intake in three formats — liters, standard 250 mL glasses, and total milliliters. Results update in real time as you adjust your inputs, with no forms to submit or pages to reload.
+      </p>
+      <p>
+        Staying properly hydrated is one of the simplest yet most impactful things you can do for your health. Water regulates body temperature, lubricates joints, transports nutrients to cells, and supports every major organ system. Even mild dehydration of just 1-2% of body weight can impair concentration, increase fatigue, and reduce physical performance. This calculator helps you set a clear, measurable daily target tailored to your individual needs.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How Your Water Needs Are Calculated</h2>
+      <p>
+        The baseline recommendation is approximately 35 mL of water per kilogram of body weight per day. This accounts for the water your body needs for basic metabolic functions, digestion, and temperature regulation at rest. For exercise, an additional 350 mL (about 12 oz) is added for every 30 minutes of physical activity, which compensates for fluid lost through sweat. These guidelines align with recommendations from major health organizations and provide a practical starting point for most healthy adults.
+      </p>
+
+      <h3>Factors That Increase Your Water Needs</h3>
+      <p>
+        Several factors beyond weight and exercise can increase how much water you need. <strong>Hot or humid weather</strong> causes more sweating and requires additional fluid replacement. <strong>High altitude</strong> (above 2,500 meters) increases breathing rate and urine output, both of which deplete fluids faster. <strong>Illness</strong> involving fever, vomiting, or diarrhea dramatically increases water loss. <strong>Pregnancy and breastfeeding</strong> require extra fluid to support fetal development and milk production. If any of these factors apply, consider adding 500 mL to 1 liter above your calculated recommendation.
+      </p>
+
+      <h3>Practical Hydration Tips</h3>
+      <p>
+        The best strategy is to drink water consistently throughout the day rather than consuming large amounts at once. Keep a reusable water bottle with you and sip regularly. Drink a glass of water with each meal and one between meals. Monitor your urine color — pale straw yellow indicates good hydration, while dark yellow suggests you need more fluids. Setting hourly reminders on your phone can help build the habit until it becomes automatic. Eating water-rich foods like cucumbers, watermelon, oranges, and lettuce also contributes to your daily fluid intake.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much water should I drink per day?</h3>
+      <p>
+        A general guideline is to drink approximately 35 mL of water per kilogram of body weight per day. For a 70 kg person, that is about 2.45 liters. However, needs increase with exercise, hot weather, high altitude, and certain health conditions. The popular 8 glasses per day recommendation (about 2 liters) is a reasonable minimum for most adults.
+      </p>
+
+      <h3>Does exercise affect how much water I need?</h3>
+      <p>
+        Yes, exercise significantly increases your water needs. For every 30 minutes of exercise, you should add approximately 350 mL (about 12 oz) of water to your daily intake. Intense exercise in hot conditions may require even more. Proper hydration before, during, and after exercise is essential for performance and recovery.
+      </p>
+
+      <h3>What are the signs of dehydration?</h3>
+      <p>
+        Common signs of dehydration include thirst, dark yellow urine, dry mouth, fatigue, headache, dizziness, and reduced urine output. Mild dehydration (1-2% body weight loss) can impair concentration and physical performance. Severe dehydration can cause rapid heartbeat, confusion, and requires immediate medical attention.
+      </p>
+
+      <h3>Can I drink too much water?</h3>
+      <p>
+        Yes, drinking excessive amounts of water in a short period can lead to hyponatremia (water intoxication), where sodium levels in the blood become dangerously low. This is rare but can occur during extreme endurance events. A safe approach is to drink steadily throughout the day rather than consuming large volumes at once, and to listen to your thirst signals.
+      </p>
+
+      <h3>Do other beverages count toward my daily water intake?</h3>
+      <p>
+        Yes, most beverages contribute to your daily fluid intake, including tea, coffee, milk, and juice. While caffeine has a mild diuretic effect, the net hydration from caffeinated beverages is still positive. Water-rich foods like fruits, vegetables, and soups also contribute. However, plain water remains the best choice as it is calorie-free and readily absorbed.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure to find your daily calorie target.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

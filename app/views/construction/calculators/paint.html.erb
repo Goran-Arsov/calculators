@@ -1,0 +1,166 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Paint Calculator - Free Online Tool",
+  description: "Calculate how much paint you need for any room. Enter room dimensions, number of coats, doors, and windows to get accurate gallon estimates — free and instant.",
+  canonical: construction_paint_url,
+  og: {
+    title: "Paint Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how much paint you need for any room. Enter room dimensions, number of coats, doors, and windows to get accurate gallon estimates.",
+    url: construction_paint_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Paint Calculator", url: construction_paint_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much paint do I need for a room?", answer: "Measure the length, width, and height of the room. Multiply the perimeter (2 x length + 2 x width) by the height to get total wall area. Subtract about 20 sq ft per door and 15 sq ft per window, then divide by 350 sq ft per gallon. Multiply by the number of coats for total gallons needed." },
+  { question: "How many square feet does a gallon of paint cover?", answer: "One gallon of interior paint typically covers approximately 350 square feet with one coat on a smooth surface. Rough or textured walls, porous surfaces, and dark-to-light color changes may reduce coverage to 250-300 square feet per gallon." },
+  { question: "How many coats of paint do I need?", answer: "Most paint jobs require two coats for even coverage and true color. You may need only one coat if you are repainting the same or very similar color with a high-quality paint-and-primer-in-one product. Dark colors over light surfaces or vice versa may require three coats." },
+  { question: "Should I subtract doors and windows from the paint area?", answer: "Yes. A standard door is approximately 20 square feet and a standard window is about 15 square feet. Subtracting these areas gives you a more accurate estimate and prevents you from purchasing excess paint." },
+  { question: "How do I estimate paint for a room with vaulted ceilings?", answer: "For vaulted or cathedral ceilings, measure the average wall height by adding the shortest and tallest wall heights and dividing by two. Use this average height in the calculator for a reasonable estimate. For the triangular gable wall sections, calculate the triangle area separately and add it to the total." }
+]) %>
+
+<%= calculator_schema(
+  name: "Paint Calculator",
+  description: "Calculate how much paint you need for any room based on dimensions, coats, doors, and windows.",
+  url: construction_paint_url,
+  category: "HomeApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Paint Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Paint Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate how many gallons of paint you need based on your room dimensions, number of coats, and openings.</p>
+
+    <div data-controller="paint-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Room Length (ft)</label>
+            <input type="number" data-paint-calculator-target="length" data-action="input->paint-calculator#calculate" class="w-full" placeholder="12" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Room Width (ft)</label>
+            <input type="number" data-paint-calculator-target="width" data-action="input->paint-calculator#calculate" class="w-full" placeholder="10" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Room Height (ft)</label>
+            <input type="number" data-paint-calculator-target="height" data-action="input->paint-calculator#calculate" class="w-full" placeholder="8" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Coats</label>
+            <input type="number" data-paint-calculator-target="coats" data-action="input->paint-calculator#calculate" class="w-full" value="2" step="1" min="1" max="5">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Doors</label>
+            <input type="number" data-paint-calculator-target="doors" data-action="input->paint-calculator#calculate" class="w-full" value="1" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Windows</label>
+            <input type="number" data-paint-calculator-target="windows" data-action="input->paint-calculator#calculate" class="w-full" value="2" step="1" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Wall Area</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-paint-calculator-target="resultWallArea">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Paintable Area</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-paint-calculator-target="resultPaintableArea">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Gallons Needed</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-paint-calculator-target="resultGallons">0</span>
+            </div>
+          </div>
+          <button data-action="click->paint-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Paint Calculator</h2>
+      <p>
+        Estimating the right amount of paint before you start a project saves money and prevents extra trips to the hardware store. Enter your room length, width, and height in feet. The calculator computes the total wall area from the perimeter multiplied by the ceiling height. It then subtracts standard allowances for doors (approximately 20 square feet each) and windows (approximately 15 square feet each) to give you the paintable surface area.
+      </p>
+      <p>
+        The number of coats defaults to two, which is the standard recommendation for most interior paint jobs. The calculator multiplies the paintable area by the number of coats and divides by 350 square feet per gallon, which is the industry-standard coverage rate for smooth walls. The result is rounded up to the nearest whole gallon so you always have enough paint to finish the job.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Paint Coverage and Factors That Affect It</h2>
+      <p>
+        The 350-square-foot-per-gallon coverage rate assumes a smooth, previously painted surface. Several factors can reduce coverage. Textured walls such as knockdown or orange peel finishes absorb more paint and may only yield 250 to 300 square feet per gallon. Porous surfaces like new drywall or bare wood require a primer coat first. Dramatic color changes, such as painting over a dark color with a light shade, may require an additional coat beyond the standard two.
+      </p>
+
+      <h3>Choosing the Right Paint</h3>
+      <p>
+        Interior latex paint is the most popular choice for walls and ceilings due to its easy cleanup, low odor, and quick drying time. Flat or matte finishes hide imperfections well and are ideal for ceilings and low-traffic rooms. Eggshell and satin finishes offer a slight sheen and are easier to clean, making them suitable for living rooms and bedrooms. Semi-gloss and gloss finishes are best for trim, doors, and high-moisture areas like kitchens and bathrooms because they resist moisture and wipe clean easily.
+      </p>
+
+      <h3>Tips for an Accurate Estimate</h3>
+      <p>
+        Measure each wall individually if your room is not a perfect rectangle. For rooms with alcoves, bump-outs, or partial walls, calculate each section separately and add the areas together. Always buy a little more paint than the calculator suggests to account for touch-ups and future repairs. Storing leftover paint in a cool, dry place ensures it is available when you need it. Label each can with the room and date so you can easily find the right color later.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much paint do I need for a room?</h3>
+      <p>
+        Measure the length, width, and height of the room. Multiply the perimeter (2 x length + 2 x width) by the height to get total wall area. Subtract about 20 sq ft per door and 15 sq ft per window, then divide by 350 sq ft per gallon. Multiply by the number of coats for total gallons needed.
+      </p>
+
+      <h3>How many square feet does a gallon of paint cover?</h3>
+      <p>
+        One gallon of interior paint typically covers approximately 350 square feet with one coat on a smooth surface. Rough or textured walls, porous surfaces, and dark-to-light color changes may reduce coverage to 250-300 square feet per gallon.
+      </p>
+
+      <h3>How many coats of paint do I need?</h3>
+      <p>
+        Most paint jobs require two coats for even coverage and true color. You may need only one coat if you are repainting the same or very similar color with a high-quality paint-and-primer-in-one product. Dark colors over light surfaces or vice versa may require three coats.
+      </p>
+
+      <h3>Should I subtract doors and windows from the paint area?</h3>
+      <p>
+        Yes. A standard door is approximately 20 square feet and a standard window is about 15 square feet. Subtracting these areas gives you a more accurate estimate and prevents you from purchasing excess paint.
+      </p>
+
+      <h3>How do I estimate paint for a room with vaulted ceilings?</h3>
+      <p>
+        For vaulted or cathedral ceilings, measure the average wall height by adding the shortest and tallest wall heights and dividing by two. Use this average height in the calculator for a reasonable estimate. For the triangular gable wall sections, calculate the triangle area separately and add it to the total.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Flooring Calculator", description: "Calculate how much flooring material you need with waste allowance.", path: construction_flooring_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Fence Calculator", description: "Calculate posts, rails, and pickets needed for your fence project.", path: construction_fence_path, icon_path: "M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11m16-11v11" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

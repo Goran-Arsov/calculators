@@ -1,0 +1,154 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Tip Calculator - Free Online Tool",
+  description: "Calculate the tip amount, total bill, and per-person share instantly. Adjust tip percentage and number of people splitting the bill — free and easy to use.",
+  canonical: everyday_tip_url,
+  og: {
+    title: "Tip Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the tip amount, total bill, and per-person share instantly. Adjust tip percentage and number of people splitting the bill.",
+    url: everyday_tip_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Tip Calculator", url: everyday_tip_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much should I tip at a restaurant?", answer: "In the United States, the standard restaurant tip is 15-20% of the pre-tax bill. For excellent service, 20-25% is common. For buffets, 10% is typical. For takeout, 0-10% is acceptable. Always tip on the pre-tax total rather than the after-tax amount for the most accurate calculation." },
+  { question: "How do I calculate a tip?", answer: "Multiply the bill amount by the tip percentage as a decimal. For example, an 18% tip on a $50 bill is $50 x 0.18 = $9.00, making the total $59.00. If splitting among multiple people, divide the total by the number of diners." },
+  { question: "Should I tip on the pre-tax or post-tax amount?", answer: "Etiquette experts recommend tipping on the pre-tax subtotal. Tax rates vary by location and do not reflect the service provided. However, tipping on the post-tax total is also common and results in only a slightly higher tip. Either approach is considered acceptable." },
+  { question: "How much should I tip for delivery?", answer: "For food delivery, tip 15-20% of the order total, with a minimum of $3-5 for small orders. For large orders, difficult weather conditions, or long-distance deliveries, consider tipping 20% or more. Delivery drivers often use their own vehicles and fuel, so generous tipping is appreciated." },
+  { question: "How do I split the bill fairly?", answer: "The simplest method is to divide the total bill plus tip equally among all diners. If people ordered items of significantly different prices, each person can calculate their individual subtotal, add the agreed tip percentage, and pay their share. Our calculator handles the equal-split method automatically." }
+]) %>
+
+<%= calculator_schema(
+  name: "Tip Calculator",
+  description: "Calculate tip amount, total bill, and per-person share for any bill with customizable tip percentage and split count.",
+  url: everyday_tip_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Tip Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Tip Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Quickly calculate the tip amount, total bill, and each person's share when splitting the check.</p>
+
+    <div data-controller="tip-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Bill Amount ($)</label>
+            <input type="number" data-tip-calculator-target="bill" data-action="input->tip-calculator#calculate" class="w-full" placeholder="85.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tip (%)</label>
+            <input type="number" data-tip-calculator-target="tipPercent" data-action="input->tip-calculator#calculate" class="w-full" value="18" step="1" min="0" max="100">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Split Between</label>
+            <input type="number" data-tip-calculator-target="split" data-action="input->tip-calculator#calculate" class="w-full" value="1" step="1" min="1">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tip Amount</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultTip">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultTotal">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Per Person</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultPerPerson">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->tip-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Tip Calculator</h2>
+      <p>
+        Calculating tips and splitting bills should not require mental gymnastics. Enter your bill amount, choose your desired tip percentage, and specify how many people are sharing the check. The calculator instantly shows the tip amount, the total bill including the tip, and each person's share if you are splitting.
+      </p>
+      <p>
+        The default tip percentage is set to 18%, which is a standard tip for good service at a sit-down restaurant in the United States. Adjust this up or down based on the quality of service and the type of establishment. The split feature divides the total evenly among all diners, making group outings stress-free.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Tipping Guidelines by Situation</h2>
+      <p>
+        Tipping norms vary by service type. At restaurants, 15-20% of the pre-tax bill is standard. For food delivery, 15-20% with a $3-5 minimum is appropriate. Hairdressers and barbers typically receive 15-20%. Taxi and rideshare drivers customarily get 15-20%. Hotel housekeeping is usually $2-5 per night. Valet parking attendants expect $2-5. Movers often receive $20-50 per person for a full day of work. When in doubt, 20% is a generous and widely appreciated tip.
+      </p>
+
+      <h3>Tipping Etiquette Around the World</h3>
+      <p>
+        Tipping customs differ significantly by country. In the United States and Canada, tipping is expected and often constitutes a significant portion of service workers' income. In many European countries, a service charge is often included in the bill, though rounding up or leaving a small extra amount is appreciated. In Japan and South Korea, tipping is generally not practiced and can even be considered rude. In Australia and New Zealand, tipping is not expected but is becoming more common. Always research local customs when traveling abroad.
+      </p>
+
+      <h3>Quick Mental Math Tip</h3>
+      <p>
+        For a quick 20% tip estimate, move the decimal point one place to the left (giving you 10%) and then double it. For example, on a $65 bill: 10% is $6.50, so 20% is $13.00. For 15%, calculate 10% and add half of that amount. These mental shortcuts work well when you do not have a calculator handy, but for exact figures and bill splitting, use our tool above.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much should I tip at a restaurant?</h3>
+      <p>
+        In the United States, the standard restaurant tip is 15-20% of the pre-tax bill. For excellent service, 20-25% is common. For buffets, 10% is typical. For takeout, 0-10% is acceptable. Always tip on the pre-tax total rather than the after-tax amount for the most accurate calculation.
+      </p>
+
+      <h3>How do I calculate a tip?</h3>
+      <p>
+        Multiply the bill amount by the tip percentage as a decimal. For example, an 18% tip on a $50 bill is $50 x 0.18 = $9.00, making the total $59.00. If splitting among multiple people, divide the total by the number of diners.
+      </p>
+
+      <h3>Should I tip on the pre-tax or post-tax amount?</h3>
+      <p>
+        Etiquette experts recommend tipping on the pre-tax subtotal. Tax rates vary by location and do not reflect the service provided. However, tipping on the post-tax total is also common and results in only a slightly higher tip. Either approach is considered acceptable.
+      </p>
+
+      <h3>How much should I tip for delivery?</h3>
+      <p>
+        For food delivery, tip 15-20% of the order total, with a minimum of $3-5 for small orders. For large orders, difficult weather conditions, or long-distance deliveries, consider tipping 20% or more. Delivery drivers often use their own vehicles and fuel, so generous tipping is appreciated.
+      </p>
+
+      <h3>How do I split the bill fairly?</h3>
+      <p>
+        The simplest method is to divide the total bill plus tip equally among all diners. If people ordered items of significantly different prices, each person can calculate their individual subtotal, add the agreed tip percentage, and pay their share. Our calculator handles the equal-split method automatically.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "GPA Calculator", description: "Calculate your grade point average from course grades and credits.", path: everyday_gpa_path, icon_path: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" },
+      { name: "Fuel Cost Calculator", description: "Estimate the fuel cost for any trip based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

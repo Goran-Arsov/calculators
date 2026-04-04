@@ -1,0 +1,154 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Gravel & Mulch Calculator - Free Online Tool",
+  description: "Calculate how much gravel or mulch you need in cubic yards and tons. Enter area dimensions and depth to get instant estimates for your landscaping project.",
+  canonical: construction_gravel_mulch_url,
+  og: {
+    title: "Gravel & Mulch Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how much gravel or mulch you need in cubic yards and tons. Enter area dimensions and depth to get instant estimates.",
+    url: construction_gravel_mulch_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Gravel & Mulch Calculator", url: construction_gravel_mulch_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate how much gravel or mulch I need?", answer: "Multiply the length by the width of the area in feet to get square footage. Multiply the square footage by the depth in inches, then divide by 324 to convert to cubic yards. For tons, multiply cubic yards by 1.4 for gravel or by 0.5 for mulch, as gravel is significantly heavier than organic mulch." },
+  { question: "How deep should I spread gravel?", answer: "For driveways, use 4 to 6 inches of gravel. Pathways and walkways need 2 to 3 inches. Decorative gravel beds and garden borders typically require 2 to 4 inches. Drainage areas may need 6 to 12 inches depending on water volume and soil conditions." },
+  { question: "How deep should I spread mulch?", answer: "Apply mulch 2 to 4 inches deep for most garden beds and around trees. Thinner layers may not suppress weeds effectively, while deeper layers can trap excess moisture and encourage root rot. Keep mulch a few inches away from plant stems and tree trunks to prevent moisture-related decay." },
+  { question: "How many cubic yards are in a ton of gravel?", answer: "One ton of gravel is approximately 0.714 cubic yards, or conversely, one cubic yard of gravel weighs about 1.4 tons (2,800 pounds). This varies slightly by gravel type and moisture content. Pea gravel and crushed stone have similar weights, while river rock may weigh slightly more." },
+  { question: "What type of gravel should I use for a driveway?", answer: "A driveway typically uses three layers. The base layer is large crushed stone (2-3 inches), the middle layer is smaller crushed stone (about 1 inch), and the top layer is fine gravel or crusher run (0.5-1 inch) that compacts tightly. Crusher run, also called process gravel, is the most popular driveway surface because it packs down firmly." }
+]) %>
+
+<%= calculator_schema(
+  name: "Gravel & Mulch Calculator",
+  description: "Calculate how much gravel or mulch you need in cubic yards and tons for any landscaping or construction project.",
+  url: construction_gravel_mulch_url,
+  category: "HomeApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Gravel & Mulch Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Gravel & Mulch Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate the cubic yards and tons of gravel or mulch you need based on the area dimensions and desired depth.</p>
+
+    <div data-controller="gravel-mulch-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Length (ft)</label>
+            <input type="number" data-gravel-mulch-calculator-target="length" data-action="input->gravel-mulch-calculator#calculate" class="w-full" placeholder="20" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Width (ft)</label>
+            <input type="number" data-gravel-mulch-calculator-target="width" data-action="input->gravel-mulch-calculator#calculate" class="w-full" placeholder="10" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Depth (in)</label>
+            <input type="number" data-gravel-mulch-calculator-target="depth" data-action="input->gravel-mulch-calculator#calculate" class="w-full" placeholder="3" step="0.5" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Area</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-gravel-mulch-calculator-target="resultArea">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cubic Yards</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-gravel-mulch-calculator-target="resultCubicYards">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tons (Gravel)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-gravel-mulch-calculator-target="resultTons">0</span>
+            </div>
+          </div>
+          <button data-action="click->gravel-mulch-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Gravel & Mulch Calculator</h2>
+      <p>
+        Ordering the right amount of gravel or mulch prevents wasted material and extra delivery fees. Enter the length and width of the area you plan to cover in feet, then specify the desired depth in inches. The calculator instantly computes the total area in square feet, the volume in cubic yards, and the estimated weight in tons.
+      </p>
+      <p>
+        The cubic yards figure is what most landscape supply companies use for pricing and delivery. The tons estimate uses an average gravel density of 1.4 tons per cubic yard, which is typical for crushed stone and pea gravel. For mulch, the weight is significantly less at roughly 0.5 tons per cubic yard, so keep that in mind when ordering organic materials. Always confirm the weight-per-yard with your specific supplier, as density varies by material type and moisture content.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Gravel and Mulch Coverage Formula</h2>
+      <p>
+        The volume calculation is: <strong>Cubic Yards = (Length x Width x Depth in inches) / 324</strong>. The number 324 comes from converting square feet and inches into cubic yards (27 cubic feet per yard x 12 inches per foot = 324). To convert cubic yards to tons for gravel, multiply by 1.4. For mulch, multiply by approximately 0.5 depending on the type.
+      </p>
+
+      <h3>Choosing Between Gravel Types</h3>
+      <p>
+        Pea gravel is smooth and round, making it comfortable underfoot and ideal for pathways, patios, and decorative beds. Crushed stone has angular edges that lock together, creating a stable surface for driveways and structural base layers. River rock is larger and smooth, best suited for decorative landscaping, dry creek beds, and erosion control. Decomposed granite compacts tightly and is popular for walkways and patios in dry climates. Each type has a slightly different density, so coverage per cubic yard may vary.
+      </p>
+
+      <h3>Mulch Benefits and Depth Guidelines</h3>
+      <p>
+        Mulch conserves soil moisture, suppresses weeds, insulates plant roots from temperature extremes, and adds organic matter to the soil as it decomposes. Hardwood mulch and pine bark are the most common types. Apply 2 to 3 inches for perennial beds and 3 to 4 inches for weed suppression around trees and shrubs. Avoid piling mulch against tree trunks, a practice called volcano mulching, as it traps moisture and promotes bark decay and pest problems. Replenish mulch annually as it breaks down over time.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate how much gravel or mulch I need?</h3>
+      <p>
+        Multiply the length by the width of the area in feet to get square footage. Multiply the square footage by the depth in inches, then divide by 324 to convert to cubic yards. For tons, multiply cubic yards by 1.4 for gravel or by 0.5 for mulch, as gravel is significantly heavier than organic mulch.
+      </p>
+
+      <h3>How deep should I spread gravel?</h3>
+      <p>
+        For driveways, use 4 to 6 inches of gravel. Pathways and walkways need 2 to 3 inches. Decorative gravel beds and garden borders typically require 2 to 4 inches. Drainage areas may need 6 to 12 inches depending on water volume and soil conditions.
+      </p>
+
+      <h3>How deep should I spread mulch?</h3>
+      <p>
+        Apply mulch 2 to 4 inches deep for most garden beds and around trees. Thinner layers may not suppress weeds effectively, while deeper layers can trap excess moisture and encourage root rot. Keep mulch a few inches away from plant stems and tree trunks to prevent moisture-related decay.
+      </p>
+
+      <h3>How many cubic yards are in a ton of gravel?</h3>
+      <p>
+        One ton of gravel is approximately 0.714 cubic yards, or conversely, one cubic yard of gravel weighs about 1.4 tons (2,800 pounds). This varies slightly by gravel type and moisture content. Pea gravel and crushed stone have similar weights, while river rock may weigh slightly more.
+      </p>
+
+      <h3>What type of gravel should I use for a driveway?</h3>
+      <p>
+        A driveway typically uses three layers. The base layer is large crushed stone (2-3 inches), the middle layer is smaller crushed stone (about 1 inch), and the top layer is fine gravel or crusher run (0.5-1 inch) that compacts tightly. Crusher run, also called process gravel, is the most popular driveway surface because it packs down firmly.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for slabs and footings.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Fence Calculator", description: "Calculate posts, rails, and pickets for your fence project.", path: construction_fence_path, icon_path: "M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11m16-11v11" },
+      { name: "Paint Calculator", description: "Calculate how many gallons of paint you need for any room.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

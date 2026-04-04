@@ -1,0 +1,154 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Flooring Calculator - Free Online Tool",
+  description: "Calculate how much flooring material you need for any room. Factor in waste percentage and find out how many boxes to buy — free and instant results.",
+  canonical: construction_flooring_url,
+  og: {
+    title: "Flooring Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how much flooring material you need for any room. Factor in waste percentage and find out how many boxes to buy.",
+    url: construction_flooring_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Flooring Calculator", url: construction_flooring_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate how much flooring I need?", answer: "Multiply the length of the room by the width to get the total square footage. Then add a waste percentage (typically 10%) to account for cuts, mistakes, and pattern matching. Divide the total area with waste by the square footage per box to determine how many boxes to purchase." },
+  { question: "What percentage should I add for flooring waste?", answer: "A 10% waste allowance is standard for most flooring installations with a straightforward layout. For diagonal installations, herringbone patterns, or rooms with many angles and obstacles, increase the waste factor to 15-20%. Complex room shapes and wider planks also tend to produce more waste." },
+  { question: "How many square feet are in a box of flooring?", answer: "Most flooring boxes contain between 20 and 30 square feet of material, though this varies by manufacturer and plank size. Check the product packaging or listing for the exact coverage per box. Our calculator uses 25 sq ft per box as a common default." },
+  { question: "Should I measure the room including closets?", answer: "Yes, measure every area that will receive flooring, including closets, alcoves, and hallways. Measure each section separately if the room is not a simple rectangle, then add all the areas together for the total square footage." },
+  { question: "How do I account for irregularly shaped rooms?", answer: "Break the room into simple rectangles and calculate each section separately. Add all the areas together, then apply the waste percentage to the total. For rooms with many angles or curves, consider increasing the waste factor to 15% since more cuts will be needed." }
+]) %>
+
+<%= calculator_schema(
+  name: "Flooring Calculator",
+  description: "Calculate how much flooring material and how many boxes you need based on room dimensions and waste percentage.",
+  url: construction_flooring_url,
+  category: "HomeApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Flooring Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Flooring Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Determine exactly how much flooring material you need, including waste allowance and the number of boxes to purchase.</p>
+
+    <div data-controller="flooring-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Room Length (ft)</label>
+            <input type="number" data-flooring-calculator-target="length" data-action="input->flooring-calculator#calculate" class="w-full" placeholder="15" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Room Width (ft)</label>
+            <input type="number" data-flooring-calculator-target="width" data-action="input->flooring-calculator#calculate" class="w-full" placeholder="12" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Waste (%)</label>
+            <input type="number" data-flooring-calculator-target="waste" data-action="input->flooring-calculator#calculate" class="w-full" value="10" step="1" min="0" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Area</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-flooring-calculator-target="resultArea">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Area with Waste</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-flooring-calculator-target="resultAreaWaste">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Boxes Needed</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-flooring-calculator-target="resultBoxes">0</span>
+            </div>
+          </div>
+          <button data-action="click->flooring-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Flooring Calculator</h2>
+      <p>
+        Planning a flooring project starts with knowing exactly how much material to buy. Enter the length and width of your room in feet. The calculator multiplies them to give you the total square footage. It then applies your chosen waste percentage, which defaults to 10%, to account for cuts, mistakes, and pattern matching during installation.
+      </p>
+      <p>
+        The boxes needed figure divides the total area with waste by 25 square feet per box, a common coverage amount for standard flooring products. Always check your specific product packaging for the exact square footage per box and adjust accordingly. The result is rounded up so you never come up short during installation.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Waste Allowance</h2>
+      <p>
+        Waste is an inevitable part of any flooring installation. Even in a perfectly rectangular room, you will need to cut planks or tiles at the edges. The offcuts from these pieces may be too small to use elsewhere. A 10% waste factor is the industry standard for straightforward, parallel-to-wall installations. Diagonal installations generate more waste because every plank at the room edges must be cut at an angle, leaving unusable triangular pieces. Herringbone and chevron patterns can push waste to 15% or more.
+      </p>
+
+      <h3>Measuring Complex Rooms</h3>
+      <p>
+        If your room is L-shaped, T-shaped, or has bump-outs, divide it into separate rectangular sections. Measure each section individually, calculate its area, and add the areas together. Apply the waste percentage to the combined total. For rooms with many obstacles like island counters, fireplaces, or built-in furniture, it is wise to add an extra 5% waste beyond the standard allowance because you will make more cuts around these features.
+      </p>
+
+      <h3>Choosing the Right Flooring Material</h3>
+      <p>
+        Hardwood, laminate, vinyl plank, and tile each have different installation characteristics that affect waste. Hardwood planks vary in length, which can reduce waste since shorter offcuts can start the next row. Laminate planks are uniform length, making them predictable but sometimes less efficient. Vinyl plank flooring is easy to cut and generates less waste than tile. Ceramic and porcelain tile requires the most precise cuts and can break during installation, so a higher waste factor is recommended for tile projects.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate how much flooring I need?</h3>
+      <p>
+        Multiply the length of the room by the width to get the total square footage. Then add a waste percentage (typically 10%) to account for cuts, mistakes, and pattern matching. Divide the total area with waste by the square footage per box to determine how many boxes to purchase.
+      </p>
+
+      <h3>What percentage should I add for flooring waste?</h3>
+      <p>
+        A 10% waste allowance is standard for most flooring installations with a straightforward layout. For diagonal installations, herringbone patterns, or rooms with many angles and obstacles, increase the waste factor to 15-20%. Complex room shapes and wider planks also tend to produce more waste.
+      </p>
+
+      <h3>How many square feet are in a box of flooring?</h3>
+      <p>
+        Most flooring boxes contain between 20 and 30 square feet of material, though this varies by manufacturer and plank size. Check the product packaging or listing for the exact coverage per box. Our calculator uses 25 sq ft per box as a common default.
+      </p>
+
+      <h3>Should I measure the room including closets?</h3>
+      <p>
+        Yes, measure every area that will receive flooring, including closets, alcoves, and hallways. Measure each section separately if the room is not a simple rectangle, then add all the areas together for the total square footage.
+      </p>
+
+      <h3>How do I account for irregularly shaped rooms?</h3>
+      <p>
+        Break the room into simple rectangles and calculate each section separately. Add all the areas together, then apply the waste percentage to the total. For rooms with many angles or curves, consider increasing the waste factor to 15% since more cuts will be needed.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Paint Calculator", description: "Calculate how many gallons of paint you need for any room.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Gravel & Mulch Calculator", description: "Calculate cubic yards and tons of gravel or mulch for landscaping.", path: construction_gravel_mulch_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

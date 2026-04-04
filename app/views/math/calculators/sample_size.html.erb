@@ -1,0 +1,141 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Sample Size Calculator - Free Online Tool",
+  description: "Calculate the ideal survey sample size for any confidence level and margin of error. Get the required sample size and Z-score instantly — no sign-up required.",
+  canonical: math_sample_size_url,
+  og: {
+    title: "Sample Size Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the ideal survey sample size for any confidence level and margin of error. Get the required sample size and Z-score instantly.",
+    url: math_sample_size_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Math", url: category_url("math") },
+  { name: "Sample Size Calculator", url: math_sample_size_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do you calculate sample size?", answer: "Sample size is calculated using the formula n = (Z² × p × (1-p)) / E², where Z is the Z-score for your confidence level, p is the estimated population proportion, and E is the desired margin of error. For a 95% confidence level with 5% margin of error and 50% proportion, the sample size is 385." },
+  { question: "What is a confidence level?", answer: "The confidence level represents the probability that the true population parameter falls within the margin of error of your sample result. A 95% confidence level means that if you repeated the survey 100 times, approximately 95 of those samples would contain the true population value. Common confidence levels are 90%, 95%, and 99%." },
+  { question: "What is margin of error?", answer: "Margin of error is the range within which the true population value is expected to fall. A margin of error of 5% means your results could be up to 5 percentage points above or below the reported figure. Smaller margins of error require larger sample sizes but produce more precise results." },
+  { question: "What is the Z-score used for in sample size calculations?", answer: "The Z-score corresponds to the confidence level and represents the number of standard deviations from the mean in a normal distribution. For 90% confidence the Z-score is 1.645, for 95% it is 1.96, and for 99% it is 2.576. Higher confidence levels use larger Z-scores and require bigger sample sizes." },
+  { question: "Why use 50% as the default population proportion?", answer: "A proportion of 50% (0.5) maximises the expression p × (1-p), which produces the largest possible sample size. This is the most conservative estimate and guarantees the sample is large enough regardless of the actual proportion. If you know the expected proportion from prior research, using that value will give a smaller (more efficient) sample size." }
+]) %>
+
+<%= calculator_schema(
+  name: "Sample Size Calculator",
+  description: "Calculate the required survey sample size given a confidence level, margin of error, and population proportion.",
+  url: math_sample_size_url,
+  category: "MathApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Math", url: category_path("math") },
+  { name: "Sample Size Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Sample Size Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Determine the ideal sample size for your survey or study by selecting a confidence level, margin of error, and expected population proportion.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="sample-size-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">n</div>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Calculate Sample Size</h2>
+        <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">n = Z&sup2;p(1&minus;p) / E&sup2;</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Confidence Level</label>
+            <select data-sample-size-calculator-target="confidence" data-action="change->sample-size-calculator#calculate" class="w-full">
+              <option value="90">90%</option>
+              <option value="95" selected>95%</option>
+              <option value="99">99%</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Margin of Error (%)</label>
+            <input type="number" data-sample-size-calculator-target="marginOfError" data-action="input->sample-size-calculator#calculate" class="w-full" placeholder="5" step="any" min="0.1" value="5">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Population Proportion (%)</label>
+            <input type="number" data-sample-size-calculator-target="proportion" data-action="input->sample-size-calculator#calculate" class="w-full" placeholder="50" step="any" min="0" max="100" value="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sample Size</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-sample-size-calculator-target="sampleSize">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Z-Score</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-sample-size-calculator-target="zScore">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->sample-size-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Sample Size Calculator</h2>
+      <p>Select your desired confidence level from the dropdown (90%, 95%, or 99%), enter the margin of error as a percentage, and optionally adjust the population proportion. The calculator instantly returns the required sample size and the corresponding Z-score. Results update in real time, so you can experiment with different parameters to see how they affect the number of respondents you need.</p>
+
+      <p>Determining the right sample size before collecting data is one of the most important steps in any survey or research study. A sample that is too small produces unreliable results, while one that is too large wastes time and resources. This calculator takes the guesswork out of the process by applying the standard statistical formula used by researchers worldwide.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the Sample Size Formula</h2>
+      <p>The formula for calculating sample size for a proportion is <strong>n = (Z&sup2; &times; p &times; (1 &minus; p)) / E&sup2;</strong>, where Z is the Z-score for the chosen confidence level, p is the estimated population proportion (expressed as a decimal), and E is the margin of error (also as a decimal). This formula assumes an infinite population. For finite populations, apply the finite population correction: <strong>n<sub>adj</sub> = n / (1 + (n &minus; 1) / N)</strong>, where N is the population size.</p>
+
+      <h3>Confidence Level and Z-Score</h3>
+      <p>The confidence level tells you how certain you can be that the true value lies within your margin of error. A 95% confidence level uses a Z-score of 1.96, meaning you are capturing 95% of the normal distribution. Increasing to 99% (Z = 2.576) provides more certainty but requires a larger sample. Dropping to 90% (Z = 1.645) reduces the required sample size at the cost of less certainty. In most social science and market research, 95% is the standard choice.</p>
+
+      <h3>Practical Tips for Researchers</h3>
+      <p>Always round the sample size up to the next whole number to maintain at least the stated confidence level. If you expect survey non-response, inflate the sample size accordingly. A common practice is to multiply by 1 / (expected response rate). For example, if you need 385 responses and expect a 70% response rate, send the survey to at least 385 / 0.70 = 550 people. Using 50% as the population proportion is the safest default when you have no prior data.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do you calculate sample size?</h3>
+      <p>Sample size is calculated using the formula n = (Z&sup2; &times; p &times; (1 &minus; p)) / E&sup2;, where Z is the Z-score for your confidence level, p is the estimated population proportion, and E is the desired margin of error. For a 95% confidence level with 5% margin of error and 50% proportion, the sample size is 385.</p>
+
+      <h3>What is a confidence level?</h3>
+      <p>The confidence level represents the probability that the true population parameter falls within the margin of error of your sample result. A 95% confidence level means that if you repeated the survey 100 times, approximately 95 of those samples would contain the true population value.</p>
+
+      <h3>What is margin of error?</h3>
+      <p>Margin of error is the range within which the true population value is expected to fall. A margin of error of 5% means your results could be up to 5 percentage points above or below the reported figure. Smaller margins of error require larger sample sizes but produce more precise results.</p>
+
+      <h3>What is the Z-score used for in sample size calculations?</h3>
+      <p>The Z-score corresponds to the confidence level and represents the number of standard deviations from the mean in a normal distribution. For 90% confidence the Z-score is 1.645, for 95% it is 1.96, and for 99% it is 2.576.</p>
+
+      <h3>Why use 50% as the default population proportion?</h3>
+      <p>A proportion of 50% (0.5) maximises the expression p &times; (1 &minus; p), which produces the largest possible sample size. This is the most conservative estimate and guarantees the sample is large enough regardless of the actual proportion.</p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Standard Deviation Calculator", description: "Calculate standard deviation, variance, mean, and range from any data set.", path: math_standard_deviation_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "Percentage Calculator", description: "Find percentages, percentage change, and more.", path: math_percentage_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Fraction Calculator", description: "Add, subtract, multiply, and divide fractions with step-by-step results.", path: math_fraction_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

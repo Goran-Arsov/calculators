@@ -1,0 +1,200 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Fuel Cost Calculator - Free Online Tool",
+  description: "Estimate fuel cost for any trip, or solve for distance you can travel on a budget, or find the MPG needed to stay within budget. Free instant results.",
+  canonical: everyday_fuel_cost_url,
+  og: {
+    title: "Fuel Cost Calculator - Free Online Tool | CalcWise",
+    description: "Estimate fuel cost for any trip, or solve for distance or MPG needed. Free instant results — no sign-up required.",
+    url: everyday_fuel_cost_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Fuel Cost Calculator", url: everyday_fuel_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate fuel cost for a trip?", answer: "Divide the total trip distance by your vehicle's MPG to get gallons needed, then multiply by the price per gallon. For example, a 300-mile trip in a car that gets 25 MPG with gas at $3.50 per gallon costs (300 / 25) x $3.50 = $42.00." },
+  { question: "How far can I drive on a certain budget?", answer: "Divide your fuel budget by the price per gallon to get the gallons you can buy. Multiply by your vehicle's MPG to get the distance. For example, with a $50 budget, gas at $3.50/gallon, and 25 MPG: ($50 / $3.50) x 25 = approximately 357 miles." },
+  { question: "What MPG do I need to keep fuel costs under a budget?", answer: "Divide the trip distance by the gallons your budget can buy (budget divided by gas price). For example, to drive 400 miles on $40 with $3.50/gallon gas, you need 400 / ($40 / $3.50) = 400 / 11.43 = approximately 35 MPG." },
+  { question: "How do gas prices affect trip cost?", answer: "Fuel cost is directly proportional to the price per gallon. A 10-cent increase in gas price adds about $0.40 to a 100-mile trip for a vehicle averaging 25 MPG. Over longer distances or with less efficient vehicles, small price differences add up significantly." },
+  { question: "Should I calculate fuel cost for a round trip?", answer: "Yes, always double the one-way distance for a round trip. Many people forget to account for the return journey, which doubles the fuel cost. Enter the total round-trip distance in the calculator for an accurate estimate of the full trip cost." }
+]) %>
+
+<%= calculator_schema(
+  name: "Fuel Cost Calculator",
+  description: "Calculate fuel cost for trips, or solve for maximum distance on a budget, or find the MPG needed to stay within a fuel budget.",
+  url: everyday_fuel_cost_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Fuel Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Fuel Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate fuel cost for a trip, find how far you can drive on a budget, or determine the MPG needed to stay within budget.</p>
+
+    <div data-controller="fuel-cost-calculator" class="space-y-5 mb-8">
+      <%# Card 1: Solve for Cost %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">$</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Solve for Cost</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">Cost = (Dist / MPG) &times; Price</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance (miles)</label>
+            <input type="number" data-fuel-cost-calculator-target="distanceForCost" data-action="input->fuel-cost-calculator#calcCost" class="w-full" placeholder="300" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">MPG</label>
+            <input type="number" data-fuel-cost-calculator-target="mpgForCost" data-action="input->fuel-cost-calculator#calcCost" class="w-full" placeholder="25" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gas Price ($/gal)</label>
+            <input type="number" data-fuel-cost-calculator-target="priceForCost" data-action="input->fuel-cost-calculator#calcCost" class="w-full" placeholder="3.50" step="0.01" min="0">
+          </div>
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Fuel Cost</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-fuel-cost-calculator-target="resultCost">&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 2: Solve for Distance %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">D</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Solve for Distance</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">Dist = (Budget / Price) &times; MPG</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Budget ($)</label>
+            <input type="number" data-fuel-cost-calculator-target="budgetForDist" data-action="input->fuel-cost-calculator#calcDistance" class="w-full" placeholder="50" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">MPG</label>
+            <input type="number" data-fuel-cost-calculator-target="mpgForDist" data-action="input->fuel-cost-calculator#calcDistance" class="w-full" placeholder="25" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gas Price ($/gal)</label>
+            <input type="number" data-fuel-cost-calculator-target="priceForDist" data-action="input->fuel-cost-calculator#calcDistance" class="w-full" placeholder="3.50" step="0.01" min="0">
+          </div>
+          <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Max Distance</span>
+            <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400" data-fuel-cost-calculator-target="resultDistance">&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 3: Solve for MPG Needed %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">M</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Solve for MPG Needed</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">MPG = Dist / (Budget / Price)</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance (miles)</label>
+            <input type="number" data-fuel-cost-calculator-target="distanceForMpg" data-action="input->fuel-cost-calculator#calcMpg" class="w-full" placeholder="400" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Budget ($)</label>
+            <input type="number" data-fuel-cost-calculator-target="budgetForMpg" data-action="input->fuel-cost-calculator#calcMpg" class="w-full" placeholder="40" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gas Price ($/gal)</label>
+            <input type="number" data-fuel-cost-calculator-target="priceForMpg" data-action="input->fuel-cost-calculator#calcMpg" class="w-full" placeholder="3.50" step="0.01" min="0">
+          </div>
+          <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">MPG Needed</span>
+            <span class="text-xl font-bold text-amber-600 dark:text-amber-400" data-fuel-cost-calculator-target="resultMpg">&mdash;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Fuel Cost Calculator</h2>
+      <p>
+        This calculator offers three modes for different fuel-related questions. The first card estimates the total fuel cost for a trip when you know the distance, your vehicle's MPG, and the current gas price. The second card tells you how far you can drive on a given budget. The third card calculates the minimum MPG your vehicle needs to achieve in order to complete a trip within a set fuel budget. All three modes update results in real time as you type.
+      </p>
+      <p>
+        These calculations are useful for planning road trips, comparing the cost of driving versus flying, budgeting for a daily commute, or deciding whether a more fuel-efficient vehicle would save money on a regular route. Enter your values into whichever card matches your question and get an instant answer.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Fuel Cost Formulas</h2>
+      <p>
+        The core relationship is: <strong>Fuel Cost = (Distance / MPG) x Price per Gallon</strong>. Rearranging this formula gives the other two modes. To solve for distance: <strong>Distance = (Budget / Price per Gallon) x MPG</strong>. To solve for MPG: <strong>MPG = Distance / (Budget / Price per Gallon)</strong>. All three are algebraically equivalent, just solving for different variables.
+      </p>
+
+      <h3>Planning a Road Trip Budget</h3>
+      <p>
+        When budgeting for a road trip, calculate the one-way fuel cost and double it for the return journey. Check current gas prices along your route using apps or websites, as prices can vary significantly between states and regions. Highway driving typically yields better MPG than city driving, so use your highway fuel efficiency rating for long-distance calculations. Add a 10% buffer to your estimated fuel cost to account for detours, traffic, and gas price fluctuations.
+      </p>
+
+      <h3>Driving vs. Flying Cost Comparison</h3>
+      <p>
+        To compare driving with flying, calculate the total fuel cost using this tool, then add tolls, parking, and wear-and-tear costs (the IRS standard mileage rate provides a reasonable per-mile cost estimate). Compare this total against airfare plus airport transportation, parking, and rental car costs at your destination. For solo travelers on trips under 500 miles, driving is often cheaper. For longer distances or multiple travelers, splitting fuel costs can make driving very economical.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate fuel cost for a trip?</h3>
+      <p>
+        Divide the total trip distance by your vehicle's MPG to get gallons needed, then multiply by the price per gallon. For example, a 300-mile trip in a car that gets 25 MPG with gas at $3.50 per gallon costs (300 / 25) x $3.50 = $42.00.
+      </p>
+
+      <h3>How far can I drive on a certain budget?</h3>
+      <p>
+        Divide your fuel budget by the price per gallon to get the gallons you can buy. Multiply by your vehicle's MPG to get the distance. For example, with a $50 budget, gas at $3.50/gallon, and 25 MPG: ($50 / $3.50) x 25 = approximately 357 miles.
+      </p>
+
+      <h3>What MPG do I need to keep fuel costs under a budget?</h3>
+      <p>
+        Divide the trip distance by the gallons your budget can buy (budget divided by gas price). For example, to drive 400 miles on $40 with $3.50/gallon gas, you need 400 / ($40 / $3.50) = 400 / 11.43 = approximately 35 MPG.
+      </p>
+
+      <h3>How do gas prices affect trip cost?</h3>
+      <p>
+        Fuel cost is directly proportional to the price per gallon. A 10-cent increase in gas price adds about $0.40 to a 100-mile trip for a vehicle averaging 25 MPG. Over longer distances or with less efficient vehicles, small price differences add up significantly.
+      </p>
+
+      <h3>Should I calculate fuel cost for a round trip?</h3>
+      <p>
+        Yes, always double the one-way distance for a round trip. Many people forget to account for the return journey, which doubles the fuel cost. Enter the total round-trip distance in the calculator for an accurate estimate of the full trip cost.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Gas Mileage Calculator", description: "Calculate your vehicle's fuel efficiency in MPG or L/100km.", path: everyday_gas_mileage_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

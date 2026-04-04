@@ -1,0 +1,161 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Sleep Calculator - Free Bedtime & Wake Time Tool",
+  description: "Calculate the best times to go to sleep or wake up with our free sleep calculator. Based on 90-minute sleep cycles to help you wake feeling refreshed and avoid grogginess.",
+  canonical: health_sleep_url,
+  og: {
+    title: "Sleep Calculator - Free Bedtime & Wake Time Tool | CalcWise",
+    description: "Calculate optimal bedtimes or wake times based on 90-minute sleep cycles. Wake up feeling refreshed and energized.",
+    url: health_sleep_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Sleep Calculator", url: health_sleep_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does the sleep cycle calculator work?", answer: "The sleep calculator uses 90-minute sleep cycles to determine optimal bedtimes and wake times. Each complete sleep cycle includes light sleep, deep sleep, and REM stages. Waking at the end of a full cycle (rather than in the middle of deep sleep) helps you feel more alert and refreshed. The calculator also adds 15 minutes to account for the average time it takes to fall asleep." },
+  { question: "How many hours of sleep do adults need?", answer: "Most adults need 7 to 9 hours of sleep per night, which corresponds to 5 to 6 complete 90-minute sleep cycles. Individual needs vary — some people function well on 7 hours while others need a full 9. Consistently sleeping fewer than 6 hours is associated with impaired cognitive function, weakened immunity, and increased health risks." },
+  { question: "What is a sleep cycle and how long does it last?", answer: "A sleep cycle lasts approximately 90 minutes and consists of four stages: NREM Stage 1 (light sleep, 1-5 minutes), NREM Stage 2 (slightly deeper, 10-60 minutes), NREM Stage 3 (deep sleep, 20-40 minutes), and REM sleep (dreaming, 10-60 minutes). You typically go through 4-6 cycles per night, with REM periods getting longer toward morning." },
+  { question: "Why do I feel groggy when my alarm goes off?", answer: "Grogginess upon waking, called sleep inertia, is usually caused by your alarm interrupting deep sleep (NREM Stage 3). Deep sleep is the hardest stage to wake from, and doing so leaves you feeling disoriented and tired. By timing your alarm to coincide with the end of a complete sleep cycle (during light sleep), you can minimize sleep inertia and wake feeling more alert." },
+  { question: "Is it better to sleep early or get more sleep cycles?", answer: "Both timing and duration matter. Earlier sleep tends to include more deep sleep in the first half of the night, which is critical for physical recovery. Later sleep cycles have more REM sleep, which supports memory and learning. Ideally, aim for 5-6 complete cycles starting at a consistent time each night. A regular sleep schedule is more beneficial than varying bedtimes even if total hours are the same." }
+]) %>
+
+<%= calculator_schema(
+  name: "Sleep Calculator",
+  description: "Calculate optimal bedtimes or wake times based on 90-minute sleep cycles to help you wake feeling refreshed.",
+  url: health_sleep_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Sleep Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Sleep Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find the best times to fall asleep or wake up based on 90-minute sleep cycles so you wake feeling refreshed.</p>
+
+    <%# Calculator UI — 2 cards %>
+    <div data-controller="sleep-calculator" class="space-y-6 mb-8">
+
+      <%# Card 1: From Wake Time %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">I need to wake up at...</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wake-Up Time</label>
+            <input type="time" data-sleep-calculator-target="wakeTime" data-action="input->sleep-calculator#calcBedtimes" class="w-full">
+          </div>
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3 block">Suggested Bedtimes</span>
+            <div class="space-y-2" data-sleep-calculator-target="resultBedtimes">
+              <p class="text-gray-500 dark:text-gray-400">Enter a wake-up time to see suggestions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 2: From Bed Time %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">I plan to go to bed at...</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Bedtime</label>
+            <input type="time" data-sleep-calculator-target="bedTime" data-action="input->sleep-calculator#calcWakeTimes" class="w-full">
+          </div>
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3 block">Suggested Wake Times</span>
+            <div class="space-y-2" data-sleep-calculator-target="resultWakeTimes">
+              <p class="text-gray-500 dark:text-gray-400">Enter a bedtime to see suggestions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Sleep Calculator</h2>
+      <p>
+        Our free sleep calculator helps you find the optimal times to go to bed or set your alarm by working with your body's natural 90-minute sleep cycles. The page provides two calculation modes. In the first mode, enter the time you need to wake up, and the calculator suggests several ideal bedtimes that align with complete sleep cycles. In the second mode, enter the time you plan to go to bed, and it suggests wake times that coincide with the end of a full cycle. The calculator adds 15 minutes to account for the average time it takes to fall asleep. Results update instantly as you change the time input.
+      </p>
+      <p>
+        Waking at the end of a complete sleep cycle — during a light sleep phase — is the key to feeling alert and refreshed in the morning. When your alarm interrupts deep sleep in the middle of a cycle, you experience sleep inertia: that heavy, groggy feeling that can persist for 30 minutes or more. By timing your sleep in multiples of 90 minutes, you dramatically reduce the chance of waking during deep sleep.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Sleep Cycles</h2>
+      <p>
+        Each sleep cycle lasts approximately 90 minutes and progresses through four distinct stages. <strong>Stage 1 (NREM)</strong> is the lightest phase, lasting 1-5 minutes as you transition from wakefulness to sleep. <strong>Stage 2 (NREM)</strong> is slightly deeper, lasting 10-60 minutes, during which your heart rate slows and body temperature drops. <strong>Stage 3 (NREM)</strong> is deep sleep, lasting 20-40 minutes, when tissue repair, immune function, and growth hormone release occur. <strong>REM sleep</strong> follows, lasting 10-60 minutes, during which vivid dreaming occurs and the brain consolidates memories. You cycle through these stages 4-6 times per night, with earlier cycles containing more deep sleep and later cycles containing more REM sleep.
+      </p>
+
+      <h3>How Much Sleep Do You Need?</h3>
+      <p>
+        The National Sleep Foundation recommends 7-9 hours for adults aged 18-64 and 7-8 hours for adults 65 and older. This corresponds to roughly 5-6 complete 90-minute cycles. Teenagers need 8-10 hours, while school-age children need 9-11 hours. Individual needs vary based on genetics, activity level, and overall health. The best indicator is how you feel during the day — if you consistently feel alert and energetic without relying on caffeine, you are likely getting enough sleep.
+      </p>
+
+      <h3>Tips for Better Sleep Quality</h3>
+      <p>
+        Beyond timing your cycles correctly, sleep quality depends on several habits collectively known as sleep hygiene. Maintain a consistent sleep schedule, even on weekends, to regulate your circadian rhythm. Keep your bedroom cool (around 18-20 degrees Celsius), dark, and quiet. Avoid screens for at least 30 minutes before bed, as blue light suppresses melatonin production. Limit caffeine after mid-afternoon and avoid heavy meals within 2-3 hours of bedtime. Regular exercise improves sleep quality, but intense workouts close to bedtime can make it harder to fall asleep.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does the sleep cycle calculator work?</h3>
+      <p>
+        The sleep calculator uses 90-minute sleep cycles to determine optimal bedtimes and wake times. Each complete sleep cycle includes light sleep, deep sleep, and REM stages. Waking at the end of a full cycle (rather than in the middle of deep sleep) helps you feel more alert and refreshed. The calculator also adds 15 minutes to account for the average time it takes to fall asleep.
+      </p>
+
+      <h3>How many hours of sleep do adults need?</h3>
+      <p>
+        Most adults need 7 to 9 hours of sleep per night, which corresponds to 5 to 6 complete 90-minute sleep cycles. Individual needs vary — some people function well on 7 hours while others need a full 9. Consistently sleeping fewer than 6 hours is associated with impaired cognitive function, weakened immunity, and increased health risks.
+      </p>
+
+      <h3>What is a sleep cycle and how long does it last?</h3>
+      <p>
+        A sleep cycle lasts approximately 90 minutes and consists of four stages: NREM Stage 1 (light sleep, 1-5 minutes), NREM Stage 2 (slightly deeper, 10-60 minutes), NREM Stage 3 (deep sleep, 20-40 minutes), and REM sleep (dreaming, 10-60 minutes). You typically go through 4-6 cycles per night, with REM periods getting longer toward morning.
+      </p>
+
+      <h3>Why do I feel groggy when my alarm goes off?</h3>
+      <p>
+        Grogginess upon waking, called sleep inertia, is usually caused by your alarm interrupting deep sleep (NREM Stage 3). Deep sleep is the hardest stage to wake from, and doing so leaves you feeling disoriented and tired. By timing your alarm to coincide with the end of a complete sleep cycle (during light sleep), you can minimize sleep inertia and wake feeling more alert.
+      </p>
+
+      <h3>Is it better to sleep early or get more sleep cycles?</h3>
+      <p>
+        Both timing and duration matter. Earlier sleep tends to include more deep sleep in the first half of the night, which is critical for physical recovery. Later sleep cycles have more REM sleep, which supports memory and learning. Ideally, aim for 5-6 complete cycles starting at a consistent time each night. A regular sleep schedule is more beneficial than varying bedtimes even if total hours are the same.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Water Intake Calculator", description: "Calculate your recommended daily water intake based on weight and activity.", path: health_water_intake_path, icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

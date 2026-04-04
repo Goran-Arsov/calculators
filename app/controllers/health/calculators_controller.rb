@@ -5,6 +5,14 @@ module Health
     def bmi; end
     def calorie; end
     def body_fat; end
+    def pregnancy_due_date; end
+    def tdee; end
+    def macro; end
+    def pace; end
+    def water_intake; end
+    def sleep; end
+    def one_rep_max; end
+    def dog_age; end
 
     private
 

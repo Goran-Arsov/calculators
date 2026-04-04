@@ -1,0 +1,168 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Solar Savings Calculator - Free Online Tool",
+  description: "Estimate annual solar panel production, savings, payback period, and 25-year total savings. Free solar calculator with instant results — no sign-up required.",
+  canonical: finance_solar_savings_url,
+  og: {
+    title: "Solar Savings Calculator - Free Online Tool | CalcWise",
+    description: "Estimate annual solar panel production, savings, payback period, and 25-year total savings. Free solar calculator with instant results.",
+    url: finance_solar_savings_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Solar Savings Calculator", url: finance_solar_savings_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do you calculate solar panel savings?", answer: "Solar savings are calculated by multiplying your system size (kW) by peak sun hours per day by 365 days to get annual production in kWh. Then multiply annual production by your electricity rate to get annual savings. Payback period is the total system cost divided by annual savings. The 25-year savings is the annual savings times 25 minus the system cost." },
+  { question: "What is the typical payback period for solar panels?", answer: "The typical payback period for residential solar panels is 6-12 years, depending on your electricity rate, system cost, available incentives, and local sun exposure. After the payback period, the electricity generated is essentially free for the remaining lifespan of the system, which is typically 25-30 years." },
+  { question: "How many peak sun hours does my location get?", answer: "Peak sun hours vary by location and season. The southwestern United States averages 5-7 peak sun hours per day, while the northeast averages 3-4.5 hours. You can find your area's peak sun hours through the National Renewable Energy Laboratory (NREL) solar resource maps. Use an annual average for this calculator." },
+  { question: "What size solar system do I need for my home?", answer: "The average U.S. home uses about 10,000-11,000 kWh per year. To offset this with solar, divide your annual usage by (peak sun hours x 365) to get the system size in kW. A typical home needs a 5-10 kW system. Check your electricity bills for actual usage and adjust based on your goals and budget." },
+  { question: "Do solar panels work on cloudy days?", answer: "Yes, solar panels still produce electricity on cloudy days, but at reduced output, typically 10-25% of their rated capacity. Peak sun hours already account for weather variations, making them a more accurate measure than total daylight hours. Even in cloudy climates like Seattle or London, solar can be economically viable with the right electricity rates and incentives." }
+]) %>
+
+<%= calculator_schema(
+  name: "Solar Savings Calculator",
+  description: "Estimate annual solar panel production, savings, payback period, and 25-year total savings.",
+  url: finance_solar_savings_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Solar Savings Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Solar Savings Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your annual solar production, electricity savings, payback period, and 25-year total savings.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="solar-savings-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">System Size (kW)</label>
+            <input type="number" data-solar-savings-calculator-target="systemSize" data-action="input->solar-savings-calculator#calculate" class="w-full" placeholder="8" step="0.5" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Electricity Rate ($/kWh)</label>
+            <input type="number" data-solar-savings-calculator-target="electricityRate" data-action="input->solar-savings-calculator#calculate" class="w-full" placeholder="0.15" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Peak Sun Hours per Day</label>
+            <input type="number" data-solar-savings-calculator-target="sunHours" data-action="input->solar-savings-calculator#calculate" class="w-full" placeholder="5" step="0.1" min="0" max="24">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total System Cost ($)</label>
+            <input type="number" data-solar-savings-calculator-target="systemCost" data-action="input->solar-savings-calculator#calculate" class="w-full" placeholder="20000" step="500" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Annual Production</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-solar-savings-calculator-target="resultProduction">0 kWh</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Annual Savings</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-solar-savings-calculator-target="resultAnnualSavings">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Payback Period</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-solar-savings-calculator-target="resultPayback">0 years</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">25-Year Savings</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-solar-savings-calculator-target="resultLifetimeSavings">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->solar-savings-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Solar Savings Calculator</h2>
+      <p>
+        This calculator estimates the financial return of installing solar panels on your home or business. Enter your system size in kilowatts (kW), your current electricity rate in dollars per kilowatt-hour ($/kWh), the average peak sun hours per day for your location, and the total cost of the solar system including installation. The calculator shows your estimated annual electricity production, annual dollar savings, how many years until the system pays for itself, and total savings over a 25-year system lifespan.
+      </p>
+      <p>
+        Solar energy is one of the most accessible renewable energy options for homeowners. With falling panel prices and various federal and state incentives, solar has become a financially attractive investment in many regions. This calculator provides a quick, clear estimate to help you decide whether solar makes sense for your situation before committing to detailed quotes from installers.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How Solar Savings Are Calculated</h2>
+      <p>
+        Annual energy production is: <strong>Production (kWh) = System Size (kW) &times; Peak Sun Hours &times; 365</strong>. Annual savings are: <strong>Savings = Production &times; Electricity Rate</strong>. The payback period is: <strong>Payback = System Cost / Annual Savings</strong>. The 25-year total savings are: <strong>Lifetime Savings = (Annual Savings &times; 25) - System Cost</strong>. These calculations provide a simplified but useful estimate for initial planning purposes.
+      </p>
+
+      <h3>Understanding Peak Sun Hours</h3>
+      <p>
+        Peak sun hours are not the same as hours of daylight. One peak sun hour equals one hour of sunlight at an intensity of 1,000 watts per square meter, the standard test condition for solar panels. A location might have 12 hours of daylight but only 5 peak sun hours because morning, evening, and cloudy periods produce less intense sunlight. The southwestern United States enjoys 5-7 peak sun hours, while northern states average 3-4.5. Your local peak sun hours determine how much energy your system actually produces.
+      </p>
+
+      <h3>Federal and State Incentives</h3>
+      <p>
+        The federal Investment Tax Credit (ITC) allows homeowners to deduct a percentage of their solar installation cost from federal taxes. Many states offer additional incentives such as rebates, property tax exemptions, and sales tax exemptions on solar equipment. Net metering programs allow you to sell excess electricity back to the grid, further improving your return. These incentives can significantly reduce your effective system cost and shorten the payback period. Research available incentives in your area to get a more accurate financial picture.
+      </p>
+
+      <h3>Factors That Affect Real-World Production</h3>
+      <p>
+        Several factors can cause actual production to differ from the calculated estimate. Panel orientation and tilt angle affect how much sunlight panels receive. South-facing panels at a tilt equal to your latitude produce the most energy in the Northern Hemisphere. Shading from trees, buildings, or chimneys reduces output. Panel degradation, typically 0.5-0.7% per year, slightly reduces production over time. Temperature also matters: panels produce less electricity in extreme heat. Despite these variables, the estimate from this calculator provides a reasonable baseline for financial planning.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do you calculate solar panel savings?</h3>
+      <p>
+        Multiply system size (kW) by peak sun hours per day by 365 to get annual production in kWh. Then multiply by your electricity rate to get annual savings. Payback period is system cost divided by annual savings. The 25-year savings is annual savings times 25 minus the system cost.
+      </p>
+
+      <h3>What is the typical payback period for solar panels?</h3>
+      <p>
+        The typical payback period is 6-12 years, depending on your electricity rate, system cost, available incentives, and local sun exposure. After payback, the electricity is essentially free for the remaining 15-20 years of the system's lifespan.
+      </p>
+
+      <h3>How many peak sun hours does my location get?</h3>
+      <p>
+        The southwestern U.S. averages 5-7 peak sun hours per day, while the northeast averages 3-4.5 hours. Find your area's specific data through the National Renewable Energy Laboratory (NREL) solar resource maps. Use an annual average for this calculator.
+      </p>
+
+      <h3>What size solar system do I need for my home?</h3>
+      <p>
+        The average U.S. home uses about 10,000-11,000 kWh per year. Divide your annual usage by (peak sun hours x 365) to get the system size in kW. A typical home needs a 5-10 kW system. Check your electricity bills for your actual usage.
+      </p>
+
+      <h3>Do solar panels work on cloudy days?</h3>
+      <p>
+        Yes, solar panels still produce electricity on cloudy days, but at reduced output, typically 10-25% of rated capacity. Peak sun hours already account for weather variations. Even in cloudy climates, solar can be economically viable with the right electricity rates and incentives.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "ROI Calculator", description: "Calculate return on investment, gain, or cost using the ROI formula.", path: finance_roi_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Break-Even Calculator", description: "Calculate the break-even point for your business in units and revenue.", path: finance_break_even_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Savings Goal Calculator", description: "Calculate how much you need to save monthly to reach your financial goal.", path: finance_savings_goal_path, icon_path: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

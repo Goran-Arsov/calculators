@@ -1,0 +1,165 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "GPA Calculator - Free Online Tool",
+  description: "Calculate your grade point average from course grades and credit hours. Enter up to 6 courses with letter grades to get your GPA, total credits, and quality points instantly.",
+  canonical: everyday_gpa_url,
+  og: {
+    title: "GPA Calculator - Free Online Tool | CalcWise",
+    description: "Calculate your grade point average from course grades and credit hours. Enter up to 6 courses to get your GPA instantly.",
+    url: everyday_gpa_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "GPA Calculator", url: everyday_gpa_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is GPA calculated?", answer: "GPA is calculated by multiplying each course's grade points by its credit hours to get quality points, summing all quality points, and dividing by the total credit hours. For example, an A (4.0) in a 3-credit course gives 12 quality points. If you also earn a B (3.0) in a 4-credit course (12 points), your GPA is (12 + 12) / (3 + 4) = 3.43." },
+  { question: "What is the GPA scale?", answer: "The standard US GPA scale is: A = 4.0, A- = 3.7, B+ = 3.3, B = 3.0, B- = 2.7, C+ = 2.3, C = 2.0, C- = 1.7, D+ = 1.3, D = 1.0, F = 0.0. Some institutions use variations, such as including an A+ at 4.0 or 4.3. Check your school's specific scale." },
+  { question: "What is a good GPA?", answer: "A GPA of 3.0 (B average) or above is generally considered good. A 3.5 or higher is considered very good and is often required for dean's list recognition. A 3.7 or above is considered excellent. For graduate school admission, most programs prefer a 3.0 minimum, with competitive programs expecting 3.5 or higher." },
+  { question: "What are quality points?", answer: "Quality points are the product of a course's grade points and its credit hours. They represent the weighted value of your grade in that course. For example, a B+ (3.3) in a 4-credit course yields 3.3 x 4 = 13.2 quality points. Your GPA is the total quality points divided by total credit hours." },
+  { question: "Does retaking a course affect my GPA?", answer: "Policies vary by institution. Many schools use grade replacement, where only the higher grade counts toward your GPA. Others average both attempts. Some include both grades but only count the credit hours once. Check your school's academic policies to understand how retakes affect your GPA calculation." }
+]) %>
+
+<%= calculator_schema(
+  name: "GPA Calculator",
+  description: "Calculate your grade point average from letter grades and credit hours for up to 6 courses.",
+  url: everyday_gpa_url,
+  category: "EducationalApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "GPA Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">GPA Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter your course grades and credit hours to calculate your GPA, total credits, and quality points.</p>
+
+    <div data-controller="gpa-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Grade</span>
+            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Credits</span>
+          </div>
+          <% 6.times do |i| %>
+            <div class="grid grid-cols-2 gap-3">
+              <select data-gpa-calculator-target="grade<%= i + 1 %>" data-action="change->gpa-calculator#calculate" class="w-full">
+                <option value="" selected>--</option>
+                <option value="4.0">A</option>
+                <option value="3.7">A-</option>
+                <option value="3.3">B+</option>
+                <option value="3.0">B</option>
+                <option value="2.7">B-</option>
+                <option value="2.3">C+</option>
+                <option value="2.0">C</option>
+                <option value="1.7">C-</option>
+                <option value="1.3">D+</option>
+                <option value="1.0">D</option>
+                <option value="0.0">F</option>
+              </select>
+              <input type="number" data-gpa-calculator-target="credits<%= i + 1 %>" data-action="input->gpa-calculator#calculate" class="w-full" placeholder="3" step="1" min="0" max="12">
+            </div>
+          <% end %>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">GPA</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-gpa-calculator-target="resultGpa">0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Credits</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-gpa-calculator-target="resultTotalCredits">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Quality Points</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-gpa-calculator-target="resultQualityPoints">0.00</span>
+            </div>
+          </div>
+          <button data-action="click->gpa-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the GPA Calculator</h2>
+      <p>
+        Enter the letter grade and number of credit hours for each of your courses. Rows with the grade set to "--" or with zero credits are automatically excluded from the calculation. The calculator supports up to six courses at a time, which covers a typical semester course load. Results update in real time as you select grades and enter credit hours.
+      </p>
+      <p>
+        The calculator uses the standard 4.0 GPA scale used by most US colleges and universities. Each letter grade is assigned a point value: A = 4.0, A- = 3.7, B+ = 3.3, and so on down to F = 0.0. The GPA is computed by totaling the quality points (grade points multiplied by credit hours for each course) and dividing by the total credit hours.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the GPA Formula</h2>
+      <p>
+        The GPA formula is: <strong>GPA = Total Quality Points / Total Credit Hours</strong>. Quality points for each course equal the grade point value multiplied by the credit hours. For example, a B+ (3.3) in a 4-credit course contributes 3.3 x 4 = 13.2 quality points. If you also earn an A (4.0) in a 3-credit course, that adds 4.0 x 3 = 12.0 quality points. Your GPA would be (13.2 + 12.0) / (4 + 3) = 25.2 / 7 = 3.60.
+      </p>
+
+      <h3>Weighted vs. Unweighted GPA</h3>
+      <p>
+        An unweighted GPA uses the standard 4.0 scale for all courses regardless of difficulty. A weighted GPA adds extra points for honors, AP, or IB courses, typically on a 5.0 scale. High schools commonly use weighted GPAs, while most colleges and universities use unweighted GPAs on a 4.0 scale. This calculator uses the unweighted 4.0 scale.
+      </p>
+
+      <h3>Strategies for Improving Your GPA</h3>
+      <p>
+        Focus on courses with more credit hours, since they have a greater impact on your GPA. A higher grade in a 4-credit course moves your GPA more than the same grade improvement in a 1-credit course. Take advantage of professor office hours, tutoring services, and study groups. If your school allows grade replacement for retaken courses, retaking a course where you received a low grade can significantly boost your GPA. Planning a balanced course load each semester, mixing challenging courses with ones you are confident in, helps maintain a steady GPA over time.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is GPA calculated?</h3>
+      <p>
+        GPA is calculated by multiplying each course's grade points by its credit hours to get quality points, summing all quality points, and dividing by the total credit hours. For example, an A (4.0) in a 3-credit course gives 12 quality points. If you also earn a B (3.0) in a 4-credit course (12 points), your GPA is (12 + 12) / (3 + 4) = 3.43.
+      </p>
+
+      <h3>What is the GPA scale?</h3>
+      <p>
+        The standard US GPA scale is: A = 4.0, A- = 3.7, B+ = 3.3, B = 3.0, B- = 2.7, C+ = 2.3, C = 2.0, C- = 1.7, D+ = 1.3, D = 1.0, F = 0.0. Some institutions use variations, such as including an A+ at 4.0 or 4.3. Check your school's specific scale.
+      </p>
+
+      <h3>What is a good GPA?</h3>
+      <p>
+        A GPA of 3.0 (B average) or above is generally considered good. A 3.5 or higher is considered very good and is often required for dean's list recognition. A 3.7 or above is considered excellent. For graduate school admission, most programs prefer a 3.0 minimum, with competitive programs expecting 3.5 or higher.
+      </p>
+
+      <h3>What are quality points?</h3>
+      <p>
+        Quality points are the product of a course's grade points and its credit hours. They represent the weighted value of your grade in that course. For example, a B+ (3.3) in a 4-credit course yields 3.3 x 4 = 13.2 quality points. Your GPA is the total quality points divided by total credit hours.
+      </p>
+
+      <h3>Does retaking a course affect my GPA?</h3>
+      <p>
+        Policies vary by institution. Many schools use grade replacement, where only the higher grade counts toward your GPA. Others average both attempts. Some include both grades but only count the credit hours once. Check your school's academic policies to understand how retakes affect your GPA calculation.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Age Calculator", description: "Calculate your exact age in years, months, days, and total days.", path: everyday_age_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

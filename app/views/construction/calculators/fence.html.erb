@@ -1,0 +1,158 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Fence Calculator - Free Online Tool",
+  description: "Calculate how many posts, rails, pickets, and sections you need for your fence project. Enter total length, height, and post spacing to get instant estimates.",
+  canonical: construction_fence_url,
+  og: {
+    title: "Fence Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how many posts, rails, pickets, and sections you need for your fence project. Enter total length, height, and post spacing.",
+    url: construction_fence_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Fence Calculator", url: construction_fence_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate how many fence posts I need?", answer: "Divide the total fence length by the post spacing distance and add one for the end post. For example, a 100-foot fence with 8-foot post spacing needs (100 / 8) + 1 = 14 posts. Always round up to ensure complete coverage. Corner posts and gate posts count as regular posts in the calculation." },
+  { question: "What is the standard fence post spacing?", answer: "The standard post spacing for most residential fences is 8 feet on center, meaning 8 feet from the center of one post to the center of the next. Some fence styles, heavier materials, or high-wind areas may require 6-foot spacing for added strength. Always check local building codes for specific requirements." },
+  { question: "How many rails do I need for a fence?", answer: "Most fences use 2 horizontal rails per section for fences under 5 feet tall and 3 rails for fences 5 feet and taller. The number of rails equals the number of sections multiplied by the rails per section. A 6-foot privacy fence typically uses 3 rails per section." },
+  { question: "How many pickets do I need per section?", answer: "For a standard privacy fence with no gaps, divide the section width by the picket width (typically 3.5 or 5.5 inches) and round up. For a 8-foot section with 3.5-inch pickets, you need about 28 pickets. For a shadow-box or spaced picket fence, account for the gap between pickets." },
+  { question: "How deep should fence posts be set?", answer: "A general rule is to bury one-third of the total post length underground. For a 6-foot fence, use 8-foot posts and set them 2 feet deep. In areas with frost, posts should extend below the frost line to prevent heaving. Setting posts in concrete provides the strongest hold and longest lifespan." }
+]) %>
+
+<%= calculator_schema(
+  name: "Fence Calculator",
+  description: "Calculate posts, rails, pickets, and sections needed for any fence project based on total length, height, and post spacing.",
+  url: construction_fence_url,
+  category: "HomeApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Fence Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Fence Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the number of posts, rails, pickets, and sections you need for your fence based on total length, height, and spacing.</p>
+
+    <div data-controller="fence-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Fence Length (ft)</label>
+            <input type="number" data-fence-calculator-target="length" data-action="input->fence-calculator#calculate" class="w-full" placeholder="100" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fence Height (ft)</label>
+            <input type="number" data-fence-calculator-target="height" data-action="input->fence-calculator#calculate" class="w-full" value="6" step="0.5" min="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Post Spacing (ft)</label>
+            <input type="number" data-fence-calculator-target="spacing" data-action="input->fence-calculator#calculate" class="w-full" value="8" step="0.5" min="1">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Posts</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-fence-calculator-target="resultPosts">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Rails</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-fence-calculator-target="resultRails">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Pickets</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-fence-calculator-target="resultPickets">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sections</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-fence-calculator-target="resultSections">0</span>
+            </div>
+          </div>
+          <button data-action="click->fence-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Fence Calculator</h2>
+      <p>
+        Building a fence requires careful planning to order the right amount of lumber and hardware. Enter the total length of your fence line in feet, the desired fence height, and the distance between posts. The calculator determines the number of posts, horizontal rails, pickets, and fence sections you need for the entire project.
+      </p>
+      <p>
+        Posts are calculated by dividing the total length by the post spacing and adding one for the end post. Sections equal the number of posts minus one. Rails are calculated using two per section for fences under 5 feet tall and three per section for fences 5 feet and taller. Pickets are estimated assuming standard 3.5-inch-wide pickets in a privacy (no-gap) configuration, giving approximately 28 pickets per 8-foot section.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Fence Materials Planning</h2>
+      <p>
+        The most common residential fence material is pressure-treated pine, which is affordable and resists decay when properly maintained. Cedar is a premium option that naturally resists rot and insects without chemical treatment, though it costs more. Redwood offers similar benefits to cedar with a distinctive color. Composite fencing is the most expensive but requires virtually no maintenance. For each material, the posts, rails, and pickets are sized the same way, so the quantities from this calculator apply regardless of material choice.
+      </p>
+
+      <h3>Post Sizing and Installation</h3>
+      <p>
+        For a 6-foot fence, use 4x4-inch posts that are 8 feet long, burying 2 feet underground. For fences taller than 6 feet or in high-wind areas, upgrade to 6x6-inch posts for added strength. Dig post holes at least 3 times the post width (about 12 inches for a 4x4 post) and set them in premixed concrete for maximum stability. Allow the concrete to cure for at least 24 to 48 hours before attaching rails and pickets.
+      </p>
+
+      <h3>Permits and Property Lines</h3>
+      <p>
+        Most municipalities require a permit for fences over a certain height, typically 4 or 6 feet. Check your local building codes before starting. Have your property surveyed or locate existing survey pins to ensure your fence is built on your property and not encroaching on a neighbor's land. Many jurisdictions also require the finished side of the fence to face outward toward the neighbor. Homeowner associations may have additional restrictions on fence height, material, and style.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate how many fence posts I need?</h3>
+      <p>
+        Divide the total fence length by the post spacing distance and add one for the end post. For example, a 100-foot fence with 8-foot post spacing needs (100 / 8) + 1 = 14 posts. Always round up to ensure complete coverage. Corner posts and gate posts count as regular posts in the calculation.
+      </p>
+
+      <h3>What is the standard fence post spacing?</h3>
+      <p>
+        The standard post spacing for most residential fences is 8 feet on center, meaning 8 feet from the center of one post to the center of the next. Some fence styles, heavier materials, or high-wind areas may require 6-foot spacing for added strength. Always check local building codes for specific requirements.
+      </p>
+
+      <h3>How many rails do I need for a fence?</h3>
+      <p>
+        Most fences use 2 horizontal rails per section for fences under 5 feet tall and 3 rails for fences 5 feet and taller. The number of rails equals the number of sections multiplied by the rails per section. A 6-foot privacy fence typically uses 3 rails per section.
+      </p>
+
+      <h3>How many pickets do I need per section?</h3>
+      <p>
+        For a standard privacy fence with no gaps, divide the section width by the picket width (typically 3.5 or 5.5 inches) and round up. For an 8-foot section with 3.5-inch pickets, you need about 28 pickets. For a shadow-box or spaced picket fence, account for the gap between pickets.
+      </p>
+
+      <h3>How deep should fence posts be set?</h3>
+      <p>
+        A general rule is to bury one-third of the total post length underground. For a 6-foot fence, use 8-foot posts and set them 2 feet deep. In areas with frost, posts should extend below the frost line to prevent heaving. Setting posts in concrete provides the strongest hold and longest lifespan.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Concrete Calculator", description: "Calculate concrete needed for post holes and other projects.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Gravel & Mulch Calculator", description: "Calculate cubic yards and tons of gravel or mulch for landscaping.", path: construction_gravel_mulch_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Paint Calculator", description: "Calculate how many gallons of paint you need for any room.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

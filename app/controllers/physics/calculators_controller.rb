@@ -14,6 +14,7 @@ module Physics
     def wire_gauge; end
     def decibel; end
     def wavelength_frequency; end
+    def planet_weight; end
 
     private
 

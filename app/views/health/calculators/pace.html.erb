@@ -1,0 +1,184 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pace Calculator - Free Running Pace, Time & Distance Tool",
+  description: "Calculate your running pace, finish time, or distance with our free pace calculator. Solve for any variable given the other two. Perfect for runners training for races of any distance.",
+  canonical: health_pace_url,
+  og: {
+    title: "Pace Calculator - Free Running Pace, Time & Distance Tool | CalcWise",
+    description: "Calculate running pace, finish time, or distance. Solve for any variable given the other two. Perfect for race training.",
+    url: health_pace_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Pace Calculator", url: health_pace_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate my running pace?", answer: "Running pace is calculated by dividing your total time by the distance covered. For example, if you run 5 km in 25 minutes, your pace is 25 / 5 = 5:00 minutes per kilometer. To convert to miles, divide your total time by the distance in miles. Pace is typically expressed as minutes and seconds per kilometer or per mile." },
+  { question: "What is a good running pace for beginners?", answer: "A good pace for beginner runners is typically 7:00 to 8:00 minutes per kilometer (11:00 to 13:00 minutes per mile). The most important thing for beginners is to find a comfortable conversational pace where you can speak in full sentences while running. Speed naturally improves with consistent training over weeks and months." },
+  { question: "How do I calculate my finish time for a race?", answer: "Multiply your pace (in minutes per km or mile) by the race distance. For example, at a 5:30 min/km pace, a 10K would take 5.5 x 10 = 55 minutes. For a half marathon (21.1 km), it would be 5.5 x 21.1 = 116 minutes or 1 hour 56 minutes. Keep in mind that pace often slows over longer distances." },
+  { question: "What is the difference between pace and speed?", answer: "Pace and speed are inversely related. Pace measures how long it takes to cover a unit of distance (e.g., 5 minutes per kilometer), while speed measures how much distance you cover in a unit of time (e.g., 12 kilometers per hour). Runners typically use pace because it is easier to maintain a consistent effort level when thinking in time per distance." },
+  { question: "How can I improve my running pace?", answer: "To improve your pace, incorporate interval training (alternating fast and slow segments), tempo runs (sustained effort at a comfortably hard pace), and long slow runs to build endurance. Consistency is key — running 3-5 times per week with gradual increases in distance and intensity. Adequate rest, proper nutrition, and strength training also contribute to faster paces over time." }
+]) %>
+
+<%= calculator_schema(
+  name: "Pace Calculator",
+  description: "Calculate your running pace, finish time, or distance. Solve for any variable given the other two.",
+  url: health_pace_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Pace Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pace Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your running pace, finish time, or distance. Enter any two values and solve for the third.</p>
+
+    <%# Calculator UI — 3 cards %>
+    <div data-controller="pace-calculator" class="space-y-6 mb-8">
+
+      <%# Card 1: Solve for Pace %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Solve for Pace</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance (km)</label>
+            <input type="number" data-pace-calculator-target="distForPace" data-action="input->pace-calculator#calcPace" class="w-full" placeholder="5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Time (mm:ss)</label>
+            <input type="text" data-pace-calculator-target="timeForPace" data-action="input->pace-calculator#calcPace" class="w-full" placeholder="25:00">
+          </div>
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 flex flex-col justify-center">
+            <span class="text-sm text-gray-600 dark:text-gray-400 mb-1">Pace (min/km)</span>
+            <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-pace-calculator-target="resultPace">—</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 2: Solve for Time %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Solve for Time</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance (km)</label>
+            <input type="number" data-pace-calculator-target="distForTime" data-action="input->pace-calculator#calcTime" class="w-full" placeholder="10" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pace (min/km, e.g. 5:30)</label>
+            <input type="text" data-pace-calculator-target="paceForTime" data-action="input->pace-calculator#calcTime" class="w-full" placeholder="5:30">
+          </div>
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 flex flex-col justify-center">
+            <span class="text-sm text-gray-600 dark:text-gray-400 mb-1">Finish Time</span>
+            <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-pace-calculator-target="resultTime">—</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 3: Solve for Distance %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Solve for Distance</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pace (min/km, e.g. 5:30)</label>
+            <input type="text" data-pace-calculator-target="paceForDist" data-action="input->pace-calculator#calcDistance" class="w-full" placeholder="5:30">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Time (mm:ss)</label>
+            <input type="text" data-pace-calculator-target="timeForDist" data-action="input->pace-calculator#calcDistance" class="w-full" placeholder="55:00">
+          </div>
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 flex flex-col justify-center">
+            <span class="text-sm text-gray-600 dark:text-gray-400 mb-1">Distance (km)</span>
+            <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-pace-calculator-target="resultDistance">—</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Pace Calculator</h2>
+      <p>
+        Our free pace calculator helps runners solve the fundamental relationship between pace, time, and distance. The page provides three separate calculation cards so you can solve for any unknown variable given the other two. To find your <strong>pace</strong>, enter your distance and total time. To find your <strong>finish time</strong>, enter the distance and your target pace. To find the <strong>distance</strong> you covered, enter your pace and total time. All results update instantly as you type — no buttons to press and no page reloads needed.
+      </p>
+      <p>
+        Whether you are training for your first 5K, targeting a personal best in a marathon, or simply tracking your daily runs, understanding the relationship between pace, time, and distance is essential. This calculator helps you set realistic race goals, plan training splits, and evaluate your performance after each workout.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Running Pace</h2>
+      <p>
+        Running pace is the amount of time it takes to cover one unit of distance, typically expressed as minutes per kilometer or minutes per mile. A pace of 5:30 min/km means you take five minutes and thirty seconds to run each kilometer. Pace is the inverse of speed — a faster pace means a lower number, while a slower pace means a higher number. Runners prefer pace over speed because it directly translates to race planning: multiply your pace by the race distance to get your estimated finish time.
+      </p>
+
+      <h3>Common Race Distances and Target Paces</h3>
+      <p>
+        Popular race distances include the 5K (3.1 miles), 10K (6.2 miles), half marathon (21.1 km / 13.1 miles), and full marathon (42.2 km / 26.2 miles). A recreational runner might target a 6:00 min/km pace for a 5K, which gives a finish time of 30 minutes. The same runner might slow to 6:30 min/km for a half marathon due to the longer distance, finishing in about 2 hours 17 minutes. Elite marathoners sustain paces near 2:55 min/km, while most recreational runners fall between 5:30 and 7:00 min/km depending on the distance.
+      </p>
+
+      <h3>Using Pace for Training Plans</h3>
+      <p>
+        Training plans are built around different pace zones that correspond to different physiological adaptations. Easy runs should be done at a conversational pace — typically 1-2 minutes slower per kilometer than your race pace. Tempo runs are sustained efforts at a pace you could hold for about an hour, roughly 15-20 seconds per kilometer faster than your target race pace. Interval workouts involve short bursts at speeds significantly faster than race pace, followed by recovery periods. Long runs are performed at an easy pace to build endurance. This calculator helps you translate target times into precise pace zones for each type of workout.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate my running pace?</h3>
+      <p>
+        Running pace is calculated by dividing your total time by the distance covered. For example, if you run 5 km in 25 minutes, your pace is 25 / 5 = 5:00 minutes per kilometer. To convert to miles, divide your total time by the distance in miles. Pace is typically expressed as minutes and seconds per kilometer or per mile.
+      </p>
+
+      <h3>What is a good running pace for beginners?</h3>
+      <p>
+        A good pace for beginner runners is typically 7:00 to 8:00 minutes per kilometer (11:00 to 13:00 minutes per mile). The most important thing for beginners is to find a comfortable conversational pace where you can speak in full sentences while running. Speed naturally improves with consistent training over weeks and months.
+      </p>
+
+      <h3>How do I calculate my finish time for a race?</h3>
+      <p>
+        Multiply your pace (in minutes per km or mile) by the race distance. For example, at a 5:30 min/km pace, a 10K would take 5.5 x 10 = 55 minutes. For a half marathon (21.1 km), it would be 5.5 x 21.1 = 116 minutes or 1 hour 56 minutes. Keep in mind that pace often slows over longer distances.
+      </p>
+
+      <h3>What is the difference between pace and speed?</h3>
+      <p>
+        Pace and speed are inversely related. Pace measures how long it takes to cover a unit of distance (e.g., 5 minutes per kilometer), while speed measures how much distance you cover in a unit of time (e.g., 12 kilometers per hour). Runners typically use pace because it is easier to maintain a consistent effort level when thinking in time per distance.
+      </p>
+
+      <h3>How can I improve my running pace?</h3>
+      <p>
+        To improve your pace, incorporate interval training (alternating fast and slow segments), tempo runs (sustained effort at a comfortably hard pace), and long slow runs to build endurance. Consistency is key — running 3-5 times per week with gradual increases in distance and intensity. Adequate rest, proper nutrition, and strength training also contribute to faster paces over time.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure to find your daily calorie target.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,160 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Macro Calculator - Free Macronutrient Calculator Tool",
+  description: "Calculate your ideal daily macronutrient split with our free macro calculator. Get personalized protein, carbs, and fat targets based on your calorie intake and fitness goal.",
+  canonical: health_macro_url,
+  og: {
+    title: "Macro Calculator - Free Macronutrient Calculator Tool | CalcWise",
+    description: "Calculate your ideal protein, carbs, and fat intake. Personalized macro targets based on your calories and fitness goal.",
+    url: health_macro_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Macro Calculator", url: health_macro_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are macronutrients and why do they matter?", answer: "Macronutrients — protein, carbohydrates, and fat — are the three main nutrients your body needs in large amounts. Each plays a unique role: protein builds and repairs muscle tissue, carbohydrates provide energy for activity and brain function, and fat supports hormone production and nutrient absorption. The ratio in which you consume them affects body composition, energy levels, and performance." },
+  { question: "How many grams of protein do I need per day?", answer: "Protein needs depend on your goals and activity level. For general health, 0.8 g per kg of body weight is sufficient. For muscle building or fat loss while preserving lean mass, 1.6 to 2.2 g per kg is recommended. Athletes in intense training may benefit from up to 2.4 g per kg. This calculator adjusts protein based on your selected goal." },
+  { question: "What is the best macro ratio for weight loss?", answer: "A common macro split for weight loss is 40% protein, 35% carbohydrates, and 25% fat. The higher protein intake helps preserve muscle mass during a calorie deficit and increases satiety. However, the best ratio varies by individual — some people perform better with higher carbs, while others prefer higher fat. Consistency with your calorie target matters more than exact ratios." },
+  { question: "What is the best macro ratio for muscle gain?", answer: "For muscle gain (bulking), a typical macro split is 30% protein, 45% carbohydrates, and 25% fat. The higher carbohydrate intake fuels intense workouts and supports recovery, while adequate protein provides the amino acids needed for muscle protein synthesis. A caloric surplus of 200-400 calories above TDEE is also necessary." },
+  { question: "Do I need to track macros exactly every day?", answer: "Exact daily tracking is not necessary for most people. Hitting your macro targets within plus or minus 10% is generally sufficient to see results. What matters most is overall consistency over weeks and months rather than daily perfection. Tracking can be a useful learning tool even if you eventually transition to intuitive eating." }
+]) %>
+
+<%= calculator_schema(
+  name: "Macro Calculator",
+  description: "Calculate your ideal daily protein, carbohydrate, and fat intake based on your calorie goal and fitness objective.",
+  url: health_macro_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Macro Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Macro Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your ideal daily protein, carbs, and fat targets based on your calorie intake and fitness goal.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="macro-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Daily Calories</label>
+            <input type="number" data-macro-calculator-target="calories" data-action="input->macro-calculator#calculate" class="w-full" placeholder="2000" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Goal</label>
+            <select data-macro-calculator-target="goal" data-action="change->macro-calculator#calculate" class="w-full">
+              <option value="maintain">Maintain Weight</option>
+              <option value="cut">Cut (Fat Loss)</option>
+              <option value="bulk">Bulk (Muscle Gain)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Protein</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-macro-calculator-target="protein">— g</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Carbs</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-macro-calculator-target="carbs">— g</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Fat</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-macro-calculator-target="fat">— g</span>
+            </div>
+          </div>
+          <button data-action="click->macro-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Macro Calculator</h2>
+      <p>
+        Our free macro calculator takes your daily calorie target and splits it into the optimal grams of protein, carbohydrates, and fat based on your fitness goal. Enter the number of calories you plan to eat each day — you can get this from a TDEE calculator — then select your goal: maintain weight, cut (fat loss), or bulk (muscle gain). The calculator instantly shows your recommended daily intake for each macronutrient in grams. Results update in real time as you change any input, with no forms to submit or pages to reload.
+      </p>
+      <p>
+        Tracking macronutrients rather than just total calories gives you far greater control over your body composition. Two diets with identical calorie counts can produce vastly different results depending on the macro split. A higher protein intake preserves lean muscle during a cut, while adequate carbohydrates fuel intense training sessions. Fat supports hormonal health and helps absorb fat-soluble vitamins. Getting the balance right accelerates your progress toward any physique goal.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Macro Splits by Goal</h2>
+      <p>
+        The ideal macronutrient ratio depends on your objective. For <strong>maintenance</strong>, a balanced split of approximately 30% protein, 40% carbohydrates, and 30% fat supports general health and stable energy levels. For a <strong>cut</strong>, protein is increased to around 40% to maximize muscle retention during a caloric deficit, with carbs at 35% and fat at 25%. For a <strong>bulk</strong>, carbohydrates are prioritized at roughly 45% to fuel intense training, with protein at 30% and fat at 25% to support recovery and hormone production.
+      </p>
+
+      <h3>Understanding Each Macronutrient</h3>
+      <p>
+        <strong>Protein</strong> contains 4 calories per gram and is the building block of muscle tissue. It has the highest thermic effect of food, meaning your body burns more calories digesting protein than carbs or fat. <strong>Carbohydrates</strong> also contain 4 calories per gram and are your body's preferred energy source, especially during high-intensity exercise. They replenish muscle glycogen stores and support brain function. <strong>Fat</strong> contains 9 calories per gram — more than double the other macros — and is essential for hormone production, cell membrane integrity, and absorption of vitamins A, D, E, and K.
+      </p>
+
+      <h3>Tips for Hitting Your Macro Targets</h3>
+      <p>
+        Start by planning your protein sources first, as protein is typically the hardest macro to hit consistently. Lean meats, fish, eggs, dairy, and legumes are excellent choices. Fill in carbohydrates with whole grains, fruits, vegetables, and starchy tubers. Healthy fat sources include nuts, seeds, avocado, olive oil, and fatty fish. Use a food tracking app for the first few weeks to build intuition about portion sizes. Over time, most people develop the ability to estimate their macros without weighing every meal.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What are macronutrients and why do they matter?</h3>
+      <p>
+        Macronutrients — protein, carbohydrates, and fat — are the three main nutrients your body needs in large amounts. Each plays a unique role: protein builds and repairs muscle tissue, carbohydrates provide energy for activity and brain function, and fat supports hormone production and nutrient absorption. The ratio in which you consume them affects body composition, energy levels, and performance.
+      </p>
+
+      <h3>How many grams of protein do I need per day?</h3>
+      <p>
+        Protein needs depend on your goals and activity level. For general health, 0.8 g per kg of body weight is sufficient. For muscle building or fat loss while preserving lean mass, 1.6 to 2.2 g per kg is recommended. Athletes in intense training may benefit from up to 2.4 g per kg. This calculator adjusts protein based on your selected goal.
+      </p>
+
+      <h3>What is the best macro ratio for weight loss?</h3>
+      <p>
+        A common macro split for weight loss is 40% protein, 35% carbohydrates, and 25% fat. The higher protein intake helps preserve muscle mass during a calorie deficit and increases satiety. However, the best ratio varies by individual — some people perform better with higher carbs, while others prefer higher fat. Consistency with your calorie target matters more than exact ratios.
+      </p>
+
+      <h3>What is the best macro ratio for muscle gain?</h3>
+      <p>
+        For muscle gain (bulking), a typical macro split is 30% protein, 45% carbohydrates, and 25% fat. The higher carbohydrate intake fuels intense workouts and supports recovery, while adequate protein provides the amino acids needed for muscle protein synthesis. A caloric surplus of 200-400 calories above TDEE is also necessary.
+      </p>
+
+      <h3>Do I need to track macros exactly every day?</h3>
+      <p>
+        Exact daily tracking is not necessary for most people. Hitting your macro targets within plus or minus 10% is generally sufficient to see results. What matters most is overall consistency over weeks and months rather than daily perfection. Tracking can be a useful learning tool even if you eventually transition to intuitive eating.
+      </p>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure to find your daily calorie target.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" }
+    ] %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

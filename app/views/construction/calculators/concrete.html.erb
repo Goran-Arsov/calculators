@@ -1,0 +1,158 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Concrete Calculator - Free Online Tool",
+  description: "Calculate how much concrete you need in cubic feet, cubic yards, and number of bags. Enter slab dimensions and get instant results — free online concrete calculator.",
+  canonical: construction_concrete_url,
+  og: {
+    title: "Concrete Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how much concrete you need in cubic feet, cubic yards, and number of bags. Enter slab dimensions and get instant results.",
+    url: construction_concrete_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Concrete Calculator", url: construction_concrete_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate how much concrete I need?", answer: "Multiply the length by the width to get the area in square feet. Convert the depth from inches to feet by dividing by 12. Multiply the area by the depth in feet to get cubic feet. Divide cubic feet by 27 to convert to cubic yards. One cubic yard of concrete covers about 81 square feet at 4 inches thick." },
+  { question: "How many bags of concrete do I need?", answer: "A 60-pound bag of premixed concrete yields approximately 0.45 cubic feet, while an 80-pound bag yields about 0.6 cubic feet. Divide your total cubic feet by the yield per bag and round up. For example, 27 cubic feet (1 cubic yard) requires about 60 of the 60-lb bags or 45 of the 80-lb bags." },
+  { question: "How thick should a concrete slab be?", answer: "A standard concrete slab for a patio or walkway is 4 inches thick. Driveways should be at least 4 to 6 inches thick depending on vehicle weight. Garage floors are typically 4 to 6 inches. Foundation footings and structural slabs may require 8 to 12 inches or more, as specified by local building codes." },
+  { question: "What is the difference between concrete and cement?", answer: "Cement is a powder ingredient that acts as a binder. Concrete is the finished material made by mixing cement with water, sand, and gravel (aggregate). Premixed concrete bags contain all the dry ingredients and only require the addition of water to create ready-to-pour concrete." },
+  { question: "Should I order extra concrete?", answer: "Yes, it is wise to order 5-10% more concrete than calculated to account for spillage, uneven subgrade, and slight variations in form dimensions. Running short during a pour is much more costly than having a small amount left over, as cold joints from a delayed pour weaken the finished slab." }
+]) %>
+
+<%= calculator_schema(
+  name: "Concrete Calculator",
+  description: "Calculate how much concrete you need in cubic feet, cubic yards, and bags for any slab, footing, or project.",
+  url: construction_concrete_url,
+  category: "HomeApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Concrete Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Concrete Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate how much concrete you need in cubic feet, cubic yards, and premixed bags for slabs, footings, and more.</p>
+
+    <div data-controller="concrete-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Length (ft)</label>
+            <input type="number" data-concrete-calculator-target="length" data-action="input->concrete-calculator#calculate" class="w-full" placeholder="10" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Width (ft)</label>
+            <input type="number" data-concrete-calculator-target="width" data-action="input->concrete-calculator#calculate" class="w-full" placeholder="10" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Depth (inches)</label>
+            <input type="number" data-concrete-calculator-target="depth" data-action="input->concrete-calculator#calculate" class="w-full" placeholder="4" step="0.5" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cubic Feet</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-concrete-calculator-target="resultCubicFeet">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cubic Yards</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-concrete-calculator-target="resultCubicYards">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">60 lb Bags</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-concrete-calculator-target="resultBags60">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">80 lb Bags</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-concrete-calculator-target="resultBags80">0</span>
+            </div>
+          </div>
+          <button data-action="click->concrete-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Concrete Calculator</h2>
+      <p>
+        Whether you are pouring a patio slab, setting fence posts, or building a foundation footing, knowing the right amount of concrete is essential. Enter the length and width of your project in feet and the depth in inches. The calculator converts the depth to feet, computes the volume in cubic feet, then converts to cubic yards, which is the standard ordering unit for ready-mix concrete.
+      </p>
+      <p>
+        For DIY projects using premixed bags, the calculator also shows how many 60-pound and 80-pound bags you need. A 60-pound bag yields approximately 0.45 cubic feet of mixed concrete, while an 80-pound bag yields about 0.6 cubic feet. Both figures are rounded up so you always have enough material to complete the pour without interruption.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Concrete Volume Formula</h2>
+      <p>
+        The basic volume formula is straightforward: <strong>Volume = Length x Width x Depth</strong>. Since depth is commonly measured in inches, you must first convert it to feet by dividing by 12. The result is in cubic feet. To convert cubic feet to cubic yards, divide by 27 (since 3 ft x 3 ft x 3 ft = 27 cubic feet per cubic yard). For bag calculations, divide the total cubic feet by the yield per bag (0.45 for 60 lb, 0.6 for 80 lb) and round up.
+      </p>
+
+      <h3>Recommended Slab Thickness</h3>
+      <p>
+        Choosing the right thickness depends on the intended use. Sidewalks and garden paths can be as thin as 3.5 to 4 inches. Patios and standard slabs should be a minimum of 4 inches. Driveways need at least 4 inches for cars and 5 to 6 inches for heavier vehicles like trucks and RVs. Garage floors are typically 4 to 6 inches. Always check your local building codes, as structural applications such as foundations may require thicker pours and reinforcement with rebar or wire mesh.
+      </p>
+
+      <h3>Bags vs. Ready-Mix Delivery</h3>
+      <p>
+        Premixed bags are economical for small projects under one cubic yard. For larger pours, ordering ready-mix concrete from a batch plant is more practical and cost-effective. A standard ready-mix truck delivers 8 to 10 cubic yards. Many suppliers also offer short-load trucks for quantities between 1 and 4 cubic yards, though these may carry a small-load surcharge. For very large projects, always schedule your pour and have enough labor on hand to place and finish the concrete before it begins to set.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate how much concrete I need?</h3>
+      <p>
+        Multiply the length by the width to get the area in square feet. Convert the depth from inches to feet by dividing by 12. Multiply the area by the depth in feet to get cubic feet. Divide cubic feet by 27 to convert to cubic yards. One cubic yard of concrete covers about 81 square feet at 4 inches thick.
+      </p>
+
+      <h3>How many bags of concrete do I need?</h3>
+      <p>
+        A 60-pound bag of premixed concrete yields approximately 0.45 cubic feet, while an 80-pound bag yields about 0.6 cubic feet. Divide your total cubic feet by the yield per bag and round up. For example, 27 cubic feet (1 cubic yard) requires about 60 of the 60-lb bags or 45 of the 80-lb bags.
+      </p>
+
+      <h3>How thick should a concrete slab be?</h3>
+      <p>
+        A standard concrete slab for a patio or walkway is 4 inches thick. Driveways should be at least 4 to 6 inches thick depending on vehicle weight. Garage floors are typically 4 to 6 inches. Foundation footings and structural slabs may require 8 to 12 inches or more, as specified by local building codes.
+      </p>
+
+      <h3>What is the difference between concrete and cement?</h3>
+      <p>
+        Cement is a powder ingredient that acts as a binder. Concrete is the finished material made by mixing cement with water, sand, and gravel (aggregate). Premixed concrete bags contain all the dry ingredients and only require the addition of water to create ready-to-pour concrete.
+      </p>
+
+      <h3>Should I order extra concrete?</h3>
+      <p>
+        Yes, it is wise to order 5-10% more concrete than calculated to account for spillage, uneven subgrade, and slight variations in form dimensions. Running short during a pour is much more costly than having a small amount left over, as cold joints from a delayed pour weaken the finished slab.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Gravel & Mulch Calculator", description: "Calculate cubic yards and tons of gravel or mulch for landscaping.", path: construction_gravel_mulch_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Flooring Calculator", description: "Calculate how much flooring material you need with waste allowance.", path: construction_flooring_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Paint Calculator", description: "Calculate how many gallons of paint you need for any room.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

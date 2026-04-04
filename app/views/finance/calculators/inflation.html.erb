@@ -1,0 +1,156 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Inflation Calculator - Free Online Tool",
+  description: "Calculate the future cost of goods and purchasing power loss due to inflation. Free inflation calculator with instant results — no sign-up required.",
+  canonical: finance_inflation_url,
+  og: {
+    title: "Inflation Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the future cost of goods and purchasing power loss due to inflation. Free inflation calculator with instant results.",
+    url: finance_inflation_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Inflation Calculator", url: finance_inflation_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does inflation affect purchasing power?", answer: "Inflation erodes purchasing power by increasing the general price level over time. If inflation averages 3% per year, something that costs $100 today will cost about $134 in 10 years. Your dollars buy less as prices rise, which is why savings that do not grow at least as fast as inflation effectively lose value." },
+  { question: "What is a normal inflation rate?", answer: "Central banks in most developed economies target an inflation rate of about 2% per year, which is considered healthy for economic growth. Historically, U.S. inflation has averaged roughly 3% annually over the past century. Rates above 5-6% are generally considered high, while negative inflation (deflation) can signal economic trouble." },
+  { question: "How is the future value calculated with inflation?", answer: "The future value is calculated using the formula FV = PV x (1 + r)^n, where PV is the present value, r is the annual inflation rate as a decimal, and n is the number of years. This shows how much more something will cost in the future due to inflation." },
+  { question: "What is the difference between real and nominal returns?", answer: "Nominal returns are the raw percentage gain on an investment before adjusting for inflation. Real returns subtract the inflation rate, showing your actual increase in purchasing power. For example, if your investment earns 8% but inflation is 3%, your real return is approximately 5%. Real returns are what truly matter for wealth building." },
+  { question: "How can I protect my savings from inflation?", answer: "To outpace inflation, invest in assets that historically grow faster than the inflation rate, such as stocks, real estate, or Treasury Inflation-Protected Securities (TIPS). Keeping large sums in a standard savings account often fails to keep up with inflation. Diversifying across asset classes and regularly reviewing your investment strategy helps maintain purchasing power over the long term." }
+]) %>
+
+<%= calculator_schema(
+  name: "Inflation Calculator",
+  description: "Calculate the future cost of goods and purchasing power loss due to inflation over time.",
+  url: finance_inflation_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Inflation Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Inflation Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">See how inflation affects prices and purchasing power over time using the compound inflation formula.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="inflation-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Present Value ($)</label>
+            <input type="number" data-inflation-calculator-target="presentValue" data-action="input->inflation-calculator#calculate" class="w-full" placeholder="1000" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Inflation Rate (%)</label>
+            <input type="number" data-inflation-calculator-target="rate" data-action="input->inflation-calculator#calculate" class="w-full" placeholder="3" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Years</label>
+            <input type="number" data-inflation-calculator-target="years" data-action="input->inflation-calculator#calculate" class="w-full" placeholder="10" step="1" min="1" max="100">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Future Value</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-inflation-calculator-target="resultFutureValue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Purchasing Power Loss</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-inflation-calculator-target="resultLoss">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->inflation-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Inflation Calculator</h2>
+      <p>
+        This inflation calculator shows you how rising prices erode the value of your money over time. Enter the present value of an item or amount of money, the expected annual inflation rate, and the number of years into the future you want to project. The calculator instantly computes the future value, what that item will cost in the future, and the purchasing power loss, how much value your current dollars will have lost.
+      </p>
+      <p>
+        Understanding the impact of inflation is crucial for long-term financial planning. Whether you are saving for retirement, planning a major purchase, or negotiating a salary, inflation determines how far your money will stretch in the future. A dollar today is worth more than a dollar tomorrow because inflation steadily reduces what each dollar can buy. This calculator helps you quantify that effect so you can plan accordingly.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Inflation Formula</h2>
+      <p>
+        The future value under inflation is calculated using the compound growth formula: <strong>FV = PV &times; (1 + r)<sup>n</sup></strong>, where <em>PV</em> is the present value, <em>r</em> is the annual inflation rate expressed as a decimal, and <em>n</em> is the number of years. The purchasing power loss is simply the difference between the future value and the present value: <strong>Loss = FV - PV</strong>. This shows how much more you will need to pay for the same goods in the future.
+      </p>
+
+      <h3>Historical Inflation Trends</h3>
+      <p>
+        In the United States, inflation has averaged roughly 3% per year over the past century, though it has varied significantly by decade. The 1970s saw double-digit inflation peaking near 14%, while the 2010s experienced historically low rates near 1.5-2%. The Federal Reserve targets 2% annual inflation as a balance between economic growth and price stability. When planning, using a range of 2-4% helps account for uncertainty.
+      </p>
+
+      <h3>The Rule of 72</h3>
+      <p>
+        A handy shortcut for understanding inflation is the Rule of 72. Divide 72 by the inflation rate to estimate how many years it takes for prices to double. At 3% inflation, prices double roughly every 24 years. At 6% inflation, prices double every 12 years. This mental math helps you quickly grasp the long-term impact without needing a calculator.
+      </p>
+
+      <h3>Inflation and Retirement Planning</h3>
+      <p>
+        Inflation is one of the biggest risks to retirement savings. If you plan to retire in 30 years and inflation averages 3%, prices will more than double. That means a comfortable retirement budget of $50,000 per year in today's dollars will require over $121,000 per year in future dollars. This is why financial advisors emphasize investing in assets that outpace inflation rather than relying solely on cash savings, which lose real value over time.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does inflation affect purchasing power?</h3>
+      <p>
+        Inflation erodes purchasing power by increasing the general price level over time. If inflation averages 3% per year, something that costs $100 today will cost about $134 in 10 years. Your dollars buy less as prices rise, which is why savings that do not grow at least as fast as inflation effectively lose value.
+      </p>
+
+      <h3>What is a normal inflation rate?</h3>
+      <p>
+        Central banks in most developed economies target an inflation rate of about 2% per year, which is considered healthy for economic growth. Historically, U.S. inflation has averaged roughly 3% annually over the past century. Rates above 5-6% are generally considered high, while negative inflation (deflation) can signal economic trouble.
+      </p>
+
+      <h3>How is the future value calculated with inflation?</h3>
+      <p>
+        The future value is calculated using the formula FV = PV x (1 + r)^n, where PV is the present value, r is the annual inflation rate as a decimal, and n is the number of years. This shows how much more something will cost in the future due to inflation.
+      </p>
+
+      <h3>What is the difference between real and nominal returns?</h3>
+      <p>
+        Nominal returns are the raw percentage gain on an investment before adjusting for inflation. Real returns subtract the inflation rate, showing your actual increase in purchasing power. For example, if your investment earns 8% but inflation is 3%, your real return is approximately 5%. Real returns are what truly matter for wealth building.
+      </p>
+
+      <h3>How can I protect my savings from inflation?</h3>
+      <p>
+        To outpace inflation, invest in assets that historically grow faster than the inflation rate, such as stocks, real estate, or Treasury Inflation-Protected Securities (TIPS). Keeping large sums in a standard savings account often fails to keep up with inflation. Diversifying across asset classes helps maintain purchasing power over the long term.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Compound Interest Calculator", description: "See how your money grows over time with compound interest.", path: finance_compound_interest_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Investment Calculator", description: "Project the future value of your investments with regular contributions.", path: finance_investment_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Retirement Calculator", description: "Plan your retirement savings and estimate your monthly retirement income.", path: finance_retirement_path, icon_path: "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

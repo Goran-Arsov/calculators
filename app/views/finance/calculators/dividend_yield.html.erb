@@ -1,0 +1,193 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Dividend Yield Calculator - Free Online Tool",
+  description: "Calculate dividend yield, annual dividend, or stock price using the dividend yield formula. Free calculator with three solving modes and real-time results — no sign-up required.",
+  canonical: finance_dividend_yield_url,
+  og: {
+    title: "Dividend Yield Calculator - Free Online Tool | CalcWise",
+    description: "Calculate dividend yield, annual dividend, or stock price using the dividend yield formula. Free calculator with three solving modes and real-time results.",
+    url: finance_dividend_yield_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Dividend Yield Calculator", url: finance_dividend_yield_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do you calculate dividend yield?", answer: "Dividend yield is calculated by dividing the annual dividend per share by the stock price per share, then multiplying by 100. The formula is: Yield (%) = (Annual Dividend / Stock Price) x 100. For example, a stock priced at $50 that pays $2.50 annually has a yield of (2.50 / 50) x 100 = 5%." },
+  { question: "What is a good dividend yield?", answer: "A good dividend yield typically ranges from 2% to 6%. Yields below 2% may not provide meaningful income, while yields above 6-8% can signal financial trouble or an unsustainable payout. The average S&P 500 dividend yield is around 1.5-2%. Compare yields within the same sector for a fair assessment, as different industries have different norms." },
+  { question: "What is the difference between dividend yield and dividend payout ratio?", answer: "Dividend yield measures the dividend relative to the stock price, telling investors what percentage return they receive in dividends. Dividend payout ratio measures the dividend relative to earnings, showing what fraction of profits a company distributes. A high yield with a low payout ratio suggests the dividend is well-supported by earnings." },
+  { question: "How often are dividends paid?", answer: "Most U.S. companies pay dividends quarterly (four times per year). Some pay monthly, semi-annually, or annually. REITs and certain income-focused investments often pay monthly. When calculating yield, always use the total annual dividend regardless of payment frequency. Multiply the quarterly dividend by 4 to get the annual figure." },
+  { question: "Can dividend yield change over time?", answer: "Yes, dividend yield changes whenever the stock price or dividend amount changes. If a stock price drops but the dividend stays the same, the yield rises. If the company increases its dividend, the yield rises at the current price. Yield is a dynamic ratio, not a fixed return, so it fluctuates daily with stock price movements." }
+]) %>
+
+<%= calculator_schema(
+  name: "Dividend Yield Calculator",
+  description: "Calculate dividend yield, annual dividend, or stock price using the dividend yield formula.",
+  url: finance_dividend_yield_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Dividend Yield Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Dividend Yield Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate dividend yield, annual dividend, or stock price using the formula Yield = (Annual Dividend / Price) &times; 100.</p>
+
+    <div data-controller="dividend-yield-calculator" class="space-y-5 mb-8">
+      <%# Card 1: Solve for Yield %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">Y</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Solve for Yield</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">Yield = (Dividend / Price) &times; 100</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Dividend ($)</label>
+            <input type="number" data-dividend-yield-calculator-target="dividendForYield" data-action="input->dividend-yield-calculator#calcYield" class="w-full" placeholder="2.50" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Stock Price ($)</label>
+            <input type="number" data-dividend-yield-calculator-target="priceForYield" data-action="input->dividend-yield-calculator#calcYield" class="w-full" placeholder="50" step="any" min="0">
+          </div>
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Yield</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-dividend-yield-calculator-target="resultYield" data-result>&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 2: Solve for Dividend %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">D</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Solve for Dividend</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">Dividend = Price &times; Yield / 100</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Stock Price ($)</label>
+            <input type="number" data-dividend-yield-calculator-target="priceForDividend" data-action="input->dividend-yield-calculator#calcDividend" class="w-full" placeholder="50" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Yield (%)</label>
+            <input type="number" data-dividend-yield-calculator-target="yieldForDividend" data-action="input->dividend-yield-calculator#calcDividend" class="w-full" placeholder="5" step="any" min="0">
+          </div>
+          <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Annual Dividend</span>
+            <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400" data-dividend-yield-calculator-target="resultDividend" data-result>&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 3: Solve for Price %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">P</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Solve for Price</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">Price = Dividend / (Yield / 100)</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Dividend ($)</label>
+            <input type="number" data-dividend-yield-calculator-target="dividendForPrice" data-action="input->dividend-yield-calculator#calcPrice" class="w-full" placeholder="2.50" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Yield (%)</label>
+            <input type="number" data-dividend-yield-calculator-target="yieldForPrice" data-action="input->dividend-yield-calculator#calcPrice" class="w-full" placeholder="5" step="any" min="0">
+          </div>
+          <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Stock Price</span>
+            <span class="text-xl font-bold text-amber-600 dark:text-amber-400" data-dividend-yield-calculator-target="resultPrice" data-result>&mdash;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Dividend Yield Calculator</h2>
+      <p>
+        This calculator solves for any variable in the dividend yield equation. Use the first card to calculate the yield when you know the annual dividend and stock price. Use the second card to find what annual dividend a stock must pay to achieve a desired yield at a given price. Use the third card to determine what stock price would produce a target yield for a known dividend. Results update instantly as you type, making it easy to explore different scenarios.
+      </p>
+      <p>
+        Dividend yield is a key metric for income-focused investors. It shows the annual return you receive from dividends alone, before considering any capital appreciation. Comparing yields across different stocks, sectors, and asset classes helps you build a portfolio that matches your income needs and risk tolerance.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Dividend Yield Formula</h2>
+      <p>
+        The dividend yield formula is: <strong>Yield (%) = (Annual Dividend per Share / Stock Price per Share) &times; 100</strong>. This can be rearranged to solve for the other two variables: <strong>Dividend = Price &times; Yield / 100</strong> and <strong>Price = Dividend / (Yield / 100)</strong>. Always use the annual total dividend, even if the company pays quarterly. Multiply the quarterly payment by four to get the annual figure.
+      </p>
+
+      <h3>High Yield vs. Yield Traps</h3>
+      <p>
+        A high dividend yield is not always good news. When a stock price falls sharply, the yield automatically increases even if the dividend has not changed. This can create a "yield trap" where the high yield lures investors into a stock whose fundamentals are deteriorating. Before investing based on yield, check the company's earnings, payout ratio, and dividend history. A sustainable dividend backed by strong earnings is far more valuable than an unsustainably high yield.
+      </p>
+
+      <h3>Dividend Growth Investing</h3>
+      <p>
+        Many investors prefer stocks with moderate but consistently growing dividends over stocks with the highest current yield. A company that increases its dividend by 7-10% annually can deliver significant income growth over time. A $2 dividend growing at 8% per year becomes $4.32 in 10 years and $9.32 in 20 years. This approach, known as dividend growth investing, combines current income with long-term income growth potential.
+      </p>
+
+      <h3>Yield Across Asset Classes</h3>
+      <p>
+        Dividend yield is not limited to individual stocks. ETFs, mutual funds, REITs, and preferred stocks all have yields. REITs often offer yields of 4-8% because they are required to distribute most of their income. Preferred stocks typically yield 4-6%. Bond yields, while calculated differently, serve a similar function. Comparing yields across asset classes helps you allocate capital efficiently for income generation.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do you calculate dividend yield?</h3>
+      <p>
+        Dividend yield is calculated by dividing the annual dividend per share by the stock price per share, then multiplying by 100. For example, a stock priced at $50 that pays $2.50 annually has a yield of 5%.
+      </p>
+
+      <h3>What is a good dividend yield?</h3>
+      <p>
+        A good dividend yield typically ranges from 2% to 6%. Yields below 2% may not provide meaningful income, while yields above 6-8% can signal financial trouble. The average S&P 500 dividend yield is around 1.5-2%. Compare yields within the same sector for a fair assessment.
+      </p>
+
+      <h3>What is the difference between dividend yield and dividend payout ratio?</h3>
+      <p>
+        Dividend yield measures the dividend relative to the stock price, telling investors what percentage return they receive in dividends. Dividend payout ratio measures the dividend relative to earnings, showing what fraction of profits a company distributes.
+      </p>
+
+      <h3>How often are dividends paid?</h3>
+      <p>
+        Most U.S. companies pay dividends quarterly. Some pay monthly, semi-annually, or annually. REITs often pay monthly. When calculating yield, always use the total annual dividend regardless of payment frequency.
+      </p>
+
+      <h3>Can dividend yield change over time?</h3>
+      <p>
+        Yes, dividend yield changes whenever the stock price or dividend amount changes. If a stock price drops but the dividend stays the same, the yield rises. Yield is a dynamic ratio that fluctuates daily with stock price movements.
+      </p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Investment Calculator", description: "Project the future value of your investments with regular contributions.", path: finance_investment_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "DCA Calculator", description: "See the power of dollar-cost averaging with regular monthly investments.", path: finance_dca_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Compound Interest Calculator", description: "See how your money grows over time with compound interest.", path: finance_compound_interest_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -7,6 +7,12 @@ module Math
     def area; end
     def circumference; end
     def exponent; end
+    def pythagorean; end
+    def quadratic; end
+    def standard_deviation; end
+    def gcd_lcm; end
+    def sample_size; end
+    def aspect_ratio; end
 
     private
 

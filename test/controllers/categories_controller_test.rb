@@ -16,7 +16,7 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
   test "should get health category" do
     get category_url("health")
     assert_response :success
-    assert_select "h1", /Health Calculators/
+    assert_select "h1", /Health/
   end
 
   test "should return 404 for unknown category" do

@@ -31,5 +31,41 @@ module Math
       assert_response :success
       assert_select "h1", /Exponent Calculator/
     end
+
+    test "should get pythagorean" do
+      get math_pythagorean_url
+      assert_response :success
+      assert_select "h1", /Pythagorean/
+    end
+
+    test "should get quadratic" do
+      get math_quadratic_url
+      assert_response :success
+      assert_select "h1", /Quadratic/
+    end
+
+    test "should get standard_deviation" do
+      get math_standard_deviation_url
+      assert_response :success
+      assert_select "h1", /Standard Deviation/
+    end
+
+    test "should get gcd_lcm" do
+      get math_gcd_lcm_url
+      assert_response :success
+      assert_select "h1", /GCD/
+    end
+
+    test "should get sample_size" do
+      get math_sample_size_url
+      assert_response :success
+      assert_select "h1", /Sample Size/
+    end
+
+    test "should get aspect_ratio" do
+      get math_aspect_ratio_url
+      assert_response :success
+      assert_select "h1", /Aspect Ratio/
+    end
   end
 end

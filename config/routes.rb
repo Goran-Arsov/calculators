@@ -12,6 +12,15 @@ Rails.application.routes.draw do
     get "debt-payoff-calculator", to: "calculators#debt_payoff", as: :debt_payoff
     get "salary-calculator", to: "calculators#salary", as: :salary
     get "savings-goal-calculator", to: "calculators#savings_goal", as: :savings_goal
+    get "roi-calculator", to: "calculators#roi", as: :roi
+    get "profit-margin-calculator", to: "calculators#profit_margin", as: :profit_margin
+    get "inflation-calculator", to: "calculators#inflation", as: :inflation
+    get "break-even-calculator", to: "calculators#break_even", as: :break_even
+    get "markup-margin-calculator", to: "calculators#markup_margin", as: :markup_margin
+    get "rent-vs-buy-calculator", to: "calculators#rent_vs_buy", as: :rent_vs_buy
+    get "dividend-yield-calculator", to: "calculators#dividend_yield", as: :dividend_yield
+    get "dca-calculator", to: "calculators#dca", as: :dca
+    get "solar-savings-calculator", to: "calculators#solar_savings", as: :solar_savings
   end
 
   # Math calculators
@@ -21,6 +30,12 @@ Rails.application.routes.draw do
     get "area-calculator", to: "calculators#area", as: :area
     get "circumference-calculator", to: "calculators#circumference", as: :circumference
     get "exponent-calculator", to: "calculators#exponent", as: :exponent
+    get "pythagorean-theorem-calculator", to: "calculators#pythagorean", as: :pythagorean
+    get "quadratic-equation-calculator", to: "calculators#quadratic", as: :quadratic
+    get "standard-deviation-calculator", to: "calculators#standard_deviation", as: :standard_deviation
+    get "gcd-lcm-calculator", to: "calculators#gcd_lcm", as: :gcd_lcm
+    get "sample-size-calculator", to: "calculators#sample_size", as: :sample_size
+    get "aspect-ratio-calculator", to: "calculators#aspect_ratio", as: :aspect_ratio
   end
 
   # Physics calculators
@@ -37,6 +52,7 @@ Rails.application.routes.draw do
     get "wire-gauge-calculator", to: "calculators#wire_gauge", as: :wire_gauge
     get "decibel-calculator", to: "calculators#decibel", as: :decibel
     get "wavelength-frequency-calculator", to: "calculators#wavelength_frequency", as: :wavelength_frequency
+    get "planet-weight-calculator", to: "calculators#planet_weight", as: :planet_weight
   end
 
   # Health calculators
@@ -44,6 +60,35 @@ Rails.application.routes.draw do
     get "bmi-calculator", to: "calculators#bmi", as: :bmi
     get "calorie-calculator", to: "calculators#calorie", as: :calorie
     get "body-fat-calculator", to: "calculators#body_fat", as: :body_fat
+    get "pregnancy-due-date-calculator", to: "calculators#pregnancy_due_date", as: :pregnancy_due_date
+    get "tdee-calculator", to: "calculators#tdee", as: :tdee
+    get "macro-calculator", to: "calculators#macro", as: :macro
+    get "pace-calculator", to: "calculators#pace", as: :pace
+    get "water-intake-calculator", to: "calculators#water_intake", as: :water_intake
+    get "sleep-calculator", to: "calculators#sleep", as: :sleep
+    get "one-rep-max-calculator", to: "calculators#one_rep_max", as: :one_rep_max
+    get "dog-age-calculator", to: "calculators#dog_age", as: :dog_age
+  end
+
+  # Construction calculators
+  namespace :construction do
+    get "paint-calculator", to: "calculators#paint", as: :paint
+    get "flooring-calculator", to: "calculators#flooring", as: :flooring
+    get "concrete-calculator", to: "calculators#concrete", as: :concrete
+    get "gravel-mulch-calculator", to: "calculators#gravel_mulch", as: :gravel_mulch
+    get "fence-calculator", to: "calculators#fence", as: :fence
+  end
+
+  # Everyday calculators
+  namespace :everyday do
+    get "tip-calculator", to: "calculators#tip", as: :tip
+    get "discount-calculator", to: "calculators#discount", as: :discount
+    get "age-calculator", to: "calculators#age", as: :age
+    get "date-difference-calculator", to: "calculators#date_difference", as: :date_difference
+    get "gas-mileage-calculator", to: "calculators#gas_mileage", as: :gas_mileage
+    get "fuel-cost-calculator", to: "calculators#fuel_cost", as: :fuel_cost
+    get "gpa-calculator", to: "calculators#gpa", as: :gpa
+    get "cooking-converter", to: "calculators#cooking_converter", as: :cooking_converter
   end
 
   # Blog
@@ -61,7 +106,7 @@ Rails.application.routes.draw do
 
   # Category landing pages (must be last to avoid catching other routes)
   get ":category", to: "categories#show", as: :category,
-      constraints: { category: /finance|math|physics|health/ }
+      constraints: { category: /finance|math|physics|health|construction|everyday/ }
 
   root "home#index"
 end

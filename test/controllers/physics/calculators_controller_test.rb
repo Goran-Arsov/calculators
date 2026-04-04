@@ -73,5 +73,11 @@ module Physics
       assert_response :success
       assert_select "h1", /Wavelength/
     end
+
+    test "should get planet_weight" do
+      get physics_planet_weight_url
+      assert_response :success
+      assert_select "h1", /Planet Weight/
+    end
   end
 end
