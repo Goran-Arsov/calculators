@@ -31,5 +31,47 @@ module Physics
       assert_response :success
       assert_select "h1", /Projectile Motion Calculator/
     end
+
+    test "should get element_mass" do
+      get physics_element_mass_url
+      assert_response :success
+      assert_select "h1", /Element Mass Calculator/
+    end
+
+    test "should get element_volume" do
+      get physics_element_volume_url
+      assert_response :success
+      assert_select "h1", /Element Volume Calculator/
+    end
+
+    test "should get unit_converter" do
+      get physics_unit_converter_url
+      assert_response :success
+      assert_select "h1", /Unit Converter/
+    end
+
+    test "should get electricity_cost" do
+      get physics_electricity_cost_url
+      assert_response :success
+      assert_select "h1", /Electricity Cost Calculator/
+    end
+
+    test "should get wire_gauge" do
+      get physics_wire_gauge_url
+      assert_response :success
+      assert_select "h1", /Wire Gauge Calculator/
+    end
+
+    test "should get decibel" do
+      get physics_decibel_url
+      assert_response :success
+      assert_select "h1", /Decibel.*Calculator/
+    end
+
+    test "should get wavelength_frequency" do
+      get physics_wavelength_frequency_url
+      assert_response :success
+      assert_select "h1", /Wavelength/
+    end
   end
 end

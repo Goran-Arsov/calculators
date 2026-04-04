@@ -1,42 +1,38 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["force", "mass", "acceleration", "mode",
-                     "resultForce", "resultMass", "resultAcceleration"]
+  static targets = [
+    "massForF", "accForF", "resultForce",
+    "forceForM", "accForM", "resultMass",
+    "forceForA", "massForA", "resultAcceleration"
+  ]
 
-  calculate() {
-    const mode = this.modeTarget.value
-    const f = parseFloat(this.forceTarget.value)
-    const m = parseFloat(this.massTarget.value)
-    const a = parseFloat(this.accelerationTarget.value)
-
-    if (mode === "force" && m > 0 && a !== undefined && !isNaN(a)) {
-      this.resultForceTarget.textContent = this.fmt(m * a)
-      this.resultMassTarget.textContent = this.fmt(m)
-      this.resultAccelerationTarget.textContent = this.fmt(a)
-    } else if (mode === "mass" && f !== undefined && !isNaN(f) && a !== 0 && !isNaN(a)) {
-      this.resultMassTarget.textContent = this.fmt(f / a)
-      this.resultForceTarget.textContent = this.fmt(f)
-      this.resultAccelerationTarget.textContent = this.fmt(a)
-    } else if (mode === "acceleration" && f !== undefined && !isNaN(f) && m > 0) {
-      this.resultAccelerationTarget.textContent = this.fmt(f / m)
-      this.resultForceTarget.textContent = this.fmt(f)
-      this.resultMassTarget.textContent = this.fmt(m)
-    } else {
-      this.clearResults()
-    }
+  calcForce() {
+    const m = parseFloat(this.massForFTarget.value)
+    const a = parseFloat(this.accForFTarget.value)
+    this.resultForceTarget.textContent = (m > 0 && !isNaN(a)) ? this.fmt(m * a) + " N" : "—"
   }
 
-  clearResults() {
-    this.resultForceTarget.textContent = "—"
-    this.resultMassTarget.textContent = "—"
-    this.resultAccelerationTarget.textContent = "—"
+  calcMass() {
+    const f = parseFloat(this.forceForMTarget.value)
+    const a = parseFloat(this.accForMTarget.value)
+    this.resultMassTarget.textContent = (!isNaN(f) && a !== 0 && !isNaN(a)) ? this.fmt(f / a) + " kg" : "—"
   }
 
-  fmt(n) { return n.toFixed(4).replace(/\.?0+$/, "") }
+  calcAcceleration() {
+    const f = parseFloat(this.forceForATarget.value)
+    const m = parseFloat(this.massForATarget.value)
+    this.resultAccelerationTarget.textContent = (!isNaN(f) && m > 0) ? this.fmt(f / m) + " m/s²" : "—"
+  }
 
-  copy() {
-    const text = `Force: ${this.resultForceTarget.textContent} N\nMass: ${this.resultMassTarget.textContent} kg\nAcceleration: ${this.resultAccelerationTarget.textContent} m/s²`
-    navigator.clipboard.writeText(text)
+  fmt(n) {
+    if (Math.abs(n) >= 1000) return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    return n.toFixed(4).replace(/\.?0+$/, "")
+  }
+
+  copy(event) {
+    const card = event.target.closest("[data-card]")
+    const result = card.querySelector("[data-result]")
+    navigator.clipboard.writeText(`${card.dataset.card}: ${result.textContent}`)
   }
 }

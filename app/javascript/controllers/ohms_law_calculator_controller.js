@@ -1,49 +1,59 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["voltage", "current", "resistance", "mode",
-                     "resultVoltage", "resultCurrent", "resultResistance", "resultPower"]
+  static targets = [
+    "currentForV", "resistanceForV", "resultVoltage", "powerForV",
+    "voltageForI", "resistanceForI", "resultCurrent", "powerForI",
+    "voltageForR", "currentForR", "resultResistance", "powerForR"
+  ]
 
-  calculate() {
-    const mode = this.modeTarget.value
-    const v = parseFloat(this.voltageTarget.value)
-    const i = parseFloat(this.currentTarget.value)
-    const r = parseFloat(this.resistanceTarget.value)
-
-    if (mode === "voltage" && !isNaN(i) && r > 0) {
-      const voltage = i * r
-      this.resultVoltageTarget.textContent = this.fmt(voltage)
-      this.resultCurrentTarget.textContent = this.fmt(i)
-      this.resultResistanceTarget.textContent = this.fmt(r)
-      this.resultPowerTarget.textContent = this.fmt(voltage * i)
-    } else if (mode === "current" && !isNaN(v) && r > 0) {
-      const current = v / r
-      this.resultVoltageTarget.textContent = this.fmt(v)
-      this.resultCurrentTarget.textContent = this.fmt(current)
-      this.resultResistanceTarget.textContent = this.fmt(r)
-      this.resultPowerTarget.textContent = this.fmt(v * current)
-    } else if (mode === "resistance" && !isNaN(v) && i !== 0 && !isNaN(i)) {
-      const resistance = v / i
-      this.resultVoltageTarget.textContent = this.fmt(v)
-      this.resultCurrentTarget.textContent = this.fmt(i)
-      this.resultResistanceTarget.textContent = this.fmt(resistance)
-      this.resultPowerTarget.textContent = this.fmt(v * i)
+  calcVoltage() {
+    const i = parseFloat(this.currentForVTarget.value)
+    const r = parseFloat(this.resistanceForVTarget.value)
+    if (!isNaN(i) && r > 0) {
+      const v = i * r
+      this.resultVoltageTarget.textContent = this.fmt(v) + " V"
+      this.powerForVTarget.textContent = this.fmt(v * i) + " W"
     } else {
-      this.clearResults()
+      this.resultVoltageTarget.textContent = "—"
+      this.powerForVTarget.textContent = "—"
     }
   }
 
-  clearResults() {
-    this.resultVoltageTarget.textContent = "—"
-    this.resultCurrentTarget.textContent = "—"
-    this.resultResistanceTarget.textContent = "—"
-    this.resultPowerTarget.textContent = "—"
+  calcCurrent() {
+    const v = parseFloat(this.voltageForITarget.value)
+    const r = parseFloat(this.resistanceForITarget.value)
+    if (!isNaN(v) && r > 0) {
+      const i = v / r
+      this.resultCurrentTarget.textContent = this.fmt(i) + " A"
+      this.powerForITarget.textContent = this.fmt(v * i) + " W"
+    } else {
+      this.resultCurrentTarget.textContent = "—"
+      this.powerForITarget.textContent = "—"
+    }
   }
 
-  fmt(n) { return n.toFixed(4).replace(/\.?0+$/, "") }
+  calcResistance() {
+    const v = parseFloat(this.voltageForRTarget.value)
+    const i = parseFloat(this.currentForRTarget.value)
+    if (!isNaN(v) && i !== 0 && !isNaN(i)) {
+      const r = v / i
+      this.resultResistanceTarget.textContent = this.fmt(r) + " \u03A9"
+      this.powerForRTarget.textContent = this.fmt(v * i) + " W"
+    } else {
+      this.resultResistanceTarget.textContent = "—"
+      this.powerForRTarget.textContent = "—"
+    }
+  }
 
-  copy() {
-    const text = `Voltage: ${this.resultVoltageTarget.textContent} V\nCurrent: ${this.resultCurrentTarget.textContent} A\nResistance: ${this.resultResistanceTarget.textContent} Ω\nPower: ${this.resultPowerTarget.textContent} W`
-    navigator.clipboard.writeText(text)
+  fmt(n) {
+    if (Math.abs(n) >= 1000) return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    return n.toFixed(4).replace(/\.?0+$/, "")
+  }
+
+  copy(event) {
+    const card = event.target.closest("[data-card]")
+    const result = card.querySelector("[data-result]")
+    navigator.clipboard.writeText(`${card.dataset.card}: ${result.textContent}`)
   }
 }

@@ -30,6 +30,13 @@ Rails.application.routes.draw do
     get "kinetic-energy-calculator", to: "calculators#kinetic_energy", as: :kinetic_energy
     get "ohms-law-calculator", to: "calculators#ohms_law", as: :ohms_law
     get "projectile-motion-calculator", to: "calculators#projectile_motion", as: :projectile_motion
+    get "element-mass-calculator", to: "calculators#element_mass", as: :element_mass
+    get "element-volume-calculator", to: "calculators#element_volume", as: :element_volume
+    get "unit-converter", to: "calculators#unit_converter", as: :unit_converter
+    get "electricity-cost-calculator", to: "calculators#electricity_cost", as: :electricity_cost
+    get "wire-gauge-calculator", to: "calculators#wire_gauge", as: :wire_gauge
+    get "decibel-calculator", to: "calculators#decibel", as: :decibel
+    get "wavelength-frequency-calculator", to: "calculators#wavelength_frequency", as: :wavelength_frequency
   end
 
   # Health calculators

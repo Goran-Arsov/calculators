@@ -1,0 +1,144 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Element Mass Calculator - Free Online Tool",
+  description: "Calculate the mass of any chemical element from its volume using accurate density data for all 118 elements. Instant results with a complete density reference table.",
+  canonical: physics_element_mass_url,
+  og: {
+    title: "Element Mass Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the mass of any chemical element from its volume using accurate density data for all 118 elements.",
+    url: physics_element_mass_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Element Mass Calculator", url: physics_element_mass_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do you calculate the mass of an element from its volume?", answer: "Mass equals density multiplied by volume: m = ρ × V. Select the element to get its density, enter the volume in cubic centimeters (cm³), and the calculator instantly computes the mass in grams. This relationship is fundamental to chemistry and materials science." },
+  { question: "What is density and how does it relate to mass and volume?", answer: "Density is the mass per unit volume of a substance, typically measured in grams per cubic centimeter (g/cm³). It is an intrinsic physical property of each element. The formula ρ = m / V can be rearranged to find mass (m = ρ × V) or volume (V = m / ρ)." },
+  { question: "Which element has the highest density?", answer: "Osmium (Os) is the densest naturally occurring element at 22.587 g/cm³, followed closely by Iridium (Ir) at 22.56 g/cm³. Both are platinum-group metals. For comparison, iron has a density of 7.874 g/cm³ and aluminium is 2.699 g/cm³." },
+  { question: "Why do gases have such low density values?", answer: "Gas densities listed here are at standard temperature and pressure (STP: 0°C, 1 atm). At STP, gas molecules are spread far apart compared to solids and liquids, resulting in densities thousands of times lower. For example, hydrogen gas is 0.00008988 g/cm³ versus solid iron at 7.874 g/cm³." },
+  { question: "Are the density values exact for all elements?", answer: "Density values for common stable elements are well-established and accurate to the digits shown. For radioactive and synthetic elements (especially those beyond element 99), densities may be estimated or predicted from theoretical calculations, as these elements are too short-lived or produced in too small quantities to measure directly." }
+]) %>
+
+<%= calculator_schema(
+  name: "Element Mass Calculator",
+  description: "Calculate the mass of any chemical element given its volume, using accurate density data for all 118 elements.",
+  url: physics_element_mass_url,
+  category: "EducationalApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Element Mass Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Element Mass Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Select any element and enter a volume to instantly calculate the mass using the formula m = density x volume.</p>
+
+    <div data-controller="element-mass-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Element</label>
+            <select data-element-mass-calculator-target="element" data-action="change->element-mass-calculator#calculate" class="w-full">
+              <option value="">Select an element...</option>
+              <% Physics::ElementData::CALCULABLE_ELEMENTS.each do |el| %>
+                <option value="<%= el[:symbol] %>"><%= el[:z] %>. <%= el[:name] %> (<%= el[:symbol] %>) — <%= el[:density] %> g/cm³</option>
+              <% end %>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Volume (cm³)</label>
+            <input type="number" data-element-mass-calculator-target="volume" data-action="input->element-mass-calculator#calculate" class="w-full" placeholder="1" step="any" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Element</span>
+              <span class="text-base font-bold text-blue-600 dark:text-blue-400" data-element-mass-calculator-target="resultElement">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Density</span>
+              <span class="text-base font-bold text-blue-600 dark:text-blue-400" data-element-mass-calculator-target="resultDensity">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-100 dark:border-blue-800/30">
+              <span class="text-gray-600 dark:text-gray-400">Mass</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-element-mass-calculator-target="resultMass">—</span>
+            </div>
+          </div>
+          <button data-action="click->element-mass-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Element Mass Calculator</h2>
+      <p>This calculator uses the fundamental relationship between mass, density, and volume to compute the mass of any chemical element. Select an element from the dropdown menu, which lists all 99 elements with known density values along with their atomic number and density in grams per cubic centimeter. Then enter the volume of the element in cubic centimeters (cm³). The calculator instantly multiplies the density by the volume to give you the mass in grams.</p>
+
+      <p>This tool is useful in chemistry labs for calculating expected sample masses, in materials science for estimating component weights, in engineering for structural analysis, and in education for understanding the physical properties of elements. The density values represent standard conditions at 20°C and 1 atmosphere of pressure.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Mass-Density-Volume Formula</h2>
+      <p>The relationship between mass, density, and volume is expressed as:</p>
+      <ul>
+        <li><strong>m = ρ x V</strong> — Mass equals density times volume</li>
+        <li><strong>ρ = m / V</strong> — Density equals mass divided by volume</li>
+        <li><strong>V = m / ρ</strong> — Volume equals mass divided by density</li>
+      </ul>
+      <p>Where m is mass in grams (g), ρ (rho) is density in grams per cubic centimeter (g/cm³), and V is volume in cubic centimeters (cm³). This formula applies to any substance, not just elements, as long as you know the correct density.</p>
+
+      <h3>Understanding Element Densities</h3>
+      <p>Element densities span an enormous range. The lightest element, hydrogen gas, has a density of just 0.00008988 g/cm³ at standard conditions, while the densest element, osmium, reaches 22.587 g/cm³. This means a cubic centimeter of osmium weighs over 250,000 times more than the same volume of hydrogen gas. Among everyday metals, aluminium (2.699 g/cm³) is relatively light, iron (7.874 g/cm³) is moderate, and gold (19.282 g/cm³) is notably heavy.</p>
+
+      <h3>Practical Applications</h3>
+      <p>Knowing element masses from volumes is essential in many fields. Jewelers calculate gold mass to determine value. Engineers estimate the weight of metal components before fabrication. Chemists prepare precise amounts of reagents for reactions. Nuclear physicists compute fuel rod masses for reactor design. Even archaeologists use density measurements to authenticate metal artifacts by comparing expected versus actual masses.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do you calculate the mass of an element from its volume?</h3>
+      <p>Mass equals density multiplied by volume: m = ρ x V. Select the element to get its density, enter the volume in cubic centimeters (cm³), and the calculator instantly computes the mass in grams.</p>
+
+      <h3>What is density and how does it relate to mass and volume?</h3>
+      <p>Density is the mass per unit volume of a substance, typically measured in g/cm³. It is an intrinsic property of each element. The formula ρ = m / V can be rearranged to find mass (m = ρ x V) or volume (V = m / ρ).</p>
+
+      <h3>Which element has the highest density?</h3>
+      <p>Osmium (Os) is the densest naturally occurring element at 22.587 g/cm³, followed closely by Iridium (Ir) at 22.56 g/cm³. Both are platinum-group metals.</p>
+
+      <h3>Why do gases have such low density values?</h3>
+      <p>Gas densities listed here are at standard temperature and pressure (STP). Gas molecules are spread far apart compared to solids and liquids, resulting in densities thousands of times lower.</p>
+
+      <h3>Are the density values exact for all elements?</h3>
+      <p>Density values for common stable elements are well-established and accurate. For radioactive and synthetic elements beyond element 99, densities may be estimated, as these elements are too short-lived to measure directly.</p>
+    </article>
+
+    <%= render "shared/element_density_table" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Element Volume Calculator", description: "Calculate the volume of any element given its mass.", path: physics_element_volume_path, icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
+      { name: "Force Calculator", description: "Calculate force, mass, or acceleration using Newton's second law.", path: physics_force_path, icon_path: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" },
+      { name: "Kinetic Energy Calculator", description: "Calculate kinetic energy, mass, or velocity using KE = 1/2 mv².", path: physics_kinetic_energy_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

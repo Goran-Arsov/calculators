@@ -24,6 +24,14 @@ import KineticEnergyCalculatorController from "controllers/kinetic_energy_calcul
 import OhmsLawCalculatorController from "controllers/ohms_law_calculator_controller"
 import ProjectileMotionCalculatorController from "controllers/projectile_motion_calculator_controller"
 
+import ElementMassCalculatorController from "controllers/element_mass_calculator_controller"
+import ElementVolumeCalculatorController from "controllers/element_volume_calculator_controller"
+import UnitConverterController from "controllers/unit_converter_controller"
+import ElectricityCostCalculatorController from "controllers/electricity_cost_calculator_controller"
+import WireGaugeCalculatorController from "controllers/wire_gauge_calculator_controller"
+import DecibelCalculatorController from "controllers/decibel_calculator_controller"
+import WavelengthFrequencyCalculatorController from "controllers/wavelength_frequency_calculator_controller"
+
 // Health calculators
 import BmiCalculatorController from "controllers/bmi_calculator_controller"
 import CalorieCalculatorController from "controllers/calorie_calculator_controller"
@@ -32,6 +40,7 @@ import BodyFatCalculatorController from "controllers/body_fat_calculator_control
 // UI controllers
 import DarkModeController from "controllers/dark_mode_controller"
 import NavbarController from "controllers/navbar_controller"
+import CalculatorSearchController from "controllers/calculator_search_controller"
 
 // Finance
 application.register("mortgage-calculator", MortgageCalculatorController)
@@ -56,6 +65,13 @@ application.register("force-calculator", ForceCalculatorController)
 application.register("kinetic-energy-calculator", KineticEnergyCalculatorController)
 application.register("ohms-law-calculator", OhmsLawCalculatorController)
 application.register("projectile-motion-calculator", ProjectileMotionCalculatorController)
+application.register("element-mass-calculator", ElementMassCalculatorController)
+application.register("element-volume-calculator", ElementVolumeCalculatorController)
+application.register("unit-converter", UnitConverterController)
+application.register("electricity-cost-calculator", ElectricityCostCalculatorController)
+application.register("wire-gauge-calculator", WireGaugeCalculatorController)
+application.register("decibel-calculator", DecibelCalculatorController)
+application.register("wavelength-frequency-calculator", WavelengthFrequencyCalculatorController)
 
 // Health
 application.register("bmi-calculator", BmiCalculatorController)
@@ -65,3 +81,4 @@ application.register("body-fat-calculator", BodyFatCalculatorController)
 // UI
 application.register("dark-mode", DarkModeController)
 application.register("navbar", NavbarController)
+application.register("calculator-search", CalculatorSearchController)

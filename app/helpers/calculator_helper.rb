@@ -23,7 +23,14 @@ module CalculatorHelper
     { name: "Force Calculator", slug: "force-calculator", path: :physics_force_path, description: "Calculate force, mass, or acceleration using Newton's second law (F = ma).", icon_path: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" },
     { name: "Kinetic Energy Calculator", slug: "kinetic-energy-calculator", path: :physics_kinetic_energy_path, description: "Calculate kinetic energy, mass, or velocity using KE = 1/2 mv².", icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
     { name: "Ohm's Law Calculator", slug: "ohms-law-calculator", path: :physics_ohms_law_path, description: "Calculate voltage, current, or resistance using Ohm's law (V = IR).", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
-    { name: "Projectile Motion Calculator", slug: "projectile-motion-calculator", path: :physics_projectile_motion_path, description: "Calculate range, max height, and flight time for projectile motion.", icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    { name: "Projectile Motion Calculator", slug: "projectile-motion-calculator", path: :physics_projectile_motion_path, description: "Calculate range, max height, and flight time for projectile motion.", icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+    { name: "Element Mass Calculator", slug: "element-mass-calculator", path: :physics_element_mass_path, description: "Calculate the mass of any element given its volume using density data for all 118 elements.", icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+    { name: "Element Volume Calculator", slug: "element-volume-calculator", path: :physics_element_volume_path, description: "Calculate the volume of any element given its mass using density data for all 118 elements.", icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
+    { name: "Unit Converter", slug: "unit-converter", path: :physics_unit_converter_path, description: "Convert between common units of length, weight, temperature, speed, and more.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+    { name: "Electricity Cost Calculator", slug: "electricity-cost-calculator", path: :physics_electricity_cost_path, description: "Calculate your electricity bill from power usage, time, and rate — or solve for any variable.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+    { name: "Wire Gauge Calculator", slug: "wire-gauge-calculator", path: :physics_wire_gauge_path, description: "Look up AWG wire diameter, cross-section area, resistance, and max ampacity.", icon_path: "M4 6h16M4 12h16M4 18h7" },
+    { name: "Decibel Calculator", slug: "decibel-calculator", path: :physics_decibel_path, description: "Convert between decibels and power or voltage ratios, and add dB levels.", icon_path: "M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5.586V18.414a1 1 0 01-1.707.707L5.586 15z" },
+    { name: "Wavelength & Frequency Calculator", slug: "wavelength-frequency-calculator", path: :physics_wavelength_frequency_path, description: "Calculate wavelength, frequency, period, or energy of electromagnetic waves.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
   ].freeze
 
   HEALTH_CALCULATORS = [
@@ -68,5 +75,18 @@ module CalculatorHelper
       .reject { |c| c[:slug] == current_slug }
       .sample(count)
       .map { |c| c.merge(path: resolve_calculator_path(c)) }
+  end
+
+  def all_calculators_json
+    ALL_CATEGORIES.flat_map do |category_slug, category|
+      category[:calculators].map do |calc|
+        {
+          name: calc[:name],
+          description: calc[:description],
+          category: category[:title],
+          path: resolve_calculator_path(calc)
+        }
+      end
+    end.to_json
   end
 end

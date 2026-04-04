@@ -1,0 +1,186 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Decibel (dB) Calculator - Free Online Tool",
+  description: "Convert between decibels and power or voltage ratios instantly. Free online dB calculator with real-time results for audio, electronics, and signal processing — no sign-up required.",
+  canonical: physics_decibel_url,
+  og: {
+    title: "Decibel (dB) Calculator - Free Online Tool | CalcWise",
+    description: "Convert between decibels and power or voltage ratios instantly. Free online dB calculator with real-time results for audio, electronics, and signal processing.",
+    url: physics_decibel_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Decibel Calculator", url: physics_decibel_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a decibel (dB)?", answer: "A decibel (dB) is a logarithmic unit used to express the ratio between two values of a physical quantity, most commonly power or amplitude (voltage). It was originally developed for measuring sound intensity but is now widely used in electronics, telecommunications, and acoustics. Because it uses a logarithmic scale, decibels can represent very large or very small ratios with manageable numbers." },
+  { question: "Why is the formula different for power dB and voltage dB?", answer: "Power decibels use a factor of 10 (dB = 10 log10(P2/P1)) while voltage decibels use a factor of 20 (dB = 20 log10(V2/V1)). This is because power is proportional to the square of voltage (P = V^2/R). When you take the logarithm of V squared, the exponent 2 comes out front as a multiplier, turning the factor of 10 into 20." },
+  { question: "What does doubling the power mean in decibels?", answer: "Doubling the power corresponds to an increase of approximately 3 dB. This is because 10 x log10(2) equals roughly 3.01 dB. Similarly, halving the power is a decrease of about 3 dB. This 3 dB rule is one of the most commonly referenced benchmarks in audio and RF engineering." },
+  { question: "Can you add decibel values directly?", answer: "Yes, one of the advantages of decibels is that multiplication and division of ratios become simple addition and subtraction. For example, if a signal passes through an amplifier with 10 dB gain and then through a cable with 3 dB loss, the net change is 10 - 3 = 7 dB. However, you cannot directly add dB values that represent separate, uncorrelated sources — those must first be converted back to linear power values, summed, and then converted back to dB." },
+  { question: "What are some common decibel values and what do they represent?", answer: "0 dB represents no change (a ratio of 1:1). 3 dB is roughly double the power. 10 dB is 10 times the power. 20 dB is 100 times the power. In acoustics, 0 dB SPL is the threshold of human hearing, normal conversation is about 60 dB SPL, and 120 dB SPL is the threshold of pain. In electronics, -3 dB is the standard cutoff frequency for filters." }
+]) %>
+
+<%= calculator_schema(
+  name: "Decibel Calculator",
+  description: "Convert between decibels and power or voltage ratios using standard logarithmic formulas.",
+  url: physics_decibel_url,
+  category: "EducationalApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Decibel Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Decibel (dB) Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert between decibels and power or voltage ratios using standard logarithmic formulas. Results update in real time.</p>
+
+    <div data-controller="decibel-calculator" class="space-y-5 mb-8">
+      <%# Card 1: Power Ratio to dB %>
+      <div data-card="Power to dB" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">P</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Power Ratio &rarr; dB</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">dB = 10 log<sub>10</sub>(P<sub>2</sub>/P<sub>1</sub>)</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Power Ratio (P<sub>2</sub>/P<sub>1</sub>)</label>
+            <input type="number" data-decibel-calculator-target="powerRatio" data-action="input->decibel-calculator#calcPowerDb" class="w-full" placeholder="2" step="any">
+          </div>
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Decibels</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-decibel-calculator-target="resultPowerDb" data-result>&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 2: dB to Power Ratio %>
+      <div data-card="dB to Power Ratio" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">P</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">dB &rarr; Power Ratio</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">P<sub>2</sub>/P<sub>1</sub> = 10<sup>(dB/10)</sup></span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Decibels (dB)</label>
+            <input type="number" data-decibel-calculator-target="powerDb" data-action="input->decibel-calculator#calcPowerRatio" class="w-full" placeholder="3" step="any">
+          </div>
+          <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Power Ratio</span>
+            <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400" data-decibel-calculator-target="resultPowerRatio" data-result>&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 3: Voltage Ratio to dB %>
+      <div data-card="Voltage to dB" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">V</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Voltage Ratio &rarr; dB</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">dB = 20 log<sub>10</sub>(V<sub>2</sub>/V<sub>1</sub>)</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Voltage Ratio (V<sub>2</sub>/V<sub>1</sub>)</label>
+            <input type="number" data-decibel-calculator-target="voltageRatio" data-action="input->decibel-calculator#calcVoltageDb" class="w-full" placeholder="2" step="any">
+          </div>
+          <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Decibels</span>
+            <span class="text-xl font-bold text-amber-600 dark:text-amber-400" data-decibel-calculator-target="resultVoltageDb" data-result>&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 4: dB to Voltage Ratio %>
+      <div data-card="dB to Voltage Ratio" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">V</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">dB &rarr; Voltage Ratio</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">V<sub>2</sub>/V<sub>1</sub> = 10<sup>(dB/20)</sup></span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Decibels (dB)</label>
+            <input type="number" data-decibel-calculator-target="voltageDb" data-action="input->decibel-calculator#calcVoltageRatio" class="w-full" placeholder="6" step="any">
+          </div>
+          <div class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Voltage Ratio</span>
+            <span class="text-xl font-bold text-violet-600 dark:text-violet-400" data-decibel-calculator-target="resultVoltageRatio" data-result>&mdash;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Decibels Work</h2>
+      <p>The <strong>decibel (dB)</strong> is a logarithmic unit that expresses the ratio between two values of a physical quantity. Rather than saying a signal is 1,000,000 times more powerful, engineers simply say it is 60 dB stronger. This logarithmic compression makes it far easier to work with the enormous ranges of power and amplitude encountered in acoustics, electronics, and telecommunications.</p>
+
+      <p>The decibel is named after Alexander Graham Bell and is defined as one-tenth of a bel. It is not an absolute unit like a watt or a volt; instead, it always describes a ratio relative to a reference level. Common reference standards include dBm (referenced to 1 milliwatt), dBV (referenced to 1 volt), and dB SPL (referenced to the threshold of human hearing at 20 micropascals).</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Power dB vs. Voltage dB</h2>
+      <p>The two most common decibel formulas differ by a factor of two. For <strong>power ratios</strong>, the formula is <strong>dB = 10 &times; log<sub>10</sub>(P<sub>2</sub>/P<sub>1</sub>)</strong>. For <strong>voltage (or amplitude) ratios</strong>, the formula is <strong>dB = 20 &times; log<sub>10</sub>(V<sub>2</sub>/V<sub>1</sub>)</strong>. The reason for this difference is that power is proportional to the square of voltage (P = V&sup2;/R). When you take the logarithm of a squared quantity, the exponent of 2 comes out as a multiplier, doubling the factor from 10 to 20. Use the power formula when comparing wattages, and the voltage formula when comparing signal amplitudes or voltages.</p>
+
+      <h2>Common Decibel Values Reference</h2>
+      <p>Understanding a few key dB values provides a useful intuitive benchmark:</p>
+      <ul>
+        <li><strong>0 dB</strong> &mdash; no change; the ratio is exactly 1:1</li>
+        <li><strong>3 dB</strong> &mdash; approximately double the power (or &radic;2 &times; the voltage)</li>
+        <li><strong>6 dB</strong> &mdash; approximately four times the power (or double the voltage)</li>
+        <li><strong>10 dB</strong> &mdash; 10 times the power</li>
+        <li><strong>20 dB</strong> &mdash; 100 times the power (or 10 times the voltage)</li>
+        <li><strong>-3 dB</strong> &mdash; half the power; this is the standard cutoff point for filters</li>
+        <li><strong>-10 dB</strong> &mdash; one-tenth the power</li>
+      </ul>
+      <p>In acoustics, the range from a whisper (around 30 dB SPL) to a rock concert (around 110 dB SPL) spans a power ratio of 100 million to one, yet it is neatly expressed as an 80 dB difference.</p>
+
+      <h3>Practical Uses of Decibels</h3>
+      <p>Decibels appear everywhere in engineering. Audio engineers use dB to set gain stages, ensuring signals stay above the noise floor but below clipping. RF engineers calculate link budgets in dB, adding antenna gains and subtracting cable losses to predict whether a receiver can detect a transmitted signal. Acousticians measure sound pressure levels in dB SPL to assess noise exposure and hearing safety. In fiber optics, insertion loss and return loss are both expressed in dB. The beauty of the logarithmic scale is that cascaded gains and losses simply add and subtract, making system-level analysis straightforward.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a decibel (dB)?</h3>
+      <p>A decibel (dB) is a logarithmic unit used to express the ratio between two values of a physical quantity, most commonly power or amplitude (voltage). It was originally developed for measuring sound intensity but is now widely used in electronics, telecommunications, and acoustics. Because it uses a logarithmic scale, decibels can represent very large or very small ratios with manageable numbers.</p>
+
+      <h3>Why is the formula different for power dB and voltage dB?</h3>
+      <p>Power decibels use a factor of 10 (dB = 10 log<sub>10</sub>(P<sub>2</sub>/P<sub>1</sub>)) while voltage decibels use a factor of 20 (dB = 20 log<sub>10</sub>(V<sub>2</sub>/V<sub>1</sub>)). This is because power is proportional to the square of voltage (P = V&sup2;/R). When you take the logarithm of V squared, the exponent 2 comes out front as a multiplier, turning the factor of 10 into 20.</p>
+
+      <h3>What does doubling the power mean in decibels?</h3>
+      <p>Doubling the power corresponds to an increase of approximately 3 dB. This is because 10 &times; log<sub>10</sub>(2) equals roughly 3.01 dB. Similarly, halving the power is a decrease of about 3 dB. This 3 dB rule is one of the most commonly referenced benchmarks in audio and RF engineering.</p>
+
+      <h3>Can you add decibel values directly?</h3>
+      <p>Yes, one of the advantages of decibels is that multiplication and division of ratios become simple addition and subtraction. For example, if a signal passes through an amplifier with 10 dB gain and then through a cable with 3 dB loss, the net change is 10 - 3 = 7 dB. However, you cannot directly add dB values that represent separate, uncorrelated sources &mdash; those must first be converted back to linear power values, summed, and then converted back to dB.</p>
+
+      <h3>What are some common decibel values and what do they represent?</h3>
+      <p>0 dB represents no change (a ratio of 1:1). 3 dB is roughly double the power. 10 dB is 10 times the power. 20 dB is 100 times the power. In acoustics, 0 dB SPL is the threshold of human hearing, normal conversation is about 60 dB SPL, and 120 dB SPL is the threshold of pain. In electronics, -3 dB is the standard cutoff frequency for filters.</p>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Wavelength & Frequency Calculator", description: "Convert between wavelength and frequency for electromagnetic and sound waves.", path: physics_wavelength_frequency_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Ohm's Law Calculator", description: "Calculate voltage, current, or resistance using Ohm's Law V = IR.", path: physics_ohms_law_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Electricity Cost Calculator", description: "Estimate your electricity costs based on power consumption and rates.", path: physics_electricity_cost_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,144 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Element Volume Calculator - Free Online Tool",
+  description: "Calculate the volume of any chemical element from its mass using accurate density data for all 118 elements. Instant results with a complete density reference table.",
+  canonical: physics_element_volume_url,
+  og: {
+    title: "Element Volume Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the volume of any chemical element from its mass using accurate density data for all 118 elements.",
+    url: physics_element_volume_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Element Volume Calculator", url: physics_element_volume_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do you calculate the volume of an element from its mass?", answer: "Volume equals mass divided by density: V = m / ρ. Select the element to get its density, enter the mass in grams, and the calculator instantly computes the volume in cubic centimeters (cm³). This is a direct application of the density formula." },
+  { question: "What units should I use for mass and volume?", answer: "This calculator uses grams (g) for mass and cubic centimeters (cm³) for volume, which are the standard units when density is given in g/cm³. One cm³ equals one milliliter (mL). To convert to liters, divide cm³ by 1,000. To convert to cubic meters, divide by 1,000,000." },
+  { question: "Which element takes up the most volume per gram?", answer: "Among solids, lithium has the lowest density at 0.534 g/cm³, meaning 1 gram of lithium occupies about 1.87 cm³. Among all elements, hydrogen gas at STP is the least dense at 0.00008988 g/cm³, so 1 gram occupies over 11,000 cm³ (11 liters)." },
+  { question: "How much volume does 1 kg of gold occupy?", answer: "Gold has a density of 19.282 g/cm³. One kilogram (1000 g) divided by 19.282 gives approximately 51.86 cm³, which is roughly the size of a cube with sides of 3.73 cm — about the size of a golf ball. This is why gold feels so heavy for its size." },
+  { question: "Can I use this calculator for alloys or compounds?", answer: "This calculator is designed for pure elements only. Alloys and compounds have different densities than their constituent elements. For example, steel (an iron-carbon alloy) has a density of about 7.8 g/cm³, which is close to but not exactly iron's 7.874 g/cm³." }
+]) %>
+
+<%= calculator_schema(
+  name: "Element Volume Calculator",
+  description: "Calculate the volume of any chemical element given its mass, using accurate density data for all 118 elements.",
+  url: physics_element_volume_url,
+  category: "EducationalApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Element Volume Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Element Volume Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Select any element and enter a mass to instantly calculate the volume using the formula V = mass / density.</p>
+
+    <div data-controller="element-volume-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Element</label>
+            <select data-element-volume-calculator-target="element" data-action="change->element-volume-calculator#calculate" class="w-full">
+              <option value="">Select an element...</option>
+              <% Physics::ElementData::CALCULABLE_ELEMENTS.each do |el| %>
+                <option value="<%= el[:symbol] %>"><%= el[:z] %>. <%= el[:name] %> (<%= el[:symbol] %>) — <%= el[:density] %> g/cm³</option>
+              <% end %>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Mass (g)</label>
+            <input type="number" data-element-volume-calculator-target="mass" data-action="input->element-volume-calculator#calculate" class="w-full" placeholder="1" step="any" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Element</span>
+              <span class="text-base font-bold text-blue-600 dark:text-blue-400" data-element-volume-calculator-target="resultElement">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Density</span>
+              <span class="text-base font-bold text-blue-600 dark:text-blue-400" data-element-volume-calculator-target="resultDensity">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-100 dark:border-blue-800/30">
+              <span class="text-gray-600 dark:text-gray-400">Volume</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-element-volume-calculator-target="resultVolume">—</span>
+            </div>
+          </div>
+          <button data-action="click->element-volume-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Element Volume Calculator</h2>
+      <p>This calculator determines how much space a given mass of any element occupies. Select an element from the dropdown, which lists all 99 elements with known density values. Then enter the mass in grams. The calculator divides the mass by the element's density to give you the volume in cubic centimeters (cm³), which is equivalent to milliliters (mL).</p>
+
+      <p>Knowing the volume of a substance from its mass is essential in many practical situations. Engineers need to know if a component will fit within a given space. Chemists calculate reagent volumes for reactions. Jewelers determine the size of a gemstone setting from the weight of a precious metal. This calculator makes these conversions instant and accurate.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Volume Formula</h2>
+      <p>The volume of a substance is calculated by rearranging the density formula:</p>
+      <ul>
+        <li><strong>V = m / ρ</strong> — Volume equals mass divided by density</li>
+        <li><strong>m = ρ x V</strong> — Mass equals density times volume</li>
+        <li><strong>ρ = m / V</strong> — Density equals mass divided by volume</li>
+      </ul>
+      <p>Where V is volume in cm³, m is mass in grams, and ρ (rho) is density in g/cm³. Since 1 cm³ = 1 mL, the volume result can also be read as milliliters.</p>
+
+      <h3>Comparing Element Volumes</h3>
+      <p>The density differences between elements lead to dramatic volume differences for the same mass. One kilogram of lithium (density 0.534 g/cm³) occupies about 1,873 cm³ — nearly two liters. The same mass of osmium (22.587 g/cm³) occupies only 44.3 cm³, roughly the size of a shot glass. This 42-fold difference in volume for the same mass illustrates why density is such an important property in materials selection.</p>
+
+      <h3>Unit Conversions</h3>
+      <p>The calculator outputs volume in cubic centimeters (cm³). Common conversions include: 1 cm³ = 1 mL, 1,000 cm³ = 1 liter, 1,000,000 cm³ = 1 m³, and 1 cm³ = 0.0610 cubic inches. For larger volumes, divide your result by 1,000 to get liters or by 1,000,000 to get cubic meters.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do you calculate the volume of an element from its mass?</h3>
+      <p>Volume equals mass divided by density: V = m / ρ. Select the element to get its density, enter the mass in grams, and the calculator computes the volume in cubic centimeters (cm³).</p>
+
+      <h3>What units should I use for mass and volume?</h3>
+      <p>This calculator uses grams for mass and cubic centimeters for volume. One cm³ equals one milliliter (mL). To convert to liters, divide cm³ by 1,000.</p>
+
+      <h3>Which element takes up the most volume per gram?</h3>
+      <p>Among solids, lithium has the lowest density at 0.534 g/cm³, meaning 1 gram occupies about 1.87 cm³. Among all elements at STP, hydrogen gas is the least dense.</p>
+
+      <h3>How much volume does 1 kg of gold occupy?</h3>
+      <p>Gold has a density of 19.282 g/cm³. One kilogram divided by 19.282 gives approximately 51.86 cm³ — roughly the size of a golf ball.</p>
+
+      <h3>Can I use this calculator for alloys or compounds?</h3>
+      <p>This calculator is designed for pure elements only. Alloys and compounds have different densities than their constituent elements.</p>
+    </article>
+
+    <%= render "shared/element_density_table" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Element Mass Calculator", description: "Calculate the mass of any element given its volume.", path: physics_element_mass_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Velocity Calculator", description: "Calculate speed, distance, or time using v = d/t.", path: physics_velocity_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Force Calculator", description: "Calculate force, mass, or acceleration using F = ma.", path: physics_force_path, icon_path: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" }
+    ] %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
