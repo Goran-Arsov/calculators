@@ -21,10 +21,12 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2563eb">
 
-    <%# DNS prefetch for ad networks — reduces latency %>
+    <%# DNS prefetch + preconnect for ad networks — reduces latency %>
     <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="//adservice.google.com">
     <link rel="dns-prefetch" href="//www.googletagmanager.com">
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+    <link rel="preconnect" href="https://adservice.google.com" crossorigin>
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
@@ -36,18 +38,41 @@
       }
     </script>
 
+    <%# Google Consent Mode v2 — must load BEFORE AdSense and Analytics scripts %>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+
+      gtag("consent", "default", {
+        "ad_storage": "denied",
+        "ad_user_data": "denied",
+        "ad_personalization": "denied",
+        "analytics_storage": "denied",
+        "wait_for_update": 500
+      });
+
+      // Restore stored consent immediately so ads load with correct signals
+      var storedConsent = localStorage.getItem("cookie_consent");
+      if (storedConsent === "accepted") {
+        gtag("consent", "update", {
+          "ad_storage": "granted",
+          "ad_user_data": "granted",
+          "ad_personalization": "granted",
+          "analytics_storage": "granted"
+        });
+      }
+    </script>
+
     <% if adsense_enabled? %>
-      <%# AdSense auto-ads + manual units %>
+      <%# AdSense — respects Consent Mode signals automatically %>
       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<%= adsense_pub_id %>"
               crossorigin="anonymous"></script>
     <% end %>
 
     <% if ENV["GA_MEASUREMENT_ID"].present? %>
-      <%# Google Analytics 4 %>
+      <%# Google Analytics 4 — also respects Consent Mode %>
       <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV["GA_MEASUREMENT_ID"] %>"></script>
       <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', '<%= ENV["GA_MEASUREMENT_ID"] %>');
       </script>
@@ -66,5 +91,19 @@
 
     <%# Anchor ad — sticky bottom on mobile, high RPM %>
     <%= render "shared/ad_slot", slot: "anchor" %>
+
+    <% if adsense_enabled? %>
+      <%# Enable Auto Ads (vignettes + anchor) on Turbo navigations %>
+      <script>
+        document.addEventListener("turbo:load", function() {
+          try {
+            (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "<%= adsense_pub_id %>",
+              enable_page_level_ads: true
+            });
+          } catch(e) {}
+        });
+      </script>
+    <% end %>
   </body>
 </html>

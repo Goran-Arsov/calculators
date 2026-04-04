@@ -128,7 +128,7 @@ module SeoHelper
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end
 
-  def calculator_schema(name:, description:, url:, category:)
+  def calculator_schema(name:, description:, url:, category:, rating_value: nil, rating_count: nil)
     schema = {
       "@context" => "https://schema.org",
       "@type" => "SoftwareApplication",
@@ -143,6 +143,15 @@ module SeoHelper
         "priceCurrency" => "USD"
       }
     }
+    if rating_value && rating_count
+      schema["aggregateRating"] = {
+        "@type" => "AggregateRating",
+        "ratingValue" => rating_value,
+        "ratingCount" => rating_count,
+        "bestRating" => "5",
+        "worstRating" => "1"
+      }
+    end
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end
 end

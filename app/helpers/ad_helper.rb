@@ -3,6 +3,9 @@ module AdHelper
   ADSENSE_PUB_ID = ENV.fetch("ADSENSE_PUB_ID", "ca-pub-XXXXXXXXXXXXXXXX")
   ADSENSE_ENABLED = ENV.fetch("ADSENSE_ENABLED", "false") == "true"
 
+  # Ad provider: "adsense" (default) or "gam" (Google Ad Manager / header bidding)
+  AD_PROVIDER = ENV.fetch("AD_PROVIDER", "adsense").freeze
+
   # Slot IDs — replace after creating ad units in AdSense dashboard
   AD_SLOTS = {
     "leaderboard"  => ENV.fetch("AD_SLOT_LEADERBOARD", ""),
@@ -10,11 +13,20 @@ module AdHelper
     "in_content"   => ENV.fetch("AD_SLOT_IN_CONTENT", ""),
     "sidebar"      => ENV.fetch("AD_SLOT_SIDEBAR", ""),
     "anchor"       => ENV.fetch("AD_SLOT_ANCHOR", ""),
-    "multiplex"    => ENV.fetch("AD_SLOT_MULTIPLEX", "")
+    "multiplex"    => ENV.fetch("AD_SLOT_MULTIPLEX", ""),
+    "after_intro"  => ENV.fetch("AD_SLOT_AFTER_INTRO", "")
   }.freeze
 
   def adsense_enabled?
     ADSENSE_ENABLED && ADSENSE_PUB_ID != "ca-pub-XXXXXXXXXXXXXXXX"
+  end
+
+  def ad_provider
+    AD_PROVIDER
+  end
+
+  def ad_provider_gam?
+    AD_PROVIDER == "gam"
   end
 
   def adsense_pub_id

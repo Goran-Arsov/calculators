@@ -91,6 +91,7 @@ import DarkModeController from "controllers/dark_mode_controller"
 import NavbarController from "controllers/navbar_controller"
 import CalculatorSearchController from "controllers/calculator_search_controller"
 import CookieConsentController from "controllers/cookie_consent_controller"
+import AdEngagementController from "controllers/ad_engagement_controller"
 
 // Finance
 application.register("mortgage-calculator", MortgageCalculatorController)
@@ -183,3 +184,4 @@ application.register("dark-mode", DarkModeController)
 application.register("navbar", NavbarController)
 application.register("calculator-search", CalculatorSearchController)
 application.register("cookie-consent", CookieConsentController)
+application.register("ad-engagement", AdEngagementController)

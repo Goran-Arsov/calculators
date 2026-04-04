@@ -3,9 +3,11 @@
 <% is_anchor = slot == "anchor" %>
 <% is_multiplex = slot == "multiplex" %>
 <% is_sidebar = slot == "sidebar" %>
+<% is_in_results = slot == "in_results" %>
+<% is_after_intro = slot == "after_intro" %>
 
 <% if adsense_enabled? %>
-  <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>">
+  <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>" data-ad-provider="<%= ad_provider %>">
     <ins class="adsbygoogle"
          style="display:block<%= ';min-height:250px' if is_sidebar %>"
          data-ad-client="<%= adsense_pub_id %>"
@@ -17,22 +19,36 @@
            data-full-width-responsive="true"
          <% elsif is_sidebar %>
            data-ad-format="vertical"
+         <% elsif is_in_results || is_after_intro %>
+           data-ad-format="fluid"
+           data-ad-layout-key="-gw-3+1f-3d+2z"
          <% else %>
            data-ad-format="auto"
            data-full-width-responsive="true"
          <% end %>
          <% unless above_fold %>loading="lazy"<% end %>></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <script>
+      <% if above_fold %>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      <% else %>
+        if ("requestIdleCallback" in window) {
+          requestIdleCallback(function() { (adsbygoogle = window.adsbygoogle || []).push({}); });
+        } else {
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        }
+      <% end %>
+    </script>
   </div>
 <% else %>
   <%# Placeholder for development — mimics real ad sizes to test layout %>
   <% unless is_anchor %>
-    <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>">
+    <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>" data-ad-provider="<%= ad_provider %>">
       <div class="bg-gray-100/50 dark:bg-gray-800/30 rounded-xl text-center text-xs text-gray-300 dark:text-gray-600 flex items-center justify-center border border-dashed border-gray-200/60 dark:border-gray-700/60
-        <%= 'p-4 min-h-[90px]' unless is_sidebar %>
+        <%= 'p-4 min-h-[90px]' unless is_sidebar || is_multiplex || is_after_intro %>
         <%= 'p-4 min-h-[250px]' if is_sidebar %>
-        <%= 'p-4 min-h-[120px]' if is_multiplex %>">
-        Ad
+        <%= 'p-4 min-h-[120px]' if is_multiplex %>
+        <%= 'p-4 min-h-[100px]' if is_after_intro %>">
+        Ad<%= " (#{slot})" %>
       </div>
     </div>
   <% end %>

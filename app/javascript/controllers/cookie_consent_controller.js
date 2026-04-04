@@ -10,18 +10,21 @@ export default class extends Controller {
   accept() {
     localStorage.setItem("cookie_consent", "accepted")
     this.element.classList.add("hidden")
-    // Enable personalized ads
-    window.adsbygoogle = window.adsbygoogle || []
-    if (typeof window.__tcfapi !== "undefined") {
-      window.__tcfapi("postCustomConsent", 2, () => {}, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [], [])
+    // Consent Mode v2 — grant all signals
+    if (typeof gtag === "function") {
+      gtag("consent", "update", {
+        "ad_storage": "granted",
+        "ad_user_data": "granted",
+        "ad_personalization": "granted",
+        "analytics_storage": "granted"
+      })
     }
   }
 
   reject() {
     localStorage.setItem("cookie_consent", "rejected")
     this.element.classList.add("hidden")
-    // Signal non-personalized ads only
-    window.adsbygoogle = window.adsbygoogle || []
-    window.adsbygoogle.requestNonPersonalizedAds = 1
+    // Consent stays denied — Google Consent Mode serves non-personalized
+    // ads and uses conversion modeling for analytics uplift
   }
 }
