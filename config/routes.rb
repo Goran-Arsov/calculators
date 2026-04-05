@@ -257,6 +257,13 @@ Rails.application.routes.draw do
   get "sitemap.xml", to: "sitemap#show", defaults: { format: :xml }
   get "robots.txt", to: "robots#show", defaults: { format: :text }
 
+  # Calculator suites - guided multi-step workflows
+  scope :suites do
+    get "home-buying", to: "suites#home_buying", as: :suite_home_buying
+    get "fitness", to: "suites#fitness", as: :suite_fitness
+    get "business-startup", to: "suites#business_startup", as: :suite_business_startup
+  end
+
   # Comparison pages
   get "finance/15-year-vs-30-year-mortgage", to: "comparisons#mortgage_terms", as: :compare_mortgage_terms
   get "health/bmi-vs-body-fat", to: "comparisons#bmi_vs_body_fat", as: :compare_bmi_vs_body_fat

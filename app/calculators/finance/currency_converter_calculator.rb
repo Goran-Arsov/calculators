@@ -2,6 +2,8 @@ module Finance
   class CurrencyConverterCalculator
     attr_reader :errors
 
+    RATES_LAST_UPDATED = "2026-04-05"
+
     # Static exchange rates vs USD (how many units of foreign currency per 1 USD)
     RATES = {
       "USD" => 1.0,
@@ -57,7 +59,8 @@ module Finance
         to_currency: @to_currency,
         converted_amount: converted_amount.round(4),
         exchange_rate: exchange_rate.round(6),
-        inverse_rate: inverse_rate.round(6)
+        inverse_rate: inverse_rate.round(6),
+        rates_last_updated: RATES_LAST_UPDATED
       }
     end
 

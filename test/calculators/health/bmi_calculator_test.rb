@@ -163,9 +163,57 @@ class Health::BmiCalculatorTest < ActiveSupport::TestCase
     assert_includes result[:errors], "Invalid unit system"
   end
 
+  # --- Upper-bound validation: metric ---
+
+  test "metric: weight over 700 kg returns error" do
+    result = Health::BmiCalculator.new(weight: 701, height: 175, unit_system: "metric").call
+    refute result[:valid]
+    assert_includes result[:errors], "Weight cannot exceed 700 kg"
+  end
+
+  test "metric: weight at 700 kg is accepted" do
+    result = Health::BmiCalculator.new(weight: 700, height: 175, unit_system: "metric").call
+    assert result[:valid]
+  end
+
+  test "metric: height over 300 cm returns error" do
+    result = Health::BmiCalculator.new(weight: 70, height: 301, unit_system: "metric").call
+    refute result[:valid]
+    assert_includes result[:errors], "Height cannot exceed 300 cm"
+  end
+
+  test "metric: height at 300 cm is accepted" do
+    result = Health::BmiCalculator.new(weight: 70, height: 300, unit_system: "metric").call
+    assert result[:valid]
+  end
+
+  # --- Upper-bound validation: imperial ---
+
+  test "imperial: weight over 1500 lbs returns error" do
+    result = Health::BmiCalculator.new(weight: 1501, height: 69, unit_system: "imperial").call
+    refute result[:valid]
+    assert_includes result[:errors], "Weight cannot exceed 1500 lbs"
+  end
+
+  test "imperial: weight at 1500 lbs is accepted" do
+    result = Health::BmiCalculator.new(weight: 1500, height: 69, unit_system: "imperial").call
+    assert result[:valid]
+  end
+
+  test "imperial: height over 120 inches returns error" do
+    result = Health::BmiCalculator.new(weight: 154, height: 121, unit_system: "imperial").call
+    refute result[:valid]
+    assert_includes result[:errors], "Height cannot exceed 120 inches"
+  end
+
+  test "imperial: height at 120 inches is accepted" do
+    result = Health::BmiCalculator.new(weight: 154, height: 120, unit_system: "imperial").call
+    assert result[:valid]
+  end
+
   # --- Very large values ---
 
-  test "very large weight" do
+  test "very large weight within bounds" do
     result = Health::BmiCalculator.new(weight: 500, height: 175, unit_system: "metric").call
     assert result[:valid]
     assert result[:bmi] > 100

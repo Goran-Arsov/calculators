@@ -87,6 +87,41 @@ class Health::PregnancyDueDateCalculatorTest < ActiveSupport::TestCase
     assert_includes result[:errors], "Last period date seems too far in the past"
   end
 
+  test "date within overdue window is accepted" do
+    lmp = (Date.today - 285).to_s
+    result = Health::PregnancyDueDateCalculator.new(last_period_date: lmp).call
+    assert result[:valid]
+  end
+
+  # --- Overdue handling ---
+
+  test "not overdue returns overdue false and days_overdue 0" do
+    lmp = (Date.today - 100).to_s
+    result = Health::PregnancyDueDateCalculator.new(last_period_date: lmp).call
+    assert result[:valid]
+    assert_equal false, result[:overdue]
+    assert_equal 0, result[:days_overdue]
+    assert_equal 180, result[:days_remaining]
+  end
+
+  test "due date today returns not overdue with zero days remaining" do
+    lmp = (Date.today - 280).to_s
+    result = Health::PregnancyDueDateCalculator.new(last_period_date: lmp).call
+    assert result[:valid]
+    assert_equal false, result[:overdue]
+    assert_equal 0, result[:days_remaining]
+    assert_equal 0, result[:days_overdue]
+  end
+
+  test "overdue pregnancy clamps days_remaining to zero" do
+    lmp = (Date.today - 285).to_s
+    result = Health::PregnancyDueDateCalculator.new(last_period_date: lmp).call
+    assert result[:valid]
+    assert_equal true, result[:overdue]
+    assert_equal 0, result[:days_remaining]
+    assert_equal 5, result[:days_overdue]
+  end
+
   test "errors accessor returns empty array before call" do
     calc = Health::PregnancyDueDateCalculator.new(last_period_date: Date.today.to_s)
     assert_equal [], calc.errors

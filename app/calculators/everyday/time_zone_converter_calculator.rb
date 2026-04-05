@@ -45,7 +45,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       source_offset = TIMEZONES[@source_zone]
       target_offset = TIMEZONES[@target_zone]
@@ -66,6 +66,7 @@ module Everyday
       converted_minute = total_minutes % 60
 
       {
+        valid: true,
         converted_hour: converted_hour,
         converted_minute: converted_minute,
         offset_diff: offset_diff,

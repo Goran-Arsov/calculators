@@ -12,7 +12,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       cost_per_hour = @total_cost / @number_of_hours
       cost_per_minute = cost_per_hour / 60.0
@@ -20,6 +20,7 @@ module Everyday
       cost_per_8_hours = cost_per_hour * 8
 
       {
+        valid: true,
         cost_per_hour: cost_per_hour.round(2),
         cost_per_minute: cost_per_minute.round(4),
         cost_per_day: cost_per_day.round(2),

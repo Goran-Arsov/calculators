@@ -30,6 +30,7 @@
     <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
     <link rel="preconnect" href="https://adservice.google.com" crossorigin>
 
+    <%= preload_link_tag(path_to_stylesheet("application.css"), as: "style") rescue nil %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
 
@@ -68,7 +69,7 @@
     <% if adsense_enabled? %>
       <%# AdSense — respects Consent Mode signals automatically %>
       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<%= adsense_pub_id %>"
-              crossorigin="anonymous"></script>
+              crossorigin="anonymous" fetchpriority="low"></script>
     <% end %>
 
     <% if ENV["GA_MEASUREMENT_ID"].present? %>
@@ -82,9 +83,12 @@
   </head>
 
   <body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col antialiased">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-none">
+      Skip to main content
+    </a>
     <%= render "shared/nav" %>
 
-    <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <main id="main-content" class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <%= yield %>
     </main>
 
@@ -100,6 +104,8 @@
         navigator.serviceWorker.register("/service-worker.js").catch(function() {});
       }
     </script>
+
+    <%= render "shared/pwa_install" %>
 
     <% if adsense_enabled? %>
       <%# Enable Auto Ads (vignettes + anchor) on Turbo navigations %>

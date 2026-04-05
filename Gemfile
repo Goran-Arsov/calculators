@@ -40,6 +40,19 @@ gem "thruster", require: false
 gem "meta-tags"
 gem "sitemap_generator"
 
+# Error monitoring
+gem "sentry-ruby"
+gem "sentry-rails"
+
+# Structured logging
+gem "lograge"
+
+# Application performance monitoring
+gem "skylight"
+
+# Rate limiting
+gem "rack-attack"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"

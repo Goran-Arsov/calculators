@@ -39,7 +39,7 @@ module Construction
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       # Base BTU from square footage
       base_btu = @room_sqft * BASE_BTU_PER_SQFT
@@ -67,6 +67,7 @@ module Construction
       tonnage = recommended_btu / 12_000.0
 
       {
+        valid: true,
         base_btu: base_btu.round(0),
         ceiling_factor: ceiling_factor.round(2),
         climate_multiplier: climate_mult,

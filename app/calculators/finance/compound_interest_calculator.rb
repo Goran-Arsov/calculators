@@ -14,9 +14,14 @@ module Finance
       validate!
       return { valid: false, errors: @errors } if @errors.any?
 
-      n = @compounds_per_year
-      future_value = @principal * (1 + @annual_rate / n)**(n * @years)
-      total_interest = future_value - @principal
+      if @annual_rate.zero?
+        future_value = @principal
+        total_interest = 0.0
+      else
+        n = @compounds_per_year
+        future_value = @principal * (1 + @annual_rate / n)**(n * @years)
+        total_interest = future_value - @principal
+      end
 
       {
         valid: true,

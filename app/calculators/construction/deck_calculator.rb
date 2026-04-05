@@ -22,7 +22,7 @@ module Construction
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       deck_area = @length * @width
 
@@ -52,6 +52,7 @@ module Construction
       total_cost = board_cost # decking boards are the primary cost driver
 
       {
+        valid: true,
         deck_area: deck_area.round(2),
         total_boards: total_boards,
         num_joists: num_joists,

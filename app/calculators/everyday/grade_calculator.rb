@@ -28,7 +28,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       scores = @scores_str.split(",").map(&:strip).map(&:to_f)
       weights = @weights_str.split(",").map(&:strip).map(&:to_f)
@@ -40,6 +40,7 @@ module Everyday
       letter = letter_grade(weighted_average)
 
       {
+        valid: true,
         weighted_average: weighted_average.round(2),
         letter_grade: letter,
         total_weight: total_weight.round(2),

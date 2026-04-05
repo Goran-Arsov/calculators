@@ -5,6 +5,7 @@ class Construction::RoofingCalculatorTest < ActiveSupport::TestCase
 
   test "40x30 roof, 6/12 pitch → bundles > 0" do
     result = Construction::RoofingCalculator.new(length: 40, width: 30, pitch: 6, waste_pct: 10).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert result[:bundles] > 0
     assert result[:squares] > 0
@@ -14,6 +15,7 @@ class Construction::RoofingCalculatorTest < ActiveSupport::TestCase
 
   test "footprint area calculated correctly" do
     result = Construction::RoofingCalculator.new(length: 40, width: 30, pitch: 0, waste_pct: 0).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 1200.0, result[:footprint_area]
     # Pitch 0 multiplier = 1.0, so roof area equals footprint
@@ -36,12 +38,14 @@ class Construction::RoofingCalculatorTest < ActiveSupport::TestCase
 
   test "bundles equal 3 times squares" do
     result = Construction::RoofingCalculator.new(length: 40, width: 30, pitch: 6, waste_pct: 10).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal result[:squares] * 3, result[:bundles]
   end
 
   test "string inputs are coerced" do
     result = Construction::RoofingCalculator.new(length: "40", width: "30", pitch: "6", waste_pct: "10").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert result[:bundles] > 0
   end
@@ -50,24 +54,28 @@ class Construction::RoofingCalculatorTest < ActiveSupport::TestCase
 
   test "error when length is zero" do
     result = Construction::RoofingCalculator.new(length: 0, width: 30, pitch: 6).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Length must be greater than zero"
   end
 
   test "error when width is negative" do
     result = Construction::RoofingCalculator.new(length: 40, width: -5, pitch: 6).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Width must be greater than zero"
   end
 
   test "error when pitch is out of range" do
     result = Construction::RoofingCalculator.new(length: 40, width: 30, pitch: 15).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Pitch must be between 0 and 12"
   end
 
   test "error when waste is negative" do
     result = Construction::RoofingCalculator.new(length: 40, width: 30, pitch: 6, waste_pct: -5).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Waste percentage cannot be negative"
   end

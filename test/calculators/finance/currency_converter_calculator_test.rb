@@ -211,4 +211,22 @@ class Finance::CurrencyConverterCalculatorTest < ActiveSupport::TestCase
     assert_equal "AUD", result[:to_currency]
     assert_in_delta 100.0, result[:amount], 0.01
   end
+
+  # --- Rates last updated ---
+
+  test "RATES_LAST_UPDATED constant is defined" do
+    assert_equal "2026-04-05", Finance::CurrencyConverterCalculator::RATES_LAST_UPDATED
+  end
+
+  test "result includes rates_last_updated" do
+    calc = Finance::CurrencyConverterCalculator.new(
+      amount: 100,
+      from_currency: "USD",
+      to_currency: "EUR"
+    )
+    result = calc.call
+
+    assert result[:valid]
+    assert_equal "2026-04-05", result[:rates_last_updated]
+  end
 end

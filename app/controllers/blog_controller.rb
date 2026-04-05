@@ -38,6 +38,6 @@ class BlogController < ApplicationController
   private
 
   def set_cache_headers
-    expires_in 30.minutes, public: true
+    expires_in 30.minutes, public: true, stale_while_revalidate: 15.minutes
   end
 end

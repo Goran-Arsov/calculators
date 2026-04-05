@@ -7,7 +7,7 @@ class Physics::WavelengthFrequencyCalculatorTest < ActiveSupport::TestCase
   test "wavelength to frequency: 1 meter" do
     result = Physics::WavelengthFrequencyCalculator.new(wavelength: 1.0).call
     assert result[:valid]
-    assert_in_delta C, result[:frequency], 1.0
+    assert_in_delta C, result[:frequency], 10_000
     assert_in_delta 1.0, result[:wavelength], 0.001
     assert_equal :frequency, result[:solved_for]
   end

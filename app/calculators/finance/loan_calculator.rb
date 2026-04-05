@@ -1,5 +1,7 @@
 module Finance
   class LoanCalculator
+    include Finance::LoanMath
+
     attr_reader :errors
 
     def initialize(amount:, annual_rate:, years:)
@@ -13,26 +15,8 @@ module Finance
       validate!
       return { valid: false, errors: @errors } if @errors.any?
 
-      monthly_rate = @annual_rate / 12.0
-      num_payments = @years * 12
-
-      if monthly_rate.zero?
-        monthly_payment = @amount / num_payments
-      else
-        monthly_payment = @amount * (monthly_rate * (1 + monthly_rate)**num_payments) /
-                          ((1 + monthly_rate)**num_payments - 1)
-      end
-
-      total_paid = monthly_payment * num_payments
-      total_interest = total_paid - @amount
-
-      {
-        valid: true,
-        monthly_payment: monthly_payment.round(2),
-        total_paid: total_paid.round(2),
-        total_interest: total_interest.round(2),
-        num_payments: num_payments
-      }
+      result = calculate_amortization(@amount, @annual_rate, @years)
+      result.merge(valid: true)
     end
 
     private

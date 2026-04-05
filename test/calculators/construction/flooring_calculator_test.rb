@@ -5,12 +5,14 @@ class Construction::FlooringCalculatorTest < ActiveSupport::TestCase
 
   test "12x10 → area=120 sqft" do
     result = Construction::FlooringCalculator.new(length: 12, width: 10).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 120.0, result[:area_sqft]
   end
 
   test "area with waste is larger than base area" do
     result = Construction::FlooringCalculator.new(length: 12, width: 10, waste_pct: 10).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 120.0, result[:area_sqft]
     assert_equal 132.0, result[:area_with_waste]
@@ -18,6 +20,7 @@ class Construction::FlooringCalculatorTest < ActiveSupport::TestCase
 
   test "boxes needed rounds up" do
     result = Construction::FlooringCalculator.new(length: 10, width: 10, waste_pct: 0).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     # 100 sqft / 20 sqft per box = 5 boxes
     assert_equal 5, result[:boxes_needed]
@@ -25,6 +28,7 @@ class Construction::FlooringCalculatorTest < ActiveSupport::TestCase
 
   test "zero waste percentage" do
     result = Construction::FlooringCalculator.new(length: 15, width: 10, waste_pct: 0).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 150.0, result[:area_sqft]
     assert_equal 150.0, result[:area_with_waste]
@@ -34,12 +38,14 @@ class Construction::FlooringCalculatorTest < ActiveSupport::TestCase
 
   test "error when length is zero" do
     result = Construction::FlooringCalculator.new(length: 0, width: 10).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Length must be greater than zero"
   end
 
   test "error when waste percentage is negative" do
     result = Construction::FlooringCalculator.new(length: 12, width: 10, waste_pct: -5).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Waste percentage cannot be negative"
   end

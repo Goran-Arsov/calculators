@@ -5,6 +5,7 @@ class Everyday::PasswordStrengthCalculatorTest < ActiveSupport::TestCase
 
   test "short lowercase password is very weak" do
     result = Everyday::PasswordStrengthCalculator.new(password: "abc").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 3, result[:length]
     assert_equal 26, result[:pool_size]
@@ -14,6 +15,7 @@ class Everyday::PasswordStrengthCalculatorTest < ActiveSupport::TestCase
 
   test "long mixed password is very strong" do
     result = Everyday::PasswordStrengthCalculator.new(password: "C0mpl3x!Pass#2024").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 17, result[:length]
     assert_equal 95, result[:pool_size]  # 26+26+10+33
@@ -29,6 +31,7 @@ class Everyday::PasswordStrengthCalculatorTest < ActiveSupport::TestCase
 
   test "has_lowercase and has_uppercase detection" do
     result = Everyday::PasswordStrengthCalculator.new(password: "AbCd").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert result[:has_lowercase]
     assert result[:has_uppercase]
@@ -38,6 +41,7 @@ class Everyday::PasswordStrengthCalculatorTest < ActiveSupport::TestCase
 
   test "digits only password" do
     result = Everyday::PasswordStrengthCalculator.new(password: "12345678").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 10, result[:pool_size]
     assert result[:has_digits]
@@ -46,6 +50,7 @@ class Everyday::PasswordStrengthCalculatorTest < ActiveSupport::TestCase
 
   test "symbols detected" do
     result = Everyday::PasswordStrengthCalculator.new(password: "p@ss!").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert result[:has_symbols]
     assert result[:has_lowercase]
@@ -53,12 +58,14 @@ class Everyday::PasswordStrengthCalculatorTest < ActiveSupport::TestCase
 
   test "crack_time returns a string" do
     result = Everyday::PasswordStrengthCalculator.new(password: "test").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_kind_of String, result[:crack_time]
   end
 
   test "very long password has high entropy" do
     result = Everyday::PasswordStrengthCalculator.new(password: "aB3$" * 10).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert result[:entropy_bits] > 100
   end
@@ -67,6 +74,7 @@ class Everyday::PasswordStrengthCalculatorTest < ActiveSupport::TestCase
 
   test "error when password is empty" do
     result = Everyday::PasswordStrengthCalculator.new(password: "").call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Password cannot be empty"
   end
@@ -78,6 +86,7 @@ class Everyday::PasswordStrengthCalculatorTest < ActiveSupport::TestCase
 
   test "string coercion works" do
     result = Everyday::PasswordStrengthCalculator.new(password: 12345).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 5, result[:length]
     assert result[:has_digits]
@@ -85,6 +94,7 @@ class Everyday::PasswordStrengthCalculatorTest < ActiveSupport::TestCase
 
   test "score is capped at 7" do
     result = Everyday::PasswordStrengthCalculator.new(password: "V3ry$tr0ng!P@ssw0rd").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert result[:score] <= 7
   end

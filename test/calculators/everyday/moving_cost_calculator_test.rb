@@ -5,6 +5,7 @@ class Everyday::MovingCostCalculatorTest < ActiveSupport::TestCase
 
   test "local move studio, no extras" do
     result = Everyday::MovingCostCalculator.new(distance_miles: 20, home_size: "studio").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 400, result[:estimate_low]
     assert_equal 800, result[:estimate_high]
@@ -13,6 +14,7 @@ class Everyday::MovingCostCalculatorTest < ActiveSupport::TestCase
 
   test "local move 3bed, no extras" do
     result = Everyday::MovingCostCalculator.new(distance_miles: 50, home_size: "3bed").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 1200, result[:estimate_low]
     assert_equal 2200, result[:estimate_high]
@@ -20,6 +22,7 @@ class Everyday::MovingCostCalculatorTest < ActiveSupport::TestCase
 
   test "long distance move 2bed" do
     result = Everyday::MovingCostCalculator.new(distance_miles: 500, home_size: "2bed").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert result[:estimate_low] > 800  # base is 800 + distance factor
     assert result[:estimate_high] > 1500
@@ -28,6 +31,7 @@ class Everyday::MovingCostCalculatorTest < ActiveSupport::TestCase
 
   test "extras add to cost range" do
     result = Everyday::MovingCostCalculator.new(distance_miles: 20, home_size: "studio", extras: "packing,piano").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     # Base: 400-800, packing: 200-600, piano: 200-500
     assert_equal 800, result[:estimate_low]
@@ -38,6 +42,7 @@ class Everyday::MovingCostCalculatorTest < ActiveSupport::TestCase
 
   test "extras breakdown is returned" do
     result = Everyday::MovingCostCalculator.new(distance_miles: 30, home_size: "1bed", extras: "insurance").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 1, result[:extras_breakdown].size
     assert_equal "insurance", result[:extras_breakdown][0][:name]
@@ -45,18 +50,21 @@ class Everyday::MovingCostCalculatorTest < ActiveSupport::TestCase
 
   test "boundary 100 miles is local" do
     result = Everyday::MovingCostCalculator.new(distance_miles: 100, home_size: "studio").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal false, result[:is_long_distance]
   end
 
   test "boundary 101 miles is long distance" do
     result = Everyday::MovingCostCalculator.new(distance_miles: 101, home_size: "studio").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal true, result[:is_long_distance]
   end
 
   test "5bed large home" do
     result = Everyday::MovingCostCalculator.new(distance_miles: 30, home_size: "5bed").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 2000, result[:estimate_low]
     assert_equal 4000, result[:estimate_high]
@@ -66,18 +74,22 @@ class Everyday::MovingCostCalculatorTest < ActiveSupport::TestCase
 
   test "error when distance is zero" do
     result = Everyday::MovingCostCalculator.new(distance_miles: 0, home_size: "studio").call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Distance must be greater than zero"
   end
 
   test "error for unknown home size" do
     result = Everyday::MovingCostCalculator.new(distance_miles: 50, home_size: "mansion").call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
+    assert_equal false, result[:valid]
     assert result[:errors].any? { |e| e.include?("Unknown home size") }
   end
 
   test "string coercion for distance" do
     result = Everyday::MovingCostCalculator.new(distance_miles: "50", home_size: "studio").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 400, result[:estimate_low]
   end

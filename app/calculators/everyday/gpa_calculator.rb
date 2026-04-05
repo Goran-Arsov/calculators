@@ -26,7 +26,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       grades = @grades_str.split(",").map(&:strip).map(&:upcase)
       credits = @credits_str.split(",").map(&:strip).map(&:to_f)
@@ -43,6 +43,7 @@ module Everyday
       gpa = total_credits.positive? ? (total_quality_points / total_credits) : 0.0
 
       {
+        valid: true,
         gpa: gpa.round(2),
         total_credits: total_credits.round(1),
         total_quality_points: total_quality_points.round(2)

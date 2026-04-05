@@ -12,13 +12,14 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       discount_amount = @original_price * (@discount_percent / 100.0)
       sale_price = @original_price - discount_amount
       savings = discount_amount
 
       {
+        valid: true,
         sale_price: sale_price.round(2),
         savings: savings.round(2),
         discount_amount: discount_amount.round(2)

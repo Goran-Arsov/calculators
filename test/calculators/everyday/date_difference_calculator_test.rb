@@ -7,12 +7,14 @@ class Everyday::DateDifferenceCalculatorTest < ActiveSupport::TestCase
     start_date = "2025-01-01"
     end_date = "2025-01-31"
     result = Everyday::DateDifferenceCalculator.new(start_date: start_date, end_date: end_date).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 30, result[:total_days]
   end
 
   test "exactly one year apart" do
     result = Everyday::DateDifferenceCalculator.new(start_date: "2024-01-01", end_date: "2025-01-01").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 366, result[:total_days] # 2024 is a leap year
     assert_equal 1, result[:years]
@@ -20,6 +22,7 @@ class Everyday::DateDifferenceCalculatorTest < ActiveSupport::TestCase
 
   test "returns weeks" do
     result = Everyday::DateDifferenceCalculator.new(start_date: "2025-01-01", end_date: "2025-01-15").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 14, result[:total_days]
     assert_equal 2, result[:weeks]
@@ -35,12 +38,14 @@ class Everyday::DateDifferenceCalculatorTest < ActiveSupport::TestCase
 
   test "error with invalid start date" do
     result = Everyday::DateDifferenceCalculator.new(start_date: "invalid", end_date: "2025-01-01").call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Invalid start date format"
   end
 
   test "error with invalid end date" do
     result = Everyday::DateDifferenceCalculator.new(start_date: "2025-01-01", end_date: "invalid").call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Invalid end date format"
   end

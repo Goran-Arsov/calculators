@@ -17,7 +17,7 @@ module Construction
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       # Calculate number of risers based on ideal riser height
       num_risers = (@floor_height / IDEAL_RISER_HEIGHT).round
@@ -51,6 +51,7 @@ module Construction
       angle = Math.atan2(@floor_height, total_run) * (180.0 / Math::PI)
 
       {
+        valid: true,
         num_risers: num_risers,
         num_treads: num_treads,
         rise_per_step: rise_per_step.round(3),
@@ -64,8 +65,11 @@ module Construction
 
     private
 
+    MAX_FLOOR_HEIGHT = 780.0  # 65 feet in inches
+
     def validate!
       @errors << "Floor height must be greater than zero" unless @floor_height.positive?
+      @errors << "Floor height cannot exceed #{MAX_FLOOR_HEIGHT} inches (65 feet)" if @floor_height > MAX_FLOOR_HEIGHT
       if @run_preference && @run_preference > 0 && @run_preference < MIN_TREAD_DEPTH
         @errors << "Run preference must be at least #{MIN_TREAD_DEPTH} inches (IRC minimum)"
       end

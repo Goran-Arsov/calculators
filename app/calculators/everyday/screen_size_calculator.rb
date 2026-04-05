@@ -15,7 +15,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       # From diagonal and aspect ratio, calculate width and height
       # diagonal^2 = width^2 + height^2
@@ -29,6 +29,7 @@ module Everyday
       area = width * height
 
       result = {
+        valid: true,
         width: width.round(2),
         height: height.round(2),
         area: area.round(2),

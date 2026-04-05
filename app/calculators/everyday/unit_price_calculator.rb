@@ -16,7 +16,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       unit_price_a = @price_a / @quantity_a
       unit_price_b = @price_b / @quantity_b
@@ -37,6 +37,7 @@ module Everyday
       end
 
       {
+        valid: true,
         unit_price_a: unit_price_a.round(4),
         unit_price_b: unit_price_b.round(4),
         better_deal: better_deal,

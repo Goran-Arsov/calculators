@@ -37,7 +37,7 @@ module Construction
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       # Calculate roof area using pitch multiplier
       footprint_area = @length * @width
@@ -59,6 +59,7 @@ module Construction
       nail_boxes = (total_nails / NAILS_PER_BOX.to_f).ceil
 
       {
+        valid: true,
         footprint_area: footprint_area.round(2),
         roof_area: roof_area.round(2),
         area_with_waste: area_with_waste.round(2),

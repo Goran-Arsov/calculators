@@ -39,7 +39,7 @@ module Health
     private
 
     def set_cache_headers
-      expires_in 1.hour, public: true
+      expires_in 1.hour, public: true, stale_while_revalidate: 30.minutes
     end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_05_114144) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_05_161010) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -36,5 +36,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_114144) do
     t.datetime "updated_at", null: false
     t.index ["calculator_slug", "ip_hash"], name: "index_calculator_ratings_on_calculator_slug_and_ip_hash", unique: true
     t.index ["calculator_slug"], name: "index_calculator_ratings_on_calculator_slug"
+  end
+
+  create_table "user_formulas", force: :cascade do |t|
+    t.string "author_email"
+    t.string "author_name"
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.jsonb "formula_json"
+    t.string "slug"
+    t.string "status", default: "pending"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_user_formulas_on_category"
+    t.index ["slug"], name: "index_user_formulas_on_slug", unique: true
+    t.index ["status"], name: "index_user_formulas_on_status"
   end
 end

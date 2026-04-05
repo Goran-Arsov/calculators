@@ -13,12 +13,13 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       cost_per_page = @cartridge_cost / @page_yield
       cost_per_100_pages = cost_per_page * 100
 
       result = {
+        valid: true,
         cost_per_page: cost_per_page.round(4),
         cost_per_100_pages: cost_per_100_pages.round(2),
         cartridge_cost: @cartridge_cost.round(2),

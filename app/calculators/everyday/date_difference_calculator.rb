@@ -12,7 +12,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       start_d = Date.parse(@start_date_str)
       end_d = Date.parse(@end_date_str)
@@ -40,6 +40,7 @@ module Everyday
       total_months = (years * 12) + months
 
       {
+        valid: true,
         total_days: total_days,
         weeks: weeks,
         months: total_months,

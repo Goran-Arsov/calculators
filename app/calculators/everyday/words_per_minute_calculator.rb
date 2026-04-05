@@ -25,7 +25,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       total_minutes = @time_minutes + (@time_seconds / 60.0)
       wpm = @word_count / total_minutes
@@ -38,6 +38,7 @@ module Everyday
       end
 
       {
+        valid: true,
         wpm: wpm.round(1),
         total_minutes: total_minutes.round(2),
         word_count: @word_count.round(0),

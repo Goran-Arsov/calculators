@@ -13,13 +13,14 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       gallons_needed = @distance / @fuel_economy_mpg
       total_cost = gallons_needed * @fuel_price_per_gallon
       cost_per_mile = total_cost / @distance
 
       {
+        valid: true,
         gallons_needed: gallons_needed.round(2),
         total_cost: total_cost.round(2),
         cost_per_mile: cost_per_mile.round(4)

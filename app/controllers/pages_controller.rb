@@ -44,6 +44,6 @@ class PagesController < ApplicationController
   private
 
   def set_cache_headers
-    expires_in 1.day, public: true
+    expires_in 1.day, public: true, stale_while_revalidate: 6.hours
   end
 end

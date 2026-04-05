@@ -62,6 +62,21 @@ class Finance::CompoundInterestCalculatorTest < ActiveSupport::TestCase
     assert_in_delta 0.00, result[:total_interest], 0.01
   end
 
+  test "zero interest rate with any compounding frequency returns principal" do
+    [ 1, 4, 12, 365 ].each do |freq|
+      calc = Finance::CompoundInterestCalculator.new(
+        principal: 25_000, annual_rate: 0, years: 30, compounds_per_year: freq
+      )
+      result = calc.call
+
+      assert result[:valid], "Expected valid for compounds_per_year=#{freq}"
+      assert_in_delta 25_000.00, result[:future_value], 0.01,
+        "Expected principal unchanged for compounds_per_year=#{freq}"
+      assert_in_delta 0.00, result[:total_interest], 0.01,
+        "Expected zero interest for compounds_per_year=#{freq}"
+    end
+  end
+
   # --- Negative values ---
 
   test "negative principal returns error" do

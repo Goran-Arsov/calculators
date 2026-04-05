@@ -29,7 +29,6 @@ Rails.application.configure do
                        "adservice.google.com"
   end
 
-  # Report violations without enforcing — enable this first to find issues,
-  # then switch to enforcing mode once clean.
-  config.content_security_policy_report_only = true
+  # Report-only by default; set CSP_ENFORCE=true to switch to enforcement mode.
+  config.content_security_policy_report_only = !ENV.fetch("CSP_ENFORCE", "false").then { |v| v == "true" }
 end

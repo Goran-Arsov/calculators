@@ -15,17 +15,19 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       mpg = @distance / @fuel_used
       l_per_100km = (@fuel_used / @distance) * 100.0
       km_per_l = @distance / @fuel_used
 
       {
+        valid: true,
         mpg: mpg.round(2),
         l_per_100km: l_per_100km.round(2),
         km_per_l: km_per_l.round(2)
       }
+
     end
 
     private

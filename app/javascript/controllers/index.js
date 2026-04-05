@@ -185,6 +185,9 @@ import ScreenSizeCalculatorController from "controllers/screen_size_calculator_c
 import BandwidthCalculatorController from "controllers/bandwidth_calculator_controller"
 import UnitPriceCalculatorController from "controllers/unit_price_calculator_controller"
 
+// Suite controllers
+import SuiteStepperController from "controllers/suite_stepper_controller"
+
 // UI controllers
 import DarkModeController from "controllers/dark_mode_controller"
 import NavbarController from "controllers/navbar_controller"
@@ -192,6 +195,8 @@ import CalculatorSearchController from "controllers/calculator_search_controller
 import CookieConsentController from "controllers/cookie_consent_controller"
 import AdEngagementController from "controllers/ad_engagement_controller"
 import CalculatorRatingController from "controllers/calculator_rating_controller"
+import ChartController from "controllers/chart_controller"
+import EmailCaptureController from "controllers/email_capture_controller"
 
 // Finance
 application.register("mortgage-calculator", MortgageCalculatorController)
@@ -378,6 +383,9 @@ application.register("screen-size-calculator", ScreenSizeCalculatorController)
 application.register("bandwidth-calculator", BandwidthCalculatorController)
 application.register("unit-price-calculator", UnitPriceCalculatorController)
 
+// Suites
+application.register("suite-stepper", SuiteStepperController)
+
 // UI
 application.register("dark-mode", DarkModeController)
 application.register("navbar", NavbarController)
@@ -385,3 +393,5 @@ application.register("calculator-search", CalculatorSearchController)
 application.register("cookie-consent", CookieConsentController)
 application.register("ad-engagement", AdEngagementController)
 application.register("calculator-rating", CalculatorRatingController)
+application.register("chart", ChartController)
+application.register("email-capture", EmailCaptureController)

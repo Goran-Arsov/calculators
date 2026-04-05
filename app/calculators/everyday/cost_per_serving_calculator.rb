@@ -13,7 +13,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       cost_per_serving = @total_cost / @servings
       selling_price_per_serving = cost_per_serving * (1 + @markup_percent / 100.0)
@@ -22,6 +22,7 @@ module Everyday
       total_profit = profit_per_serving * @servings
 
       {
+        valid: true,
         cost_per_serving: cost_per_serving.round(2),
         selling_price_per_serving: selling_price_per_serving.round(2),
         profit_per_serving: profit_per_serving.round(2),

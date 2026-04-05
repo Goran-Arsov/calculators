@@ -20,7 +20,7 @@ module Construction
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       wall_area = 2 * (@length + @width) * @height
       door_area = @doors * DOOR_AREA_SQFT
@@ -32,6 +32,7 @@ module Construction
       gallons = (raw_gallons * 2).ceil / 2.0
 
       {
+        valid: true,
         wall_area: wall_area.round(2),
         paintable_area: paintable_area.round(2),
         gallons: gallons

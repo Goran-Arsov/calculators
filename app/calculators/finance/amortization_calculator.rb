@@ -66,9 +66,12 @@ module Finance
 
     private
 
+    MAX_YEARS = 100
+
     def validate!
       @errors << "Principal must be positive" unless @principal > 0
       @errors << "Loan term must be positive" unless @years > 0
+      @errors << "Loan term cannot exceed #{MAX_YEARS} years" if @years > MAX_YEARS
       @errors << "Interest rate cannot be negative" if @annual_rate < 0
     end
   end

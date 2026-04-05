@@ -5,6 +5,7 @@ class Construction::HvacBtuCalculatorTest < ActiveSupport::TestCase
 
   test "500 sqft room → recommended BTU > 0" do
     result = Construction::HvacBtuCalculator.new(room_sqft: 500).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert result[:recommended_btu] > 0
     assert result[:tonnage] > 0
@@ -12,6 +13,7 @@ class Construction::HvacBtuCalculatorTest < ActiveSupport::TestCase
 
   test "base BTU equals sqft times 20" do
     result = Construction::HvacBtuCalculator.new(room_sqft: 500, ceiling_height: 8, insulation: "average", climate_zone: "moderate", windows: 0).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 10_000, result[:base_btu]
   end
@@ -44,6 +46,7 @@ class Construction::HvacBtuCalculatorTest < ActiveSupport::TestCase
 
   test "recommended BTU rounded up to nearest 1000" do
     result = Construction::HvacBtuCalculator.new(room_sqft: 500, ceiling_height: 8, insulation: "average", climate_zone: "moderate", windows: 2).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 0, result[:recommended_btu] % 1000
     assert result[:recommended_btu] >= result[:total_btu]
@@ -51,6 +54,7 @@ class Construction::HvacBtuCalculatorTest < ActiveSupport::TestCase
 
   test "tonnage equals recommended BTU / 12000" do
     result = Construction::HvacBtuCalculator.new(room_sqft: 500).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     expected_tonnage = (result[:recommended_btu] / 12_000.0).round(2)
     assert_equal expected_tonnage, result[:tonnage]
@@ -58,6 +62,7 @@ class Construction::HvacBtuCalculatorTest < ActiveSupport::TestCase
 
   test "string inputs are coerced" do
     result = Construction::HvacBtuCalculator.new(room_sqft: "500", ceiling_height: "10", insulation: "poor", climate_zone: "hot", windows: "3").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert result[:recommended_btu] > 0
   end
@@ -66,24 +71,28 @@ class Construction::HvacBtuCalculatorTest < ActiveSupport::TestCase
 
   test "error when room sqft is zero" do
     result = Construction::HvacBtuCalculator.new(room_sqft: 0).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Room square footage must be greater than zero"
   end
 
   test "error when ceiling height is zero" do
     result = Construction::HvacBtuCalculator.new(room_sqft: 500, ceiling_height: 0).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Ceiling height must be greater than zero"
   end
 
   test "error when insulation is invalid" do
     result = Construction::HvacBtuCalculator.new(room_sqft: 500, insulation: "terrible").call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Insulation must be one of: poor, average, good"
   end
 
   test "error when climate zone is invalid" do
     result = Construction::HvacBtuCalculator.new(room_sqft: 500, climate_zone: "tropical").call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Climate zone must be one of: hot, warm, moderate, cool, cold"
   end

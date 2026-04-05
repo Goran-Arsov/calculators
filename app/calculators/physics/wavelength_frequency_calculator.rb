@@ -20,21 +20,29 @@ module Physics
         f = SPEED_OF_LIGHT / @wavelength
         e = PLANCK_CONSTANT * f
         t = 1.0 / f
-        { valid: true, wavelength: @wavelength, frequency: f, energy: e, period: t, solved_for: :frequency }
+        { valid: true, wavelength: round_sig(@wavelength), frequency: round_sig(f), energy: round_sig(e), period: round_sig(t), solved_for: :frequency }
       elsif @frequency && !@wavelength && !@energy
         l = SPEED_OF_LIGHT / @frequency
         e = PLANCK_CONSTANT * @frequency
         t = 1.0 / @frequency
-        { valid: true, wavelength: l, frequency: @frequency, energy: e, period: t, solved_for: :wavelength }
+        { valid: true, wavelength: round_sig(l), frequency: round_sig(@frequency), energy: round_sig(e), period: round_sig(t), solved_for: :wavelength }
       else
         f = @energy / PLANCK_CONSTANT
         l = SPEED_OF_LIGHT / f
         t = 1.0 / f
-        { valid: true, wavelength: l, frequency: f, energy: @energy, period: t, solved_for: :energy }
+        { valid: true, wavelength: round_sig(l), frequency: round_sig(f), energy: round_sig(@energy), period: round_sig(t), solved_for: :energy }
       end
     end
 
     private
+
+    SIGNIFICANT_DIGITS = 4
+
+    def round_sig(value, digits = SIGNIFICANT_DIGITS)
+      return 0.0 if value.zero?
+      d = (Math.log10(value.abs)).floor + 1
+      value.round(digits - d)
+    end
 
     def validate!
       provided = { wavelength: @wavelength, frequency: @frequency, energy: @energy }.compact

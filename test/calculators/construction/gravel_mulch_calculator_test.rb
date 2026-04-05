@@ -5,6 +5,7 @@ class Construction::GravelMulchCalculatorTest < ActiveSupport::TestCase
 
   test "10x10x3 inches → tons > 0" do
     result = Construction::GravelMulchCalculator.new(length_ft: 10, width_ft: 10, depth_in: 3).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert result[:tons] > 0
     assert result[:cubic_yards] > 0
@@ -12,6 +13,7 @@ class Construction::GravelMulchCalculatorTest < ActiveSupport::TestCase
 
   test "area calculated correctly" do
     result = Construction::GravelMulchCalculator.new(length_ft: 10, width_ft: 10, depth_in: 3).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 100.0, result[:area_sqft]
   end
@@ -27,12 +29,14 @@ class Construction::GravelMulchCalculatorTest < ActiveSupport::TestCase
 
   test "error when width is zero" do
     result = Construction::GravelMulchCalculator.new(length_ft: 10, width_ft: 0, depth_in: 3).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Width must be greater than zero"
   end
 
   test "error when depth is zero" do
     result = Construction::GravelMulchCalculator.new(length_ft: 10, width_ft: 10, depth_in: 0).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Depth must be greater than zero"
   end

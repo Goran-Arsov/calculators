@@ -43,12 +43,13 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       idx = SYSTEM_INDEX[@system]
       row = find_closest_row(idx)
 
       {
+        valid: true,
         us: row[0],
         uk: row[1],
         eu: row[2],

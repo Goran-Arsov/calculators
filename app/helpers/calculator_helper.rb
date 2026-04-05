@@ -248,4 +248,77 @@ module CalculatorHelper
       end
     end.to_json
   end
+
+  # Seasonal featured calculators - rotated by month
+  SEASONAL_FEATURES = {
+    1  => %w[calorie-calculator tdee-calculator savings-goal-calculator],      # New Year resolutions
+    2  => %w[calorie-deficit-calculator heart-rate-zone-calculator roi-calculator],
+    3  => %w[tax-bracket-calculator salary-calculator mortgage-calculator],    # Tax season
+    4  => %w[tax-bracket-calculator mortgage-calculator home-affordability-calculator], # Tax + spring housing
+    5  => %w[mortgage-calculator paint-calculator deck-calculator],            # Home improvement
+    6  => %w[concrete-calculator roofing-calculator fuel-cost-calculator],     # Summer projects
+    7  => %w[fuel-cost-calculator bmi-calculator pace-calculator],             # Summer fitness
+    8  => %w[gpa-calculator grade-calculator student-loan-calculator],         # Back to school
+    9  => %w[gpa-calculator budget-calculator retirement-calculator],
+    10 => %w[retirement-calculator investment-calculator compound-interest-calculator],
+    11 => %w[discount-calculator tip-calculator savings-goal-calculator],      # Holiday shopping
+    12 => %w[discount-calculator tip-calculator savings-goal-calculator]       # Holiday shopping
+  }.freeze
+
+  def seasonal_calculators(count: 3)
+    month = Date.current.month
+    slugs = SEASONAL_FEATURES[month] || SEASONAL_FEATURES[1]
+    ALL_CATEGORIES.values.flat_map { |cat| cat[:calculators] }
+      .select { |c| slugs.include?(c[:slug]) }
+      .first(count)
+      .map { |c| c.merge(path: resolve_calculator_path(c)) }
+  end
+
+  # Maps calculators to relevant calculators in OTHER categories
+  CROSS_CATEGORY_LINKS = {
+    "mortgage-calculator" => %w[home-affordability-calculator paint-calculator concrete-calculator],
+    "bmi-calculator" => %w[calorie-calculator tdee-calculator pace-calculator],
+    "calorie-calculator" => %w[bmi-calculator macro-calculator keto-calculator],
+    "tip-calculator" => %w[discount-calculator percentage-calculator],
+    "concrete-calculator" => %w[gravel-mulch-calculator deck-calculator lumber-calculator],
+    "loan-calculator" => %w[mortgage-calculator auto-loan-calculator debt-payoff-calculator],
+    "percentage-calculator" => %w[discount-calculator tip-calculator profit-margin-calculator],
+    "velocity-calculator" => %w[force-calculator kinetic-energy-calculator projectile-motion-calculator],
+    "paint-calculator" => %w[wallpaper-calculator flooring-calculator tile-calculator],
+    "compound-interest-calculator" => %w[investment-calculator savings-goal-calculator retirement-calculator],
+    "retirement-calculator" => %w[401k-calculator compound-interest-calculator savings-goal-calculator],
+    "tdee-calculator" => %w[calorie-calculator macro-calculator keto-calculator]
+  }.freeze
+
+  def cross_category_calculators(calculator_slug, count: 3)
+    slugs = CROSS_CATEGORY_LINKS[calculator_slug] || []
+    return [] if slugs.empty?
+    ALL_CATEGORIES.values.flat_map { |cat| cat[:calculators] }
+      .select { |c| slugs.include?(c[:slug]) }
+      .first(count)
+      .map { |c| c.merge(path: resolve_calculator_path(c)) }
+  end
+
+  # Renders a reusable SVG chart container for calculator visualizations.
+  # Supports donut, bar, gauge, and stacked-bar chart types.
+  #
+  # Usage in views:
+  #   <%= chart_container("donut", id: "mortgage-breakdown") %>
+  #   <%= chart_container("bar", id: "yearly-comparison", width: 400, height: 300) %>
+  #   <%= chart_container("gauge", id: "bmi-gauge") %>
+  def chart_container(type, id: "chart", width: 280, height: 280)
+    render "shared/chart", type: type, id: id, width: width, height: height
+  end
+
+  def embed_url_for(category_slug, calculator_slug)
+    calculator_embed_url(category: category_slug, slug: calculator_slug)
+  rescue
+    nil
+  end
+
+  def embed_code_for(category_slug, calculator_slug, width: "100%", height: "500")
+    url = embed_url_for(category_slug, calculator_slug)
+    return nil unless url
+    %(<iframe src="#{url}" width="#{width}" height="#{height}" frameborder="0" style="border:none;border-radius:12px;" loading="lazy" title="CalcWise Calculator"></iframe>)
+  end
 end

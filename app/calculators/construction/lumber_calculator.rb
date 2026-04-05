@@ -15,7 +15,7 @@ module Construction
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       # Board feet = (thickness x width x length) / 12
       # where thickness and width are in inches, length in feet
@@ -30,6 +30,7 @@ module Construction
       total_linear_feet = @length_ft * @quantity
 
       {
+        valid: true,
         board_feet_each: board_feet_each.round(4),
         total_board_feet: total_board_feet.round(4),
         total_linear_feet: total_linear_feet.round(2),

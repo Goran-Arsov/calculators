@@ -16,7 +16,7 @@ module Construction
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       area_sqft = @length_ft * @width_ft
       depth_ft = @depth_in / 12.0
@@ -25,6 +25,7 @@ module Construction
       tons = cubic_yards * GRAVEL_TONS_PER_CUBIC_YARD
 
       {
+        valid: true,
         cubic_yards: cubic_yards.round(2),
         tons: tons.round(2),
         area_sqft: area_sqft.round(2)

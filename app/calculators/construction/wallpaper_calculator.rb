@@ -21,7 +21,7 @@ module Construction
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       # Wall area
       perimeter = 2 * (@length + @width)
@@ -60,6 +60,7 @@ module Construction
       coverage_per_roll = strips_per_roll * roll_width_ft * @height
 
       {
+        valid: true,
         wall_area: wall_area.round(2),
         coverable_area: coverable_area.round(2),
         perimeter: perimeter.round(2),

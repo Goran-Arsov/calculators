@@ -23,13 +23,13 @@ module Physics
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       weights = PLANETS.each_with_object({}) do |(planet, ratio), hash|
         hash[planet] = (@earth_weight * ratio).round(2)
       end
 
-      weights
+      weights.merge(valid: true)
     end
 
     private

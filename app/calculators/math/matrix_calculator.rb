@@ -46,6 +46,8 @@ module Math
       nil
     end
 
+    MAX_DIMENSION = 10
+
     def validate!
       @errors << "Invalid operation" unless %w[add subtract multiply determinant_a determinant_b transpose_a transpose_b].include?(@operation)
       @errors << "Matrix A is required" if @matrix_a.nil? || @matrix_a.empty?
@@ -55,6 +57,14 @@ module Math
       unless rectangular?(@matrix_a)
         @errors << "Matrix A rows must have equal length"
         return
+      end
+
+      if @matrix_a.size > MAX_DIMENSION || @matrix_a.first.size > MAX_DIMENSION
+        @errors << "Matrix A dimensions cannot exceed #{MAX_DIMENSION}x#{MAX_DIMENSION}"
+      end
+
+      if @matrix_b && rectangular?(@matrix_b) && (@matrix_b.size > MAX_DIMENSION || @matrix_b.first.size > MAX_DIMENSION)
+        @errors << "Matrix B dimensions cannot exceed #{MAX_DIMENSION}x#{MAX_DIMENSION}"
       end
 
       if %w[add subtract multiply].include?(@operation) || %w[determinant_b transpose_b].include?(@operation)

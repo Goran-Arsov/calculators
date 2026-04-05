@@ -56,4 +56,27 @@ class SitemapControllerTest < ActionDispatch::IntegrationTest
     get "/sitemap.xml"
     assert_match %r{<urlset xmlns="http://www\.sitemaps\.org/schemas/sitemap/0\.9">}, response.body
   end
+
+  test "sitemap includes lastmod tags" do
+    get "/sitemap.xml"
+    assert_match %r{<lastmod>\d{4}-\d{2}-\d{2}</lastmod>}, response.body
+  end
+
+  test "sitemap homepage lastmod is today" do
+    get "/sitemap.xml"
+    assert_includes response.body, "<lastmod>#{Date.current.to_s}</lastmod>"
+  end
+
+  test "sitemap blog post lastmod uses updated_at" do
+    post = BlogPost.create!(
+      title: "Lastmod Blog Post",
+      slug: "lastmod-blog-post",
+      body: "<p>Body</p>",
+      excerpt: "Excerpt",
+      published_at: 1.day.ago
+    )
+
+    get "/sitemap.xml"
+    assert_includes response.body, "<lastmod>#{post.updated_at.to_date.to_s}</lastmod>"
+  end
 end

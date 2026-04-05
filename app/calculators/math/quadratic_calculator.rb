@@ -19,15 +19,21 @@ module Math
 
       if discriminant >= 0
         sqrt_disc = ::Math.sqrt(discriminant)
-        x1 = ((-@b + sqrt_disc) / (2 * @a)).round(4)
-        x2 = ((-@b - sqrt_disc) / (2 * @a)).round(4)
+        x1_real = ((-@b + sqrt_disc) / (2 * @a)).round(4)
+        x2_real = ((-@b - sqrt_disc) / (2 * @a)).round(4)
+        root_type = discriminant.zero? ? "repeated" : "real"
 
         {
           valid: true,
           discriminant: discriminant.round(4),
-          x1: x1,
-          x2: x2,
-          roots_type: discriminant.zero? ? "repeated" : "real",
+          x1: x1_real.to_s,
+          x2: x2_real.to_s,
+          x1_real: x1_real,
+          x1_imaginary: 0.0,
+          x2_real: x2_real,
+          x2_imaginary: 0.0,
+          root_type: root_type,
+          roots_type: root_type,
           vertex_x: vertex_x,
           vertex_y: vertex_y
         }
@@ -35,14 +41,16 @@ module Math
         real_part = (-@b / (2 * @a)).round(4)
         imaginary_part = (::Math.sqrt(discriminant.abs) / (2 * @a)).round(4)
 
-        x1 = "#{real_part} + #{imaginary_part}i"
-        x2 = "#{real_part} - #{imaginary_part}i"
-
         {
           valid: true,
           discriminant: discriminant.round(4),
-          x1: x1,
-          x2: x2,
+          x1: "#{real_part} + #{imaginary_part}i",
+          x2: "#{real_part} - #{imaginary_part}i",
+          x1_real: real_part,
+          x1_imaginary: imaginary_part,
+          x2_real: real_part,
+          x2_imaginary: -imaginary_part,
+          root_type: "complex",
           roots_type: "complex",
           vertex_x: vertex_x,
           vertex_y: vertex_y

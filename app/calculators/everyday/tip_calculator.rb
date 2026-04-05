@@ -13,13 +13,14 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       tip_amount = @bill_amount * (@tip_percent / 100.0)
       total = @bill_amount + tip_amount
       per_person = total / @split.to_f
 
       {
+        valid: true,
         tip_amount: tip_amount.round(2),
         total: total.round(2),
         per_person: per_person.round(2)

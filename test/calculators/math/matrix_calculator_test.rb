@@ -94,6 +94,30 @@ class Math::MatrixCalculatorTest < ActiveSupport::TestCase
     assert result[:errors].any? { |e| e.include?("required") }
   end
 
+  # --- Upper-bound validation: dimensions ---
+
+  test "error when matrix A exceeds 10x10" do
+    # 11 rows of 1 element each
+    big_matrix = (1..11).map { |i| i.to_s }.join(";")
+    result = Math::MatrixCalculator.new(matrix_a: big_matrix, operation: "transpose_a").call
+    refute result[:valid]
+    assert result[:errors].any? { |e| e.include?("cannot exceed 10x10") }
+  end
+
+  test "error when matrix B exceeds 10x10" do
+    small = "1,2;3,4"
+    big_matrix = (1..11).map { |i| i.to_s }.join(";")
+    result = Math::MatrixCalculator.new(matrix_a: small, matrix_b: big_matrix, operation: "transpose_b").call
+    refute result[:valid]
+    assert result[:errors].any? { |e| e.include?("cannot exceed 10x10") }
+  end
+
+  test "10x10 matrix A is accepted" do
+    rows = (1..10).map { |_| (1..10).map { |j| j.to_s }.join(",") }.join(";")
+    result = Math::MatrixCalculator.new(matrix_a: rows, operation: "transpose_a").call
+    assert result[:valid]
+  end
+
   # --- Edge cases ---
 
   test "negative values in matrix" do

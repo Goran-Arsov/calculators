@@ -13,7 +13,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       pool = character_pool_size
       length = @password.length
@@ -27,6 +27,7 @@ module Everyday
       strength_label = strength_from_score(score)
 
       {
+        valid: true,
         length: length,
         entropy_bits: entropy.round(1),
         pool_size: pool,

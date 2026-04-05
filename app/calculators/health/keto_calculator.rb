@@ -1,14 +1,8 @@
 module Health
   class KetoCalculator
-    attr_reader :errors
+    include Health::Constants
 
-    ACTIVITY_MULTIPLIERS = {
-      "sedentary" => 1.2,
-      "light" => 1.375,
-      "moderate" => 1.55,
-      "active" => 1.725,
-      "very_active" => 1.9
-    }.freeze
+    attr_reader :errors
 
     CALORIES_PER_GRAM_PROTEIN = 4
     CALORIES_PER_GRAM_CARBS = 4

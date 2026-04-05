@@ -7,16 +7,21 @@ class Math::QuadraticCalculatorTest < ActiveSupport::TestCase
     result = Math::QuadraticCalculator.new(a: 1, b: -5, c: 6).call
     assert result[:valid]
     assert_equal "real", result[:roots_type]
-    assert_equal 3.0, result[:x1]
-    assert_equal 2.0, result[:x2]
+    assert_equal "real", result[:root_type]
+    assert_equal "3.0", result[:x1]
+    assert_equal "2.0", result[:x2]
+    assert_equal 3.0, result[:x1_real]
+    assert_equal 0.0, result[:x1_imaginary]
+    assert_equal 2.0, result[:x2_real]
+    assert_equal 0.0, result[:x2_imaginary]
     assert_equal 1.0, result[:discriminant]
   end
 
   test "two distinct real roots: x^2 - 3x + 2 = 0" do
     result = Math::QuadraticCalculator.new(a: 1, b: -3, c: 2).call
     assert result[:valid]
-    assert_equal 2.0, result[:x1]
-    assert_equal 1.0, result[:x2]
+    assert_equal "2.0", result[:x1]
+    assert_equal "1.0", result[:x2]
   end
 
   test "vertex is calculated correctly" do
@@ -32,8 +37,11 @@ class Math::QuadraticCalculatorTest < ActiveSupport::TestCase
     result = Math::QuadraticCalculator.new(a: 1, b: -6, c: 9).call
     assert result[:valid]
     assert_equal "repeated", result[:roots_type]
-    assert_equal 3.0, result[:x1]
-    assert_equal 3.0, result[:x2]
+    assert_equal "repeated", result[:root_type]
+    assert_equal "3.0", result[:x1]
+    assert_equal "3.0", result[:x2]
+    assert_equal 3.0, result[:x1_real]
+    assert_equal 0.0, result[:x1_imaginary]
     assert_equal 0.0, result[:discriminant]
   end
 
@@ -43,8 +51,13 @@ class Math::QuadraticCalculatorTest < ActiveSupport::TestCase
     result = Math::QuadraticCalculator.new(a: 1, b: 0, c: 1).call
     assert result[:valid]
     assert_equal "complex", result[:roots_type]
+    assert_equal "complex", result[:root_type]
     assert_match(/0\.0 \+ 1\.0i/, result[:x1])
     assert_match(/0\.0 - 1\.0i/, result[:x2])
+    assert_equal 0.0, result[:x1_real]
+    assert_equal 1.0, result[:x1_imaginary]
+    assert_equal 0.0, result[:x2_real]
+    assert_equal(-1.0, result[:x2_imaginary])
     assert_equal(-4.0, result[:discriminant])
   end
 
@@ -54,6 +67,10 @@ class Math::QuadraticCalculatorTest < ActiveSupport::TestCase
     assert_equal "complex", result[:roots_type]
     assert result[:x1].is_a?(String)
     assert result[:x2].is_a?(String)
+    assert result[:x1_real].is_a?(Float)
+    assert result[:x1_imaginary].is_a?(Float)
+    assert result[:x2_real].is_a?(Float)
+    assert result[:x2_imaginary].is_a?(Float)
   end
 
   # --- Negative leading coefficient ---
@@ -62,8 +79,8 @@ class Math::QuadraticCalculatorTest < ActiveSupport::TestCase
     result = Math::QuadraticCalculator.new(a: -1, b: 0, c: 4).call
     assert result[:valid]
     assert_equal "real", result[:roots_type]
-    assert_equal(-2.0, result[:x1])
-    assert_equal 2.0, result[:x2]
+    assert_equal(-2.0, result[:x1_real])
+    assert_equal 2.0, result[:x2_real]
   end
 
   # --- Discriminant ---
@@ -89,7 +106,7 @@ class Math::QuadraticCalculatorTest < ActiveSupport::TestCase
     result = Math::QuadraticCalculator.new(a: 1, b: 0, c: -1_000_000).call
     assert result[:valid]
     assert_equal "real", result[:roots_type]
-    assert_in_delta 1000.0, result[:x1], 0.01
+    assert_in_delta 1000.0, result[:x1_real], 0.01
   end
 
   test "fractional coefficients" do
@@ -101,5 +118,42 @@ class Math::QuadraticCalculatorTest < ActiveSupport::TestCase
   test "errors accessor returns empty array before call" do
     calc = Math::QuadraticCalculator.new(a: 1, b: 2, c: 3)
     assert_equal [], calc.errors
+  end
+
+  # --- Consistent return types ---
+
+  test "real roots return numeric fields with zero imaginary parts" do
+    result = Math::QuadraticCalculator.new(a: 1, b: -5, c: 6).call
+    assert result[:valid]
+    assert_equal "real", result[:root_type]
+    assert result[:x1_real].is_a?(Float)
+    assert_equal 0.0, result[:x1_imaginary]
+    assert_equal 0.0, result[:x2_imaginary]
+    # x1 and x2 are string representations for backward compatibility
+    assert result[:x1].is_a?(String)
+    assert result[:x2].is_a?(String)
+  end
+
+  test "complex roots return numeric fields with nonzero imaginary parts" do
+    result = Math::QuadraticCalculator.new(a: 1, b: 0, c: 1).call
+    assert result[:valid]
+    assert_equal "complex", result[:root_type]
+    assert_equal 0.0, result[:x1_real]
+    assert_equal 1.0, result[:x1_imaginary]
+    assert_equal 0.0, result[:x2_real]
+    assert_equal(-1.0, result[:x2_imaginary])
+    # x1 and x2 are string representations for backward compatibility
+    assert result[:x1].is_a?(String)
+    assert result[:x2].is_a?(String)
+  end
+
+  test "repeated root returns root_type repeated with zero imaginary parts" do
+    result = Math::QuadraticCalculator.new(a: 1, b: -6, c: 9).call
+    assert result[:valid]
+    assert_equal "repeated", result[:root_type]
+    assert_equal 3.0, result[:x1_real]
+    assert_equal 0.0, result[:x1_imaginary]
+    assert_equal 3.0, result[:x2_real]
+    assert_equal 0.0, result[:x2_imaginary]
   end
 end

@@ -16,7 +16,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       watts_list = @watts_str.split(",").map(&:strip).map(&:to_f)
       hours_list = @hours_str.split(",").map(&:strip).map(&:to_f)
@@ -40,6 +40,7 @@ module Everyday
       yearly_cost = yearly_kwh * @rate_per_kwh
 
       {
+        valid: true,
         appliances: appliances,
         total_daily_kwh: total_daily_kwh.round(3),
         monthly_kwh: monthly_kwh.round(2),

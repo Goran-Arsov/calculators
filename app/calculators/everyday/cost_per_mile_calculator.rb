@@ -18,7 +18,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       total_cost = @fuel_cost + @insurance_cost + @maintenance_cost + @depreciation_cost + @other_costs
       cost_per_mile = total_cost / @miles_driven
@@ -27,6 +27,7 @@ module Everyday
       annual_cost = total_cost
 
       {
+        valid: true,
         cost_per_mile: cost_per_mile.round(4),
         cost_per_km: cost_per_km.round(4),
         total_cost: total_cost.round(2),

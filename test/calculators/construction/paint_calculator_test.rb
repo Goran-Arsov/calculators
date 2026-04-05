@@ -5,6 +5,7 @@ class Construction::PaintCalculatorTest < ActiveSupport::TestCase
 
   test "12x10x8 room, 2 coats → gallons > 0" do
     result = Construction::PaintCalculator.new(length: 12, width: 10, height: 8, coats: 2).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert result[:gallons] > 0
     assert result[:wall_area] > 0
@@ -15,6 +16,7 @@ class Construction::PaintCalculatorTest < ActiveSupport::TestCase
     result = Construction::PaintCalculator.new(
       length: 10, width: 10, height: 10, coats: 1, doors: 0, windows: 0
     ).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     # 2 * (10 + 10) * 10 = 400 sqft
     assert_equal 400.0, result[:wall_area]
@@ -45,12 +47,14 @@ class Construction::PaintCalculatorTest < ActiveSupport::TestCase
 
   test "error when length is zero" do
     result = Construction::PaintCalculator.new(length: 0, width: 10, height: 8).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Length must be greater than zero"
   end
 
   test "error when coats is zero" do
     result = Construction::PaintCalculator.new(length: 12, width: 10, height: 8, coats: 0).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Coats must be at least 1"
   end

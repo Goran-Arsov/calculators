@@ -84,6 +84,24 @@ class Finance::AmortizationCalculatorTest < ActiveSupport::TestCase
     assert_includes calc.errors, "Interest rate cannot be negative"
   end
 
+  # --- Upper-bound validation: years ---
+
+  test "years over 100 returns error" do
+    calc = Finance::AmortizationCalculator.new(principal: 100_000, annual_rate: 5, years: 101)
+    result = calc.call
+
+    refute result[:valid]
+    assert_includes calc.errors, "Loan term cannot exceed 100 years"
+  end
+
+  test "years at 100 is accepted" do
+    calc = Finance::AmortizationCalculator.new(principal: 100_000, annual_rate: 5, years: 100)
+    result = calc.call
+
+    assert result[:valid]
+    assert_equal 1200, result[:num_payments]
+  end
+
   # --- String coercion ---
 
   test "string inputs are coerced to numeric" do

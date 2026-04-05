@@ -1,14 +1,8 @@
 module Health
   class CalorieCalculator
-    attr_reader :errors
+    include Health::Constants
 
-    ACTIVITY_MULTIPLIERS = {
-      "sedentary" => 1.2,
-      "light" => 1.375,
-      "moderate" => 1.55,
-      "active" => 1.725,
-      "very_active" => 1.9
-    }.freeze
+    attr_reader :errors
 
     def initialize(age:, sex:, weight:, height:, activity_level:, unit_system: "metric")
       @age = age.to_i
@@ -55,6 +49,7 @@ module Health
 
     def validate!
       @errors << "Age must be positive" unless @age > 0
+      @errors << "Age cannot exceed 150" if @age > 150
       @errors << "Sex must be male or female" unless %w[male female].include?(@sex)
       @errors << "Weight must be positive" unless @weight > 0
       @errors << "Height must be positive" unless @height > 0

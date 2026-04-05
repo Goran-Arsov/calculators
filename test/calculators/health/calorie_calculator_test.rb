@@ -245,6 +245,25 @@ class Health::CalorieCalculatorTest < ActiveSupport::TestCase
     assert_includes result[:errors], "Invalid unit system"
   end
 
+  # --- Upper-bound validation: age ---
+
+  test "age over 150 returns error" do
+    result = Health::CalorieCalculator.new(
+      age: 151, sex: "male", weight: 80, height: 180,
+      activity_level: "sedentary", unit_system: "metric"
+    ).call
+    refute result[:valid]
+    assert_includes result[:errors], "Age cannot exceed 150"
+  end
+
+  test "age at 150 is accepted" do
+    result = Health::CalorieCalculator.new(
+      age: 150, sex: "male", weight: 80, height: 180,
+      activity_level: "sedentary", unit_system: "metric"
+    ).call
+    assert result[:valid]
+  end
+
   # --- Very large values ---
 
   test "very large weight metric" do

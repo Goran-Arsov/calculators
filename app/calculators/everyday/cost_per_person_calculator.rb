@@ -14,7 +14,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       tax_amount = @total_cost * (@tax_percent / 100.0)
       tip_amount = @total_cost * (@tip_percent / 100.0)
@@ -24,6 +24,7 @@ module Everyday
       tax_per_person = tax_amount / @people
 
       {
+        valid: true,
         cost_per_person: cost_per_person.round(2),
         grand_total: grand_total.round(2),
         tax_amount: tax_amount.round(2),

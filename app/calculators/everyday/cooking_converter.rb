@@ -25,12 +25,13 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       conv = CONVERSIONS[@conversion]
       result = @value * conv[:factor]
 
       {
+        valid: true,
         from_unit: conv[:from],
         to_unit: conv[:to],
         result: result.round(4)

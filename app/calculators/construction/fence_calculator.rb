@@ -16,7 +16,7 @@ module Construction
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       sections = (@total_length_ft / @post_spacing_ft).ceil
       posts = sections + 1
@@ -25,6 +25,7 @@ module Construction
       pickets = (@total_length_ft / PICKET_WIDTH_FT).ceil
 
       {
+        valid: true,
         posts: posts,
         rails: rails,
         pickets: pickets,

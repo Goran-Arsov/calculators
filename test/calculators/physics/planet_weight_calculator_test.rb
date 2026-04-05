@@ -5,6 +5,7 @@ class Physics::PlanetWeightCalculatorTest < ActiveSupport::TestCase
 
   test "100 on Earth → ~37.7 on Mars" do
     result = Physics::PlanetWeightCalculator.new(earth_weight: 100).call
+    assert_equal true, result[:valid]
     refute result.key?(:errors)
     assert_equal 37.7, result["Mars"]
   end
@@ -33,12 +34,14 @@ class Physics::PlanetWeightCalculatorTest < ActiveSupport::TestCase
 
   test "error when earth weight is zero" do
     result = Physics::PlanetWeightCalculator.new(earth_weight: 0).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Earth weight must be greater than zero"
   end
 
   test "error when earth weight is negative" do
     result = Physics::PlanetWeightCalculator.new(earth_weight: -50).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Earth weight must be greater than zero"
   end

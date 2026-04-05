@@ -11,7 +11,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       birth = Date.parse(@birth_date_str)
       today = Date.today
@@ -36,6 +36,7 @@ module Everyday
       next_birthday = Date.new(today.year + 1, birth.month, birth.day) if next_birthday <= today
 
       {
+        valid: true,
         years: years,
         months: months,
         days: days,

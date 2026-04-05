@@ -32,7 +32,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       size_data = HOME_SIZE_MULTIPLIERS[@home_size]
       selected_extras = parse_extras
@@ -64,6 +64,7 @@ module Everyday
       total_high = base_high + extras_high
 
       {
+        valid: true,
         estimate_low: total_low.round(0),
         estimate_high: total_high.round(0),
         base_low: base_low.round(0),

@@ -64,6 +64,14 @@ module Health
       @errors << "Weight must be positive" unless @weight > 0
       @errors << "Height must be positive" unless @height > 0
       @errors << "Invalid unit system" unless %w[metric imperial].include?(@unit_system)
+
+      if @unit_system == "imperial"
+        @errors << "Weight cannot exceed 1500 lbs" if @weight > 1500
+        @errors << "Height cannot exceed 120 inches" if @height > 120
+      else
+        @errors << "Weight cannot exceed 700 kg" if @weight > 700
+        @errors << "Height cannot exceed 300 cm" if @height > 300
+      end
     end
   end
 end

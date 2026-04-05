@@ -5,6 +5,7 @@ class Everyday::CostPerPageCalculatorTest < ActiveSupport::TestCase
 
   test "$30 cartridge, 500 pages = $0.06/page" do
     result = Everyday::CostPerPageCalculator.new(cartridge_cost: 30, page_yield: 500).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 0.06, result[:cost_per_page]
     assert_equal 6.0, result[:cost_per_100_pages]
@@ -12,6 +13,7 @@ class Everyday::CostPerPageCalculatorTest < ActiveSupport::TestCase
 
   test "monthly cost projection" do
     result = Everyday::CostPerPageCalculator.new(cartridge_cost: 30, page_yield: 500, pages_per_month: 200).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 12.0, result[:monthly_cost]
     assert_equal 144.0, result[:yearly_cost]
@@ -20,6 +22,7 @@ class Everyday::CostPerPageCalculatorTest < ActiveSupport::TestCase
 
   test "no monthly data when pages_per_month is zero" do
     result = Everyday::CostPerPageCalculator.new(cartridge_cost: 30, page_yield: 500, pages_per_month: 0).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_nil result[:monthly_cost]
     assert_nil result[:yearly_cost]
@@ -27,6 +30,7 @@ class Everyday::CostPerPageCalculatorTest < ActiveSupport::TestCase
 
   test "expensive cartridge with high yield" do
     result = Everyday::CostPerPageCalculator.new(cartridge_cost: 100, page_yield: 10000).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 0.01, result[:cost_per_page]
     assert_equal 1.0, result[:cost_per_100_pages]
@@ -34,6 +38,7 @@ class Everyday::CostPerPageCalculatorTest < ActiveSupport::TestCase
 
   test "returns cartridge cost and page yield" do
     result = Everyday::CostPerPageCalculator.new(cartridge_cost: 25, page_yield: 250).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 25.0, result[:cartridge_cost]
     assert_equal 250, result[:page_yield]
@@ -43,18 +48,21 @@ class Everyday::CostPerPageCalculatorTest < ActiveSupport::TestCase
 
   test "error when cartridge cost is zero" do
     result = Everyday::CostPerPageCalculator.new(cartridge_cost: 0, page_yield: 500).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Cartridge cost must be greater than zero"
   end
 
   test "error when page yield is zero" do
     result = Everyday::CostPerPageCalculator.new(cartridge_cost: 30, page_yield: 0).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Page yield must be greater than zero"
   end
 
   test "error when pages per month is negative" do
     result = Everyday::CostPerPageCalculator.new(cartridge_cost: 30, page_yield: 500, pages_per_month: -10).call
+    assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Pages per month cannot be negative"
   end
@@ -63,6 +71,7 @@ class Everyday::CostPerPageCalculatorTest < ActiveSupport::TestCase
 
   test "string inputs are coerced to numeric" do
     result = Everyday::CostPerPageCalculator.new(cartridge_cost: "30", page_yield: "500").call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 0.06, result[:cost_per_page]
   end
@@ -76,6 +85,7 @@ class Everyday::CostPerPageCalculatorTest < ActiveSupport::TestCase
 
   test "very cheap per-page cost" do
     result = Everyday::CostPerPageCalculator.new(cartridge_cost: 50, page_yield: 50000).call
+    assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 0.001, result[:cost_per_page]
   end

@@ -5,6 +5,7 @@ module Health
     GESTATION_DAYS = 280
     CONCEPTION_OFFSET_DAYS = 14
     TRIMESTER_WEEKS = [ 13, 27, 40 ].freeze
+    MAX_OVERDUE_DAYS = 14
 
     def initialize(last_period_date:)
       @last_period_date = parse_date(last_period_date)
@@ -18,6 +19,8 @@ module Health
       due_date = @last_period_date + GESTATION_DAYS
       conception_date = @last_period_date + CONCEPTION_OFFSET_DAYS
       weeks_pregnant = calculate_weeks_pregnant
+      raw_days_remaining = (due_date - Date.today).to_i
+      overdue = raw_days_remaining < 0
 
       {
         valid: true,
@@ -25,7 +28,9 @@ module Health
         conception_date: conception_date,
         trimester_dates: trimester_dates,
         weeks_pregnant: weeks_pregnant,
-        days_remaining: (due_date - Date.today).to_i
+        days_remaining: overdue ? 0 : raw_days_remaining,
+        overdue: overdue,
+        days_overdue: overdue ? raw_days_remaining.abs : 0
       }
     end
 
@@ -63,7 +68,7 @@ module Health
       end
 
       @errors << "Last period date cannot be in the future" if @last_period_date > Date.today
-      @errors << "Last period date seems too far in the past" if @last_period_date < Date.today - GESTATION_DAYS
+      @errors << "Last period date seems too far in the past" if @last_period_date < Date.today - GESTATION_DAYS - MAX_OVERDUE_DAYS
     end
   end
 end

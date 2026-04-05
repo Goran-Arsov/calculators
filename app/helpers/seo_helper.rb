@@ -185,4 +185,29 @@ module SeoHelper
     end
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end
+
+  def speakable_schema(url:, css_selectors: [])
+    schema = {
+      "@context" => "https://schema.org",
+      "@type" => "WebPage",
+      "speakable" => {
+        "@type" => "SpeakableSpecification",
+        "cssSelector" => css_selectors.presence || ["h1", ".calculator-results", ".faq-answer:first-of-type"]
+      },
+      "url" => url
+    }
+    tag.script(schema.to_json.html_safe, type: "application/ld+json")
+  end
+
+  def calculator_schema_with_ratings(name:, description:, url:, category:, calculator_slug:)
+    rating = CalculatorRating.rating_for_schema(calculator_slug)
+    calculator_schema(
+      name: name,
+      description: description,
+      url: url,
+      category: category,
+      rating_value: rating&.dig(:rating_value),
+      rating_count: rating&.dig(:rating_count)
+    )
+  end
 end

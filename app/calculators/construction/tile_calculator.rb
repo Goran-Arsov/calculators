@@ -18,7 +18,7 @@ module Construction
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       # Tile area in square feet (including grout line around each tile)
       tile_area_in = @tile_length_in * @tile_width_in
@@ -49,9 +49,10 @@ module Construction
       adhesive_bags = (area_with_waste / ADHESIVE_COVERAGE_SQFT_PER_BAG.to_f).ceil
 
       {
+        valid: true,
         area_sqft: @area_sqft.round(2),
         area_with_waste: area_with_waste.round(2),
-        tile_area_sqft: tile_area_sqft.round(4),
+        tile_area_sqft: tile_area_sqft.round(2),
         tiles_needed: tiles_needed,
         grout_lbs: grout_lbs,
         adhesive_bags: adhesive_bags

@@ -14,10 +14,11 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       cost_per_wear = @item_price / @estimated_wears
       result = {
+        valid: true,
         cost_per_wear: cost_per_wear.round(2),
         item_price: @item_price.round(2),
         estimated_wears: @estimated_wears.round(0)

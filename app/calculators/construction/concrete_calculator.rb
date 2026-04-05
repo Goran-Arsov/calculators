@@ -17,7 +17,7 @@ module Construction
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       depth_ft = @depth_in / 12.0
       cubic_feet = @length_ft * @width_ft * depth_ft
@@ -26,6 +26,7 @@ module Construction
       bags_80lb = (cubic_yards / CUBIC_YARDS_PER_80LB_BAG).ceil
 
       {
+        valid: true,
         cubic_feet: cubic_feet.round(2),
         cubic_yards: cubic_yards.round(2),
         bags_60lb: bags_60lb,

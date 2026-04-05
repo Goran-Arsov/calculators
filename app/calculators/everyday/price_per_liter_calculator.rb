@@ -20,7 +20,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       conversion = VOLUME_TO_LITERS[@unit] || 1.0
       volume_in_liters = @volume * conversion
@@ -31,6 +31,7 @@ module Everyday
       price_per_fl_oz = price_per_liter * 0.0295735
 
       {
+        valid: true,
         price_per_liter: price_per_liter.round(4),
         price_per_ml: price_per_ml.round(6),
         price_per_gallon: price_per_gallon.round(2),

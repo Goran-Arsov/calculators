@@ -12,7 +12,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       cost_per_day = @total_cost / @number_of_days
       cost_per_week = cost_per_day * 7
@@ -20,6 +20,7 @@ module Everyday
       cost_per_year = cost_per_day * 365.25
 
       {
+        valid: true,
         cost_per_day: cost_per_day.round(2),
         cost_per_week: cost_per_week.round(2),
         cost_per_month: cost_per_month.round(2),

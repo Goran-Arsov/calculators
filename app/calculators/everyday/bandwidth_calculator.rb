@@ -29,7 +29,7 @@ module Everyday
 
     def call
       validate!
-      return { errors: @errors } if @errors.any?
+      return { valid: false, errors: @errors } if @errors.any?
 
       file_bytes = @file_size * SIZE_UNITS[@file_unit]
       file_bits = file_bytes * 8
@@ -44,6 +44,7 @@ module Everyday
       speed_for_1_hour = speed_bps > 0 ? file_bits / 3600.0 : 0
 
       {
+        valid: true,
         download_seconds: download_seconds.round(2),
         download_time: download_time,
         file_size_bytes: file_bytes.round(0),
