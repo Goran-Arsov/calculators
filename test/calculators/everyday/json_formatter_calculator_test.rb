@@ -29,7 +29,7 @@ class Everyday::JsonFormatterCalculatorTest < ActiveSupport::TestCase
   end
 
   test "detects array as root element" do
-    result = Everyday::JsonFormatterCalculator.new(text: '[1,2,3]').call
+    result = Everyday::JsonFormatterCalculator.new(text: "[1,2,3]").call
     assert result[:valid]
     assert result[:is_array]
     assert_not result[:is_object]
@@ -43,7 +43,7 @@ class Everyday::JsonFormatterCalculatorTest < ActiveSupport::TestCase
   end
 
   test "returns error for invalid JSON" do
-    result = Everyday::JsonFormatterCalculator.new(text: '{invalid}').call
+    result = Everyday::JsonFormatterCalculator.new(text: "{invalid}").call
     assert_not result[:valid]
     assert result[:errors].any? { |e| e.include?("Invalid JSON") }
   end
@@ -55,14 +55,14 @@ class Everyday::JsonFormatterCalculatorTest < ActiveSupport::TestCase
   end
 
   test "handles deeply nested arrays" do
-    text = '[[[[1]]]]'
+    text = "[[[[1]]]]"
     result = Everyday::JsonFormatterCalculator.new(text: text).call
     assert result[:valid]
     assert_equal 5, result[:nesting_depth]
   end
 
   test "handles empty object" do
-    result = Everyday::JsonFormatterCalculator.new(text: '{}').call
+    result = Everyday::JsonFormatterCalculator.new(text: "{}").call
     assert result[:valid]
     assert_equal 0, result[:key_count]
     assert_equal 1, result[:nesting_depth]

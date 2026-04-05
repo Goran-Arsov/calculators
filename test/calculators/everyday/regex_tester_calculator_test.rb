@@ -19,7 +19,7 @@ class Everyday::RegexTesterCalculatorTest < ActiveSupport::TestCase
   test "captures groups" do
     result = Everyday::RegexTesterCalculator.new(pattern: "(\\w+)@(\\w+)", test_string: "user@host").call
     assert result[:valid]
-    assert_equal ["user", "host"], result[:matches][0][:captures]
+    assert_equal [ "user", "host" ], result[:matches][0][:captures]
     assert result[:has_captures]
   end
 

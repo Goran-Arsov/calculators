@@ -84,7 +84,7 @@ module Everyday
           dp[i][j] = if a[i - 1] == b[j - 1]
             dp[i - 1][j - 1] + 1
           else
-            [dp[i - 1][j], dp[i][j - 1]].max
+            [ dp[i - 1][j], dp[i][j - 1] ].max
           end
         end
       end

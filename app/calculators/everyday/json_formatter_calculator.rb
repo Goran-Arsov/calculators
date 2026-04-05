@@ -55,11 +55,11 @@ module Everyday
       when Hash
         return current if obj.empty?
         current_max = obj.values.map { |v| nesting_depth(v, current + 1) }.max
-        [current, current_max].max
+        [ current, current_max ].max
       when Array
         return current if obj.empty?
         current_max = obj.map { |v| nesting_depth(v, current + 1) }.max
-        [current, current_max].max
+        [ current, current_max ].max
       else
         current
       end

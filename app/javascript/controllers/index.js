@@ -141,6 +141,16 @@ import BusinessDaysCalculatorController from "controllers/business_days_calculat
 import TimeCardCalculatorController from "controllers/time_card_calculator_controller"
 import HourlyToSalaryCalculatorController from "controllers/hourly_to_salary_calculator_controller"
 import WorkBreakCalculatorController from "controllers/work_break_calculator_controller"
+import WordCounterCalculatorController from "controllers/word_counter_calculator_controller"
+import CharacterCounterCalculatorController from "controllers/character_counter_calculator_controller"
+import CaseConverterCalculatorController from "controllers/case_converter_calculator_controller"
+import RemoveDuplicatesCalculatorController from "controllers/remove_duplicates_calculator_controller"
+import JsonFormatterCalculatorController from "controllers/json_formatter_calculator_controller"
+import LoremIpsumCalculatorController from "controllers/lorem_ipsum_calculator_controller"
+import TextDiffCalculatorController from "controllers/text_diff_calculator_controller"
+import StringEncoderCalculatorController from "controllers/string_encoder_calculator_controller"
+import RegexTesterCalculatorController from "controllers/regex_tester_calculator_controller"
+import MarkdownPreviewCalculatorController from "controllers/markdown_preview_calculator_controller"
 
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
@@ -324,6 +334,16 @@ application.register("business-days-calculator", BusinessDaysCalculatorControlle
 application.register("time-card-calculator", TimeCardCalculatorController)
 application.register("hourly-to-salary-calculator", HourlyToSalaryCalculatorController)
 application.register("work-break-calculator", WorkBreakCalculatorController)
+application.register("word-counter-calculator", WordCounterCalculatorController)
+application.register("character-counter-calculator", CharacterCounterCalculatorController)
+application.register("case-converter-calculator", CaseConverterCalculatorController)
+application.register("remove-duplicates-calculator", RemoveDuplicatesCalculatorController)
+application.register("json-formatter-calculator", JsonFormatterCalculatorController)
+application.register("lorem-ipsum-calculator", LoremIpsumCalculatorController)
+application.register("text-diff-calculator", TextDiffCalculatorController)
+application.register("string-encoder-calculator", StringEncoderCalculatorController)
+application.register("regex-tester-calculator", RegexTesterCalculatorController)
+application.register("markdown-preview-calculator", MarkdownPreviewCalculatorController)
 
 // Construction
 application.register("paint-calculator", PaintCalculatorController)

@@ -227,6 +227,16 @@ Rails.application.routes.draw do
     get "business-days-calculator", to: "calculators#business_days", as: :business_days
     get "time-card-calculator", to: "calculators#time_card", as: :time_card
     get "work-break-calculator", to: "calculators#work_break", as: :work_break
+    get "word-counter", to: "calculators#word_counter", as: :word_counter
+    get "character-counter", to: "calculators#character_counter", as: :character_counter
+    get "case-converter", to: "calculators#case_converter", as: :case_converter
+    get "remove-duplicates", to: "calculators#remove_duplicates", as: :remove_duplicates
+    get "json-formatter", to: "calculators#json_formatter", as: :json_formatter
+    get "lorem-ipsum-generator", to: "calculators#lorem_ipsum", as: :lorem_ipsum
+    get "text-diff-checker", to: "calculators#text_diff", as: :text_diff
+    get "string-encoder-decoder", to: "calculators#string_encoder", as: :string_encoder
+    get "regex-tester", to: "calculators#regex_tester", as: :regex_tester
+    get "markdown-preview", to: "calculators#markdown_preview", as: :markdown_preview
   end
 
   # Blog

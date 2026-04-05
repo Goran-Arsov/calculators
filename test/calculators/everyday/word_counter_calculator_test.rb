@@ -34,14 +34,14 @@ class Everyday::WordCounterCalculatorTest < ActiveSupport::TestCase
   end
 
   test "calculates reading time based on 238 WPM" do
-    words = (["word"] * 476).join(" ")
+    words = ([ "word" ] * 476).join(" ")
     result = Everyday::WordCounterCalculator.new(text: words).call
     assert result[:valid]
     assert_equal 2, result[:reading_time_minutes]
   end
 
   test "calculates speaking time based on 150 WPM" do
-    words = (["word"] * 300).join(" ")
+    words = ([ "word" ] * 300).join(" ")
     result = Everyday::WordCounterCalculator.new(text: words).call
     assert result[:valid]
     assert_equal 2, result[:speaking_time_minutes]

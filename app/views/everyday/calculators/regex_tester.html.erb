@@ -1,0 +1,172 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Regex Tester - Free Online Tool",
+  description: "Test regular expressions with live match highlighting, match count, and capture group display. Free online regex tester with global, case-insensitive, and multiline flags.",
+  canonical: everyday_regex_tester_url,
+  og: {
+    title: "Regex Tester - Free Online Tool | CalcWise",
+    description: "Test regex patterns with live highlighting, match count, and capture groups. Supports global, case-insensitive, and multiline flags.",
+    url: everyday_regex_tester_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Regex Tester", url: everyday_regex_tester_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a regular expression?", answer: "A regular expression (regex) is a pattern that describes a set of strings. It is used for searching, matching, and manipulating text. For example, the pattern \\d+ matches one or more digits, [a-z]+ matches one or more lowercase letters, and .* matches any character sequence. Regular expressions are supported in virtually every programming language." },
+  { question: "What are regex flags?", answer: "Flags modify how a regex pattern is applied. The global flag (g) finds all matches instead of just the first. The case-insensitive flag (i) matches regardless of letter case. The multiline flag (m) makes ^ and $ match the start and end of each line rather than the entire string. Flags can be combined for more flexible matching." },
+  { question: "What are capture groups?", answer: "Capture groups are portions of a regex pattern enclosed in parentheses. They capture the matched text for later use. For example, (\\w+)@(\\w+) applied to 'user@host' captures 'user' as group 1 and 'host' as group 2. Capture groups are essential for extracting specific parts of matched text." },
+  { question: "Why is my regex not matching?", answer: "Common reasons include: forgetting to escape special characters (use \\. to match a literal period), not enabling the global flag to find all matches, not enabling case-insensitive mode, incorrect character classes, or quantifier issues. Check that your pattern matches the exact text format and try testing with simpler patterns first." },
+  { question: "What is the difference between * and + quantifiers?", answer: "The * quantifier matches zero or more occurrences, while + matches one or more. For example, \\d* matches an empty string or any number of digits, but \\d+ requires at least one digit. Use * when the element is optional and + when at least one occurrence is required. The ? quantifier matches zero or one occurrence." }
+]) %>
+
+<%= calculator_schema(
+  name: "Regex Tester",
+  description: "Test regular expressions with live match highlighting, match count, and capture group display.",
+  url: everyday_regex_tester_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Regex Tester" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Regex Tester</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter a regex pattern and test string to see matches highlighted in real time with capture groups and match count.</p>
+
+    <div data-controller="regex-tester-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Regex Pattern</label>
+            <input type="text" data-regex-tester-calculator-target="pattern" data-action="input->regex-tester-calculator#calculate"
+              class="w-full font-mono" placeholder="\\d+" autocomplete="off">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Flags</label>
+            <div class="flex items-center gap-4 h-[42px]">
+              <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <input type="checkbox" data-regex-tester-calculator-target="flagCaseInsensitive" data-action="change->regex-tester-calculator#calculate"
+                  class="rounded border-gray-300 dark:border-gray-600 text-blue-600">
+                <span>Case insensitive (i)</span>
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <input type="checkbox" data-regex-tester-calculator-target="flagMultiline" data-action="change->regex-tester-calculator#calculate"
+                  class="rounded border-gray-300 dark:border-gray-600 text-blue-600">
+                <span>Multiline (m)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Test String</label>
+          <textarea data-regex-tester-calculator-target="testString" data-action="input->regex-tester-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="5" placeholder="Enter text to test against the pattern..."></textarea>
+        </div>
+
+        <p data-regex-tester-calculator-target="resultError" class="hidden text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl p-3"></p>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Matches</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-regex-tester-calculator-target="resultMatchCount">&mdash;</span>
+          </div>
+          <div data-regex-tester-calculator-target="output"
+            class="bg-white dark:bg-gray-700 rounded-lg p-3 font-mono text-sm whitespace-pre-wrap break-all min-h-[4rem] text-gray-900 dark:text-white">
+            <span class="text-gray-400">Matches will be highlighted here</span>
+          </div>
+        </div>
+
+        <div data-regex-tester-calculator-target="resultCaptures"></div>
+
+        <button data-action="click->regex-tester-calculator#copy" class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Matches</button>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Regex Tester</h2>
+      <p>
+        Enter your regular expression pattern in the pattern field and your test string in the text area below. Matches are highlighted in yellow in real time as you type. The match count updates instantly. If your pattern includes capture groups (parentheses), the captured values are displayed below the match output. Use the flag checkboxes to enable case-insensitive or multiline matching.
+      </p>
+      <p>
+        Invalid regex patterns are caught gracefully and show an error message instead of crashing. The global flag is always enabled so all matches are found. This tool is invaluable for building and debugging regular expressions before using them in your code. All processing happens in your browser using JavaScript regex engine.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Regular Expressions</h2>
+      <p>
+        Regular expressions are one of the most powerful tools in programming for text processing. They can validate input formats (emails, phone numbers, URLs), extract data from strings, search and replace text, and parse structured data. While the syntax can be intimidating at first, learning a few basic patterns covers most common use cases.
+      </p>
+
+      <h3>Common Regex Patterns</h3>
+      <p>
+        The most frequently used patterns include \d for digits, \w for word characters (letters, digits, underscore), \s for whitespace, and . for any character. Quantifiers like + (one or more), * (zero or more), and ? (zero or one) control repetition. Character classes like [a-z] match ranges of characters. Anchors ^ and $ match the start and end of a line. Combining these building blocks creates patterns for virtually any text matching task.
+      </p>
+
+      <h3>Capture Groups and Extraction</h3>
+      <p>
+        Parentheses in regex create capture groups that extract matched substrings. The pattern (\w+)@(\w+)\.(\w+) applied to an email address captures the username, domain, and TLD as separate groups. Named capture groups using (?&lt;name&gt;pattern) make extractions more readable in code. Non-capturing groups (?:pattern) group without capturing, which is useful for applying quantifiers to multiple alternatives without extracting.
+      </p>
+
+      <h3>Performance Considerations</h3>
+      <p>
+        Regex performance matters when processing large texts or running patterns in loops. Avoid catastrophic backtracking by minimizing nested quantifiers like (a+)+. Use specific character classes instead of the dot wildcard when possible. Anchor your patterns with ^ and $ when you know the match position. Compile regex patterns once and reuse them rather than creating new regex objects in loops.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a regular expression?</h3>
+      <p>A pattern describing a set of strings, used for searching, matching, and manipulating text. Supported in virtually every programming language.</p>
+
+      <h3>What are regex flags?</h3>
+      <p>Flags modify pattern behavior. Case-insensitive (i) ignores letter case. Multiline (m) makes ^ and $ match line boundaries. Global (g) finds all matches.</p>
+
+      <h3>What are capture groups?</h3>
+      <p>Portions in parentheses that extract matched text. Pattern (\w+)@(\w+) on "user@host" captures "user" and "host" separately.</p>
+
+      <h3>Why is my regex not matching?</h3>
+      <p>Common issues: un-escaped special characters, missing flags, wrong character classes, or quantifier problems. Try simpler patterns first.</p>
+
+      <h3>What is the difference between * and +?</h3>
+      <p>The * matches zero or more occurrences (optional). The + requires at least one occurrence. Use * for optional elements, + for required ones.</p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Regex Tester", url: everyday_regex_tester_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "JSON Formatter", description: "Format, prettify, minify, and validate JSON with structure analysis.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "String Encoder/Decoder", description: "Encode and decode text with Base64, URL encoding, and HTML entities.", path: everyday_string_encoder_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "Text Diff Checker", description: "Compare two texts side by side with line-by-line diff highlighting.", path: everyday_text_diff_path, icon_path: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("regex-tester") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

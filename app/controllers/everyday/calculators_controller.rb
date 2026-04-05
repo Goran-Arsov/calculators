@@ -47,6 +47,16 @@ module Everyday
     def business_days; end
     def time_card; end
     def work_break; end
+    def word_counter; end
+    def character_counter; end
+    def case_converter; end
+    def remove_duplicates; end
+    def json_formatter; end
+    def lorem_ipsum; end
+    def text_diff; end
+    def string_encoder; end
+    def regex_tester; end
+    def markdown_preview; end
 
     private
 

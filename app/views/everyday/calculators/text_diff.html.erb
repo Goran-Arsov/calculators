@@ -1,0 +1,164 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Text Diff Checker - Free Online Tool",
+  description: "Compare two texts side by side with line-by-line diff highlighting. See additions, removals, and unchanged lines. Free online text comparison tool.",
+  canonical: everyday_text_diff_url,
+  og: {
+    title: "Text Diff Checker - Free Online Tool | CalcWise",
+    description: "Compare two texts with line-by-line diff highlighting. See additions in green, removals in red, and unchanged lines clearly.",
+    url: everyday_text_diff_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Text Diff Checker", url: everyday_text_diff_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does the text diff checker work?", answer: "The diff checker compares two texts line by line using a Longest Common Subsequence (LCS) algorithm. It identifies lines that are unchanged (present in both texts), removed (present only in the first text), and added (present only in the second text). Results are displayed with color coding: green for additions, red for removals, and gray for unchanged lines." },
+  { question: "What is the difference between a line diff and a character diff?", answer: "A line diff compares text line by line and marks entire lines as added, removed, or unchanged. A character diff compares individual characters within lines to show exactly which characters changed. This tool performs a line diff, which is ideal for comparing documents, code files, and multi-line text. Line diffs provide a clear, high-level view of changes." },
+  { question: "Can I compare code with this tool?", answer: "Yes, the diff checker works well for comparing code. It uses a monospace font and preserves whitespace, making code comparison clear and accurate. However, it compares exact text, so differences in whitespace or indentation will be flagged. For code reviews, ensure both versions use the same indentation style." },
+  { question: "What does the LCS algorithm do?", answer: "The Longest Common Subsequence (LCS) algorithm finds the longest sequence of lines that appear in both texts in the same order. Lines in this common sequence are marked as unchanged. Lines not in the common sequence are marked as added or removed. This produces the minimal diff, showing the fewest changes needed to transform one text into the other." },
+  { question: "Is there a size limit for comparison?", answer: "The tool runs in your browser, so there is no server-imposed limit. Practically, it handles thousands of lines efficiently. Very large texts with tens of thousands of lines may take a moment to process because the LCS algorithm has quadratic time complexity. For typical document and code comparisons, processing is instant." }
+]) %>
+
+<%= calculator_schema(
+  name: "Text Diff Checker",
+  description: "Compare two texts with line-by-line diff highlighting showing additions, removals, and unchanged lines.",
+  url: everyday_text_diff_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Text Diff Checker" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Text Diff Checker</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste two texts to see a line-by-line comparison with additions, removals, and unchanged lines highlighted.</p>
+
+    <div data-controller="text-diff-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Original Text</label>
+            <textarea data-text-diff-calculator-target="inputA" data-action="input->text-diff-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows="8" placeholder="Paste original text here..."></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Modified Text</label>
+            <textarea data-text-diff-calculator-target="inputB" data-action="input->text-diff-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows="8" placeholder="Paste modified text here..."></textarea>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Added</span>
+            <span class="text-lg font-bold text-green-600 dark:text-green-400" data-text-diff-calculator-target="resultAdditions">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Removed</span>
+            <span class="text-lg font-bold text-red-600 dark:text-red-400" data-text-diff-calculator-target="resultRemovals">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Unchanged</span>
+            <span class="text-lg font-bold text-gray-600 dark:text-gray-400" data-text-diff-calculator-target="resultUnchanged">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Identical</span>
+            <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-text-diff-calculator-target="resultIdentical">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Diff Output</label>
+          <div data-text-diff-calculator-target="output"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 p-3 min-h-[12rem] max-h-[30rem] overflow-y-auto">
+            <div class="text-gray-400 p-4 text-center">Enter text in both fields to see the diff</div>
+          </div>
+        </div>
+
+        <button data-action="click->text-diff-calculator#copy" class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Diff</button>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Text Diff Checker</h2>
+      <p>
+        Paste your original text in the left field and the modified text in the right field. The diff checker instantly compares them line by line and displays the results with color coding. Green lines are additions (present in the modified text but not the original). Red lines are removals (present in the original but not the modified). Gray lines are unchanged and appear in both versions.
+      </p>
+      <p>
+        The statistics bar shows the total count of added lines, removed lines, and unchanged lines, plus whether the two texts are identical. This gives you a quick overview of how much has changed. The diff output uses a monospace font and preserves whitespace for accurate code comparison. Everything runs in your browser with no data sent to any server.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Diff Output</h2>
+      <p>
+        The diff algorithm finds the Longest Common Subsequence (LCS) of lines between the two texts. Lines in the LCS are unchanged. Lines not in the LCS are either additions or removals depending on which text they belong to. This approach produces the minimal diff, showing the fewest changes needed to transform the original into the modified version.
+      </p>
+
+      <h3>Common Use Cases</h3>
+      <p>
+        Text diff checking is useful for comparing document revisions, reviewing code changes, verifying configuration file updates, checking translation differences, and debugging data transformations. Writers use it to track edits between drafts. Developers use it to review changes before committing code. System administrators use it to verify configuration changes across environments.
+      </p>
+
+      <h3>Limitations of Line-by-Line Diff</h3>
+      <p>
+        A line diff treats each line as an atomic unit. If a single character changes on a line, the entire line is marked as removed and a new version is marked as added. For fine-grained character-level comparison, you would need a more detailed diff tool. However, line diffs are the standard for most text comparison tasks and provide the clearest overview of changes across documents and code files.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does the diff checker work?</h3>
+      <p>It uses a Longest Common Subsequence algorithm to find unchanged lines, then marks remaining lines as additions or removals with color coding.</p>
+
+      <h3>What is the difference between line diff and character diff?</h3>
+      <p>Line diff compares entire lines. Character diff compares individual characters within lines. This tool uses line diff for clear, high-level comparison.</p>
+
+      <h3>Can I compare code?</h3>
+      <p>Yes. The output uses monospace font and preserves whitespace. Indentation differences will be detected as changes.</p>
+
+      <h3>What does the LCS algorithm do?</h3>
+      <p>It finds the longest sequence of matching lines in both texts, producing the minimal number of changes needed.</p>
+
+      <h3>Is there a size limit?</h3>
+      <p>No server limit. The tool handles thousands of lines in-browser. Very large comparisons may take a moment to process.</p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Text Diff Checker", url: everyday_text_diff_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Remove Duplicates", description: "Remove duplicate lines from your text and see how many were eliminated.", path: everyday_remove_duplicates_path, icon_path: "M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" },
+      { name: "JSON Formatter", description: "Format, prettify, minify, and validate JSON with structure analysis.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Regex Tester", description: "Test regular expressions with live match highlighting and capture group display.", path: everyday_regex_tester_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("text-diff-checker") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

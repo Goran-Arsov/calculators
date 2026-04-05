@@ -18,7 +18,7 @@ module Everyday
         html: markdown_to_html(@text),
         word_count: @text.split(/\s+/).reject(&:empty?).size,
         line_count: @text.split("\n").size,
-        heading_count: @text.scan(/^#{1,6}\s/).size
+        heading_count: @text.scan(/^\#{1,6}\s/).size
       }
     end
 
@@ -63,7 +63,7 @@ module Everyday
         end
 
         # Headings
-        if line =~ /^(#{1,6})\s+(.*)/
+        if line =~ /^(\#{1,6})\s+(.*)/
           html_lines = close_list(html_lines, in_list, list_type)
           in_list = false
           level = $1.length
