@@ -79,5 +79,47 @@ module Health
       assert_response :success
       assert_select "h1", /Dog Food/
     end
+
+    test "should get bmi_women" do
+      get health_bmi_women_url
+      assert_response :success
+      assert_select "h1", /BMI Calculator for Women/
+    end
+
+    test "should get bmi_men" do
+      get health_bmi_men_url
+      assert_response :success
+      assert_select "h1", /BMI Calculator for Men/
+    end
+
+    test "should get bmi_kids" do
+      get health_bmi_kids_url
+      assert_response :success
+      assert_select "h1", /BMI Calculator for Kids/
+    end
+
+    test "should get calorie_deficit" do
+      get health_calorie_deficit_url
+      assert_response :success
+      assert_select "h1", /Calorie Deficit Calculator/
+    end
+
+    test "should get weight_loss_calories" do
+      get health_weight_loss_calories_url
+      assert_response :success
+      assert_select "h1", /Weight Loss Calorie Calculator/
+    end
+
+    test "should get pregnancy_calories" do
+      get health_pregnancy_calories_url
+      assert_response :success
+      assert_select "h1", /Pregnancy Calorie Calculator/
+    end
+
+    test "should get bulking_calories" do
+      get health_bulking_calories_url
+      assert_response :success
+      assert_select "h1", /Bulking Calorie Calculator/
+    end
   end
 end

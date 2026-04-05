@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Refinance Calculator - Free Mortgage Refinancing Tool",
+  description: "Calculate your new monthly payment after refinancing, total savings, and break-even point. Compare rate-and-term vs cash-out refinance options with our free tool.",
+  canonical: finance_refinance_url,
+  og: {
+    title: "Refinance Calculator - Free Mortgage Refinancing Tool | CalcWise",
+    description: "Calculate your new monthly payment after refinancing, total savings, and break-even point. Compare refinance options instantly.",
+    url: finance_refinance_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Refinance Calculator", url: finance_refinance_url }
+]) %>
+
+<%= faq_schema([
+  { question: "When should I refinance my mortgage?", answer: "A common rule of thumb is to refinance when you can lower your interest rate by at least 0.5% to 1%. However, you should also consider how long you plan to stay in the home relative to the break-even point (when monthly savings offset closing costs), your current loan balance, and whether you want to change your loan term or access equity." },
+  { question: "What is the break-even point for refinancing?", answer: "The break-even point is when your total monthly savings from the lower payment equal the closing costs of refinancing. For example, if refinancing costs $4,000 and saves you $200 per month, your break-even point is 20 months. If you plan to stay in the home longer than the break-even period, refinancing makes financial sense." },
+  { question: "What is the difference between rate-and-term and cash-out refinance?", answer: "A rate-and-term refinance replaces your current mortgage with a new one at a different rate or term, without changing the loan amount significantly. A cash-out refinance lets you borrow more than your current balance and receive the difference in cash, typically used for home improvements or debt consolidation. Cash-out refinances usually carry slightly higher rates." },
+  { question: "How much does it cost to refinance a mortgage?", answer: "Refinancing typically costs 2% to 5% of the loan amount in closing costs. For a $300,000 loan, that is $6,000 to $15,000. Costs include appraisal fees, title insurance, origination fees, and recording fees. Some lenders offer no-closing-cost refinance options, but these usually come with a slightly higher interest rate." },
+  { question: "Can I refinance with bad credit?", answer: "While it is more challenging, refinancing with lower credit scores is possible. FHA streamline refinance programs have minimal credit requirements for existing FHA borrowers. VA IRRRL (Interest Rate Reduction Refinance Loan) offers similar benefits for VA loan holders. Conventional refinance typically requires a minimum credit score of 620, with the best rates reserved for scores above 740." }
+]) %>
+
+<%= calculator_schema(
+  name: "Refinance Calculator",
+  description: "Calculate your new monthly mortgage payment after refinancing, total savings, and break-even point.",
+  url: finance_refinance_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Refinance Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Refinance Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your new monthly payment after refinancing, total interest savings, and how long it takes to break even on closing costs.</p>
+
+    <%# Calculator UI — reuses mortgage-calculator Stimulus controller %>
+    <div data-controller="mortgage-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Loan Balance ($)</label>
+            <input type="number" data-mortgage-calculator-target="principal" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="280000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">New Interest Rate (%)</label>
+            <input type="number" data-mortgage-calculator-target="rate" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="5.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">New Loan Term (Years)</label>
+            <input type="number" data-mortgage-calculator-target="years" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="30" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->mortgage-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Refinance Calculator</h2>
+      <p>
+        Our free refinance calculator helps you estimate your new monthly payment if you refinance your existing mortgage. Enter your current loan balance (the amount you still owe, not the original loan amount), the new interest rate you expect to qualify for, and the new loan term. The calculator shows your new monthly payment, total amount paid, and total interest. Compare these numbers to your current mortgage to determine how much you would save by refinancing.
+      </p>
+      <p>
+        Refinancing replaces your existing mortgage with a new loan, ideally at a lower interest rate or more favorable terms. The decision to refinance depends on several factors: the rate difference, how long you plan to stay in the home, the closing costs involved, and whether you want to change your loan term. Understanding the numbers clearly before you commit helps ensure refinancing is genuinely beneficial for your financial situation.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>When Refinancing Makes Sense</h2>
+      <p>
+        The traditional rule of thumb is to refinance when you can reduce your interest rate by at least 0.75% to 1%. However, the real test is the break-even calculation. Divide your total closing costs by your monthly payment savings to find the number of months until the refinance pays for itself. If you plan to stay in the home longer than that break-even period, refinancing makes financial sense. For example, if closing costs are $6,000 and you save $250 per month, you break even in 24 months. If you plan to stay at least three to five more years, the long-term savings are substantial.
+      </p>
+
+      <h3>Rate-and-Term vs. Cash-Out Refinance</h3>
+      <p>
+        A rate-and-term refinance simply changes your interest rate, loan term, or both without significantly changing the loan balance. This is the most common type and is used to lower your monthly payment or pay off your mortgage faster. A cash-out refinance allows you to borrow more than your current balance and receive the difference in cash, which can be used for home improvements, debt consolidation, or other major expenses. Cash-out refinances typically carry rates 0.125% to 0.5% higher than rate-and-term refinances.
+      </p>
+
+      <h3>Hidden Costs of Refinancing</h3>
+      <p>
+        Closing costs for refinancing typically run 2% to 5% of the loan amount and include appraisal fees, title search and insurance, origination fees, credit report fees, and recording fees. Some lenders advertise "no-closing-cost" refinances, but these typically roll the costs into a higher interest rate, meaning you pay more over the life of the loan. Always request a Loan Estimate from multiple lenders and compare both the rate and the total closing costs to find the best overall deal.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>When should I refinance my mortgage?</h3>
+      <p>
+        A common rule of thumb is to refinance when you can lower your interest rate by at least 0.5% to 1%. However, you should also consider how long you plan to stay in the home relative to the break-even point (when monthly savings offset closing costs), your current loan balance, and whether you want to change your loan term or access equity.
+      </p>
+
+      <h3>What is the break-even point for refinancing?</h3>
+      <p>
+        The break-even point is when your total monthly savings from the lower payment equal the closing costs of refinancing. For example, if refinancing costs $4,000 and saves you $200 per month, your break-even point is 20 months. If you plan to stay in the home longer than the break-even period, refinancing makes financial sense.
+      </p>
+
+      <h3>What is the difference between rate-and-term and cash-out refinance?</h3>
+      <p>
+        A rate-and-term refinance replaces your current mortgage with a new one at a different rate or term, without changing the loan amount significantly. A cash-out refinance lets you borrow more than your current balance and receive the difference in cash, typically used for home improvements or debt consolidation. Cash-out refinances usually carry slightly higher rates.
+      </p>
+
+      <h3>How much does it cost to refinance a mortgage?</h3>
+      <p>
+        Refinancing typically costs 2% to 5% of the loan amount in closing costs. For a $300,000 loan, that is $6,000 to $15,000. Costs include appraisal fees, title insurance, origination fees, and recording fees. Some lenders offer no-closing-cost refinance options, but these usually come with a slightly higher interest rate.
+      </p>
+
+      <h3>Can I refinance with bad credit?</h3>
+      <p>
+        While it is more challenging, refinancing with lower credit scores is possible. FHA streamline refinance programs have minimal credit requirements for existing FHA borrowers. VA IRRRL (Interest Rate Reduction Refinance Loan) offers similar benefits for VA loan holders. Conventional refinance typically requires a minimum credit score of 620, with the best rates reserved for scores above 740.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Refinance Calculator", url: finance_refinance_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment and total interest.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Home Equity Loan Calculator", description: "Calculate payments for borrowing against your home equity.", path: finance_home_equity_loan_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Amortization Calculator", description: "See a full amortization schedule for your mortgage.", path: finance_amortization_path, icon_path: "M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("refinance-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

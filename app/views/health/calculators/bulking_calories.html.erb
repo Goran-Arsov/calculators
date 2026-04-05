@@ -1,0 +1,211 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Bulking Calorie Calculator - How Many Calories to Build Muscle",
+  description: "Calculate your daily calorie needs for a muscle-building bulk. Learn about caloric surplus for muscle gain (+250-500 cal), lean bulk vs dirty bulk, protein requirements (1.6-2.2g/kg), and training nutrition.",
+  canonical: health_bulking_calories_url,
+  og: {
+    title: "Bulking Calorie Calculator - How Many Calories to Build Muscle | CalcWise",
+    description: "Calculate your daily calorie surplus for muscle gain. Learn about lean bulk vs dirty bulk, protein needs, and training nutrition.",
+    url: health_bulking_calories_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Bulking Calorie Calculator", url: health_bulking_calories_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many extra calories do I need to build muscle?", answer: "To build muscle effectively, most people need a caloric surplus of 250 to 500 calories above their TDEE (Total Daily Energy Expenditure). A surplus of 250 calories per day supports a lean bulk with minimal fat gain, while 500 calories accelerates muscle growth but comes with more fat accumulation. Beginners and younger lifters can often gain muscle with a smaller surplus, while advanced lifters may need to be closer to 500 calories above maintenance." },
+  { question: "What is the difference between a lean bulk and a dirty bulk?", answer: "A lean bulk involves eating a modest caloric surplus (250-350 calories above TDEE) from nutrient-dense foods, resulting in slow, steady muscle gain with minimal fat. A dirty bulk involves eating a large surplus (500-1,000+ calories) from any food source, including highly processed foods. While a dirty bulk produces faster weight gain, a significant portion is body fat that must later be dieted off. Most coaches recommend a lean bulk for better long-term results." },
+  { question: "How much protein do I need when bulking?", answer: "During a bulk, aim for 1.6 to 2.2 grams of protein per kilogram of body weight per day. For a 80 kg (176 lb) person, this is 128 to 176 grams of protein daily. Research shows that protein intake above 1.6 g/kg provides the building blocks for muscle protein synthesis, while going above 2.2 g/kg offers diminishing returns. Distribute protein evenly across 3-5 meals for optimal absorption." },
+  { question: "How fast can I build muscle naturally?", answer: "Natural muscle gain rates depend on training experience. Beginners can expect to gain approximately 0.9-1.3 kg (2-3 lbs) of muscle per month in their first year of consistent training. Intermediate lifters (1-3 years) typically gain 0.45-0.9 kg (1-2 lbs) per month. Advanced lifters (3+ years) may gain only 0.2-0.45 kg (0.5-1 lb) per month. These rates assume proper training, nutrition, and recovery." },
+  { question: "Should I do cardio while bulking?", answer: "Light to moderate cardio (2-3 sessions of 20-30 minutes per week) is beneficial during a bulk for cardiovascular health, nutrient partitioning, and appetite regulation. However, excessive cardio can interfere with muscle recovery and requires additional calories to compensate for the energy burned. Keep cardio moderate and increase your calorie intake to account for the extra expenditure if needed." }
+]) %>
+
+<%= calculator_schema(
+  name: "Bulking Calorie Calculator",
+  description: "Calculate your daily calorie needs for a muscle-building bulk, including TDEE, surplus targets, and guidance on lean vs dirty bulking.",
+  url: health_bulking_calories_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Bulking Calorie Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Bulking Calorie Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your daily calorie target for building muscle. Find your maintenance calories, then add the right surplus for a lean or aggressive bulk.</p>
+
+    <%# Calculator UI — reuses calorie-calculator Stimulus controller %>
+    <div data-controller="calorie-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit System</label>
+            <select data-calorie-calculator-target="unitSystem" data-action="change->calorie-calculator#updateLabels" class="w-full" aria-label="Unit System">
+              <option value="metric">Metric (kg, cm)</option>
+              <option value="imperial">Imperial (lbs, in)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Age (years)</label>
+            <input type="number" data-calorie-calculator-target="age" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="25" step="1" min="1" max="120">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sex</label>
+            <select data-calorie-calculator-target="sex" data-action="change->calorie-calculator#calculate" class="w-full" aria-label="Sex">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-calorie-calculator-target="weightLabel">Weight (kg)</label>
+            <input type="number" data-calorie-calculator-target="weight" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="75" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-calorie-calculator-target="heightLabel">Height (cm)</label>
+            <input type="number" data-calorie-calculator-target="height" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="178" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Activity Level</label>
+            <select data-calorie-calculator-target="activityLevel" data-action="change->calorie-calculator#calculate" class="w-full" aria-label="Activity Level">
+              <option value="sedentary">Sedentary (little or no exercise)</option>
+              <option value="light">Light (exercise 1-3 days/week)</option>
+              <option value="moderate">Moderate (exercise 3-5 days/week)</option>
+              <option value="active" selected>Active (exercise 6-7 days/week)</option>
+              <option value="very_active">Very Active (intense exercise daily)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Basal Metabolic Rate</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-calorie-calculator-target="bmr">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Maintenance (TDEE)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-calorie-calculator-target="tdee">— cal</span>
+            </div>
+            <hr class="border-green-200 dark:border-green-800">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mild Weight Loss (-0.25 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="mildLoss">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weight Loss (-0.5 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="weightLoss">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mild Weight Gain (+0.25 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="mildGain">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weight Gain (+0.5 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="weightGain">— cal</span>
+            </div>
+          </div>
+          <button data-action="click->calorie-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Calculating Your Bulking Calories</h2>
+      <p>
+        Building muscle requires eating more calories than your body burns — a caloric surplus. This calculator estimates your TDEE (Total Daily Energy Expenditure) using the Mifflin-St Jeor equation and shows you calorie targets for different rates of weight gain. For bulking, focus on the "Mild Weight Gain" and "Weight Gain" results. The mild gain target (+0.25 kg per week, roughly a 250-calorie surplus) is ideal for a lean bulk that minimizes fat gain, while the standard gain target (+0.5 kg per week, roughly a 500-calorie surplus) supports faster muscle growth at the cost of some additional fat accumulation.
+      </p>
+      <p>
+        Your surplus should match your training experience and goals. Beginners in their first year of serious training can build muscle relatively fast and may benefit from a slightly larger surplus of 400-500 calories. Intermediate and advanced lifters gain muscle more slowly and should stick to a more conservative surplus of 200-300 calories to avoid unnecessary fat gain. Remember that your body can only synthesize a limited amount of muscle tissue per day regardless of how much you eat — excess calories beyond what muscle growth requires are stored as fat.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Lean Bulk vs Dirty Bulk</h2>
+      <p>
+        A <strong>lean bulk</strong> is a controlled approach that uses a modest surplus of 250-350 calories per day from high-quality, nutrient-dense foods. You gain weight slowly — roughly 0.25-0.5 kg per week — and the majority of that gain is lean muscle tissue. A lean bulk requires more patience and precise tracking but results in a body composition you can maintain year-round without extended cutting phases. Most experienced coaches and natural bodybuilders recommend this approach.
+      </p>
+      <p>
+        A <strong>dirty bulk</strong> involves eating a large surplus — often 500 to 1,000+ calories above maintenance — from any available food source, including fast food, sweets, and highly processed options. While it does produce faster scale weight gain, a substantial portion is body fat. The subsequent cutting phase required to remove that fat takes longer, risks muscle loss, and can be psychologically challenging. A dirty bulk may make sense in rare cases — such as underweight individuals trying to reach a healthy weight quickly — but for most people pursuing muscle gain, a lean bulk delivers better results with fewer downsides.
+      </p>
+
+      <h3>Protein Requirements for Muscle Growth</h3>
+      <p>
+        Protein is the most critical macronutrient for muscle building. During a bulk, aim for <strong>1.6 to 2.2 grams of protein per kilogram of body weight</strong> per day. For an 80 kg person, this translates to 128-176 grams of protein daily. Research from multiple meta-analyses consistently shows that intakes within this range maximize muscle protein synthesis when combined with resistance training. Going above 2.2 g/kg offers negligible additional benefit for most people. Distribute your protein intake across 3-5 meals throughout the day, with 25-40 grams per meal, to optimize muscle protein synthesis. Good sources include chicken, fish, lean beef, eggs, Greek yogurt, whey protein, tofu, and legumes.
+      </p>
+
+      <h3>Training Nutrition for Bulking</h3>
+      <p>
+        Beyond protein, your surplus calories should come primarily from carbohydrates, which fuel intense resistance training and support recovery. Aim for 4-7 grams of carbohydrates per kilogram of body weight depending on training volume. Fat should make up approximately 20-35% of total calories to support hormone production, including testosterone, which plays a key role in muscle growth. Time your largest meals around your training — a carb-rich meal 2-3 hours before training provides energy for performance, and a protein-plus-carb meal within 1-2 hours after training supports muscle recovery and glycogen replenishment. Consistency in both training and nutrition over weeks and months produces far greater results than any single-day optimization.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many extra calories do I need to build muscle?</h3>
+      <p>
+        To build muscle effectively, most people need a caloric surplus of 250 to 500 calories above their TDEE. A surplus of 250 calories per day supports a lean bulk with minimal fat gain, while 500 calories accelerates muscle growth but comes with more fat accumulation. Beginners and younger lifters can often gain muscle with a smaller surplus, while advanced lifters may need to be closer to 500 calories above maintenance.
+      </p>
+
+      <h3>What is the difference between a lean bulk and a dirty bulk?</h3>
+      <p>
+        A lean bulk involves eating a modest caloric surplus (250-350 calories above TDEE) from nutrient-dense foods, resulting in slow, steady muscle gain with minimal fat. A dirty bulk involves eating a large surplus (500-1,000+ calories) from any food source, including highly processed foods. While a dirty bulk produces faster weight gain, a significant portion is body fat that must later be dieted off. Most coaches recommend a lean bulk for better long-term results.
+      </p>
+
+      <h3>How much protein do I need when bulking?</h3>
+      <p>
+        During a bulk, aim for 1.6 to 2.2 grams of protein per kilogram of body weight per day. For an 80 kg (176 lb) person, this is 128 to 176 grams of protein daily. Research shows that protein intake above 1.6 g/kg provides the building blocks for muscle protein synthesis, while going above 2.2 g/kg offers diminishing returns. Distribute protein evenly across 3-5 meals for optimal absorption.
+      </p>
+
+      <h3>How fast can I build muscle naturally?</h3>
+      <p>
+        Natural muscle gain rates depend on training experience. Beginners can expect to gain approximately 0.9-1.3 kg (2-3 lbs) of muscle per month in their first year of consistent training. Intermediate lifters (1-3 years) typically gain 0.45-0.9 kg (1-2 lbs) per month. Advanced lifters (3+ years) may gain only 0.2-0.45 kg (0.5-1 lb) per month. These rates assume proper training, nutrition, and recovery.
+      </p>
+
+      <h3>Should I do cardio while bulking?</h3>
+      <p>
+        Light to moderate cardio (2-3 sessions of 20-30 minutes per week) is beneficial during a bulk for cardiovascular health, nutrient partitioning, and appetite regulation. However, excessive cardio can interfere with muscle recovery and requires additional calories to compensate for the energy burned. Keep cardio moderate and increase your calorie intake to account for the extra expenditure if needed.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Bulking Calorie Calculator", url: health_bulking_calories_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Macro Calculator", description: "Calculate your ideal macronutrient split for your fitness goals.", path: health_macro_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "One Rep Max Calculator", description: "Estimate your one-rep max for any lift based on weight and reps performed.", path: health_one_rep_max_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("calorie-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

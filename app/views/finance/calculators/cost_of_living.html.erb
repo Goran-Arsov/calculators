@@ -1,0 +1,173 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cost of Living Comparison Calculator - Free Online Tool",
+  description: "Compare cost of living between cities. Enter your salary and city indexes to find the equivalent salary needed, purchasing power difference, and cost ratio.",
+  canonical: finance_cost_of_living_url,
+  og: {
+    title: "Cost of Living Comparison Calculator - Free Online Tool | CalcWise",
+    description: "Compare cost of living between cities. Find the equivalent salary needed and purchasing power difference instantly.",
+    url: finance_cost_of_living_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Cost of Living Comparison Calculator", url: finance_cost_of_living_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I use cost of living indexes?", answer: "Cost of living indexes assign a number to each city where 100 typically represents the national average. A city with an index of 120 is 20% more expensive than average. To compare two cities, divide the target index by the current index and multiply by your salary. For example, moving from a city with index 90 to one with index 120 requires 33% more salary to maintain the same lifestyle." },
+  { question: "Where do I find cost of living index numbers?", answer: "Numbeo, Expatistan, and the Council for Community and Economic Research (C2ER) publish cost of living indexes for cities worldwide. Numbeo is the most commonly used free resource. Look up your current city and target city, and enter their index values into the calculator." },
+  { question: "What does the equivalent salary mean?", answer: "The equivalent salary is the amount you would need to earn in the target city to maintain the same purchasing power you have with your current salary in your current city. If you earn $80,000 in a city with index 85 and want to move to a city with index 110, you would need approximately $103,529 to maintain the same standard of living." },
+  { question: "What is purchasing power in this context?", answer: "Purchasing power represents how much your current salary would buy in the target city without a raise. If you earn $80,000 and move from a city with index 85 to one with index 110 without a salary adjustment, your purchasing power equivalent is about $61,818 -- meaning your dollar buys less." },
+  { question: "What factors do cost of living indexes include?", answer: "Most indexes factor in housing costs, groceries, transportation, utilities, healthcare, and entertainment. Housing is typically the largest component and varies most between cities. Some indexes weight these categories differently, which is why index values can differ between sources for the same city." }
+]) %>
+
+<%= calculator_schema(
+  name: "Cost of Living Comparison Calculator",
+  description: "Compare cost of living between cities using cost of living indexes. Calculate equivalent salary needed and purchasing power difference.",
+  url: finance_cost_of_living_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Cost of Living Comparison Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cost of Living Comparison Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Compare cost of living between two cities to find the salary you need to maintain your current standard of living.</p>
+
+    <div data-controller="cost-of-living-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Salary ($)</label>
+            <input type="number" data-cost-of-living-calculator-target="currentSalary" data-action="input->cost-of-living-calculator#calculate" class="w-full" placeholder="80000" step="100" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current City Index</label>
+            <input type="number" data-cost-of-living-calculator-target="currentIndex" data-action="input->cost-of-living-calculator#calculate" class="w-full" placeholder="85" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target City Index</label>
+            <input type="number" data-cost-of-living-calculator-target="targetIndex" data-action="input->cost-of-living-calculator#calculate" class="w-full" placeholder="110" step="0.1" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Comparison Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Equivalent Salary</span>
+              <span class="text-xl font-bold text-indigo-600 dark:text-indigo-400" data-cost-of-living-calculator-target="equivalentSalary">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Salary Difference</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-cost-of-living-calculator-target="salaryDifference">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Cost Difference</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-cost-of-living-calculator-target="percentageDifference">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Purchasing Power</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-cost-of-living-calculator-target="purchasingPower">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Cost Ratio</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-cost-of-living-calculator-target="costRatio">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->cost-of-living-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white rounded-xl shadow-sm shadow-indigo-500/20 hover:shadow-md hover:shadow-indigo-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Cost of Living Comparison Calculator</h2>
+      <p>
+        Relocating to a new city is one of the biggest financial decisions you can make. What seems like a salary increase might actually be a pay cut once you account for different living costs. This calculator uses cost of living indexes to compare two cities and shows exactly what salary you would need in the target city to maintain your current purchasing power.
+      </p>
+      <p>
+        Enter your current annual salary, then look up the cost of living index for your current city and target city on sites like Numbeo. The index is a number where 100 typically represents the national average. A city with 120 is 20% above average, while 80 is 20% below. The calculator computes the equivalent salary, the dollar and percentage difference, your purchasing power if you moved without a raise, and the cost ratio between the two cities.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Cost of Living Formula</h2>
+      <p>
+        The calculation is: <strong>Equivalent Salary = Current Salary x (Target Index / Current Index)</strong>. The cost ratio is simply Target Index / Current Index. If the ratio is greater than 1, the target city is more expensive. If less than 1, it is cheaper. Purchasing power (what your current salary buys in the new city) = Current Salary / Cost Ratio.
+      </p>
+
+      <h3>Evaluating Job Offers in Different Cities</h3>
+      <p>
+        When considering a job offer in another city, compare the offered salary against the equivalent salary this calculator produces. If the offer exceeds the equivalent salary, you would gain purchasing power by moving. If the offer is below, you would effectively be taking a pay cut despite a potentially higher number on your paycheck. A $90,000 offer in a city with index 130 may buy less than your current $70,000 in a city with index 85.
+      </p>
+
+      <h3>Limitations of Cost of Living Indexes</h3>
+      <p>
+        Indexes provide a useful approximation but they are averages across an entire city. Neighborhoods within the same city can vary dramatically in housing costs. Your personal spending patterns also matter: if you spend more on housing than the average person, a city with high housing costs will affect you disproportionately. Use the index comparison as a starting point, then research specific expenses like rent, groceries, and transit in the neighborhoods you are actually considering.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I use cost of living indexes?</h3>
+      <p>
+        Cost of living indexes assign a number to each city where 100 typically represents the national average. A city with an index of 120 is 20% more expensive than average. To compare two cities, divide the target index by the current index and multiply by your salary.
+      </p>
+
+      <h3>Where do I find cost of living index numbers?</h3>
+      <p>
+        Numbeo, Expatistan, and the Council for Community and Economic Research (C2ER) publish cost of living indexes for cities worldwide. Numbeo is the most commonly used free resource. Look up your current city and target city, and enter their index values into the calculator.
+      </p>
+
+      <h3>What does the equivalent salary mean?</h3>
+      <p>
+        The equivalent salary is the amount you would need to earn in the target city to maintain the same purchasing power you have with your current salary in your current city.
+      </p>
+
+      <h3>What is purchasing power in this context?</h3>
+      <p>
+        Purchasing power represents how much your current salary would buy in the target city without a raise. If the target city is more expensive, your purchasing power decreases, meaning your money buys less.
+      </p>
+
+      <h3>What factors do cost of living indexes include?</h3>
+      <p>
+        Most indexes factor in housing costs, groceries, transportation, utilities, healthcare, and entertainment. Housing is typically the largest component and varies most between cities. Some indexes weight these categories differently, which is why values can differ between sources.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Cost of Living Comparison Calculator", url: finance_cost_of_living_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Salary Calculator", description: "Convert salary between pay periods to understand your true earnings.", path: finance_salary_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Mortgage Calculator", description: "Compare mortgage payments across different cities and price ranges.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
+      { name: "ROI Calculator", description: "Calculate return on investment for relocation decisions.", path: finance_roi_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("cost-of-living-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

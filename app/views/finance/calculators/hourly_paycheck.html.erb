@@ -1,0 +1,224 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Hourly Paycheck Calculator - Free Hourly Wage Take-Home Pay Tool",
+  description: "Calculate your take-home pay from an hourly wage. See federal tax, state tax, Social Security, and Medicare deductions for hourly workers, part-time, and overtime.",
+  canonical: finance_hourly_paycheck_url,
+  og: {
+    title: "Hourly Paycheck Calculator - Free Hourly Wage Take-Home Pay Tool | CalcWise",
+    description: "Calculate your take-home pay from an hourly wage. See deductions for hourly workers, part-time, and overtime pay.",
+    url: finance_hourly_paycheck_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Hourly Paycheck Calculator", url: finance_hourly_paycheck_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate take-home pay from my hourly wage?", answer: "To calculate take-home pay, first determine your gross pay by multiplying your hourly rate by hours worked. Then subtract federal income tax (based on annual equivalent income and tax brackets), state income tax, Social Security (6.2%), and Medicare (1.45%). For example, at $20/hour working 40 hours/week, your gross annual equivalent is about $41,600, and your net pay after all deductions is typically 70-80% of gross." },
+  { question: "How is overtime pay calculated?", answer: "Under federal law (FLSA), overtime is paid at 1.5 times your regular hourly rate for hours worked beyond 40 in a workweek. Some states have additional rules, like daily overtime after 8 hours (California). For example, if your regular rate is $20/hour, overtime pays $30/hour. Overtime pay is subject to the same tax withholdings as regular pay." },
+  { question: "What is the difference between part-time and full-time for tax purposes?", answer: "For federal tax purposes, there is no legal distinction between part-time and full-time workers — both are taxed the same way based on total annual income. However, the ACA defines full-time as 30+ hours per week for employer health insurance requirements. Part-time workers earning less may fall into lower tax brackets, resulting in a lower effective tax rate on each paycheck." },
+  { question: "How do I convert my hourly wage to annual salary?", answer: "Multiply your hourly rate by the number of hours you work per week, then multiply by 52 weeks. For a standard 40-hour week: $15/hour = $31,200/year, $20/hour = $41,600/year, $25/hour = $52,000/year, $30/hour = $62,400/year. If you work fewer hours or take unpaid time off, adjust the weeks accordingly." },
+  { question: "Do I still pay Social Security and Medicare on hourly wages?", answer: "Yes, all hourly wages are subject to FICA taxes: 6.2% for Social Security (up to the wage base of $168,600 in 2024) and 1.45% for Medicare (on all wages, plus 0.9% additional Medicare tax on wages over $200,000). Your employer matches these amounts, paying an equal 7.65% on your behalf." }
+]) %>
+
+<%= calculator_schema(
+  name: "Hourly Paycheck Calculator",
+  description: "Calculate your take-home pay from an hourly wage including federal tax, state tax, Social Security, and Medicare deductions.",
+  url: finance_hourly_paycheck_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Hourly Paycheck Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Hourly Paycheck Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your net take-home pay from your hourly wage after federal tax, state tax, Social Security, and Medicare deductions.</p>
+
+    <%# Calculator UI — reuses paycheck-calculator Stimulus controller %>
+    <div data-controller="paycheck-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Salary ($)</label>
+            <input type="number" data-paycheck-calculator-target="annualSalary" data-action="input->paycheck-calculator#calculate" class="w-full" placeholder="41600" step="100" min="0">
+            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Tip: $20/hr x 40 hrs x 52 weeks = $41,600</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">State Tax Level</label>
+            <select data-paycheck-calculator-target="stateTaxLevel" data-action="change->paycheck-calculator#calculate" class="w-full">
+              <option value="none">None (0%)</option>
+              <option value="low">Low (3%)</option>
+              <option value="medium" selected>Medium (5%)</option>
+              <option value="high">High (7%)</option>
+              <option value="very_high">Very High (10%)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pay Frequency</label>
+            <select data-paycheck-calculator-target="payFrequency" data-action="change->paycheck-calculator#calculate" class="w-full">
+              <option value="weekly" selected>Weekly (52/year)</option>
+              <option value="biweekly">Biweekly (26/year)</option>
+              <option value="semimonthly">Semi-Monthly (24/year)</option>
+              <option value="monthly">Monthly (12/year)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Pre-Tax Deductions ($)</label>
+            <input type="number" data-paycheck-calculator-target="preTaxDeductions" data-action="input->paycheck-calculator#calculate" class="w-full" placeholder="0" step="100" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Per Paycheck (Net)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-paycheck-calculator-target="paycheckNet">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Per Paycheck (Gross)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-paycheck-calculator-target="paycheckGross">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Annual Net Pay</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-paycheck-calculator-target="annualNet">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Annual Gross Pay</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-paycheck-calculator-target="annualGross">$0.00</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Federal Tax</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="federalTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">State Tax</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="stateTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Social Security</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="socialSecurity">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Medicare</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="medicare">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total FICA</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="fica">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Deductions</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="totalDeductions">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Effective Tax Rate</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="effectiveTaxRate">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Pay Periods/Year</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="payPeriods">0</span>
+            </div>
+          </div>
+          <button data-action="click->paycheck-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Hourly Paycheck Calculator</h2>
+      <p>
+        Our free hourly paycheck calculator helps you estimate your take-home pay based on an hourly wage. To use it, convert your hourly rate to an annual salary by multiplying your hourly rate by your weekly hours, then by 52 weeks. For example, $20 per hour at 40 hours per week equals $41,600 annually. Enter this amount, select your state tax level and pay frequency (weekly is most common for hourly workers), and the calculator will break down your per-paycheck net pay, annual totals, and all deductions.
+      </p>
+      <p>
+        Understanding your real take-home pay is essential for budgeting, especially for hourly workers whose income can vary with hours worked. This calculator shows exactly how much of each paycheck goes to federal tax, state tax, Social Security, and Medicare, so you can plan your finances accurately whether you work full-time, part-time, or pick up overtime hours.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Calculating Hourly Pay to Annual Salary</h2>
+      <p>
+        The standard conversion formula is simple: hourly rate multiplied by hours per week multiplied by 52 weeks per year. A $15 per hour wage at 40 hours per week equals $31,200 annually. At $20 per hour, that becomes $41,600. At $25 per hour, $52,000. At $30 per hour, $62,400. If you work fewer than 40 hours or take unpaid time off, reduce the number of weeks accordingly. For part-time workers at 20 hours per week, the annual equivalent is halved.
+      </p>
+
+      <h3>Understanding Overtime Pay</h3>
+      <p>
+        Under the Fair Labor Standards Act (FLSA), non-exempt hourly employees must receive overtime pay at 1.5 times their regular rate for all hours worked beyond 40 in a workweek. Some states have stricter rules, such as California, which requires overtime after 8 hours in a single day. Overtime pay is taxed the same way as regular wages — it does not push you into a higher bracket on that specific pay, but it does increase your total annual income, which may affect your overall tax liability.
+      </p>
+
+      <h3>Part-Time vs. Full-Time: Tax Implications</h3>
+      <p>
+        Federal tax law does not distinguish between part-time and full-time employment. Both are taxed identically based on total annual earnings. However, part-time workers earning less may benefit from lower tax brackets and a higher percentage of their standard deduction relative to income. Part-time workers who earn less than $14,600 (the 2024 standard deduction for single filers) may owe no federal income tax at all, though FICA taxes still apply to every dollar earned.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate take-home pay from my hourly wage?</h3>
+      <p>
+        To calculate take-home pay, first determine your gross pay by multiplying your hourly rate by hours worked. Then subtract federal income tax (based on annual equivalent income and tax brackets), state income tax, Social Security (6.2%), and Medicare (1.45%). For example, at $20/hour working 40 hours/week, your gross annual equivalent is about $41,600, and your net pay after all deductions is typically 70-80% of gross.
+      </p>
+
+      <h3>How is overtime pay calculated?</h3>
+      <p>
+        Under federal law (FLSA), overtime is paid at 1.5 times your regular hourly rate for hours worked beyond 40 in a workweek. Some states have additional rules, like daily overtime after 8 hours (California). For example, if your regular rate is $20/hour, overtime pays $30/hour. Overtime pay is subject to the same tax withholdings as regular pay.
+      </p>
+
+      <h3>What is the difference between part-time and full-time for tax purposes?</h3>
+      <p>
+        For federal tax purposes, there is no legal distinction between part-time and full-time workers — both are taxed the same way based on total annual income. However, the ACA defines full-time as 30+ hours per week for employer health insurance requirements. Part-time workers earning less may fall into lower tax brackets, resulting in a lower effective tax rate on each paycheck.
+      </p>
+
+      <h3>How do I convert my hourly wage to annual salary?</h3>
+      <p>
+        Multiply your hourly rate by the number of hours you work per week, then multiply by 52 weeks. For a standard 40-hour week: $15/hour = $31,200/year, $20/hour = $41,600/year, $25/hour = $52,000/year, $30/hour = $62,400/year. If you work fewer hours or take unpaid time off, adjust the weeks accordingly.
+      </p>
+
+      <h3>Do I still pay Social Security and Medicare on hourly wages?</h3>
+      <p>
+        Yes, all hourly wages are subject to FICA taxes: 6.2% for Social Security (up to the wage base of $168,600 in 2024) and 1.45% for Medicare (on all wages, plus 0.9% additional Medicare tax on wages over $200,000). Your employer matches these amounts, paying an equal 7.65% on your behalf.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Hourly Paycheck Calculator", url: finance_hourly_paycheck_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Paycheck Calculator", description: "Calculate take-home pay from your annual salary.", path: finance_paycheck_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Salary Calculator", description: "Convert between hourly, weekly, biweekly, monthly, and annual salary.", path: finance_salary_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Tax Bracket Calculator", description: "See your federal tax bracket and effective tax rate.", path: finance_tax_bracket_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("hourly-paycheck-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

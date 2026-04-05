@@ -1,0 +1,168 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Percentage Off Calculator - Free Online Tool",
+  description: "Calculate how much you save with any percentage off discount. Find the final price after X% off, compare deals, and avoid double discount traps — free and easy to use.",
+  canonical: math_percentage_off_url,
+  og: {
+    title: "Percentage Off Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how much you save with any percentage off discount. Find the final price after X% off, compare deals, and avoid double discount traps.",
+    url: math_percentage_off_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Math", url: category_url("math") },
+  { name: "Percentage Off Calculator", url: math_percentage_off_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate X percent off a price?", answer: "Multiply the price by the percentage and divide by 100 to find the discount amount. Subtract that from the original price. For example, 25% off $80: $80 x 25 / 100 = $20 off, final price = $60. Or equivalently, multiply the price by (1 - percentage/100): $80 x 0.75 = $60." },
+  { question: "How do I compare two percentage-off deals?", answer: "Calculate the final price for each deal and compare the results. A 40% off deal on a $100 item ($60) may be worse than a 25% off deal on a $70 item ($52.50). Always compare the final dollar amounts, not just the percentage figures. The higher percentage does not always mean the better deal." },
+  { question: "What is the double discount trap?", answer: "The double discount trap occurs when two sequential discounts seem to add up but actually do not. A 30% off sale with an extra 20% off clearance is not 50% off. The second discount applies to the already-reduced price: $100 x 0.70 x 0.80 = $56, which is 44% off total, not 50%. Always calculate the actual final price." },
+  { question: "How do I mentally calculate 15% off?", answer: "To calculate 15% off in your head, find 10% by moving the decimal one place left, then find 5% (half of 10%). Add them together. For a $60 item: 10% = $6, 5% = $3, so 15% = $9 off. The sale price is $60 - $9 = $51. This mental math shortcut works for any price." },
+  { question: "Is 20% off the same as paying 80%?", answer: "Yes, exactly. Taking 20% off means you pay the remaining 80% of the original price. The formula works both ways: $100 - 20% = $80, or $100 x 0.80 = $80. Thinking in terms of what you pay (the complement) can sometimes make mental math easier." }
+]) %>
+
+<%= calculator_schema(
+  name: "Percentage Off Calculator",
+  description: "Calculate savings from any percentage off discount. Find the final price after X% off, compare deals, and understand double discount math.",
+  url: math_percentage_off_url,
+  category: "MathApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Math", url: category_path("math") },
+  { name: "Percentage Off Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Percentage Off Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate how much you save with any "X% off" discount. Find the final price, compare deals, and make smarter shopping decisions.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="percentage-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Calculation Mode</label>
+            <select data-percentage-calculator-target="mode" data-action="change->percentage-calculator#calculate" class="w-full" aria-label="Calculation Mode">
+              <option value="of" selected>What is X% of Y?</option>
+              <option value="is_what_percent">X is what % of Y?</option>
+              <option value="change">% change from X to Y</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Discount Percentage (X)</label>
+            <input type="number" data-percentage-calculator-target="value" data-action="input->percentage-calculator#calculate" class="w-full" placeholder="e.g. 25" step="any">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Original Price (Y)</label>
+            <input type="number" data-percentage-calculator-target="percentage" data-action="input->percentage-calculator#calculate" class="w-full" placeholder="e.g. 80" step="any">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Result</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Answer</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-percentage-calculator-target="result">--</span>
+            </div>
+          </div>
+          <button data-action="click->percentage-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Calculate Percentage Off</h2>
+      <p>
+        "Percentage off" is the most common way retailers express discounts, and understanding the math behind it helps you shop smarter. The calculation has two steps: first, find the discount amount by multiplying the original price by the percentage divided by 100. Second, subtract the discount from the original price to get the final price. For example, 30% off a $120 jacket: $120 x 0.30 = $36 discount, so the final price is $120 - $36 = $84. This calculator uses the "What is X% of Y?" mode to show you the discount amount, which you subtract from the original price to get the final cost.
+      </p>
+      <p>
+        A helpful shortcut is to think of the complement. Instead of calculating the discount and subtracting, multiply the price by (100 - discount percentage) / 100. For 30% off, multiply by 0.70 (since you pay 70% of the price). This single-step method is faster and less error-prone: $120 x 0.70 = $84. Both methods produce the same result, but the complement approach is particularly useful for mental math.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Comparing Percentage-Off Deals</h2>
+      <p>
+        One of the biggest mistakes shoppers make is assuming that a higher percentage off always means a better deal. This is only true when comparing the same item at the same original price at different stores. When comparing different items or different retailers, the final price matters more than the percentage. A 50% off deal on a $200 item ($100 final price) is more expensive than a 20% off deal on a $90 item ($72 final price). Always calculate the actual dollar amount you will pay and compare those figures directly.
+      </p>
+
+      <h3>The Double Discount Trap</h3>
+      <p>
+        Retailers frequently advertise "extra percentage off sale prices" or "additional discount on clearance." These stacked discounts create a mathematical trap that catches many shoppers off guard. Two discounts applied sequentially do not add together. A 40% off sale with an additional 20% off is not 60% off the original price. The math: $100 x 0.60 = $60 after the first discount, then $60 x 0.80 = $48 after the second. The actual total discount is 52%, not 60%. The bigger the individual percentages, the more the total diverges from the sum. Understanding this prevents overestimating your savings.
+      </p>
+
+      <h3>Mental Math Shortcuts for Percentage Off</h3>
+      <p>
+        You do not always need a calculator to estimate percentage-off savings. For 10% off, simply move the decimal point one place to the left: 10% off $85 is $8.50. For 20% off, double the 10% figure. For 25% off, divide by 4. For 50% off, divide by 2. For 15%, add 10% and half of 10%. For 33% off, divide by 3. These shortcuts give you quick estimates while shopping so you can evaluate deals on the spot. For exact figures, use this calculator before making a purchase decision.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate X percent off a price?</h3>
+      <p>
+        Multiply the price by the percentage and divide by 100 to find the discount amount. Subtract that from the original price. For example, 25% off $80: $80 x 25 / 100 = $20 off, final price = $60. Or equivalently, multiply the price by (1 - percentage/100): $80 x 0.75 = $60.
+      </p>
+
+      <h3>How do I compare two percentage-off deals?</h3>
+      <p>
+        Calculate the final price for each deal and compare the results. A 40% off deal on a $100 item ($60) may be worse than a 25% off deal on a $70 item ($52.50). Always compare the final dollar amounts, not just the percentage figures. The higher percentage does not always mean the better deal.
+      </p>
+
+      <h3>What is the double discount trap?</h3>
+      <p>
+        The double discount trap occurs when two sequential discounts seem to add up but actually do not. A 30% off sale with an extra 20% off clearance is not 50% off. The second discount applies to the already-reduced price: $100 x 0.70 x 0.80 = $56, which is 44% off total, not 50%. Always calculate the actual final price.
+      </p>
+
+      <h3>How do I mentally calculate 15% off?</h3>
+      <p>
+        To calculate 15% off in your head, find 10% by moving the decimal one place left, then find 5% (half of 10%). Add them together. For a $60 item: 10% = $6, 5% = $3, so 15% = $9 off. The sale price is $60 - $9 = $51. This mental math shortcut works for any price.
+      </p>
+
+      <h3>Is 20% off the same as paying 80%?</h3>
+      <p>
+        Yes, exactly. Taking 20% off means you pay the remaining 80% of the original price. The formula works both ways: $100 - 20% = $80, or $100 x 0.80 = $80. Thinking in terms of what you pay (the complement) can sometimes make mental math easier.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Percentage Off Calculator", url: math_percentage_off_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Percentage Calculator", description: "Calculate percentages: find a percent of a number, what percent X is of Y, or percentage change.", path: math_percentage_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Fraction Calculator", description: "Add, subtract, multiply, and divide fractions with step-by-step results.", path: math_fraction_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("percentage-off-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

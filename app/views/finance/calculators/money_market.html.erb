@@ -1,0 +1,181 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Money Market Calculator - Free Account Growth Estimator",
+  description: "Calculate how your money market account grows over time with compound interest. Compare money market rates, minimum balances, and tiered APY with our free calculator.",
+  canonical: finance_money_market_url,
+  og: {
+    title: "Money Market Calculator - Free Account Growth Estimator | CalcWise",
+    description: "Calculate how your money market account grows over time with compound interest. Compare money market rates and tiered APY.",
+    url: finance_money_market_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Money Market Calculator", url: finance_money_market_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a money market account?", answer: "A money market account (MMA) is a type of deposit account offered by banks and credit unions that typically pays higher interest than regular savings accounts. MMAs often come with check-writing privileges and debit card access, combining features of savings and checking accounts. They are FDIC or NCUA insured and usually require higher minimum balances." },
+  { question: "How do money market account tiered rates work?", answer: "Many money market accounts offer tiered interest rates, where higher balances earn higher APY. For example, a bank might pay 3.5% APY on balances up to $25,000, 4.0% on $25,000 to $100,000, and 4.5% on balances over $100,000. Each tier applies only to the portion of your balance within that range. Some banks pay the highest rate on the entire balance once you reach a certain threshold." },
+  { question: "What is the difference between a money market account and a money market fund?", answer: "A money market account is a bank deposit product that is FDIC insured up to $250,000. A money market fund is a mutual fund that invests in short-term debt securities and is not FDIC insured, though it aims to maintain a stable $1.00 per share value. Money market funds may offer slightly higher yields but carry more risk than insured deposit accounts." },
+  { question: "What is the minimum balance for a money market account?", answer: "Minimum balance requirements vary widely by institution. Some online banks offer money market accounts with no minimum balance, while traditional banks may require $1,000 to $25,000 or more. Falling below the minimum may trigger monthly fees or result in earning a lower interest rate. Always check the fee schedule before opening an account." },
+  { question: "Is a money market account better than a savings account?", answer: "Money market accounts often pay slightly higher rates than savings accounts and offer more access to your funds through checks and debit cards. However, they typically require higher minimum balances and may have monthly fees if the balance drops below the threshold. For larger balances, money market accounts can be advantageous; for smaller balances, a high-yield savings account may be the better choice." }
+]) %>
+
+<%= calculator_schema(
+  name: "Money Market Calculator",
+  description: "Calculate how your money market account grows over time with compound interest and tiered rates.",
+  url: finance_money_market_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Money Market Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Money Market Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">See how your money market account balance grows over time with compound interest and competitive rates.</p>
+
+    <%# Calculator UI — reuses compound-interest-calculator Stimulus controller %>
+    <div data-controller="compound-interest-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Initial Deposit ($)</label>
+            <input type="number" data-compound-interest-calculator-target="principal" data-action="input->compound-interest-calculator#calculate" class="w-full" placeholder="10000" step="500" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-compound-interest-calculator-target="rate" data-action="input->compound-interest-calculator#calculate" class="w-full" placeholder="4.25" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Time Period (Years)</label>
+            <input type="number" data-compound-interest-calculator-target="years" data-action="input->compound-interest-calculator#calculate" class="w-full" placeholder="5" step="1" min="1" max="100">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Compounding Frequency</label>
+            <select data-compound-interest-calculator-target="frequency" data-action="change->compound-interest-calculator#calculate" class="w-full" aria-label="Compounding Frequency">
+              <option value="1">Annually (1x/year)</option>
+              <option value="2">Semi-Annually (2x/year)</option>
+              <option value="4">Quarterly (4x/year)</option>
+              <option value="12" selected>Monthly (12x/year)</option>
+              <option value="365">Daily (365x/year)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Future Value</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-compound-interest-calculator-target="futureValue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest Earned</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-compound-interest-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Initial Deposit</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-compound-interest-calculator-target="principalDisplay">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->compound-interest-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Money Market Calculator</h2>
+      <p>
+        Our free money market calculator helps you project the growth of your money market account over time. Enter your initial deposit, the annual interest rate (APY) offered by your money market account, the time period in years, and the compounding frequency. The calculator instantly shows the future value of your account, total interest earned, and your original deposit for comparison. This is useful for comparing money market accounts from different banks and understanding how different rates and compounding frequencies affect your returns.
+      </p>
+      <p>
+        Money market accounts combine features of savings and checking accounts, offering competitive interest rates with more liquidity than CDs. They are an excellent option for larger cash balances that need to earn meaningful interest while remaining accessible for occasional withdrawals or transfers. Understanding how your money market account grows helps you maximize the return on your cash reserves.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Money Market Accounts</h2>
+      <p>
+        Money market accounts are deposit accounts offered by banks and credit unions that typically pay higher interest rates than standard savings accounts. They often come with check-writing privileges, debit card access, and the ability to make limited transfers, giving you more flexibility than a regular savings account. Most money market accounts are FDIC insured (or NCUA insured at credit unions) up to $250,000, providing the same safety as any other bank deposit.
+      </p>
+
+      <h3>Tiered Interest Rates Explained</h3>
+      <p>
+        Many money market accounts use tiered rate structures, where higher account balances earn higher APY. For instance, a bank might offer 3.5% APY on balances up to $25,000, 4.0% on balances from $25,000 to $100,000, and 4.5% on balances above $100,000. This incentivizes larger deposits and can reward savers who consolidate their cash in a single account. When comparing money market accounts, look at the rate tier that applies to your expected balance, not just the headline rate.
+      </p>
+
+      <h3>Money Market Accounts vs. Other Savings Options</h3>
+      <p>
+        Compared to high-yield savings accounts, money market accounts often pay slightly higher rates for larger balances and offer more transaction flexibility. Compared to CDs, money market accounts provide full liquidity without early withdrawal penalties, though CD rates may be higher for locked-in terms. Money market mutual funds are a different product entirely, as they are not FDIC insured and invest in short-term securities rather than holding deposits. For most savers, the choice between a money market account and a high-yield savings account depends on the balance size, minimum requirements, and whether check-writing access is needed.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a money market account?</h3>
+      <p>
+        A money market account (MMA) is a type of deposit account offered by banks and credit unions that typically pays higher interest than regular savings accounts. MMAs often come with check-writing privileges and debit card access, combining features of savings and checking accounts. They are FDIC or NCUA insured and usually require higher minimum balances.
+      </p>
+
+      <h3>How do money market account tiered rates work?</h3>
+      <p>
+        Many money market accounts offer tiered interest rates, where higher balances earn higher APY. For example, a bank might pay 3.5% APY on balances up to $25,000, 4.0% on $25,000 to $100,000, and 4.5% on balances over $100,000. Each tier applies only to the portion of your balance within that range. Some banks pay the highest rate on the entire balance once you reach a certain threshold.
+      </p>
+
+      <h3>What is the difference between a money market account and a money market fund?</h3>
+      <p>
+        A money market account is a bank deposit product that is FDIC insured up to $250,000. A money market fund is a mutual fund that invests in short-term debt securities and is not FDIC insured, though it aims to maintain a stable $1.00 per share value. Money market funds may offer slightly higher yields but carry more risk than insured deposit accounts.
+      </p>
+
+      <h3>What is the minimum balance for a money market account?</h3>
+      <p>
+        Minimum balance requirements vary widely by institution. Some online banks offer money market accounts with no minimum balance, while traditional banks may require $1,000 to $25,000 or more. Falling below the minimum may trigger monthly fees or result in earning a lower interest rate. Always check the fee schedule before opening an account.
+      </p>
+
+      <h3>Is a money market account better than a savings account?</h3>
+      <p>
+        Money market accounts often pay slightly higher rates than savings accounts and offer more access to your funds through checks and debit cards. However, they typically require higher minimum balances and may have monthly fees if the balance drops below the threshold. For larger balances, money market accounts can be advantageous; for smaller balances, a high-yield savings account may be the better choice.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Money Market Calculator", url: finance_money_market_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Compound Interest Calculator", description: "See how your money grows with different compounding frequencies.", path: finance_compound_interest_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Savings Growth Calculator", description: "Calculate how your savings grow in high-yield accounts.", path: finance_savings_growth_path, icon_path: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" },
+      { name: "CD Calculator", description: "Calculate returns on certificates of deposit.", path: finance_cd_path, icon_path: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("money-market-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,173 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "kWh to Cost Calculator - Free Electricity Cost Tool",
+  description: "Convert kilowatt-hours to electricity cost. Enter your kWh usage and rate to see daily, monthly, and yearly electricity costs instantly.",
+  canonical: everyday_kwh_to_cost_url,
+  og: {
+    title: "kWh to Cost Calculator - Free Electricity Cost Tool | CalcWise",
+    description: "Convert kilowatt-hours to electricity cost. Enter your kWh usage and rate for instant daily, monthly, and yearly cost breakdowns.",
+    url: everyday_kwh_to_cost_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "kWh to Cost Calculator", url: everyday_kwh_to_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate electricity cost from kWh?", answer: "Multiply your kWh usage by the rate per kWh charged by your utility. For example, if you use 30 kWh per day at $0.12 per kWh, your daily electricity cost is 30 x $0.12 = $3.60. Multiply by 30 for monthly ($108) or by 365 for yearly ($1,314) estimates." },
+  { question: "What is a kilowatt-hour (kWh)?", answer: "A kilowatt-hour is a unit of energy equal to one kilowatt of power sustained for one hour. A 100-watt light bulb running for 10 hours uses 1 kWh. Your electricity meter tracks total kWh consumed, and your utility charges a rate per kWh on your bill." },
+  { question: "What is the average electricity rate per kWh?", answer: "In the United States, the average residential electricity rate is approximately $0.12 to $0.16 per kWh, though rates vary significantly by state and provider. Some states like Louisiana average $0.10/kWh while Hawaii can exceed $0.35/kWh. Check your utility bill for your exact rate." },
+  { question: "How many kWh does a typical household use per month?", answer: "The average U.S. household uses approximately 886 kWh per month, but this varies widely based on climate, home size, and appliance usage. Homes in hot climates with air conditioning may use 1,200+ kWh, while efficient small homes might use under 500 kWh." },
+  { question: "How can I reduce my electricity costs?", answer: "Switch to LED lighting, use a programmable thermostat, seal air leaks, upgrade to Energy Star appliances, unplug electronics when not in use, wash clothes in cold water, and consider time-of-use rates if available. Even small changes can reduce your monthly bill by 10-20%." }
+]) %>
+
+<%= calculator_schema(
+  name: "kWh to Cost Calculator",
+  description: "Convert kilowatt-hour electricity usage into daily, monthly, and yearly cost estimates based on your utility rate.",
+  url: everyday_kwh_to_cost_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "kWh to Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">kWh to Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find out how much your electricity usage costs per day, month, and year based on your kWh consumption and utility rate.</p>
+
+    <div data-controller="kwh-to-cost-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Energy Usage (kWh)</label>
+            <input type="number" data-kwh-to-cost-calculator-target="kwhUsage" data-action="input->kwh-to-cost-calculator#calculate" class="w-full" placeholder="30" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rate per kWh ($)</label>
+            <input type="number" data-kwh-to-cost-calculator-target="ratePerKwh" data-action="input->kwh-to-cost-calculator#calculate" class="w-full" placeholder="0.12" step="0.001" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Usage Period</label>
+            <select data-kwh-to-cost-calculator-target="period" data-action="change->kwh-to-cost-calculator#calculate" class="w-full" aria-label="Usage period">
+              <option value="daily" selected>Daily</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Electricity Cost</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Daily kWh</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-kwh-to-cost-calculator-target="dailyKwh">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Daily Cost</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-kwh-to-cost-calculator-target="dailyCost">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Monthly Cost</span>
+              <span class="text-lg font-bold text-amber-600 dark:text-amber-400" data-kwh-to-cost-calculator-target="monthlyCost">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Yearly Cost</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-kwh-to-cost-calculator-target="yearlyCost">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->kwh-to-cost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white rounded-xl shadow-sm shadow-amber-500/20 hover:shadow-md hover:shadow-amber-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the kWh to Cost Calculator</h2>
+      <p>
+        This calculator converts your electricity consumption measured in kilowatt-hours into actual dollar costs across daily, monthly, and yearly timeframes. Enter the amount of electricity you use, select whether that amount represents daily, monthly, or yearly consumption, and provide your utility rate per kWh. The calculator normalizes everything to a daily figure and then projects it across all three periods for easy comparison.
+      </p>
+      <p>
+        You can find your rate per kWh on your electricity bill, usually listed as the energy charge per kilowatt-hour. If your utility has tiered pricing, use the weighted average or the tier that most of your usage falls into. This tool is helpful for estimating the running cost of individual appliances, comparing electricity plans, or budgeting your monthly utility expenses.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Electricity Cost Formula</h2>
+      <p>
+        The basic formula is: <strong>Cost = kWh x Rate per kWh</strong>. To project from daily to monthly, multiply by 30. To project to yearly, multiply the daily cost by 365. If you enter monthly kWh usage, the calculator divides by 30 to find the daily figure first, then scales to other periods. This gives you a consistent view regardless of which usage period you start with.
+      </p>
+
+      <h3>Estimating Appliance Running Costs</h3>
+      <p>
+        To estimate any appliance cost, find its wattage on the label or in the manual. Multiply watts by hours of use per day, then divide by 1,000 to get daily kWh. For example, a 1,500-watt space heater running 8 hours a day uses 12 kWh daily. At $0.13 per kWh, that costs $1.56 per day or about $46.80 per month. This calculator makes it easy to plug in those numbers and see the total.
+      </p>
+
+      <h3>Comparing Electricity Plans</h3>
+      <p>
+        When switching utility providers or plans, the rate per kWh is the most important number. Even a $0.02 difference in rate can add up significantly over a year. Enter your typical monthly kWh usage from a recent bill and compare costs at different rates to see which plan saves you the most. Some plans have fixed rates while others vary by time of day, so consider your usage patterns when choosing.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate electricity cost from kWh?</h3>
+      <p>
+        Multiply your kWh usage by the rate per kWh charged by your utility. For example, if you use 30 kWh per day at $0.12 per kWh, your daily electricity cost is 30 x $0.12 = $3.60. Multiply by 30 for monthly ($108) or by 365 for yearly ($1,314) estimates.
+      </p>
+
+      <h3>What is a kilowatt-hour (kWh)?</h3>
+      <p>
+        A kilowatt-hour is a unit of energy equal to one kilowatt of power sustained for one hour. A 100-watt light bulb running for 10 hours uses 1 kWh. Your electricity meter tracks total kWh consumed, and your utility charges a rate per kWh on your bill.
+      </p>
+
+      <h3>What is the average electricity rate per kWh?</h3>
+      <p>
+        In the United States, the average residential electricity rate is approximately $0.12 to $0.16 per kWh, though rates vary significantly by state and provider. Some states like Louisiana average $0.10/kWh while Hawaii can exceed $0.35/kWh. Check your utility bill for your exact rate.
+      </p>
+
+      <h3>How many kWh does a typical household use per month?</h3>
+      <p>
+        The average U.S. household uses approximately 886 kWh per month, but this varies widely based on climate, home size, and appliance usage. Homes in hot climates with air conditioning may use 1,200+ kWh, while efficient small homes might use under 500 kWh.
+      </p>
+
+      <h3>How can I reduce my electricity costs?</h3>
+      <p>
+        Switch to LED lighting, use a programmable thermostat, seal air leaks, upgrade to Energy Star appliances, unplug electronics when not in use, wash clothes in cold water, and consider time-of-use rates if available. Even small changes can reduce your monthly bill by 10-20%.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "kWh to Cost Calculator", url: everyday_kwh_to_cost_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Fuel Cost Calculator", description: "Estimate fuel cost for trips based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("kwh-to-cost-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

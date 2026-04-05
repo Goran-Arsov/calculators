@@ -1,0 +1,208 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Weight Loss Calorie Calculator - Daily Calories to Lose Weight",
+  description: "Calculate exactly how many calories you should eat per day to lose weight at a sustainable rate of 1-2 lbs per week. Includes macros for weight loss, plateau strategies, and safe minimums.",
+  canonical: health_weight_loss_calories_url,
+  og: {
+    title: "Weight Loss Calorie Calculator - Daily Calories to Lose Weight | CalcWise",
+    description: "Calculate your daily calorie target for sustainable weight loss. Includes macro guidance and plateau-breaking strategies.",
+    url: health_weight_loss_calories_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Weight Loss Calorie Calculator", url: health_weight_loss_calories_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many calories should I eat a day to lose weight?", answer: "The number of calories you need to lose weight depends on your TDEE (Total Daily Energy Expenditure). Most people can lose 0.5-1 kg (1-2 lbs) per week by eating 500-1,000 calories below their TDEE. For the average woman, this typically falls between 1,200 and 1,800 calories per day; for the average man, between 1,500 and 2,200 calories per day. Use this calculator to find your personalized target." },
+  { question: "What is a safe rate of weight loss per week?", answer: "A safe and sustainable rate of weight loss is 0.5 to 1 kg (1 to 2 lbs) per week. Losing weight faster than this increases the risk of muscle loss, gallstones, nutritional deficiencies, and metabolic slowdown. People with a higher starting weight may safely lose slightly more in the early weeks, but the rate should stabilize to 1-2 lbs per week for long-term success." },
+  { question: "What macros should I eat for weight loss?", answer: "For weight loss, a common macronutrient split is 30-35% of calories from protein, 35-40% from carbohydrates, and 25-30% from fat. Protein is especially important during a calorie deficit — aim for 1.6 to 2.2 grams per kilogram of body weight to preserve muscle mass. Adequate protein also increases satiety, helping you stick to your calorie target." },
+  { question: "Why has my weight loss stalled even though I'm eating less?", answer: "Weight loss plateaus are common and happen for several reasons: metabolic adaptation lowers your TDEE as you lose weight, water retention can mask fat loss (especially after increased exercise or hormonal changes), and unconscious calorie creep from larger portions or untracked snacks. Recalculate your TDEE at your current weight, double-check portion sizes, consider a one-week diet break at maintenance calories, and ensure you are sleeping 7-9 hours per night." },
+  { question: "Is 1,200 calories a day enough for weight loss?", answer: "For most adults, 1,200 calories per day is at or near the minimum safe intake and should only be followed with attention to nutrient density. It is the commonly cited floor for women; for men, the floor is typically 1,500 calories. Eating below these thresholds long-term risks nutrient deficiencies, muscle loss, fatigue, and hormonal disruption. If your calculated deficit falls at these levels, consult a healthcare professional." }
+]) %>
+
+<%= calculator_schema(
+  name: "Weight Loss Calorie Calculator",
+  description: "Calculate your personalized daily calorie target for sustainable weight loss based on your age, sex, weight, height, and activity level.",
+  url: health_weight_loss_calories_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Weight Loss Calorie Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Weight Loss Calorie Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find your personalized daily calorie target to lose weight at a safe, sustainable rate of 1-2 pounds per week.</p>
+
+    <%# Calculator UI — reuses calorie-calculator Stimulus controller %>
+    <div data-controller="calorie-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit System</label>
+            <select data-calorie-calculator-target="unitSystem" data-action="change->calorie-calculator#updateLabels" class="w-full" aria-label="Unit System">
+              <option value="metric">Metric (kg, cm)</option>
+              <option value="imperial">Imperial (lbs, in)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Age (years)</label>
+            <input type="number" data-calorie-calculator-target="age" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="35" step="1" min="1" max="120">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sex</label>
+            <select data-calorie-calculator-target="sex" data-action="change->calorie-calculator#calculate" class="w-full" aria-label="Sex">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-calorie-calculator-target="weightLabel">Weight (kg)</label>
+            <input type="number" data-calorie-calculator-target="weight" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="85" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-calorie-calculator-target="heightLabel">Height (cm)</label>
+            <input type="number" data-calorie-calculator-target="height" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="170" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Activity Level</label>
+            <select data-calorie-calculator-target="activityLevel" data-action="change->calorie-calculator#calculate" class="w-full" aria-label="Activity Level">
+              <option value="sedentary">Sedentary (little or no exercise)</option>
+              <option value="light">Light (exercise 1-3 days/week)</option>
+              <option value="moderate">Moderate (exercise 3-5 days/week)</option>
+              <option value="active">Active (exercise 6-7 days/week)</option>
+              <option value="very_active">Very Active (intense exercise daily)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Basal Metabolic Rate</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-calorie-calculator-target="bmr">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Maintenance (TDEE)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-calorie-calculator-target="tdee">— cal</span>
+            </div>
+            <hr class="border-green-200 dark:border-green-800">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mild Weight Loss (-0.25 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="mildLoss">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weight Loss (-0.5 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="weightLoss">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mild Weight Gain (+0.25 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="mildGain">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weight Gain (+0.5 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="weightGain">— cal</span>
+            </div>
+          </div>
+          <button data-action="click->calorie-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Setting Your Weight Loss Calorie Target</h2>
+      <p>
+        Successful weight loss starts with knowing your numbers. This calculator estimates your Basal Metabolic Rate (BMR) and Total Daily Energy Expenditure (TDEE) using the Mifflin-St Jeor equation, then provides calorie targets for different rates of loss. Your TDEE represents the total calories your body uses each day including all physical activity. To lose weight, you need to consistently eat below this number. The difference between your TDEE and your actual intake is your calorie deficit, and the size of that deficit determines how quickly you lose weight.
+      </p>
+      <p>
+        A sustainable rate of weight loss is 0.5 to 1 kilogram (1 to 2 pounds) per week. This requires a daily deficit of approximately 500 to 1,000 calories. Losing weight faster than this significantly increases the risk of muscle loss, which slows your metabolism and makes weight regain more likely. If you have a substantial amount of weight to lose, you may see faster results in the first few weeks due to water loss, but aim to settle into the 1-2 pound per week range for the duration of your weight loss journey.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Macronutrients for Weight Loss</h2>
+      <p>
+        Calories determine whether you lose weight, but macronutrients — protein, carbohydrates, and fat — determine what kind of weight you lose and how you feel during the process. The single most important macronutrient during a calorie deficit is protein. Aim for 1.6 to 2.2 grams of protein per kilogram of body weight per day. High protein intake preserves lean muscle mass during a deficit, increases satiety (helping you feel full on fewer calories), and has a higher thermic effect (your body burns more calories digesting protein than carbs or fat). A practical macro split for weight loss is 30-35% protein, 35-40% carbohydrates, and 25-30% fat.
+      </p>
+
+      <h3>Sustainable Rate: 1-2 Pounds Per Week</h3>
+      <p>
+        The 1-2 pounds per week guideline exists for good reason. At this pace, the majority of weight lost is body fat rather than muscle. It allows adequate nutrition to support energy levels, immune function, and hormonal health. It also builds the habits — portion awareness, meal planning, regular physical activity — that prevent weight regain. Research consistently shows that people who lose weight gradually are more likely to keep it off long-term. Crash diets producing rapid weight loss almost always result in regain within one to two years, often leaving the dieter heavier than when they started.
+      </p>
+
+      <h3>Breaking Through Weight Loss Plateaus</h3>
+      <p>
+        If your weight stalls for more than two to three weeks, it is time to reassess. First, recalculate your TDEE using your current weight — as you lose weight, your body requires fewer calories, so the deficit that worked at 90 kg will not produce the same results at 80 kg. Second, audit your food tracking: portion sizes tend to creep upward over time, and untracked bites, licks, and tastes can add hundreds of calories. Third, consider a structured diet break — eating at your maintenance calories for one to two weeks. This can reduce metabolic adaptation, restore hormonal balance, and improve diet adherence when you resume your deficit. Finally, ensure you are sleeping at least seven hours per night and managing stress, as poor sleep and high cortisol both promote fat retention and increase appetite.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many calories should I eat a day to lose weight?</h3>
+      <p>
+        The number of calories you need to lose weight depends on your TDEE (Total Daily Energy Expenditure). Most people can lose 0.5-1 kg (1-2 lbs) per week by eating 500-1,000 calories below their TDEE. For the average woman, this typically falls between 1,200 and 1,800 calories per day; for the average man, between 1,500 and 2,200 calories per day. Use this calculator to find your personalized target.
+      </p>
+
+      <h3>What is a safe rate of weight loss per week?</h3>
+      <p>
+        A safe and sustainable rate of weight loss is 0.5 to 1 kg (1 to 2 lbs) per week. Losing weight faster than this increases the risk of muscle loss, gallstones, nutritional deficiencies, and metabolic slowdown. People with a higher starting weight may safely lose slightly more in the early weeks, but the rate should stabilize to 1-2 lbs per week for long-term success.
+      </p>
+
+      <h3>What macros should I eat for weight loss?</h3>
+      <p>
+        For weight loss, a common macronutrient split is 30-35% of calories from protein, 35-40% from carbohydrates, and 25-30% from fat. Protein is especially important during a calorie deficit — aim for 1.6 to 2.2 grams per kilogram of body weight to preserve muscle mass. Adequate protein also increases satiety, helping you stick to your calorie target.
+      </p>
+
+      <h3>Why has my weight loss stalled even though I'm eating less?</h3>
+      <p>
+        Weight loss plateaus are common and happen for several reasons: metabolic adaptation lowers your TDEE as you lose weight, water retention can mask fat loss (especially after increased exercise or hormonal changes), and unconscious calorie creep from larger portions or untracked snacks. Recalculate your TDEE at your current weight, double-check portion sizes, consider a one-week diet break at maintenance calories, and ensure you are sleeping 7-9 hours per night.
+      </p>
+
+      <h3>Is 1,200 calories a day enough for weight loss?</h3>
+      <p>
+        For most adults, 1,200 calories per day is at or near the minimum safe intake and should only be followed with attention to nutrient density. It is the commonly cited floor for women; for men, the floor is typically 1,500 calories. Eating below these thresholds long-term risks nutrient deficiencies, muscle loss, fatigue, and hormonal disruption. If your calculated deficit falls at these levels, consult a healthcare professional.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Weight Loss Calorie Calculator", url: health_weight_loss_calories_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Macro Calculator", description: "Calculate your ideal macronutrient split for your fitness goals.", path: health_macro_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("calorie-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

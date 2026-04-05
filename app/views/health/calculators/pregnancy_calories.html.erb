@@ -1,0 +1,208 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pregnancy Calorie Calculator - Daily Calories During Pregnancy",
+  description: "Calculate your daily calorie needs during pregnancy. Learn about trimester-specific calorie increases (+0/+340/+450), key nutrients, healthy weight gain ranges, and why calorie restriction is risky during pregnancy.",
+  canonical: health_pregnancy_calories_url,
+  og: {
+    title: "Pregnancy Calorie Calculator - Daily Calories During Pregnancy | CalcWise",
+    description: "Calculate pregnancy calorie needs by trimester. Learn about healthy weight gain, key nutrients, and safe calorie targets.",
+    url: health_pregnancy_calories_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Pregnancy Calorie Calculator", url: health_pregnancy_calories_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many extra calories do I need during pregnancy?", answer: "Calorie needs increase as pregnancy progresses. During the first trimester, no additional calories are needed beyond your normal TDEE. In the second trimester, you need approximately 340 extra calories per day. In the third trimester, that increases to about 450 extra calories per day. These guidelines come from the American College of Obstetricians and Gynecologists (ACOG) and apply to women carrying a single baby." },
+  { question: "Should I eat for two during pregnancy?", answer: "No, the idea of 'eating for two' is a myth that can lead to excessive weight gain. The additional calorie needs during pregnancy are modest — equivalent to an extra healthy snack or small meal in the second and third trimesters. Quality of nutrition matters far more than quantity. Focus on nutrient-dense foods that provide folate, iron, calcium, DHA, and protein rather than simply eating more." },
+  { question: "How much weight should I gain during pregnancy?", answer: "Recommended weight gain depends on your pre-pregnancy BMI. For women with a normal BMI (18.5-24.9), the recommended gain is 25-35 pounds (11.5-16 kg). Underweight women (BMI below 18.5) should gain 28-40 pounds, overweight women (BMI 25-29.9) should gain 15-25 pounds, and obese women (BMI 30+) should gain 11-20 pounds. These ranges support healthy fetal development while minimizing complications." },
+  { question: "What are the most important nutrients during pregnancy?", answer: "Key nutrients during pregnancy include folate (400-800 mcg daily to prevent neural tube defects), iron (27 mg daily to support increased blood volume), calcium (1,000 mg daily for fetal bone development), DHA omega-3 fatty acids (200-300 mg daily for brain development), and protein (at least 71 grams daily). A prenatal vitamin covers many of these, but whole food sources remain important." },
+  { question: "Is it safe to diet or restrict calories during pregnancy?", answer: "Calorie restriction during pregnancy is not recommended and can be harmful to both mother and baby. Inadequate calorie intake can result in low birth weight, preterm delivery, and developmental problems. Even women who are overweight or obese at conception should not actively diet during pregnancy. Instead, focus on nutrient-dense food choices and let your healthcare provider guide appropriate weight gain targets." }
+]) %>
+
+<%= calculator_schema(
+  name: "Pregnancy Calorie Calculator",
+  description: "Estimate your daily calorie needs during pregnancy, with trimester-specific guidance, healthy weight gain ranges, and key nutrient information.",
+  url: health_pregnancy_calories_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Pregnancy Calorie Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pregnancy Calorie Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your daily calorie needs during pregnancy and learn how much extra energy each trimester requires for a healthy pregnancy.</p>
+
+    <%# Calculator UI — reuses calorie-calculator Stimulus controller %>
+    <div data-controller="calorie-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit System</label>
+            <select data-calorie-calculator-target="unitSystem" data-action="change->calorie-calculator#updateLabels" class="w-full" aria-label="Unit System">
+              <option value="metric">Metric (kg, cm)</option>
+              <option value="imperial">Imperial (lbs, in)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Age (years)</label>
+            <input type="number" data-calorie-calculator-target="age" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="28" step="1" min="1" max="120">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sex</label>
+            <select data-calorie-calculator-target="sex" data-action="change->calorie-calculator#calculate" class="w-full" aria-label="Sex">
+              <option value="female" selected>Female</option>
+              <option value="male">Male</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-calorie-calculator-target="weightLabel">Pre-Pregnancy Weight (kg)</label>
+            <input type="number" data-calorie-calculator-target="weight" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="65" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-calorie-calculator-target="heightLabel">Height (cm)</label>
+            <input type="number" data-calorie-calculator-target="height" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="165" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Activity Level</label>
+            <select data-calorie-calculator-target="activityLevel" data-action="change->calorie-calculator#calculate" class="w-full" aria-label="Activity Level">
+              <option value="sedentary">Sedentary (little or no exercise)</option>
+              <option value="light">Light (exercise 1-3 days/week)</option>
+              <option value="moderate">Moderate (exercise 3-5 days/week)</option>
+              <option value="active">Active (exercise 6-7 days/week)</option>
+              <option value="very_active">Very Active (intense exercise daily)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Basal Metabolic Rate</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-calorie-calculator-target="bmr">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Maintenance (TDEE)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-calorie-calculator-target="tdee">— cal</span>
+            </div>
+            <hr class="border-green-200 dark:border-green-800">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mild Weight Loss (-0.25 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="mildLoss">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weight Loss (-0.5 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="weightLoss">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mild Weight Gain (+0.25 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="mildGain">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weight Gain (+0.5 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="weightGain">— cal</span>
+            </div>
+          </div>
+          <button data-action="click->calorie-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Calorie Needs During Pregnancy by Trimester</h2>
+      <p>
+        Pregnancy increases your body's energy demands, but not by as much as the old "eating for two" saying implies. Use this calculator to estimate your baseline TDEE (Total Daily Energy Expenditure), then add trimester-specific increases to find your daily target. In the <strong>first trimester</strong>, your calorie needs remain essentially unchanged — no extra calories are recommended beyond your normal maintenance level. During the <strong>second trimester</strong>, add approximately 340 calories per day. In the <strong>third trimester</strong>, increase by about 450 calories per day. These guidelines from the American College of Obstetricians and Gynecologists apply to women carrying a single baby; those with multiples should consult their provider for individualized recommendations.
+      </p>
+      <p>
+        The TDEE displayed by this calculator represents your non-pregnant maintenance calories. For first trimester, use the maintenance number as-is. For second trimester, add 340 to your TDEE. For third trimester, add 450. This gives you a practical daily calorie target that supports fetal growth, placental development, increased blood volume, and the energy demands of your changing body without promoting excessive weight gain.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Key Nutrients During Pregnancy</h2>
+      <p>
+        While total calorie intake matters, the quality of those calories is even more critical during pregnancy. Several nutrients require special attention. <strong>Folate</strong> (400-800 mcg daily) is essential in the first trimester to prevent neural tube defects — start supplementing before conception if possible. <strong>Iron</strong> needs nearly double to 27 mg per day to support the 50% increase in blood volume. <strong>Calcium</strong> remains at 1,000 mg per day, with the fetus drawing from maternal stores if intake is insufficient. <strong>DHA</strong>, an omega-3 fatty acid (200-300 mg daily), supports fetal brain and eye development, especially in the third trimester. <strong>Protein</strong> needs rise to at least 71 grams per day to fuel the rapid growth of fetal and placental tissue.
+      </p>
+
+      <h3>Why Calorie Restriction During Pregnancy Is Dangerous</h3>
+      <p>
+        Actively dieting or restricting calories during pregnancy poses serious risks to both mother and baby. Insufficient calorie intake can lead to low birth weight, preterm delivery, fetal growth restriction, and long-term developmental consequences for the child. It also increases the mother's risk of nutrient deficiencies, fatigue, dizziness, and complications during delivery. Even women who begin pregnancy with a higher BMI should not pursue weight loss during pregnancy. Instead, the focus should be on making nutrient-dense food choices and following the appropriate weight gain guidelines for their BMI category. Any concerns about weight during pregnancy should be discussed with a healthcare provider.
+      </p>
+
+      <h3>Healthy Weight Gain Ranges</h3>
+      <p>
+        The Institute of Medicine provides weight gain ranges based on pre-pregnancy BMI. Women who are <strong>underweight</strong> (BMI below 18.5) should aim for 28-40 pounds (12.5-18 kg). Women at a <strong>normal weight</strong> (BMI 18.5-24.9) should target 25-35 pounds (11.5-16 kg). <strong>Overweight</strong> women (BMI 25-29.9) are advised to gain 15-25 pounds (7-11.5 kg), and <strong>obese</strong> women (BMI 30+) should gain 11-20 pounds (5-9 kg). Most of this weight comes from the baby, placenta, amniotic fluid, increased blood and fluid volume, uterine growth, and breast tissue — not body fat. Gaining within the recommended range reduces the risk of gestational diabetes, preeclampsia, cesarean delivery, and postpartum weight retention.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many extra calories do I need during pregnancy?</h3>
+      <p>
+        Calorie needs increase as pregnancy progresses. During the first trimester, no additional calories are needed beyond your normal TDEE. In the second trimester, you need approximately 340 extra calories per day. In the third trimester, that increases to about 450 extra calories per day. These guidelines come from the American College of Obstetricians and Gynecologists and apply to women carrying a single baby.
+      </p>
+
+      <h3>Should I eat for two during pregnancy?</h3>
+      <p>
+        No, the idea of "eating for two" is a myth that can lead to excessive weight gain. The additional calorie needs during pregnancy are modest — equivalent to an extra healthy snack or small meal in the second and third trimesters. Quality of nutrition matters far more than quantity. Focus on nutrient-dense foods that provide folate, iron, calcium, DHA, and protein rather than simply eating more.
+      </p>
+
+      <h3>How much weight should I gain during pregnancy?</h3>
+      <p>
+        Recommended weight gain depends on your pre-pregnancy BMI. For women with a normal BMI (18.5-24.9), the recommended gain is 25-35 pounds (11.5-16 kg). Underweight women should gain 28-40 pounds, overweight women should gain 15-25 pounds, and obese women should gain 11-20 pounds. These ranges support healthy fetal development while minimizing complications.
+      </p>
+
+      <h3>What are the most important nutrients during pregnancy?</h3>
+      <p>
+        Key nutrients during pregnancy include folate (400-800 mcg daily to prevent neural tube defects), iron (27 mg daily to support increased blood volume), calcium (1,000 mg daily for fetal bone development), DHA omega-3 fatty acids (200-300 mg daily for brain development), and protein (at least 71 grams daily). A prenatal vitamin covers many of these, but whole food sources remain important.
+      </p>
+
+      <h3>Is it safe to diet or restrict calories during pregnancy?</h3>
+      <p>
+        Calorie restriction during pregnancy is not recommended and can be harmful to both mother and baby. Inadequate calorie intake can result in low birth weight, preterm delivery, and developmental problems. Even women who are overweight or obese at conception should not actively diet during pregnancy. Instead, focus on nutrient-dense food choices and let your healthcare provider guide appropriate weight gain targets.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Pregnancy Calorie Calculator", url: health_pregnancy_calories_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Pregnancy Due Date Calculator", description: "Calculate your estimated due date and track pregnancy milestones.", path: health_pregnancy_due_date_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("calorie-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

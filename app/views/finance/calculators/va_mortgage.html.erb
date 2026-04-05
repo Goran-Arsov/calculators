@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "VA Mortgage Calculator - Free VA Loan Payment Tool",
+  description: "Calculate your monthly VA mortgage payment with no down payment and no PMI. Estimate total interest and loan cost for VA-eligible veterans and service members.",
+  canonical: finance_va_mortgage_url,
+  og: {
+    title: "VA Mortgage Calculator - Free VA Loan Payment Tool | CalcWise",
+    description: "Calculate your monthly VA mortgage payment with no down payment and no PMI. Estimate total interest and loan cost for veterans.",
+    url: finance_va_mortgage_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "VA Mortgage Calculator", url: finance_va_mortgage_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are the benefits of a VA loan?", answer: "VA loans offer several significant advantages: no down payment required, no private mortgage insurance (PMI), competitive interest rates (typically 0.25-0.5% lower than conventional), no prepayment penalties, and more lenient credit and DTI requirements. These benefits can save eligible borrowers tens of thousands of dollars over the life of the loan." },
+  { question: "What is the VA funding fee?", answer: "The VA funding fee is a one-time charge of 1.25% to 3.3% of the loan amount, depending on your down payment, whether it is your first VA loan use, and your service category. The fee can be rolled into the loan. Veterans receiving VA disability compensation and surviving spouses are exempt from the funding fee entirely." },
+  { question: "Who is eligible for a VA loan?", answer: "VA loans are available to active-duty service members (after 90 days of service), veterans (with at least 90 days of wartime or 181 days of peacetime service), National Guard and Reserve members (after 6 years of service or 90 days of active duty), and surviving spouses of service members who died in the line of duty or from a service-connected disability." },
+  { question: "Is there a VA loan limit?", answer: "For veterans with full entitlement (no existing VA loans), there is no VA loan limit — you can borrow as much as a lender will approve with no down payment. For veterans with reduced entitlement (existing VA loan), the 2024 conforming loan limit of $766,550 applies in most areas, with higher limits in high-cost counties." },
+  { question: "Can I use a VA loan more than once?", answer: "Yes, VA loan entitlement is reusable. You can have multiple VA loans simultaneously if you have remaining entitlement, or you can restore your full entitlement after selling a home and paying off the previous VA loan. There is no limit to how many times you can use the VA loan benefit throughout your lifetime." }
+]) %>
+
+<%= calculator_schema(
+  name: "VA Mortgage Calculator",
+  description: "Calculate your monthly VA mortgage payment with no down payment and no PMI for eligible veterans and service members.",
+  url: finance_va_mortgage_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "VA Mortgage Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">VA Mortgage Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your monthly VA loan payment, total interest, and overall cost with no down payment and no PMI for eligible veterans.</p>
+
+    <%# Calculator UI — reuses mortgage-calculator Stimulus controller %>
+    <div data-controller="mortgage-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Home Price ($)</label>
+            <input type="number" data-mortgage-calculator-target="principal" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="350000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-mortgage-calculator-target="rate" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="5.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-mortgage-calculator-target="years" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="30" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->mortgage-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the VA Mortgage Calculator</h2>
+      <p>
+        Our free VA mortgage calculator helps eligible veterans and service members estimate their monthly home loan payment. Enter the home price (VA loans require no down payment, so you can finance the full purchase price), the annual interest rate, and the loan term. The calculator instantly shows your monthly principal and interest payment, total amount paid, and total interest cost. Remember that VA loans do not require private mortgage insurance, which is a major cost savings compared to conventional and FHA loans.
+      </p>
+      <p>
+        VA loans are one of the most powerful home-buying benefits available to military service members. With no down payment requirement, no PMI, and competitive interest rates, a VA loan can save you tens of thousands of dollars compared to other mortgage types. Use this calculator to see how much home you can afford and what your monthly payment will look like.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>VA Loan Benefits Explained</h2>
+      <p>
+        The VA home loan program offers some of the most favorable terms in the mortgage market. The headline benefit is no down payment required, allowing you to finance 100% of the home's purchase price. VA loans also do not require private mortgage insurance (PMI), which typically costs 0.5% to 1% of the loan amount annually on conventional loans. VA loan interest rates are consistently 0.25% to 0.5% lower than comparable conventional rates because the government guarantee reduces lender risk. There are no prepayment penalties, so you can make extra payments or refinance freely.
+      </p>
+
+      <h3>Understanding the VA Funding Fee</h3>
+      <p>
+        While VA loans have no PMI, they do include a one-time VA funding fee that helps sustain the program. For first-time VA loan use with no down payment, the fee is 2.15% of the loan amount. It drops to 1.5% with a 5% down payment and 1.25% with 10% or more down. Subsequent VA loan use carries a higher fee of 3.3% with no down payment. The fee can be financed into the loan. Veterans receiving VA disability compensation and surviving spouses of service members who died in service are completely exempt from the funding fee.
+      </p>
+
+      <h3>VA Loan vs. Conventional and FHA</h3>
+      <p>
+        For eligible borrowers, VA loans almost always offer the best overall value. Compared to conventional loans, VA loans require no down payment and no PMI, with lower rates. Compared to FHA loans, VA loans have no ongoing mortgage insurance premium, no loan limits for borrowers with full entitlement, and typically lower rates. The only scenario where a conventional loan might be cheaper is if you have a 20% or larger down payment and excellent credit, eliminating PMI entirely while avoiding the VA funding fee.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What are the benefits of a VA loan?</h3>
+      <p>
+        VA loans offer several significant advantages: no down payment required, no private mortgage insurance (PMI), competitive interest rates (typically 0.25-0.5% lower than conventional), no prepayment penalties, and more lenient credit and DTI requirements. These benefits can save eligible borrowers tens of thousands of dollars over the life of the loan.
+      </p>
+
+      <h3>What is the VA funding fee?</h3>
+      <p>
+        The VA funding fee is a one-time charge of 1.25% to 3.3% of the loan amount, depending on your down payment, whether it is your first VA loan use, and your service category. The fee can be rolled into the loan. Veterans receiving VA disability compensation and surviving spouses are exempt from the funding fee entirely.
+      </p>
+
+      <h3>Who is eligible for a VA loan?</h3>
+      <p>
+        VA loans are available to active-duty service members (after 90 days of service), veterans (with at least 90 days of wartime or 181 days of peacetime service), National Guard and Reserve members (after 6 years of service or 90 days of active duty), and surviving spouses of service members who died in the line of duty or from a service-connected disability.
+      </p>
+
+      <h3>Is there a VA loan limit?</h3>
+      <p>
+        For veterans with full entitlement (no existing VA loans), there is no VA loan limit — you can borrow as much as a lender will approve with no down payment. For veterans with reduced entitlement (existing VA loan), the 2024 conforming loan limit of $766,550 applies in most areas, with higher limits in high-cost counties.
+      </p>
+
+      <h3>Can I use a VA loan more than once?</h3>
+      <p>
+        Yes, VA loan entitlement is reusable. You can have multiple VA loans simultaneously if you have remaining entitlement, or you can restore your full entitlement after selling a home and paying off the previous VA loan. There is no limit to how many times you can use the VA loan benefit throughout your lifetime.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "VA Mortgage Calculator", url: finance_va_mortgage_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment and total interest.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "FHA Mortgage Calculator", description: "Calculate your FHA loan payment with low down payment options.", path: finance_fha_mortgage_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Home Affordability Calculator", description: "Find out how much house you can afford.", path: finance_home_affordability_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("va-mortgage-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

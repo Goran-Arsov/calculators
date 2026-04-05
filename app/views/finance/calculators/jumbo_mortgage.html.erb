@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Jumbo Mortgage Calculator - Free Jumbo Loan Payment Tool",
+  description: "Calculate your monthly jumbo mortgage payment, total interest, and loan cost for high-value homes exceeding conforming loan limits. Free jumbo loan calculator.",
+  canonical: finance_jumbo_mortgage_url,
+  og: {
+    title: "Jumbo Mortgage Calculator - Free Jumbo Loan Payment Tool | CalcWise",
+    description: "Calculate your monthly jumbo mortgage payment, total interest, and loan cost for high-value homes exceeding conforming loan limits.",
+    url: finance_jumbo_mortgage_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Jumbo Mortgage Calculator", url: finance_jumbo_mortgage_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a jumbo mortgage?", answer: "A jumbo mortgage is a home loan that exceeds the conforming loan limits set by the Federal Housing Finance Agency (FHFA). For 2024, the conforming limit is $766,550 in most areas and up to $1,149,825 in high-cost counties. Any loan above these limits is classified as a jumbo loan and cannot be purchased by Fannie Mae or Freddie Mac, which means lenders take on more risk." },
+  { question: "What interest rate can I expect on a jumbo mortgage?", answer: "Jumbo mortgage rates are typically 0.25% to 0.5% higher than conforming loan rates, though in some market conditions they can be comparable or even lower. As of recent trends, jumbo rates range from 6% to 8% depending on your credit score, down payment, and the lender. The rate premium exists because jumbo loans cannot be sold to government-sponsored enterprises." },
+  { question: "What are the requirements for a jumbo loan?", answer: "Jumbo loans have stricter requirements than conforming mortgages. Most lenders require a minimum credit score of 700-720 (vs. 620 for conventional), a down payment of 10-20% (some require 20%+), a debt-to-income ratio below 43%, significant cash reserves (6-12 months of payments), and thorough income documentation including tax returns." },
+  { question: "How much down payment do I need for a jumbo mortgage?", answer: "Most jumbo lenders require 10% to 20% down, with 20% being the most common requirement. Some lenders offer jumbo loans with as little as 10% down for borrowers with excellent credit and strong financial profiles. A larger down payment of 25-30% can help you secure a lower interest rate and avoid additional requirements." },
+  { question: "Can I refinance a jumbo mortgage?", answer: "Yes, jumbo mortgages can be refinanced just like conforming loans. You can refinance to a lower rate, shorter term, or do a cash-out refinance. The same stricter qualification requirements apply: strong credit score, low DTI ratio, and adequate reserves. Closing costs on jumbo refinances are typically higher due to the larger loan amounts." }
+]) %>
+
+<%= calculator_schema(
+  name: "Jumbo Mortgage Calculator",
+  description: "Calculate your monthly jumbo mortgage payment, total interest, and total cost for high-value home loans exceeding conforming limits.",
+  url: finance_jumbo_mortgage_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Jumbo Mortgage Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Jumbo Mortgage Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your monthly jumbo loan payment, total interest, and the overall cost of financing a high-value home above conforming loan limits.</p>
+
+    <%# Calculator UI — reuses mortgage-calculator Stimulus controller %>
+    <div data-controller="mortgage-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Home Price ($)</label>
+            <input type="number" data-mortgage-calculator-target="principal" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="800000" step="5000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-mortgage-calculator-target="rate" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="6.75" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-mortgage-calculator-target="years" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="30" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->mortgage-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Jumbo Mortgage Calculator</h2>
+      <p>
+        Our free jumbo mortgage calculator helps you estimate the cost of financing a high-value home that exceeds conforming loan limits. Enter the home price or the loan amount after your down payment, the annual interest rate, and the loan term. The calculator instantly shows your monthly principal and interest payment, total amount paid, and total interest cost. For homes priced above $766,550 in most areas (or $1,149,825 in high-cost counties), you will need a jumbo loan, which has different requirements and rates than standard conforming mortgages.
+      </p>
+      <p>
+        Jumbo mortgages are essential for buyers in high-cost real estate markets where median home prices exceed conforming loan limits. Understanding your estimated payment before shopping for luxury or high-value properties helps you set realistic expectations and ensures you qualify for the financing you need. Because jumbo loans involve larger amounts, even small rate differences translate to significant dollar amounts over the life of the loan.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Jumbo Loan Limits and Requirements</h2>
+      <p>
+        The 2024 conforming loan limit is $766,550 for single-family homes in most of the United States, with higher limits up to $1,149,825 in designated high-cost areas like San Francisco, New York City, and parts of Hawaii. Any mortgage exceeding these limits is classified as a jumbo loan. Because these loans cannot be purchased by Fannie Mae or Freddie Mac, lenders retain them on their own books, which means stricter underwriting standards. Expect requirements including a minimum credit score of 700 to 720, a down payment of at least 10% to 20%, a debt-to-income ratio under 43%, and 6 to 12 months of cash reserves.
+      </p>
+
+      <h3>Jumbo Mortgage Rates vs. Conforming Rates</h3>
+      <p>
+        Historically, jumbo mortgage rates were significantly higher than conforming rates because of the increased risk to lenders. Today, the gap has narrowed considerably, and jumbo rates are typically only 0.25% to 0.5% higher than conforming rates. In some market conditions, jumbo rates can actually match or dip below conforming rates as banks compete for high-net-worth borrowers. Shopping around is especially important with jumbo loans, as rates can vary more widely between lenders than with conforming mortgages.
+      </p>
+
+      <h3>Strategies for Qualifying for a Jumbo Loan</h3>
+      <p>
+        To qualify for the best jumbo mortgage terms, focus on several key areas. First, aim for a credit score of 740 or higher, as this threshold unlocks the most competitive rates. Second, save for a 20% or larger down payment, which demonstrates financial stability and may eliminate the need for PMI. Third, keep your debt-to-income ratio well below 43% by paying down other debts before applying. Fourth, build substantial cash reserves, as most lenders want to see 6 to 12 months of mortgage payments in liquid assets. Finally, prepare thorough documentation of your income, assets, and employment history.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a jumbo mortgage?</h3>
+      <p>
+        A jumbo mortgage is a home loan that exceeds the conforming loan limits set by the Federal Housing Finance Agency (FHFA). For 2024, the conforming limit is $766,550 in most areas and up to $1,149,825 in high-cost counties. Any loan above these limits is classified as a jumbo loan and cannot be purchased by Fannie Mae or Freddie Mac, which means lenders take on more risk.
+      </p>
+
+      <h3>What interest rate can I expect on a jumbo mortgage?</h3>
+      <p>
+        Jumbo mortgage rates are typically 0.25% to 0.5% higher than conforming loan rates, though in some market conditions they can be comparable or even lower. As of recent trends, jumbo rates range from 6% to 8% depending on your credit score, down payment, and the lender. The rate premium exists because jumbo loans cannot be sold to government-sponsored enterprises.
+      </p>
+
+      <h3>What are the requirements for a jumbo loan?</h3>
+      <p>
+        Jumbo loans have stricter requirements than conforming mortgages. Most lenders require a minimum credit score of 700-720 (vs. 620 for conventional), a down payment of 10-20% (some require 20%+), a debt-to-income ratio below 43%, significant cash reserves (6-12 months of payments), and thorough income documentation including tax returns.
+      </p>
+
+      <h3>How much down payment do I need for a jumbo mortgage?</h3>
+      <p>
+        Most jumbo lenders require 10% to 20% down, with 20% being the most common requirement. Some lenders offer jumbo loans with as little as 10% down for borrowers with excellent credit and strong financial profiles. A larger down payment of 25-30% can help you secure a lower interest rate and avoid additional requirements.
+      </p>
+
+      <h3>Can I refinance a jumbo mortgage?</h3>
+      <p>
+        Yes, jumbo mortgages can be refinanced just like conforming loans. You can refinance to a lower rate, shorter term, or do a cash-out refinance. The same stricter qualification requirements apply: strong credit score, low DTI ratio, and adequate reserves. Closing costs on jumbo refinances are typically higher due to the larger loan amounts.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Jumbo Mortgage Calculator", url: finance_jumbo_mortgage_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment and total interest.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Refinance Calculator", description: "See if refinancing your mortgage could save you money.", path: finance_refinance_path, icon_path: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" },
+      { name: "Home Affordability Calculator", description: "Find out how much house you can afford.", path: finance_home_affordability_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("jumbo-mortgage-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

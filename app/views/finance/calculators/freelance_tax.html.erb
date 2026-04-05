@@ -1,0 +1,225 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Freelance Tax Calculator - Free Self-Employment Tax Estimator",
+  description: "Calculate your freelance self-employment tax, estimated quarterly payments, and take-home pay. Understand the 15.3% SE tax and deductible expenses with our free tool.",
+  canonical: finance_freelance_tax_url,
+  og: {
+    title: "Freelance Tax Calculator - Free Self-Employment Tax Estimator | CalcWise",
+    description: "Calculate your freelance self-employment tax, estimated quarterly payments, and take-home pay. Understand the 15.3% SE tax.",
+    url: finance_freelance_tax_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Freelance Tax Calculator", url: finance_freelance_tax_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the self-employment tax rate?", answer: "The self-employment tax rate is 15.3%, consisting of 12.4% for Social Security (on net earnings up to $168,600 in 2024) and 2.9% for Medicare (on all net earnings). This is effectively double the FICA rate of regular employees because freelancers pay both the employee and employer portions. An additional 0.9% Medicare surtax applies to net earnings above $200,000." },
+  { question: "How do freelancers pay estimated quarterly taxes?", answer: "Freelancers must make estimated tax payments four times per year using IRS Form 1040-ES. Due dates are April 15, June 15, September 15, and January 15. You must pay at least 90% of your current year tax liability or 100% of your prior year liability (110% if AGI exceeds $150,000) to avoid underpayment penalties." },
+  { question: "What expenses can freelancers deduct?", answer: "Common freelance deductions include home office expenses (simplified method: $5/sq ft up to 300 sq ft), internet and phone bills (business percentage), equipment and software, professional development, business insurance, health insurance premiums (100% deductible for the self-employed), vehicle expenses (standard mileage or actual costs), and half of the self-employment tax itself." },
+  { question: "Do freelancers need to pay state income tax?", answer: "Yes, freelancers must pay state income tax in states that impose it. Some states like Texas, Florida, and Nevada have no state income tax. Others may have additional business taxes or gross receipts taxes. Freelancers who work for clients in multiple states may need to file returns in each state where they have income-generating activity." },
+  { question: "How much should freelancers set aside for taxes?", answer: "A good rule of thumb is to set aside 25% to 30% of your gross freelance income for federal taxes (self-employment tax plus income tax). If you live in a state with income tax, add another 3% to 10%. Many freelancers keep a separate savings account specifically for tax payments to avoid cash flow problems at tax time." }
+]) %>
+
+<%= calculator_schema(
+  name: "Freelance Tax Calculator",
+  description: "Calculate your freelance self-employment tax, estimated quarterly payments, and net take-home pay after all deductions.",
+  url: finance_freelance_tax_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Freelance Tax Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Freelance Tax Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your self-employment tax, federal income tax, and take-home pay as a freelancer or independent contractor.</p>
+
+    <%# Calculator UI — reuses paycheck-calculator Stimulus controller %>
+    <div data-controller="paycheck-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Freelance Income ($)</label>
+            <input type="number" data-paycheck-calculator-target="annualSalary" data-action="input->paycheck-calculator#calculate" class="w-full" placeholder="85000" step="1000" min="0">
+            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Enter your gross self-employment income before deductions</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">State Tax Level</label>
+            <select data-paycheck-calculator-target="stateTaxLevel" data-action="change->paycheck-calculator#calculate" class="w-full">
+              <option value="none">None (0%)</option>
+              <option value="low">Low (3%)</option>
+              <option value="medium" selected>Medium (5%)</option>
+              <option value="high">High (7%)</option>
+              <option value="very_high">Very High (10%)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Estimated Payment Frequency</label>
+            <select data-paycheck-calculator-target="payFrequency" data-action="change->paycheck-calculator#calculate" class="w-full">
+              <option value="weekly">Weekly (52/year)</option>
+              <option value="biweekly">Biweekly (26/year)</option>
+              <option value="semimonthly">Semi-Monthly (24/year)</option>
+              <option value="monthly" selected>Monthly (12/year)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Business Deductions ($)</label>
+            <input type="number" data-paycheck-calculator-target="preTaxDeductions" data-action="input->paycheck-calculator#calculate" class="w-full" placeholder="10000" step="500" min="0">
+            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Home office, equipment, software, insurance, etc.</p>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Net Income</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-paycheck-calculator-target="paycheckNet">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Gross Income</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-paycheck-calculator-target="paycheckGross">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Annual Net Income</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-paycheck-calculator-target="annualNet">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Annual Gross Income</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-paycheck-calculator-target="annualGross">$0.00</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Federal Tax</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="federalTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">State Tax</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="stateTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Social Security</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="socialSecurity">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Medicare</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="medicare">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total FICA / SE Tax</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="fica">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Deductions</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="totalDeductions">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Effective Tax Rate</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="effectiveTaxRate">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Pay Periods/Year</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-paycheck-calculator-target="payPeriods">0</span>
+            </div>
+          </div>
+          <button data-action="click->paycheck-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Freelance Tax Calculator</h2>
+      <p>
+        Our free freelance tax calculator helps independent contractors and self-employed professionals estimate their tax burden and take-home income. Enter your annual gross freelance income, select your state tax level, choose a payment frequency for viewing your income breakdown (monthly is common for freelancers), and enter your estimated annual business deductions. The calculator shows your net income after estimated federal tax, state tax, and self-employment tax, giving you a realistic picture of what you actually take home.
+      </p>
+      <p>
+        As a freelancer, you are responsible for paying both the employee and employer portions of Social Security and Medicare taxes, totaling 15.3% of net earnings. This is on top of federal and state income tax. Understanding your true tax liability prevents unpleasant surprises at tax time and helps you set aside the right amount from each payment you receive.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Self-Employment Tax</h2>
+      <p>
+        The self-employment (SE) tax is the biggest surprise for new freelancers. When you work as an employee, your employer pays half of your Social Security and Medicare taxes (7.65%), and the other half (7.65%) is withheld from your paycheck. As a freelancer, you pay both halves, totaling 15.3% of your net self-employment income. This breaks down to 12.4% for Social Security (on net earnings up to $168,600 in 2024) and 2.9% for Medicare (on all net earnings). An additional 0.9% Medicare surtax applies to net earnings above $200,000.
+      </p>
+
+      <h3>Quarterly Estimated Tax Payments</h3>
+      <p>
+        Unlike employees who have taxes withheld from each paycheck, freelancers must make quarterly estimated tax payments to the IRS using Form 1040-ES. Due dates are April 15, June 15, September 15, and January 15. You must pay at least 90% of your current year tax liability or 100% of your prior year liability (110% if your adjusted gross income exceeds $150,000) to avoid underpayment penalties. A good practice is to set aside 25% to 30% of every payment you receive into a separate savings account dedicated to taxes.
+      </p>
+
+      <h3>Key Deductions for Freelancers</h3>
+      <p>
+        Maximizing deductions is essential for reducing your freelance tax bill. The most common deductions include the home office deduction (simplified method allows $5 per square foot up to 300 square feet), health insurance premiums for the self-employed (100% deductible above the line), business equipment and software, internet and phone bills (business percentage), professional development and training, vehicle expenses for business travel, and half of your self-employment tax. Keeping thorough records and receipts throughout the year is critical for claiming these deductions at tax time.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the self-employment tax rate?</h3>
+      <p>
+        The self-employment tax rate is 15.3%, consisting of 12.4% for Social Security (on net earnings up to $168,600 in 2024) and 2.9% for Medicare (on all net earnings). This is effectively double the FICA rate of regular employees because freelancers pay both the employee and employer portions. An additional 0.9% Medicare surtax applies to net earnings above $200,000.
+      </p>
+
+      <h3>How do freelancers pay estimated quarterly taxes?</h3>
+      <p>
+        Freelancers must make estimated tax payments four times per year using IRS Form 1040-ES. Due dates are April 15, June 15, September 15, and January 15. You must pay at least 90% of your current year tax liability or 100% of your prior year liability (110% if AGI exceeds $150,000) to avoid underpayment penalties.
+      </p>
+
+      <h3>What expenses can freelancers deduct?</h3>
+      <p>
+        Common freelance deductions include home office expenses (simplified method: $5/sq ft up to 300 sq ft), internet and phone bills (business percentage), equipment and software, professional development, business insurance, health insurance premiums (100% deductible for the self-employed), vehicle expenses (standard mileage or actual costs), and half of the self-employment tax itself.
+      </p>
+
+      <h3>Do freelancers need to pay state income tax?</h3>
+      <p>
+        Yes, freelancers must pay state income tax in states that impose it. Some states like Texas, Florida, and Nevada have no state income tax. Others may have additional business taxes or gross receipts taxes. Freelancers who work for clients in multiple states may need to file returns in each state where they have income-generating activity.
+      </p>
+
+      <h3>How much should freelancers set aside for taxes?</h3>
+      <p>
+        A good rule of thumb is to set aside 25% to 30% of your gross freelance income for federal taxes (self-employment tax plus income tax). If you live in a state with income tax, add another 3% to 10%. Many freelancers keep a separate savings account specifically for tax payments to avoid cash flow problems at tax time.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Freelance Tax Calculator", url: finance_freelance_tax_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Paycheck Calculator", description: "Calculate take-home pay from your annual salary.", path: finance_paycheck_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Tax Bracket Calculator", description: "See your federal tax bracket and effective tax rate.", path: finance_tax_bracket_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Hourly Paycheck Calculator", description: "Calculate take-home pay from an hourly wage.", path: finance_hourly_paycheck_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("freelance-tax-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

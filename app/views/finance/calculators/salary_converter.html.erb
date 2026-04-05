@@ -1,0 +1,188 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Salary Converter Calculator - Free Online Tool",
+  description: "Convert any salary between hourly, daily, weekly, biweekly, monthly, and annual. Customize hours per week and weeks per year for precise results.",
+  canonical: finance_salary_converter_url,
+  og: {
+    title: "Salary Converter Calculator - Free Online Tool | CalcWise",
+    description: "Convert any salary between hourly, daily, weekly, biweekly, monthly, and annual. Customize hours and weeks for precise conversions.",
+    url: finance_salary_converter_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Salary Converter Calculator", url: finance_salary_converter_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I convert an annual salary to hourly?", answer: "Divide the annual salary by the total working hours per year. For standard full-time work at 40 hours per week and 52 weeks per year, divide by 2,080. A $60,000 annual salary equals $60,000 / 2,080 = $28.85 per hour." },
+  { question: "How does weeks per year affect salary conversion?", answer: "The weeks per year setting lets you account for unpaid time off. If you only work 48 weeks per year (4 weeks unpaid vacation), your effective hourly rate is higher than someone working 52 weeks. A $60,000 salary over 48 weeks at 40 hours/week is $31.25/hour versus $28.85/hour over 52 weeks." },
+  { question: "What is the difference between biweekly and semi-monthly pay?", answer: "Biweekly means every two weeks, giving you 26 paychecks per year. Semi-monthly means twice per month on fixed dates, giving you 24 paychecks per year. Biweekly checks are slightly smaller but you get two extra per year. This calculator uses biweekly (every 2 weeks) for its conversions." },
+  { question: "How do I compare job offers with different pay periods?", answer: "Enter each offer into this calculator with the same hours per week and weeks per year settings. Compare the annual figures side by side. Also factor in benefits, retirement matching, insurance, and paid time off, as these can significantly change the total compensation even when base pay looks similar." },
+  { question: "Should I use gross or net salary for conversions?", answer: "This calculator converts gross (before-tax) amounts. Use your gross salary for consistent comparisons between pay periods. Your net (take-home) pay varies based on tax brackets, deductions, and benefits, making it less useful for period-to-period conversion." }
+]) %>
+
+<%= calculator_schema(
+  name: "Salary Converter Calculator",
+  description: "Convert salary amounts between hourly, daily, weekly, biweekly, monthly, and annual periods with customizable hours per week and weeks per year.",
+  url: finance_salary_converter_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Salary Converter Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Salary Converter Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert any salary or wage into every pay period with customizable hours per week and weeks per year.</p>
+
+    <div data-controller="salary-converter-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Salary Amount ($)</label>
+            <input type="number" data-salary-converter-calculator-target="amount" data-action="input->salary-converter-calculator#calculate" class="w-full" placeholder="60000" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pay Period</label>
+            <select data-salary-converter-calculator-target="period" data-action="change->salary-converter-calculator#calculate" class="w-full" aria-label="Pay period">
+              <option value="hourly">Hourly</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Biweekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="annual" selected>Annual</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Hours per Week</label>
+            <input type="number" data-salary-converter-calculator-target="hoursPerWeek" data-action="input->salary-converter-calculator#calculate" class="w-full" placeholder="40" value="40" step="0.5" min="1" max="168">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Weeks per Year</label>
+            <input type="number" data-salary-converter-calculator-target="weeksPerYear" data-action="input->salary-converter-calculator#calculate" class="w-full" placeholder="52" value="52" step="1" min="1" max="52">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Converted Salary</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Hourly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-salary-converter-calculator-target="hourly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Daily</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-salary-converter-calculator-target="daily">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Weekly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-salary-converter-calculator-target="weekly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Biweekly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-salary-converter-calculator-target="biweekly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Monthly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-salary-converter-calculator-target="monthly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Annual</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-salary-converter-calculator-target="annual">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->salary-converter-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-sm shadow-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Salary Converter Calculator</h2>
+      <p>
+        This calculator goes beyond simple salary conversion by letting you customize both the hours you work per week and the weeks you work per year. This matters because not everyone works a standard 40-hour week for all 52 weeks. Part-time employees, freelancers, seasonal workers, and anyone with unpaid leave can get accurate conversions by adjusting these parameters.
+      </p>
+      <p>
+        Enter your salary amount, select the pay period it represents, and adjust the hours per week and weeks per year to match your actual work schedule. All six pay period equivalents update instantly. This makes it easy to compare a contract offering $45/hour against a salaried position at $85,000/year when you know you would work 45 hours a week for 50 weeks.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Salary Conversion Formulas</h2>
+      <p>
+        All conversions derive from an hourly base rate. The formula chain is: <strong>Hourly = Annual / (Hours per Week x Weeks per Year)</strong>. From hourly, every other period is calculated: Daily = Hourly x (Hours per Week / 5), Weekly = Hourly x Hours per Week, Biweekly = Weekly x 2, Monthly = Annual / 12, Annual = Hourly x Hours per Week x Weeks per Year. Adjusting weeks per year below 52 increases all per-period rates because the same annual amount is earned in fewer working weeks.
+      </p>
+
+      <h3>Why Weeks Per Year Matters</h3>
+      <p>
+        Standard salary calculators assume 52 working weeks, but many workers take unpaid time off, have seasonal employment, or negotiate reduced schedules. A teacher who works 40 weeks per year at $50,000 effectively earns more per hour than an office worker earning $50,000 over 52 weeks. Setting weeks per year to your actual working weeks reveals your true hourly value, which is important when comparing offers or negotiating rates.
+      </p>
+
+      <h3>Freelancer and Contractor Considerations</h3>
+      <p>
+        Freelancers and independent contractors must account for non-billable time such as marketing, administration, and professional development. If you work 50 hours per week but only bill 30, set hours per week to 30 for a realistic income conversion. Also consider that contractors pay self-employment taxes and fund their own benefits, so a $50/hour contract rate is not equivalent to a $50/hour salaried position. A common rule of thumb is to multiply a desired salary by 1.3 to 1.5 to find the equivalent freelance hourly rate.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I convert an annual salary to hourly?</h3>
+      <p>
+        Divide the annual salary by the total working hours per year. For standard full-time work at 40 hours per week and 52 weeks per year, divide by 2,080. A $60,000 annual salary equals $60,000 / 2,080 = $28.85 per hour.
+      </p>
+
+      <h3>How does weeks per year affect salary conversion?</h3>
+      <p>
+        The weeks per year setting lets you account for unpaid time off. If you only work 48 weeks per year (4 weeks unpaid vacation), your effective hourly rate is higher than someone working 52 weeks. A $60,000 salary over 48 weeks at 40 hours/week is $31.25/hour versus $28.85/hour over 52 weeks.
+      </p>
+
+      <h3>What is the difference between biweekly and semi-monthly pay?</h3>
+      <p>
+        Biweekly means every two weeks, giving you 26 paychecks per year. Semi-monthly means twice per month on fixed dates, giving you 24 paychecks per year. Biweekly checks are slightly smaller but you get two extra per year. This calculator uses biweekly (every 2 weeks) for its conversions.
+      </p>
+
+      <h3>How do I compare job offers with different pay periods?</h3>
+      <p>
+        Enter each offer into this calculator with the same hours per week and weeks per year settings. Compare the annual figures side by side. Also factor in benefits, retirement matching, insurance, and paid time off, as these can significantly change the total compensation even when base pay looks similar.
+      </p>
+
+      <h3>Should I use gross or net salary for conversions?</h3>
+      <p>
+        This calculator converts gross (before-tax) amounts. Use your gross salary for consistent comparisons between pay periods. Your net (take-home) pay varies based on tax brackets, deductions, and benefits, making it less useful for period-to-period conversion.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Salary Converter Calculator", url: finance_salary_converter_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Salary Calculator", description: "Convert salary between all pay periods with standard assumptions.", path: finance_salary_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "ROI Calculator", description: "Calculate return on investment to see how your earnings grow.", path: finance_roi_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Mortgage Calculator", description: "See how your salary translates to mortgage affordability.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("salary-converter-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

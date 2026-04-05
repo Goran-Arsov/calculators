@@ -1,0 +1,174 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Price Per Unit Weight Calculator - Free Online Tool",
+  description: "Compare prices per kilogram, per pound, per 100g, and per gram. Enter any product price and weight to find the best value instantly.",
+  canonical: everyday_price_per_weight_url,
+  og: {
+    title: "Price Per Unit Weight Calculator - Free Online Tool | CalcWise",
+    description: "Compare prices per kilogram, per pound, per 100g, and per gram. Find the best value by weight instantly.",
+    url: everyday_price_per_weight_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Price Per Unit Weight Calculator", url: everyday_price_per_weight_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate price per kilogram?", answer: "Divide the product price by its weight in kilograms. If the weight is in a different unit, convert it first: 1 kg = 1000 g, 1 kg = 2.20462 lb, 1 kg = 35.274 oz. For example, a $5.99 package weighing 500g has a price per kg of $5.99 / 0.5 = $11.98/kg." },
+  { question: "How do I compare products sold in different weight units?", answer: "Convert both to the same unit using this calculator. Enter each product's price and weight with its original unit, and the calculator shows price per kg, per lb, and per 100g for both. The one with the lower price per kg is the better deal by weight." },
+  { question: "Is buying in bulk always cheaper per unit weight?", answer: "Usually, but not always. Larger packages generally have a lower price per unit weight, but stores sometimes price smaller sizes more aggressively during sales. Always check the unit price rather than assuming the bigger package is the better deal. Also consider whether you can use the product before it expires." },
+  { question: "Why do stores show price per 100g instead of per kg?", answer: "Price per 100g is common in many countries, especially in Europe and Australia, because it produces more readable numbers for small or moderately priced items. A price of $1.20 per 100g is easier to compare at a glance than $0.012 per gram. Both are valid metrics; this calculator shows all of them." },
+  { question: "How do I convert price per pound to price per kilogram?", answer: "Multiply the price per pound by 2.20462 to get the price per kilogram. Since 1 kg = 2.20462 lb, a product costing $3.00/lb costs $3.00 x 2.20462 = $6.61/kg. This calculator handles the conversion automatically when you select the weight unit." }
+]) %>
+
+<%= calculator_schema(
+  name: "Price Per Unit Weight Calculator",
+  description: "Calculate and compare product prices per kilogram, per pound, per 100g, and per gram from any weight unit.",
+  url: everyday_price_per_weight_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Price Per Unit Weight Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Price Per Unit Weight Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Compare product value by calculating price per kilogram, per pound, per 100g, and per gram from any weight unit.</p>
+
+    <div data-controller="price-per-weight-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Product Price ($)</label>
+            <input type="number" data-price-per-weight-calculator-target="price" data-action="input->price-per-weight-calculator#calculate" class="w-full" placeholder="5.99" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Weight</label>
+            <input type="number" data-price-per-weight-calculator-target="weight" data-action="input->price-per-weight-calculator#calculate" class="w-full" placeholder="500" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Weight Unit</label>
+            <select data-price-per-weight-calculator-target="unit" data-action="change->price-per-weight-calculator#calculate" class="w-full" aria-label="Weight unit">
+              <option value="g" selected>Grams (g)</option>
+              <option value="kg">Kilograms (kg)</option>
+              <option value="oz">Ounces (oz)</option>
+              <option value="lb">Pounds (lb)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Price Comparison</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Per kg</span>
+              <span class="text-lg font-bold text-rose-600 dark:text-rose-400" data-price-per-weight-calculator-target="pricePerKg">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Per lb</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-price-per-weight-calculator-target="pricePerLb">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Per 100g</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-price-per-weight-calculator-target="pricePer100g">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Per gram</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-price-per-weight-calculator-target="pricePerGram">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->price-per-weight-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white rounded-xl shadow-sm shadow-rose-500/20 hover:shadow-md hover:shadow-rose-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Price Per Unit Weight Calculator</h2>
+      <p>
+        Grocery shopping becomes significantly smarter when you compare products by their unit price rather than their total price. This calculator takes any product's price and weight, in grams, kilograms, ounces, or pounds, and shows you the equivalent price per kilogram, per pound, per 100 grams, and per gram. This makes it effortless to compare different package sizes, brands, and even products sold in different weight units.
+      </p>
+      <p>
+        Enter the total price, the weight amount, and select the appropriate weight unit. The calculator handles all the conversions between metric and imperial units instantly. Use it right in the grocery store on your phone to decide between the 400g bag at $4.99 and the 750g bag at $8.49. The one with the lower price per kilogram is the better value.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Price Per Weight Formulas</h2>
+      <p>
+        The calculator converts all weights to grams as a common base, then computes: <strong>Price per gram = Total Price / Weight in grams</strong>. From there, Price per kg = Price per gram x 1,000; Price per lb = Price per gram x 453.592; Price per 100g = Price per gram x 100. The conversion factors between units are: 1 kg = 1,000 g, 1 oz = 28.3495 g, 1 lb = 453.592 g.
+      </p>
+
+      <h3>Smart Shopping with Unit Pricing</h3>
+      <p>
+        Many stores display unit prices on shelf labels, but they are not always consistent. One product might show price per ounce while its competitor shows price per pound. This calculator normalizes everything so you can compare directly. When products are on sale, the unit price is especially important because discounts on smaller packages sometimes still leave them more expensive per unit than the regular-priced larger package.
+      </p>
+
+      <h3>Bulk Buying Considerations</h3>
+      <p>
+        A lower price per kilogram does not always mean a smarter purchase. Consider shelf life, storage space, and how quickly you will consume the product. Buying 5 kg of flour at a great unit price is wasteful if half of it expires before you use it. For non-perishable items you regularly use, bulk buying at a lower unit price is almost always a good idea. For perishable goods, balance the unit price savings against potential food waste.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate price per kilogram?</h3>
+      <p>
+        Divide the product price by its weight in kilograms. If the weight is in a different unit, convert it first: 1 kg = 1000 g, 1 kg = 2.20462 lb, 1 kg = 35.274 oz. For example, a $5.99 package weighing 500g has a price per kg of $5.99 / 0.5 = $11.98/kg.
+      </p>
+
+      <h3>How do I compare products sold in different weight units?</h3>
+      <p>
+        Convert both to the same unit using this calculator. Enter each product's price and weight with its original unit, and the calculator shows price per kg, per lb, and per 100g for both. The one with the lower price per kg is the better deal by weight.
+      </p>
+
+      <h3>Is buying in bulk always cheaper per unit weight?</h3>
+      <p>
+        Usually, but not always. Larger packages generally have a lower price per unit weight, but stores sometimes price smaller sizes more aggressively during sales. Always check the unit price rather than assuming the bigger package is the better deal. Also consider whether you can use the product before it expires.
+      </p>
+
+      <h3>Why do stores show price per 100g instead of per kg?</h3>
+      <p>
+        Price per 100g is common in many countries, especially in Europe and Australia, because it produces more readable numbers for small or moderately priced items. A price of $1.20 per 100g is easier to compare at a glance than $0.012 per gram. Both are valid metrics; this calculator shows all of them.
+      </p>
+
+      <h3>How do I convert price per pound to price per kilogram?</h3>
+      <p>
+        Multiply the price per pound by 2.20462 to get the price per kilogram. Since 1 kg = 2.20462 lb, a product costing $3.00/lb costs $3.00 x 2.20462 = $6.61/kg. This calculator handles the conversion automatically when you select the weight unit.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Price Per Unit Weight Calculator", url: everyday_price_per_weight_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Fuel Cost Calculator", description: "Estimate fuel cost for trips based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("price-per-weight-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

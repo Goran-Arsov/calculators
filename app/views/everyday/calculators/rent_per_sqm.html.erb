@@ -1,0 +1,176 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Rent Per Square Meter Calculator - Free Online Tool",
+  description: "Calculate rent per square meter, per square foot, and annual cost. Compare rental value across different apartments and spaces instantly.",
+  canonical: everyday_rent_per_sqm_url,
+  og: {
+    title: "Rent Per Square Meter Calculator - Free Online Tool | CalcWise",
+    description: "Calculate rent per square meter, per square foot, and annual cost. Compare rental value across different apartments and spaces.",
+    url: everyday_rent_per_sqm_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Rent Per Square Meter Calculator", url: everyday_rent_per_sqm_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate rent per square meter?", answer: "Divide the monthly rent by the total area in square meters. For example, if rent is $1,500/month for a 75 m\u00B2 apartment, the rent per square meter is $1,500 / 75 = $20 per m\u00B2 per month." },
+  { question: "How do I convert rent per sqm to rent per sqft?", answer: "Divide the rent per square meter by 10.7639 to get rent per square foot. A rate of $20 per m\u00B2 equals $20 / 10.7639 = approximately $1.86 per square foot. Conversely, multiply rent per sqft by 10.7639 to get rent per m\u00B2." },
+  { question: "What is a good price per square meter for rent?", answer: "This varies enormously by location. In major cities like New York or London, $30-60 per m\u00B2/month is common. In suburban areas, $10-20 per m\u00B2/month is typical. The key is to compare the price per m\u00B2 across similar properties in the same neighborhood to find the best value." },
+  { question: "Should I compare apartments by total rent or price per sqm?", answer: "Price per square meter gives a fairer comparison because it accounts for size differences. A $2,000/month apartment that is 100 m\u00B2 ($20/m\u00B2) offers better value per square meter than a $1,500/month apartment that is only 60 m\u00B2 ($25/m\u00B2). However, total rent matters for your budget, and location, amenities, and condition also affect overall value." },
+  { question: "Does rent per sqm include common areas?", answer: "It depends on how the area is measured. Some listings use usable floor area (just your apartment), while others include a proportional share of common areas like hallways and lobbies. Always ask the landlord which measurement method is used, as this can inflate or deflate the apparent price per square meter." }
+]) %>
+
+<%= calculator_schema(
+  name: "Rent Per Square Meter Calculator",
+  description: "Calculate rent per square meter, rent per square foot, and annual rental cost from monthly rent and property area.",
+  url: everyday_rent_per_sqm_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Rent Per Square Meter Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Rent Per Square Meter Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Compare rental value by calculating price per square meter, price per square foot, and total annual cost.</p>
+
+    <div data-controller="rent-per-sqm-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Rent ($)</label>
+            <input type="number" data-rent-per-sqm-calculator-target="monthlyRent" data-action="input->rent-per-sqm-calculator#calculate" class="w-full" placeholder="1500" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Area</label>
+            <input type="number" data-rent-per-sqm-calculator-target="area" data-action="input->rent-per-sqm-calculator#calculate" class="w-full" placeholder="75" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit</label>
+            <select data-rent-per-sqm-calculator-target="unit" data-action="change->rent-per-sqm-calculator#calculate" class="w-full" aria-label="Area unit">
+              <option value="sqm" selected>Square Meters (m&sup2;)</option>
+              <option value="sqft">Square Feet (sqft)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Rent Breakdown</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Price per m&sup2;</span>
+              <span class="text-lg font-bold text-violet-600 dark:text-violet-400" data-rent-per-sqm-calculator-target="pricePerSqm">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Price per sqft</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-rent-per-sqm-calculator-target="pricePerSqft">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Annual Cost</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-rent-per-sqm-calculator-target="annualCost">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Area (m&sup2;)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-rent-per-sqm-calculator-target="areaSqm">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Area (sqft)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-rent-per-sqm-calculator-target="areaSqft">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->rent-per-sqm-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white rounded-xl shadow-sm shadow-violet-500/20 hover:shadow-md hover:shadow-violet-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Rent Per Square Meter Calculator</h2>
+      <p>
+        When apartment hunting, the headline monthly rent does not tell the full story. A seemingly cheaper apartment may actually be more expensive per square meter, meaning you get less space for your money. This calculator breaks down rent into a per-area metric so you can make apples-to-apples comparisons. Enter the monthly rent, the total area of the property, and whether you are measuring in square meters or square feet. The calculator instantly shows you price per square meter, price per square foot, and the total annual rental cost.
+      </p>
+      <p>
+        This tool is equally useful for landlords setting competitive rents and for tenants evaluating market value. Commercial real estate professionals also use price-per-area metrics extensively to compare office and retail spaces. The area conversion between square meters and square feet is built in, so you can work in whichever unit your listing uses.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Rent Per Area Formulas</h2>
+      <p>
+        The formula is: <strong>Price per m&sup2; = Monthly Rent / Area in m&sup2;</strong>. To convert square feet to square meters, divide by 10.7639. To get the annual cost, multiply the monthly rent by 12. When comparing two apartments, the one with the lower price per square meter gives you more space for your money, all else being equal.
+      </p>
+
+      <h3>Tips for Comparing Rental Properties</h3>
+      <p>
+        Beyond price per square meter, consider the layout efficiency. An open-plan 50 m&sup2; studio may feel larger than a partitioned 55 m&sup2; one-bedroom because of wasted hallway and wall space. Also check which areas are included in the listed measurement: some landlords include balconies, storage closets, and garage space in the total area, which inflates the size and lowers the apparent price per square meter. Ask for the net livable area for the most accurate comparison.
+      </p>
+
+      <h3>Understanding Annual Rental Costs</h3>
+      <p>
+        Looking at annual cost helps with long-term budgeting. A $100 monthly difference between two apartments equals $1,200 per year. Over a two-year lease, that is $2,400. Sometimes the slightly more expensive option per month is in a better location, has included utilities, or avoids a long commute, making it the smarter financial choice overall. The annual figure makes these trade-offs clearer.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate rent per square meter?</h3>
+      <p>
+        Divide the monthly rent by the total area in square meters. For example, if rent is $1,500/month for a 75 m&sup2; apartment, the rent per square meter is $1,500 / 75 = $20 per m&sup2; per month.
+      </p>
+
+      <h3>How do I convert rent per sqm to rent per sqft?</h3>
+      <p>
+        Divide the rent per square meter by 10.7639 to get rent per square foot. A rate of $20 per m&sup2; equals $20 / 10.7639 = approximately $1.86 per square foot. Conversely, multiply rent per sqft by 10.7639 to get rent per m&sup2;.
+      </p>
+
+      <h3>What is a good price per square meter for rent?</h3>
+      <p>
+        This varies enormously by location. In major cities like New York or London, $30-60 per m&sup2;/month is common. In suburban areas, $10-20 per m&sup2;/month is typical. The key is to compare the price per m&sup2; across similar properties in the same neighborhood to find the best value.
+      </p>
+
+      <h3>Should I compare apartments by total rent or price per sqm?</h3>
+      <p>
+        Price per square meter gives a fairer comparison because it accounts for size differences. A $2,000/month apartment that is 100 m&sup2; ($20/m&sup2;) offers better value per square meter than a $1,500/month apartment that is only 60 m&sup2; ($25/m&sup2;). However, total rent matters for your budget, and location, amenities, and condition also affect overall value.
+      </p>
+
+      <h3>Does rent per sqm include common areas?</h3>
+      <p>
+        It depends on how the area is measured. Some listings use usable floor area (just your apartment), while others include a proportional share of common areas like hallways and lobbies. Always ask the landlord which measurement method is used, as this can inflate or deflate the apparent price per square meter.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Rent Per Square Meter Calculator", url: everyday_rent_per_sqm_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Gas Mileage Calculator", description: "Calculate fuel efficiency in MPG or L/100km for any vehicle.", path: everyday_gas_mileage_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("rent-per-sqm-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
