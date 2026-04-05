@@ -1,0 +1,146 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Matrix Calculator - Free Online Tool",
+  description: "Perform matrix addition, subtraction, multiplication, determinant, and transpose operations instantly. Free matrix calculator — no sign-up required.",
+  canonical: math_matrix_url,
+  og: {
+    title: "Matrix Calculator - Free Online Tool | CalcWise",
+    description: "Perform matrix addition, subtraction, multiplication, determinant, and transpose operations instantly.",
+    url: math_matrix_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Math", url: category_url("math") },
+  { name: "Matrix Calculator", url: math_matrix_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I enter a matrix?", answer: "Enter each row as comma-separated values and separate rows with semicolons. For example, a 2x2 matrix [[1,2],[3,4]] is entered as '1,2;3,4'. Each row must have the same number of elements." },
+  { question: "What operations can this matrix calculator perform?", answer: "This calculator supports matrix addition, subtraction, multiplication, determinant calculation, and transpose. Addition and subtraction require matrices of the same dimensions. Multiplication requires the number of columns in Matrix A to equal the number of rows in Matrix B." },
+  { question: "What is a matrix determinant?", answer: "The determinant is a scalar value computed from a square matrix that encodes important properties. It is used to determine whether a matrix is invertible (non-zero determinant), compute area/volume transformations, and solve systems of linear equations using Cramer's rule." },
+  { question: "What is matrix transpose?", answer: "The transpose of a matrix flips it over its diagonal — rows become columns and columns become rows. If the original matrix has dimensions m x n, the transpose has dimensions n x m. The transpose is denoted A^T or A'." },
+  { question: "Can I multiply any two matrices?", answer: "No. Matrix multiplication A x B is only defined when the number of columns in A equals the number of rows in B. If A is m x n and B is n x p, the result is an m x p matrix. Unlike scalar multiplication, matrix multiplication is not commutative — A x B does not generally equal B x A." }
+]) %>
+
+<%= calculator_schema(
+  name: "Matrix Calculator",
+  description: "Perform matrix addition, subtraction, multiplication, determinant, and transpose operations.",
+  url: math_matrix_url,
+  category: "EducationalApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Math", url: category_path("math") },
+  { name: "Matrix Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Matrix Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter two matrices to perform addition, subtraction, multiplication, determinant, and transpose operations in real time.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="matrix-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">M</div>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Matrix Operations</h2>
+        <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">rows: a,b ; c,d</span>
+      </div>
+      <div class="space-y-4 mb-6">
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Matrix A <span class="font-normal text-gray-400">(rows separated by ; values by ,)</span></label>
+          <textarea data-matrix-calculator-target="matrixA" data-action="input->matrix-calculator#calculate" class="w-full h-20 resize-none" placeholder="1,2;3,4"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Matrix B <span class="font-normal text-gray-400">(optional for determinant/transpose of A)</span></label>
+          <textarea data-matrix-calculator-target="matrixB" data-action="input->matrix-calculator#calculate" class="w-full h-20 resize-none" placeholder="5,6;7,8"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Operation</label>
+          <select data-matrix-calculator-target="operation" data-action="change->matrix-calculator#calculate" class="w-full">
+            <option value="add">Addition (A + B)</option>
+            <option value="subtract">Subtraction (A - B)</option>
+            <option value="multiply">Multiplication (A &times; B)</option>
+            <option value="determinant_a">Determinant of A</option>
+            <option value="determinant_b">Determinant of B</option>
+            <option value="transpose_a">Transpose of A</option>
+            <option value="transpose_b">Transpose of B</option>
+          </select>
+        </div>
+      </div>
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Result</h2>
+        <div class="min-h-[3rem] flex items-center">
+          <span class="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono break-all" data-matrix-calculator-target="result">&mdash;</span>
+        </div>
+        <button data-action="click->matrix-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Matrix Calculator</h2>
+      <p>Enter your matrices using commas to separate values within a row and semicolons to separate rows. For example, a 2&times;3 matrix with rows [1,2,3] and [4,5,6] is entered as <code>1,2,3;4,5,6</code>. Choose your desired operation from the dropdown, and results appear instantly. For determinant and transpose, you only need one matrix.</p>
+
+      <p>Matrices are fundamental to linear algebra and are used extensively in computer graphics, machine learning, physics simulations, cryptography, and engineering. This calculator handles the arithmetic so you can focus on the concepts and applications that matter.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Matrix Operations</h2>
+      <p><strong>Addition and subtraction</strong> work element-by-element and require both matrices to have identical dimensions. If A and B are both m&times;n, then (A+B)<sub>ij</sub> = A<sub>ij</sub> + B<sub>ij</sub>.</p>
+
+      <p><strong>Multiplication</strong> is more involved. To multiply A (m&times;n) by B (n&times;p), the number of columns in A must equal the number of rows in B. Each element of the result is the dot product of a row from A and a column from B. The resulting matrix has dimensions m&times;p.</p>
+
+      <h3>Determinant and Transpose</h3>
+      <p>The <strong>determinant</strong> is a single number computed from a square matrix. A non-zero determinant means the matrix is invertible. For a 2&times;2 matrix [[a,b],[c,d]], the determinant is ad&minus;bc. For larger matrices, the calculator uses cofactor expansion.</p>
+
+      <p>The <strong>transpose</strong> swaps rows and columns. If A is 2&times;3, its transpose A<sup>T</sup> is 3&times;2. Transposing is used in many algorithms, including computing symmetric matrices and solving least-squares problems.</p>
+
+      <h3>Applications of Matrices</h3>
+      <p>In computer graphics, 4&times;4 transformation matrices rotate, scale, and translate 3D objects. In data science, matrices represent datasets where rows are observations and columns are features. Neural networks rely on matrix multiplication for forward and backward passes. Engineers use matrices to solve systems of linear equations that model electrical circuits, structural loads, and fluid flow.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I enter a matrix?</h3>
+      <p>Enter each row as comma-separated values and separate rows with semicolons. For example, a 2&times;2 matrix [[1,2],[3,4]] is entered as <code>1,2;3,4</code>. Each row must have the same number of elements.</p>
+
+      <h3>What operations can this matrix calculator perform?</h3>
+      <p>This calculator supports matrix addition, subtraction, multiplication, determinant calculation, and transpose. Addition and subtraction require same-dimension matrices. Multiplication requires columns of A to equal rows of B.</p>
+
+      <h3>What is a matrix determinant?</h3>
+      <p>The determinant is a scalar value computed from a square matrix that encodes important properties like invertibility, area scaling, and orientation.</p>
+
+      <h3>What is matrix transpose?</h3>
+      <p>The transpose flips a matrix over its diagonal, turning rows into columns. If A is m&times;n, the transpose is n&times;m.</p>
+
+      <h3>Can I multiply any two matrices?</h3>
+      <p>No. Matrix multiplication A&times;B requires the number of columns in A to equal the number of rows in B. The result has as many rows as A and as many columns as B.</p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Matrix Calculator", url: math_matrix_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Quadratic Equation Solver", description: "Solve ax² + bx + c = 0 and find real or complex roots.", path: math_quadratic_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Standard Deviation Calculator", description: "Calculate mean, standard deviation, and variance from a set of numbers.", path: math_standard_deviation_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "Percentage Calculator", description: "Calculate percentages, percentage change, and more.", path: math_percentage_path, icon_path: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "math" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

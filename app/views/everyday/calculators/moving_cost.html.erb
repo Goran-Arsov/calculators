@@ -1,0 +1,198 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Moving Cost Estimator - Free Online Tool",
+  description: "Estimate your moving costs based on distance, home size, and extras like packing and piano moving. Get a cost range for local and long-distance moves.",
+  canonical: everyday_moving_cost_url,
+  og: {
+    title: "Moving Cost Estimator - Free Online Tool | CalcWise",
+    description: "Estimate your moving costs based on distance, home size, and optional services. Get a realistic cost range for your move.",
+    url: everyday_moving_cost_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Moving Cost Estimator", url: everyday_moving_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much does it cost to hire movers?", answer: "Local moves (under 100 miles) typically cost $400-$4,000+ depending on home size. A studio or one-bedroom local move averages $400-$1,000, while a 3-bedroom home costs $1,200-$2,200. Long-distance moves add per-mile charges based on shipment weight. Extras like packing, piano moving, and storage add to the total." },
+  { question: "What is the difference between a local and long-distance move?", answer: "A local move is typically defined as one within 100 miles or within the same state. Local moves are usually charged by the hour plus a truck fee. Long-distance moves (over 100 miles or across state lines) are priced based on the weight of your belongings and the distance traveled, making them significantly more expensive." },
+  { question: "How can I reduce my moving costs?", answer: "Move during off-peak times (mid-month, mid-week, fall/winter), declutter before the move to reduce weight, pack your own boxes, get multiple quotes from movers, and be flexible with dates. Renting a truck and moving yourself can save 50% or more compared to full-service movers for short distances." },
+  { question: "What extras should I budget for when moving?", answer: "Common extras include professional packing services ($200-$600), specialty item moves like pianos ($200-$500), temporary storage ($100-$300/month), moving insurance ($50-$200), and stair/elevator fees ($75-$250). Tips for movers (15-20% of the total or $20-$50 per mover) are also customary." },
+  { question: "When is the cheapest time to move?", answer: "The cheapest time to move is between October and April (off-season), on weekdays (Tuesday through Thursday), and during the middle of the month. Summer months (June-August) are the most expensive because demand is highest. Booking 4-8 weeks in advance also helps secure better rates." }
+]) %>
+
+<%= calculator_schema(
+  name: "Moving Cost Estimator",
+  description: "Estimate moving costs based on distance, home size, and optional extras for local and long-distance moves.",
+  url: everyday_moving_cost_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Moving Cost Estimator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Moving Cost Estimator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter your move distance, home size, and any extras to get an estimated cost range for your upcoming move.</p>
+
+    <div data-controller="moving-cost-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance (miles)</label>
+            <input type="number" data-moving-cost-calculator-target="distance" data-action="input->moving-cost-calculator#calculate" class="w-full" placeholder="50" step="1" min="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Home Size</label>
+            <select data-moving-cost-calculator-target="homeSize" data-action="change->moving-cost-calculator#calculate" class="w-full">
+              <option value="studio">Studio</option>
+              <option value="1bed">1 Bedroom</option>
+              <option value="2bed" selected>2 Bedrooms</option>
+              <option value="3bed">3 Bedrooms</option>
+              <option value="4bed">4 Bedrooms</option>
+              <option value="5bed">5+ Bedrooms</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Optional Extras</label>
+            <div class="space-y-2">
+              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <input type="checkbox" data-moving-cost-calculator-target="packing" data-action="change->moving-cost-calculator#calculate"> Professional Packing
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <input type="checkbox" data-moving-cost-calculator-target="piano" data-action="change->moving-cost-calculator#calculate"> Piano/Specialty Items
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <input type="checkbox" data-moving-cost-calculator-target="storage" data-action="change->moving-cost-calculator#calculate"> Temporary Storage
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <input type="checkbox" data-moving-cost-calculator-target="insurance" data-action="change->moving-cost-calculator#calculate"> Moving Insurance
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <input type="checkbox" data-moving-cost-calculator-target="stairs" data-action="change->moving-cost-calculator#calculate"> Stairs/Elevator Fee
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Estimated Cost Range</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Low Estimate</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-moving-cost-calculator-target="resultLow">$0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">High Estimate</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-moving-cost-calculator-target="resultHigh">$0</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Base Move</span>
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400"><span data-moving-cost-calculator-target="resultBaseLow">$0</span> - <span data-moving-cost-calculator-target="resultBaseHigh">$0</span></span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Extras</span>
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400"><span data-moving-cost-calculator-target="resultExtrasLow">$0</span> - <span data-moving-cost-calculator-target="resultExtrasHigh">$0</span></span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Move Type</span>
+              <span class="text-sm font-medium text-blue-600 dark:text-blue-400" data-moving-cost-calculator-target="resultMoveType">--</span>
+            </div>
+          </div>
+          <button data-action="click->moving-cost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Moving Cost Estimator</h2>
+      <p>
+        Enter the distance of your move in miles, select your home size from studio to 5+ bedrooms, and check any optional extras that apply. The estimator provides a cost range based on industry averages for both local (under 100 miles) and long-distance moves. Longer distances and larger homes increase the base cost, and extras like professional packing, piano moving, and storage add to the total.
+      </p>
+      <p>
+        These estimates reflect typical professional moving company prices. Costs can vary based on your location, the specific moving company, time of year, and the exact amount of belongings. Use this tool as a starting point for budgeting, then request quotes from at least three movers for accurate pricing for your specific move.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>What Affects Moving Costs</h2>
+      <p>
+        The biggest factors are distance and the volume or weight of your belongings (represented here by home size). Local moves are priced primarily by time and labor, while long-distance moves factor in mileage and weight. Seasonality matters too: summer moves can cost 20-30% more than winter due to higher demand. Access challenges like narrow hallways, multiple flights of stairs, and long carries from the truck to your door can add labor costs.
+      </p>
+
+      <h3>Local vs. Long-Distance Moves</h3>
+      <p>
+        Local moves (under 100 miles) are typically billed at an hourly rate plus a truck fee. Expect 4-6 hours for a one-bedroom and 8-12 hours for a three-bedroom. Long-distance moves are quoted based on shipment weight and mileage, making them substantially more expensive. Cross-country moves of 2,000+ miles for a three-bedroom home can range from $4,000 to $8,000 or more.
+      </p>
+
+      <h3>Money-Saving Moving Tips</h3>
+      <p>
+        Declutter aggressively before moving. Sell, donate, or discard items you no longer need. Every pound you eliminate reduces long-distance costs and shortens load and unload time for local moves. Pack your own belongings in free boxes from grocery or liquor stores. Move on a weekday during the off-season if possible. Consider a hybrid approach: rent a portable container for loading at your own pace, then have it transported, which often costs less than full-service moving.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much does it cost to hire movers?</h3>
+      <p>
+        Local moves (under 100 miles) typically cost $400-$4,000+ depending on home size. A studio or one-bedroom local move averages $400-$1,000, while a 3-bedroom home costs $1,200-$2,200. Long-distance moves add per-mile charges based on shipment weight. Extras like packing, piano moving, and storage add to the total.
+      </p>
+
+      <h3>What is the difference between a local and long-distance move?</h3>
+      <p>
+        A local move is typically defined as one within 100 miles or within the same state. Local moves are usually charged by the hour plus a truck fee. Long-distance moves (over 100 miles or across state lines) are priced based on the weight of your belongings and the distance traveled, making them significantly more expensive.
+      </p>
+
+      <h3>How can I reduce my moving costs?</h3>
+      <p>
+        Move during off-peak times (mid-month, mid-week, fall/winter), declutter before the move to reduce weight, pack your own boxes, get multiple quotes from movers, and be flexible with dates. Renting a truck and moving yourself can save 50% or more compared to full-service movers for short distances.
+      </p>
+
+      <h3>What extras should I budget for when moving?</h3>
+      <p>
+        Common extras include professional packing services ($200-$600), specialty item moves like pianos ($200-$500), temporary storage ($100-$300/month), moving insurance ($50-$200), and stair/elevator fees ($75-$250). Tips for movers (15-20% of the total or $20-$50 per mover) are also customary.
+      </p>
+
+      <h3>When is the cheapest time to move?</h3>
+      <p>
+        The cheapest time to move is between October and April (off-season), on weekdays (Tuesday through Thursday), and during the middle of the month. Summer months (June-August) are the most expensive because demand is highest. Booking 4-8 weeks in advance also helps secure better rates.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Moving Cost Estimator", url: everyday_moving_cost_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Fuel Cost Calculator", description: "Estimate fuel cost for trips based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("moving-cost-estimator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,180 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Savings Interest Calculator - Free Savings Growth Estimator",
+  description: "Calculate how your savings account balance grows over time with APY and monthly deposits. See total interest earned and future value with our free calculator.",
+  canonical: finance_savings_interest_url,
+  og: {
+    title: "Savings Interest Calculator - Free Savings Growth Estimator | CalcWise",
+    description: "Calculate how your savings account balance grows over time with APY and monthly deposits. See total interest earned and future value.",
+    url: finance_savings_interest_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Savings Interest Calculator", url: finance_savings_interest_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does savings account interest work?", answer: "Savings account interest is typically compounded daily and paid monthly. The bank calculates interest on your balance each day using the daily rate (APY divided by 365), adds it to your running total, and credits the accumulated interest to your account once a month." },
+  { question: "What is a good APY for a savings account?", answer: "As of 2024, high-yield savings accounts offer APYs ranging from 4.00% to 5.50%, significantly higher than the national average of around 0.45%. Online banks and credit unions typically offer the best rates because they have lower overhead costs." },
+  { question: "How much interest will I earn on $10,000 in savings?", answer: "At a 5.00% APY with no additional deposits, $10,000 earns approximately $500 in the first year. With monthly compounding, the actual amount is slightly higher due to compound interest. Adding regular monthly deposits significantly increases your total interest earned over time." },
+  { question: "Is savings account interest taxable?", answer: "Yes, interest earned on savings accounts is taxable as ordinary income. Banks report interest over $10 on Form 1099-INT. You owe federal income tax at your marginal rate and may owe state tax as well. Consider this when comparing savings returns to tax-advantaged accounts." },
+  { question: "How often is savings account interest compounded?", answer: "Most savings accounts compound interest daily and credit it monthly. Daily compounding earns slightly more than monthly compounding at the same rate, but the APY (Annual Percentage Yield) already accounts for compounding frequency, making it the best number to use for comparisons." }
+]) %>
+
+<%= calculator_schema(
+  name: "Savings Interest Calculator",
+  description: "Calculate savings account growth over time with APY, initial balance, and regular monthly deposits.",
+  url: finance_savings_interest_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Savings Interest Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Savings Interest Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">See how your savings grow over time with compound interest and regular monthly deposits.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="savings-interest-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Initial Balance ($)</label>
+            <input type="number" data-savings-interest-calculator-target="initialBalance" data-action="input->savings-interest-calculator#calculate" class="w-full" placeholder="5000" step="100" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Deposit ($)</label>
+            <input type="number" data-savings-interest-calculator-target="monthlyDeposit" data-action="input->savings-interest-calculator#calculate" class="w-full" placeholder="500" step="50" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate / APY (%)</label>
+            <input type="number" data-savings-interest-calculator-target="annualRate" data-action="input->savings-interest-calculator#calculate" class="w-full" placeholder="5.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Years</label>
+            <input type="number" data-savings-interest-calculator-target="years" data-action="input->savings-interest-calculator#calculate" class="w-full" placeholder="10" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Future Value</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-savings-interest-calculator-target="futureValue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest Earned</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-savings-interest-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Deposits</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-savings-interest-calculator-target="totalDeposits">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Contributions</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-savings-interest-calculator-target="totalContributions">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->savings-interest-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Savings Interest Calculator</h2>
+      <p>
+        Enter your current savings balance, the amount you plan to deposit each month, the annual interest rate (APY), and the number of years you plan to save. The calculator instantly shows your future balance, total interest earned, and total deposits made over the period. This helps you set realistic savings goals and understand the long-term impact of consistent deposits combined with compound interest.
+      </p>
+      <p>
+        Whether you are building an emergency fund, saving for a down payment, or simply growing your wealth, seeing the projected numbers can motivate you to maintain your savings habit. Even modest monthly deposits add up significantly over time when combined with compound interest.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Power of Compound Interest in Savings</h2>
+      <p>
+        Compound interest means you earn interest on your interest. With a savings account that compounds monthly, your interest from January becomes part of the balance that earns interest in February. Over time this snowball effect accelerates your growth. The higher the APY and the longer you save, the more dramatic the compounding effect becomes. This is why financial advisors emphasize starting to save as early as possible.
+      </p>
+
+      <h3>High-Yield Savings vs. Traditional Savings</h3>
+      <p>
+        Traditional brick-and-mortar bank savings accounts often offer APYs below 0.50%, while online high-yield savings accounts can offer 4.00% to 5.50% or more. On a $10,000 balance, that difference means earning $500 per year instead of $50. Over a decade with monthly deposits, the gap becomes tens of thousands of dollars. Always compare APYs and consider moving your savings to a higher-yielding account, especially since most high-yield savings accounts are FDIC-insured and offer the same protection as traditional banks.
+      </p>
+
+      <h3>Building an Effective Savings Habit</h3>
+      <p>
+        The most successful savers automate their deposits. Set up an automatic monthly transfer from your checking account to your savings account on payday. Start with whatever amount you can afford, even $50 or $100, and increase it over time as your income grows. Treating savings like a non-negotiable bill ensures consistency, and consistency is the single most important factor in long-term wealth building.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does savings account interest work?</h3>
+      <p>
+        Savings account interest is typically compounded daily and paid monthly. The bank calculates interest on your balance each day using the daily rate (APY divided by 365), adds it to your running total, and credits the accumulated interest to your account once a month.
+      </p>
+
+      <h3>What is a good APY for a savings account?</h3>
+      <p>
+        As of 2024, high-yield savings accounts offer APYs ranging from 4.00% to 5.50%, significantly higher than the national average of around 0.45%. Online banks and credit unions typically offer the best rates because they have lower overhead costs.
+      </p>
+
+      <h3>How much interest will I earn on $10,000 in savings?</h3>
+      <p>
+        At a 5.00% APY with no additional deposits, $10,000 earns approximately $500 in the first year. With monthly compounding, the actual amount is slightly higher due to compound interest. Adding regular monthly deposits significantly increases your total interest earned over time.
+      </p>
+
+      <h3>Is savings account interest taxable?</h3>
+      <p>
+        Yes, interest earned on savings accounts is taxable as ordinary income. Banks report interest over $10 on Form 1099-INT. You owe federal income tax at your marginal rate and may owe state tax as well. Consider this when comparing savings returns to tax-advantaged accounts.
+      </p>
+
+      <h3>How often is savings account interest compounded?</h3>
+      <p>
+        Most savings accounts compound interest daily and credit it monthly. Daily compounding earns slightly more than monthly compounding at the same rate, but the APY (Annual Percentage Yield) already accounts for compounding frequency, making it the best number to use for comparisons.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Savings Interest Calculator", url: finance_savings_interest_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Compound Interest Calculator", description: "See how your money grows over time with compound interest.", path: finance_compound_interest_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Savings Goal Calculator", description: "Find out how much you need to save monthly to reach your goal.", path: finance_savings_goal_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Investment Calculator", description: "Project the future value of your investments with regular contributions.", path: finance_investment_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("savings-interest-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

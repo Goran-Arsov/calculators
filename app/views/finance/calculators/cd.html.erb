@@ -1,0 +1,185 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "CD Calculator - Certificate of Deposit Interest Calculator",
+  description: "Calculate your certificate of deposit maturity value and interest earned. Enter principal, APY, and term to see how much your CD will be worth at maturity.",
+  canonical: finance_cd_url,
+  og: {
+    title: "CD Calculator - Certificate of Deposit Interest Calculator | CalcWise",
+    description: "Calculate your certificate of deposit maturity value and interest earned. Enter principal, APY, and term to see how much your CD will be worth.",
+    url: finance_cd_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "CD Calculator", url: finance_cd_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is CD interest calculated?", answer: "CD interest is calculated using compound interest based on the APY (Annual Percentage Yield), compounding frequency, and term length. The APY already accounts for compounding, so a 5.00% APY means you earn exactly 5% on your deposit per year regardless of how frequently the bank compounds." },
+  { question: "What is the difference between APY and interest rate?", answer: "The interest rate (also called the nominal rate) is the base rate before compounding. APY (Annual Percentage Yield) includes the effect of compounding and represents the actual amount you earn in a year. APY is always equal to or higher than the nominal rate, and it is the standard way CDs are advertised." },
+  { question: "Are CD earnings taxable?", answer: "Yes, CD interest is taxed as ordinary income in the year it is earned, even if you do not withdraw it. Your bank will issue a 1099-INT form for interest earned over $10. The interest is subject to federal income tax and may also be subject to state income tax." },
+  { question: "What happens if I withdraw from a CD early?", answer: "Withdrawing from a CD before the maturity date typically results in an early withdrawal penalty. The penalty varies by bank and term length but is commonly 3-6 months of interest for shorter CDs and 6-12 months for longer terms. Some banks offer no-penalty CDs with slightly lower rates." },
+  { question: "What is a CD ladder strategy?", answer: "A CD ladder involves splitting your investment across multiple CDs with staggered maturity dates (for example, 1-year, 2-year, 3-year, 4-year, and 5-year CDs). As each CD matures, you reinvest in a new long-term CD. This gives you regular access to funds while capturing higher long-term rates." }
+]) %>
+
+<%= calculator_schema(
+  name: "CD Calculator",
+  description: "Calculate your certificate of deposit maturity value and total interest earned based on principal, APY, term, and compounding frequency.",
+  url: finance_cd_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "CD Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">CD Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your certificate of deposit maturity value and total interest earned based on your deposit, APY, and term length.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="cd-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Deposit Amount ($)</label>
+            <input type="number" data-cd-calculator-target="principal" data-action="input->cd-calculator#calculate" class="w-full" placeholder="10000" step="100" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">APY (%)</label>
+            <input type="number" data-cd-calculator-target="apy" data-action="input->cd-calculator#calculate" class="w-full" placeholder="5.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Term (Months)</label>
+            <input type="number" data-cd-calculator-target="termMonths" data-action="input->cd-calculator#calculate" class="w-full" placeholder="12" step="1" min="1" max="120">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Compounding Frequency</label>
+            <select data-cd-calculator-target="compounding" data-action="change->cd-calculator#calculate" class="w-full">
+              <option value="daily" selected>Daily</option>
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="annually">Annually</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Maturity Value</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cd-calculator-target="maturityValue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Interest Earned</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-cd-calculator-target="interestEarned">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">APY</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cd-calculator-target="effectiveApy">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Term Length</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cd-calculator-target="termDisplay">0</span>
+            </div>
+          </div>
+          <button data-action="click->cd-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the CD Calculator</h2>
+      <p>
+        Enter your initial deposit amount, the annual percentage yield (APY) offered by the bank, and the term length in months. Optionally select the compounding frequency, though most banks compound daily. The calculator instantly shows the total value of your CD at maturity and the total interest earned over the term. Use this tool to compare CD offers from different banks or to evaluate different term lengths.
+      </p>
+      <p>
+        Certificates of deposit are among the safest investments available because they are FDIC-insured up to $250,000 per depositor, per bank. In exchange for locking up your money for a fixed period, you receive a guaranteed interest rate that is typically higher than a regular savings account. This calculator helps you understand exactly how much your money will earn during that locked-in period.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding CD Interest and APY</h2>
+      <p>
+        APY, or Annual Percentage Yield, is the standardized way to express CD returns. It accounts for the effect of compounding, meaning the APY tells you the actual amount your deposit will earn in a year. A CD with a 5.00% APY compounded daily will earn slightly more than one compounded monthly at the same APY, but the difference is negligible because APY already factors in compounding. The key advantage of CDs is rate certainty: once you lock in an APY, it does not change regardless of what happens to market interest rates.
+      </p>
+
+      <h3>Choosing the Right CD Term</h3>
+      <p>
+        CD terms typically range from 3 months to 5 years. Longer terms usually offer higher APYs, but they also lock up your money for more time. Consider your liquidity needs, interest rate outlook, and savings goals when choosing a term. If you believe rates will rise, shorter terms let you reinvest at higher rates sooner. If you expect rates to fall, locking in a longer term captures today's higher rate. The CD ladder strategy, where you split your deposit across multiple terms, provides a balanced approach.
+      </p>
+
+      <h3>CD Penalties and Alternatives</h3>
+      <p>
+        Early withdrawal penalties are the main risk of CDs. If you need your money before the CD matures, you could lose several months of interest. Some banks offer no-penalty CDs that allow early withdrawal without fees, though they typically offer slightly lower rates. High-yield savings accounts provide another alternative with competitive rates and full liquidity, though their rates can change at any time and are not guaranteed like CD rates.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is CD interest calculated?</h3>
+      <p>
+        CD interest is calculated using compound interest based on the APY (Annual Percentage Yield), compounding frequency, and term length. The APY already accounts for compounding, so a 5.00% APY means you earn exactly 5% on your deposit per year regardless of how frequently the bank compounds.
+      </p>
+
+      <h3>What is the difference between APY and interest rate?</h3>
+      <p>
+        The interest rate (also called the nominal rate) is the base rate before compounding. APY (Annual Percentage Yield) includes the effect of compounding and represents the actual amount you earn in a year. APY is always equal to or higher than the nominal rate, and it is the standard way CDs are advertised.
+      </p>
+
+      <h3>Are CD earnings taxable?</h3>
+      <p>
+        Yes, CD interest is taxed as ordinary income in the year it is earned, even if you do not withdraw it. Your bank will issue a 1099-INT form for interest earned over $10. The interest is subject to federal income tax and may also be subject to state income tax.
+      </p>
+
+      <h3>What happens if I withdraw from a CD early?</h3>
+      <p>
+        Withdrawing from a CD before the maturity date typically results in an early withdrawal penalty. The penalty varies by bank and term length but is commonly 3-6 months of interest for shorter CDs and 6-12 months for longer terms. Some banks offer no-penalty CDs with slightly lower rates.
+      </p>
+
+      <h3>What is a CD ladder strategy?</h3>
+      <p>
+        A CD ladder involves splitting your investment across multiple CDs with staggered maturity dates (for example, 1-year, 2-year, 3-year, 4-year, and 5-year CDs). As each CD matures, you reinvest in a new long-term CD. This gives you regular access to funds while capturing higher long-term rates.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "CD Calculator", url: finance_cd_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Compound Interest Calculator", description: "See how your money grows over time with compound interest.", path: finance_compound_interest_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Savings Goal Calculator", description: "Find out how much you need to save monthly to reach your goal.", path: finance_savings_goal_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Investment Calculator", description: "Project the future value of your investments with regular contributions.", path: finance_investment_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("cd-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,189 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Roofing Calculator - Free Online Tool",
+  description: "Calculate how many shingles, bundles, felt rolls, and nails you need for your roof. Enter roof dimensions, pitch, and waste percentage for instant estimates.",
+  canonical: construction_roofing_url,
+  og: {
+    title: "Roofing Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how many shingles, bundles, felt rolls, and nails you need for your roof. Enter roof dimensions, pitch, and waste percentage.",
+    url: construction_roofing_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Roofing Calculator", url: construction_roofing_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate how many shingles I need?", answer: "Measure the length and width of each roof plane to find the footprint area. Multiply by the pitch factor to get the actual roof area. Divide the total area (plus 10-15% waste) by 100 to get the number of roofing squares. Each square requires 3 bundles of standard three-tab shingles." },
+  { question: "What is a roofing square?", answer: "A roofing square is a unit of measurement equal to 100 square feet of roof area. Roofing materials such as shingles, underlayment, and flashing are commonly sold and estimated by the square. For example, a 2,000 square foot roof equals 20 squares." },
+  { question: "How does roof pitch affect material quantity?", answer: "Steeper roof pitches have more surface area than the flat footprint below them. A 6/12 pitch multiplies the footprint area by approximately 1.118, while a 12/12 (45-degree) pitch multiplies it by 1.414. Higher pitch means you need more shingles, felt, and nails to cover the same footprint." },
+  { question: "How much waste should I add for roofing?", answer: "For a simple gable roof, add 10% waste. For hip roofs or roofs with multiple valleys, dormers, or complex geometry, add 15-20% waste. Architectural shingles may also require slightly more waste than three-tab shingles due to their layered design." },
+  { question: "How many roofing nails do I need per square?", answer: "The standard is 4 nails per shingle, which works out to approximately 320 nails per roofing square (100 sq ft). In high-wind zones, manufacturers recommend 6 nails per shingle, increasing the count to about 480 nails per square. A standard box contains 250 nails." }
+]) %>
+
+<%= calculator_schema(
+  name: "Roofing Calculator",
+  description: "Calculate shingle bundles, felt rolls, and nail boxes needed for your roofing project based on roof dimensions and pitch.",
+  url: construction_roofing_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Roofing Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Roofing Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate the shingle bundles, felt underlayment rolls, and nail boxes you need based on your roof dimensions and pitch.</p>
+
+    <div data-controller="roofing-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Roof Length (ft)</label>
+            <input type="number" data-roofing-calculator-target="length" data-action="input->roofing-calculator#calculate" class="w-full" placeholder="40" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Roof Width (ft)</label>
+            <input type="number" data-roofing-calculator-target="width" data-action="input->roofing-calculator#calculate" class="w-full" placeholder="30" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Roof Pitch (rise per 12 in run)</label>
+            <select data-roofing-calculator-target="pitch" data-action="change->roofing-calculator#calculate" class="w-full">
+              <% (0..12).each do |p| %>
+                <option value="<%= p %>" <%= "selected" if p == 6 %>><%= p %>/12</option>
+              <% end %>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Waste (%)</label>
+            <input type="number" data-roofing-calculator-target="waste" data-action="input->roofing-calculator#calculate" class="w-full" value="10" step="1" min="0" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Footprint Area</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-roofing-calculator-target="resultFootprint">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Roof Area</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-roofing-calculator-target="resultRoofArea">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Area + Waste</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-roofing-calculator-target="resultAreaWaste">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Squares</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-roofing-calculator-target="resultSquares">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Bundles</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-roofing-calculator-target="resultBundles">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Felt Rolls</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-roofing-calculator-target="resultFelt">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Nail Boxes</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-roofing-calculator-target="resultNailBoxes">0</span>
+            </div>
+          </div>
+          <button data-action="click->roofing-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Roofing Calculator</h2>
+      <p>
+        Accurately estimating roofing materials before you begin a project prevents costly shortages and excess waste. Enter the length and width of your roof footprint in feet, which is the horizontal measurement of the roof as seen from above. Select the roof pitch, expressed as the number of inches the roof rises for every 12 inches of horizontal run. Finally, set a waste percentage to account for cuts, overlaps, and material defects.
+      </p>
+      <p>
+        The calculator multiplies the footprint area by a pitch factor to determine the actual roof surface area. Steeper pitches require more material because the sloped surface is larger than the flat area below it. The waste percentage is then added to produce a total coverage area. From this figure, the calculator determines the number of roofing squares, shingle bundles, felt underlayment rolls, and boxes of roofing nails needed for the job.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Roofing Materials</h2>
+      <p>
+        Three-tab asphalt shingles are the most common residential roofing material in the United States. They are sold in bundles, and three bundles cover one roofing square, which equals 100 square feet. Architectural or dimensional shingles are thicker and more durable, but they are also packaged at three bundles per square for most brands. Premium shingles may require four or more bundles per square, so always check the manufacturer specifications.
+      </p>
+
+      <h3>Underlayment and Ice Shield</h3>
+      <p>
+        Roofing felt, also called tar paper, is installed under the shingles as a moisture barrier. A standard roll of 15-pound felt covers approximately 400 square feet. Synthetic underlayment has become popular as a lighter, more tear-resistant alternative. In cold climates, ice and water shield membrane should be applied along the eaves extending at least 24 inches past the interior wall line to prevent ice dam damage.
+      </p>
+
+      <h3>Roof Pitch and Safety</h3>
+      <p>
+        Roof pitch affects not only material quantities but also installation difficulty and safety. Low-slope roofs with a pitch of 4/12 or less require special application methods and may need modified bitumen or rolled roofing instead of standard shingles. Pitches above 8/12 are considered steep and require roof jacks, harnesses, and additional safety equipment. Most residential roofs fall between 4/12 and 8/12 pitch, which provides a good balance of water shedding and ease of installation.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate how many shingles I need?</h3>
+      <p>
+        Measure the length and width of each roof plane to find the footprint area. Multiply by the pitch factor to get the actual roof area. Divide the total area plus 10 to 15 percent waste by 100 to get the number of roofing squares. Each square requires 3 bundles of standard three-tab shingles.
+      </p>
+
+      <h3>What is a roofing square?</h3>
+      <p>
+        A roofing square is a unit of measurement equal to 100 square feet of roof area. Roofing materials such as shingles, underlayment, and flashing are commonly sold and estimated by the square. For example, a 2,000 square foot roof equals 20 squares.
+      </p>
+
+      <h3>How does roof pitch affect material quantity?</h3>
+      <p>
+        Steeper roof pitches have more surface area than the flat footprint below them. A 6/12 pitch multiplies the footprint area by approximately 1.118, while a 12/12 pitch multiplies it by 1.414. Higher pitch means you need more shingles, felt, and nails to cover the same footprint.
+      </p>
+
+      <h3>How much waste should I add for roofing?</h3>
+      <p>
+        For a simple gable roof, add 10 percent waste. For hip roofs or roofs with multiple valleys, dormers, or complex geometry, add 15 to 20 percent waste. Architectural shingles may also require slightly more waste than three-tab shingles.
+      </p>
+
+      <h3>How many roofing nails do I need per square?</h3>
+      <p>
+        The standard is 4 nails per shingle, which works out to approximately 320 nails per roofing square. In high-wind zones, manufacturers recommend 6 nails per shingle, increasing the count to about 480 nails per square. A standard box contains 250 nails.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Roofing Calculator", url: construction_roofing_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Lumber Calculator", description: "Calculate board feet and pricing for lumber projects.", path: construction_lumber_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Paint Calculator", description: "Calculate how many gallons of paint you need for any room.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("roofing-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

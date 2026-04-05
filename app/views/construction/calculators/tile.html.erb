@@ -1,0 +1,177 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Tile Calculator - Free Online Tool",
+  description: "Calculate how many tiles, grout, and adhesive you need for any project. Enter area, tile size, grout width, and waste percentage for instant estimates.",
+  canonical: construction_tile_url,
+  og: {
+    title: "Tile Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how many tiles, grout, and adhesive you need for any project. Enter area, tile size, grout width, and waste percentage.",
+    url: construction_tile_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Tile Calculator", url: construction_tile_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate how many tiles I need?", answer: "Measure the total area to be tiled in square feet. Divide the area by the size of each tile (including grout line) to get the base count. Add 10% waste for straight layouts or 15-20% for diagonal or complex patterns. For example, a 100 sq ft floor with 12x12 inch tiles needs about 110 tiles with 10% waste." },
+  { question: "How much grout do I need for my tile project?", answer: "Grout quantity depends on tile size, grout joint width, and tile thickness. Larger tiles with narrow grout lines need less grout, while small mosaic tiles with wide joints need significantly more. As a general guide, a 25-pound bag of sanded grout covers 100 to 200 square feet of 12x12 inch tiles with 1/8-inch joints." },
+  { question: "What grout width should I use?", answer: "For rectified (precision-cut) tiles, use 1/16 to 1/8 inch grout lines. Standard ceramic and porcelain tiles typically use 1/8 to 3/16 inch joints. Natural stone tiles need 1/8 to 1/4 inch joints to accommodate size variation. Mosaic tiles on mesh sheets usually come with pre-set spacing of about 1/8 inch." },
+  { question: "How much thin-set adhesive do I need?", answer: "One 50-pound bag of thin-set mortar covers approximately 60 to 80 square feet using a 1/4 x 1/4 inch square-notch trowel. Larger tiles require larger trowel notches and more thin-set per square foot. For large-format tiles over 15 inches, back-butter the tile in addition to spreading thin-set on the substrate for full coverage." },
+  { question: "How much extra tile should I buy for waste?", answer: "Add 10% waste for a standard straight-lay floor installation. Add 15% for diagonal layouts, which produce more cuts. Add 20% for complex patterns, small rooms with many cuts, or natural stone that may have defects. Always keep a few extra tiles for future repairs, as tile colors and textures can vary between production batches." }
+]) %>
+
+<%= calculator_schema(
+  name: "Tile Calculator",
+  description: "Calculate the number of tiles, grout, and adhesive needed for any tiling project based on area, tile size, and grout width.",
+  url: construction_tile_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Tile Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Tile Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate the number of tiles, grout, and thin-set adhesive you need for any floor or wall tiling project.</p>
+
+    <div data-controller="tile-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Area (sq ft)</label>
+            <input type="number" data-tile-calculator-target="area" data-action="input->tile-calculator#calculate" class="w-full" placeholder="100" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tile Length (inches)</label>
+            <input type="number" data-tile-calculator-target="tileLength" data-action="input->tile-calculator#calculate" class="w-full" placeholder="12" step="0.25" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tile Width (inches)</label>
+            <input type="number" data-tile-calculator-target="tileWidth" data-action="input->tile-calculator#calculate" class="w-full" placeholder="12" step="0.25" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Grout Width (inches)</label>
+            <input type="number" data-tile-calculator-target="groutWidth" data-action="input->tile-calculator#calculate" class="w-full" value="0.125" step="0.0625" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Waste (%)</label>
+            <input type="number" data-tile-calculator-target="waste" data-action="input->tile-calculator#calculate" class="w-full" value="10" step="1" min="0" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Area + Waste</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tile-calculator-target="resultAreaWaste">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tiles Needed</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tile-calculator-target="resultTiles">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Grout</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tile-calculator-target="resultGrout">0 lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Adhesive (50-lb bags)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tile-calculator-target="resultAdhesive">0 bags</span>
+            </div>
+          </div>
+          <button data-action="click->tile-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Tile Calculator</h2>
+      <p>
+        Accurate tile estimates prevent both shortages and excess spending. Enter the total area to be tiled in square feet. Specify the tile length and width in inches, along with the grout joint width. The calculator accounts for the grout spacing when computing the effective area each tile covers. Set a waste percentage to account for cuts, breakage, and pattern matching. The result tells you exactly how many tiles to buy, plus the estimated grout and thin-set adhesive quantities.
+      </p>
+      <p>
+        The grout estimate is based on the total linear feet of grout joints multiplied by the cross-sectional area of each joint. The adhesive estimate assumes a standard 50-pound bag of thin-set mortar covering approximately 60 square feet with a quarter-inch square-notch trowel. Larger tiles or uneven substrates may require more adhesive.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Choosing the Right Tile</h2>
+      <p>
+        Ceramic tiles are the most affordable option and work well for walls and light-traffic floors. Porcelain tiles are denser, more water-resistant, and suitable for high-traffic areas, outdoor installations, and wet environments. Natural stone tiles like marble, travertine, and slate offer unique beauty but require sealing and more careful maintenance. Large-format tiles create a sleek, modern look with fewer grout lines but require a perfectly flat substrate and careful installation technique.
+      </p>
+
+      <h3>Substrate Preparation</h3>
+      <p>
+        The substrate must be clean, dry, flat, and structurally sound before tiling. Cement backer board is the preferred substrate for wet areas like showers and tub surrounds. For floors, the maximum allowable variation is 1/8 inch over 10 feet. Use a self-leveling compound to correct uneven concrete or plywood subfloors. Never install tile directly over particleboard, oriented strand board, or vinyl flooring without proper underlayment.
+      </p>
+
+      <h3>Layout and Cutting Tips</h3>
+      <p>
+        Always dry-lay tiles before applying adhesive to check the pattern and identify the best starting point. Begin from the center of the room and work outward to ensure symmetrical cuts at the walls. Avoid narrow sliver cuts less than half a tile width at the edges, as they look unprofessional and are difficult to install. A wet tile saw produces the cleanest cuts for porcelain and natural stone, while a manual tile cutter works well for straight cuts on standard ceramic tiles.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate how many tiles I need?</h3>
+      <p>
+        Measure the total area in square feet. Divide by the size of each tile including the grout line to get the base count. Add 10 percent waste for straight layouts or 15 to 20 percent for diagonal or complex patterns.
+      </p>
+
+      <h3>How much grout do I need for my tile project?</h3>
+      <p>
+        Grout quantity depends on tile size, joint width, and tile thickness. A 25-pound bag of sanded grout covers 100 to 200 square feet of 12x12 inch tiles with 1/8-inch joints. Smaller tiles with wider joints require significantly more grout.
+      </p>
+
+      <h3>What grout width should I use?</h3>
+      <p>
+        Rectified tiles use 1/16 to 1/8 inch joints. Standard ceramic and porcelain tiles use 1/8 to 3/16 inch joints. Natural stone tiles need 1/8 to 1/4 inch joints to accommodate size variation.
+      </p>
+
+      <h3>How much thin-set adhesive do I need?</h3>
+      <p>
+        One 50-pound bag covers approximately 60 to 80 square feet with a 1/4 x 1/4 inch trowel. Larger tiles require larger trowel notches and more thin-set per square foot. Back-butter tiles over 15 inches for full coverage.
+      </p>
+
+      <h3>How much extra tile should I buy for waste?</h3>
+      <p>
+        Add 10 percent for standard straight layouts, 15 percent for diagonal, and 20 percent for complex patterns or small rooms with many cuts. Always keep spare tiles for future repairs.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Tile Calculator", url: construction_tile_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Flooring Calculator", description: "Calculate how much flooring material you need with waste allowance.", path: construction_flooring_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Gravel & Mulch Calculator", description: "Calculate cubic yards and tons of gravel or mulch for landscaping.", path: construction_gravel_mulch_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("tile-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

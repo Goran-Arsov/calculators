@@ -1,0 +1,190 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "BAC Calculator - Free Blood Alcohol Content Tool",
+  description: "Estimate your blood alcohol concentration (BAC) based on drinks consumed, body weight, gender, and time elapsed. Free instant results with impairment levels.",
+  canonical: health_bac_url,
+  og: {
+    title: "BAC Calculator - Free Blood Alcohol Content Tool | CalcWise",
+    description: "Estimate your blood alcohol concentration based on drinks, weight, gender, and time. Get instant BAC results with impairment levels.",
+    url: health_bac_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "BAC Calculator", url: health_bac_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is BAC and how is it measured?", answer: "BAC (Blood Alcohol Concentration) is the percentage of alcohol in your bloodstream by volume. A BAC of 0.08% means there are 0.08 grams of alcohol per 100 milliliters of blood. BAC can be measured with a breathalyzer, blood test, or estimated using the Widmark formula based on drinks consumed, body weight, gender, and time." },
+  { question: "What is the legal BAC limit for driving?", answer: "In most US states and many countries, the legal BAC limit for driving is 0.08%. However, impairment begins well below this level. Some jurisdictions have lower limits — for example, 0.05% in Utah and many European countries. For commercial drivers, the limit is typically 0.04%, and for drivers under 21, most states enforce zero tolerance (0.00-0.02%)." },
+  { question: "How long does it take for BAC to reach zero?", answer: "The body metabolizes alcohol at an average rate of about 0.015% BAC per hour, regardless of body weight, gender, or how much you drank. This means it takes roughly one hour to eliminate one standard drink from your system. A BAC of 0.08% takes about 5.3 hours to return to zero. Only time reduces BAC — coffee, cold showers, and food do not speed up alcohol metabolism." },
+  { question: "Why does gender affect BAC?", answer: "Gender affects BAC because of differences in body water content. Men typically have about 68% body water, while women average about 55%. Since alcohol distributes through body water, women generally reach higher BAC levels than men of the same weight after consuming the same amount of alcohol. This difference is captured by the Widmark factor used in BAC calculations." },
+  { question: "What counts as one standard drink?", answer: "In the United States, one standard drink contains 14 grams of pure alcohol. This is equivalent to 12 ounces (355 mL) of regular beer at 5% ABV, 5 ounces (148 mL) of wine at 12% ABV, or 1.5 ounces (44 mL) of distilled spirits at 40% ABV (80 proof). Many cocktails and craft beers contain more than one standard drink per serving." }
+]) %>
+
+<%= calculator_schema(
+  name: "BAC Calculator",
+  description: "Estimate your blood alcohol concentration based on drinks consumed, body weight, gender, and time elapsed.",
+  url: health_bac_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "BAC Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">BAC Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your blood alcohol concentration based on drinks consumed, body weight, gender, and time elapsed.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="bac-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit System</label>
+            <select data-bac-calculator-target="unitSystem" data-action="change->bac-calculator#updateLabels" class="w-full" aria-label="Unit System">
+              <option value="metric">Metric (kg)</option>
+              <option value="imperial">Imperial (lbs)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Standard Drinks</label>
+            <input type="number" data-bac-calculator-target="drinks" data-action="input->bac-calculator#calculate" class="w-full" placeholder="3" step="0.5" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-bac-calculator-target="weightLabel">Weight (kg)</label>
+            <input type="number" data-bac-calculator-target="weight" data-action="input->bac-calculator#calculate" class="w-full" placeholder="70" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gender</label>
+            <select data-bac-calculator-target="gender" data-action="change->bac-calculator#calculate" class="w-full" aria-label="Gender">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Hours Since First Drink</label>
+            <input type="number" data-bac-calculator-target="hours" data-action="input->bac-calculator#calculate" class="w-full" placeholder="1" step="0.5" min="0" value="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Estimated BAC</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-bac-calculator-target="bac">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Status</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-bac-calculator-target="status">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Time Until Sober</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-bac-calculator-target="hoursUntilSober">—</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Impairment Level</span>
+              <p class="text-sm font-medium text-gray-900 dark:text-white mt-1" data-bac-calculator-target="impairment">—</p>
+            </div>
+          </div>
+          <button data-action="click->bac-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the BAC Calculator</h2>
+      <p>
+        This blood alcohol content calculator uses the Widmark formula to estimate your BAC based on the number of standard drinks consumed, your body weight, gender, and how much time has passed since your first drink. Select your unit system, enter the number of drinks, your weight, choose your gender, and input the hours elapsed. Results update instantly as you type, showing your estimated BAC percentage, impairment status, and how long until your BAC returns to zero.
+      </p>
+      <p>
+        This calculator provides estimates only and should never be used to determine whether it is safe to drive or operate machinery. Individual alcohol metabolism varies widely based on genetics, food intake, medications, tolerance, and overall health. When in doubt, always err on the side of caution and do not drive after consuming any alcohol.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the Widmark Formula</h2>
+      <p>
+        The Widmark formula, developed by Swedish chemist Erik Widmark in the 1930s, is the standard method for estimating BAC. The formula is: <strong>BAC = (alcohol in grams / (body weight in grams x Widmark factor)) x 100 - (0.015 x hours elapsed)</strong>. The Widmark factor accounts for the proportion of body water — 0.68 for males and 0.55 for females. One standard drink in the US contains 14 grams of pure alcohol. The body eliminates alcohol at an average rate of 0.015% BAC per hour.
+      </p>
+
+      <h3>BAC Levels and Impairment</h3>
+      <p>
+        At <strong>0.02-0.04% BAC</strong>, most people feel mild relaxation and slight mood elevation. At <strong>0.05-0.07%</strong>, judgment and coordination begin to decline noticeably. At <strong>0.08%</strong> — the legal limit in most US states — reaction time, muscle coordination, and self-control are significantly impaired. At <strong>0.15% and above</strong>, there is major loss of balance and a significant risk of vomiting, blackout, or loss of consciousness. BAC levels of <strong>0.30% or higher</strong> can be life-threatening and require immediate medical attention.
+      </p>
+
+      <h3>Factors That Affect BAC</h3>
+      <p>
+        Many factors beyond drinks, weight, and gender affect your actual BAC. Eating food before or while drinking slows alcohol absorption. Carbonated drinks may increase absorption speed. Medications can amplify alcohol's effects. Fatigue, dehydration, and stress can increase perceived impairment at lower BAC levels. Individual enzyme levels and liver health also play significant roles in alcohol metabolism. These variables mean that calculated BAC should be treated as a rough estimate, not a precise measurement.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is BAC and how is it measured?</h3>
+      <p>
+        BAC (Blood Alcohol Concentration) is the percentage of alcohol in your bloodstream by volume. A BAC of 0.08% means there are 0.08 grams of alcohol per 100 milliliters of blood. BAC can be measured with a breathalyzer, blood test, or estimated using the Widmark formula based on drinks consumed, body weight, gender, and time.
+      </p>
+
+      <h3>What is the legal BAC limit for driving?</h3>
+      <p>
+        In most US states and many countries, the legal BAC limit for driving is 0.08%. However, impairment begins well below this level. Some jurisdictions have lower limits — for example, 0.05% in Utah and many European countries. For commercial drivers, the limit is typically 0.04%, and for drivers under 21, most states enforce zero tolerance.
+      </p>
+
+      <h3>How long does it take for BAC to reach zero?</h3>
+      <p>
+        The body metabolizes alcohol at an average rate of about 0.015% BAC per hour, regardless of body weight, gender, or how much you drank. This means it takes roughly one hour to eliminate one standard drink from your system. A BAC of 0.08% takes about 5.3 hours to return to zero.
+      </p>
+
+      <h3>Why does gender affect BAC?</h3>
+      <p>
+        Gender affects BAC because of differences in body water content. Men typically have about 68% body water, while women average about 55%. Since alcohol distributes through body water, women generally reach higher BAC levels than men of the same weight after consuming the same amount of alcohol.
+      </p>
+
+      <h3>What counts as one standard drink?</h3>
+      <p>
+        In the United States, one standard drink contains 14 grams of pure alcohol. This is equivalent to 12 ounces of regular beer at 5% ABV, 5 ounces of wine at 12% ABV, or 1.5 ounces of distilled spirits at 40% ABV (80 proof).
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "BAC Calculator", url: health_bac_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Water Intake Calculator", description: "Calculate your recommended daily water intake based on your body weight and activity level.", path: health_water_intake_path, icon_path: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("bac-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

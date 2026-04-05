@@ -1,0 +1,187 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "HVAC BTU Calculator - Free Online Tool",
+  description: "Calculate the BTU heating and cooling capacity needed for any room. Enter square footage, ceiling height, insulation quality, climate zone, and windows for an accurate estimate.",
+  canonical: construction_hvac_btu_url,
+  og: {
+    title: "HVAC BTU Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the BTU heating and cooling capacity needed for any room. Enter square footage, ceiling height, insulation quality, climate zone, and windows.",
+    url: construction_hvac_btu_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "HVAC BTU Calculator", url: construction_hvac_btu_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate BTU for a room?", answer: "Multiply the room square footage by 20 BTU per square foot as a baseline. Adjust for ceiling height (higher ceilings need more BTU), insulation quality (poor insulation adds 30%, good insulation reduces by 15%), climate zone, and the number of windows (each window adds approximately 1,000 BTU). The result is rounded up to the nearest 1,000 BTU." },
+  { question: "How many BTU per square foot do I need?", answer: "The general rule is 20 BTU per square foot for standard 8-foot ceilings with average insulation in a moderate climate. Hot climates may need 22-24 BTU per square foot for cooling, while cold climates may need 30-35 BTU per square foot for heating. These figures adjust based on ceiling height, insulation, sun exposure, and other factors." },
+  { question: "What size air conditioner do I need for my room?", answer: "A 150 sq ft room needs about 5,000 BTU. A 300 sq ft room needs about 7,000 BTU. A 500 sq ft room needs 10,000-12,000 BTU. A 1,000 sq ft area needs 18,000-21,000 BTU. One ton of cooling equals 12,000 BTU, so a 2-ton unit handles approximately 24,000 BTU. These are baselines that should be adjusted for your specific conditions." },
+  { question: "What factors increase BTU requirements?", answer: "Several factors increase the BTU needed: rooms with many windows or south-facing glass, poor insulation or old windows, high ceilings above 8 feet, hot climates, rooms above garages or over unheated spaces, kitchens with cooking heat, and rooms with many occupants. Each of these factors can add 10-30% to the base BTU calculation." },
+  { question: "What is a ton in HVAC terms?", answer: "One ton of HVAC capacity equals 12,000 BTU per hour. Residential central air conditioning systems typically range from 1.5 to 5 tons. A 3-ton unit provides 36,000 BTU per hour and can cool approximately 1,500 to 1,800 square feet in a moderate climate with average insulation. Tonnage requirements increase with poor insulation, high ceilings, and hot climates." }
+]) %>
+
+<%= calculator_schema(
+  name: "HVAC BTU Calculator",
+  description: "Calculate the BTU heating and cooling capacity needed for any room based on square footage, ceiling height, insulation, climate, and windows.",
+  url: construction_hvac_btu_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "HVAC BTU Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">HVAC BTU Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate the BTU heating and cooling capacity needed for any room based on size, ceiling height, insulation, climate zone, and windows.</p>
+
+    <div data-controller="hvac-btu-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Room Size (sq ft)</label>
+            <input type="number" data-hvac-btu-calculator-target="roomSqft" data-action="input->hvac-btu-calculator#calculate" class="w-full" placeholder="500" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Ceiling Height (ft)</label>
+            <input type="number" data-hvac-btu-calculator-target="ceilingHeight" data-action="input->hvac-btu-calculator#calculate" class="w-full" value="8" step="0.5" min="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Insulation Quality</label>
+            <select data-hvac-btu-calculator-target="insulation" data-action="change->hvac-btu-calculator#calculate" class="w-full">
+              <option value="poor">Poor</option>
+              <option value="average" selected>Average</option>
+              <option value="good">Good</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Climate Zone</label>
+            <select data-hvac-btu-calculator-target="climateZone" data-action="change->hvac-btu-calculator#calculate" class="w-full">
+              <option value="hot">Hot</option>
+              <option value="warm">Warm</option>
+              <option value="moderate" selected>Moderate</option>
+              <option value="cool">Cool</option>
+              <option value="cold">Cold</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Windows</label>
+            <input type="number" data-hvac-btu-calculator-target="windows" data-action="input->hvac-btu-calculator#calculate" class="w-full" value="2" step="1" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Base BTU</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-hvac-btu-calculator-target="resultBaseBtu">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Adjusted BTU</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-hvac-btu-calculator-target="resultTotalBtu">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Recommended</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-hvac-btu-calculator-target="resultRecommended">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tonnage</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-hvac-btu-calculator-target="resultTonnage">0</span>
+            </div>
+          </div>
+          <button data-action="click->hvac-btu-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the HVAC BTU Calculator</h2>
+      <p>
+        Choosing the right size heating or cooling system is essential for comfort and energy efficiency. Enter the room size in square feet, ceiling height, insulation quality, your climate zone, and the number of windows. The calculator starts with a baseline of 20 BTU per square foot and adjusts for each factor. Higher ceilings increase the volume of air to condition, poor insulation allows more heat transfer, and each window adds approximately 1,000 BTU of heat gain or loss.
+      </p>
+      <p>
+        The recommended BTU value is rounded up to the nearest 1,000, and the equivalent tonnage is provided for central HVAC sizing. One ton of cooling capacity equals 12,000 BTU per hour. An oversized system will short-cycle, wasting energy and failing to dehumidify properly. An undersized system will run continuously and struggle to maintain comfortable temperatures during extreme weather.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Factors That Affect BTU Requirements</h2>
+      <p>
+        Room square footage is the primary driver of BTU requirements, but several other factors significantly affect the total. Ceiling height matters because air conditioning and heating systems must condition the entire volume of air, not just the floor area. A room with 10-foot ceilings contains 25 percent more air than the same room with 8-foot ceilings and requires proportionally more capacity.
+      </p>
+
+      <h3>Insulation and Building Envelope</h3>
+      <p>
+        Insulation quality determines how quickly heat transfers through walls, ceilings, and floors. Poorly insulated homes built before the 1980s may have R-values well below current code requirements and can need 20 to 30 percent more capacity. Homes with modern insulation, double-pane windows, and sealed air barriers retain conditioned air much more effectively. Upgrading insulation is often more cost-effective than installing a larger HVAC system.
+      </p>
+
+      <h3>Climate Zone and Sun Exposure</h3>
+      <p>
+        Climate zone affects the peak heating or cooling demand. Hot southern climates with summer temperatures above 95 degrees Fahrenheit require more cooling capacity, while cold northern climates with winter temperatures below zero need more heating capacity. Sun exposure is another factor. South-facing and west-facing rooms with large windows receive more solar heat gain, which increases cooling demand in summer. Shade trees and window treatments can significantly reduce solar gain.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate BTU for a room?</h3>
+      <p>
+        Multiply the room square footage by 20 BTU per square foot as a baseline. Adjust for ceiling height, insulation quality, climate zone, and the number of windows. The result is rounded up to the nearest 1,000 BTU.
+      </p>
+
+      <h3>How many BTU per square foot do I need?</h3>
+      <p>
+        The general rule is 20 BTU per square foot for standard 8-foot ceilings with average insulation in a moderate climate. Hot climates may need 22 to 24 BTU per square foot, while cold climates may need 30 to 35 BTU per square foot for heating.
+      </p>
+
+      <h3>What size air conditioner do I need for my room?</h3>
+      <p>
+        A 150 square foot room needs about 5,000 BTU. A 300 square foot room needs about 7,000 BTU. A 500 square foot room needs 10,000 to 12,000 BTU. A 1,000 square foot area needs 18,000 to 21,000 BTU.
+      </p>
+
+      <h3>What factors increase BTU requirements?</h3>
+      <p>
+        Many windows, poor insulation, high ceilings, hot climates, rooms above garages, kitchens, and rooms with many occupants all increase BTU requirements. Each factor can add 10 to 30 percent to the base calculation.
+      </p>
+
+      <h3>What is a ton in HVAC terms?</h3>
+      <p>
+        One ton equals 12,000 BTU per hour. Residential systems typically range from 1.5 to 5 tons. A 3-ton unit provides 36,000 BTU per hour and can cool approximately 1,500 to 1,800 square feet in a moderate climate.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "HVAC BTU Calculator", url: construction_hvac_btu_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Paint Calculator", description: "Calculate how many gallons of paint you need for any room.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
+      { name: "Roofing Calculator", description: "Calculate shingles, felt, and nails for your roofing project.", path: construction_roofing_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Flooring Calculator", description: "Calculate how much flooring material you need with waste allowance.", path: construction_flooring_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("hvac-btu-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

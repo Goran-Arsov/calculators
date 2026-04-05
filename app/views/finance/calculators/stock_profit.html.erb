@@ -1,0 +1,212 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Stock Profit Calculator - Free Investment Return Tool",
+  description: "Calculate your stock trading profit, ROI, and estimated capital gains tax. Enter buy/sell prices, shares, and fees to see your net return instantly.",
+  canonical: finance_stock_profit_url,
+  og: {
+    title: "Stock Profit Calculator - Free Investment Return Tool | CalcWise",
+    description: "Calculate your stock trading profit, ROI, and estimated capital gains tax. Enter buy/sell prices, shares, and fees to see your net return instantly.",
+    url: finance_stock_profit_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Stock Profit Calculator", url: finance_stock_profit_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate profit on a stock trade?", answer: "Stock profit is calculated as: (Sell Price x Shares) - (Buy Price x Shares) - Buy Commission - Sell Commission. This gives you the net profit or loss after all fees are deducted." },
+  { question: "What is the difference between short-term and long-term capital gains?", answer: "Short-term capital gains apply to investments held for one year or less and are taxed as ordinary income (up to 37%). Long-term capital gains apply to investments held for more than one year and receive preferential tax rates of 0%, 15%, or 20% depending on your income level." },
+  { question: "How do trading fees affect my returns?", answer: "Trading fees directly reduce your profit. Both buy and sell commissions are costs that must be subtracted from your returns. Many modern brokers offer commission-free trading for stocks, but options, international stocks, and certain ETFs may still carry fees." },
+  { question: "What is ROI on a stock investment?", answer: "Return on Investment (ROI) measures the percentage gain or loss relative to your total cost. It is calculated as: (Net Profit / Total Cost) x 100. A positive ROI means you profited; a negative ROI means you lost money on the trade." },
+  { question: "How is the break-even price calculated?", answer: "The break-even price is the minimum sell price needed to cover your total cost including all fees. It equals (Total Buy Cost + Sell Commission) / Number of Shares. Selling above this price results in a profit; selling below results in a loss." }
+]) %>
+
+<%= calculator_schema(
+  name: "Stock Profit Calculator",
+  description: "Calculate stock trading profit, ROI, capital gains tax, and break-even price from buy/sell prices, shares, and fees.",
+  url: finance_stock_profit_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Stock Profit Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Stock Profit Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your stock trading profit or loss, ROI, estimated capital gains tax, and break-even price.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="stock-profit-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Buy Price per Share ($)</label>
+            <input type="number" data-stock-profit-calculator-target="buyPrice" data-action="input->stock-profit-calculator#calculate" class="w-full" placeholder="50.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sell Price per Share ($)</label>
+            <input type="number" data-stock-profit-calculator-target="sellPrice" data-action="input->stock-profit-calculator#calculate" class="w-full" placeholder="75.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Shares</label>
+            <input type="number" data-stock-profit-calculator-target="shares" data-action="input->stock-profit-calculator#calculate" class="w-full" placeholder="100" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Buy Commission ($)</label>
+            <input type="number" data-stock-profit-calculator-target="buyCommission" data-action="input->stock-profit-calculator#calculate" class="w-full" placeholder="0" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sell Commission ($)</label>
+            <input type="number" data-stock-profit-calculator-target="sellCommission" data-action="input->stock-profit-calculator#calculate" class="w-full" placeholder="0" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Holding Period</label>
+            <select data-stock-profit-calculator-target="holdingPeriod" data-action="change->stock-profit-calculator#calculate" class="w-full">
+              <option value="long">Long-term (over 1 year)</option>
+              <option value="short">Short-term (1 year or less)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Profit / Loss</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-stock-profit-calculator-target="profit">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">ROI</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-stock-profit-calculator-target="roi">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Price Change</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-stock-profit-calculator-target="percentChange">0.00%</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Cost</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-stock-profit-calculator-target="totalCost">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Revenue</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-stock-profit-calculator-target="totalRevenue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Fees</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-stock-profit-calculator-target="totalFees">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Capital Gains Tax (est.)</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-stock-profit-calculator-target="capitalGainsTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">After-Tax Profit</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-stock-profit-calculator-target="afterTaxProfit">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Break-Even Price</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-stock-profit-calculator-target="breakEvenPrice">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->stock-profit-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Stock Profit Calculator</h2>
+      <p>
+        Enter the price you paid per share (buy price), the price you sold at (sell price), and the number of shares traded. Optionally add any trading commissions or fees. Select whether you held the stock for more or less than one year to estimate your capital gains tax liability. The calculator instantly shows your total profit or loss, return on investment percentage, estimated taxes, and the break-even price you would need to sell at to cover all costs.
+      </p>
+      <p>
+        This tool helps investors evaluate completed trades or model potential outcomes before buying. Understanding your true return after fees and taxes is crucial for making informed investment decisions and tracking portfolio performance accurately.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Stock Trading Returns</h2>
+      <p>
+        Your stock profit is not simply the difference between buy and sell prices. Trading fees, commissions, and taxes all reduce your actual return. Commission-free trading has become common for basic stock trades, but options trading, international stocks, and certain funds still carry transaction costs. Even with zero commissions, capital gains taxes can significantly reduce your net profit, especially for short-term trades taxed at ordinary income rates.
+      </p>
+
+      <h3>Capital Gains Tax Rates</h3>
+      <p>
+        The IRS distinguishes between short-term and long-term capital gains. Investments held for one year or less are taxed at your ordinary income tax rate, which can be as high as 37% for the highest earners. Investments held for more than one year qualify for the lower long-term capital gains rates of 0%, 15%, or 20% depending on your taxable income. This tax difference is a major incentive for longer holding periods and is a key consideration in any trading strategy.
+      </p>
+
+      <h3>The Importance of Tracking Your Cost Basis</h3>
+      <p>
+        Your cost basis includes the purchase price plus any fees paid to acquire the investment. Accurate cost basis tracking is essential for calculating your actual gain or loss and for tax reporting on Form 8949 and Schedule D. If you buy shares of the same stock at different times and prices, you may use specific identification, FIFO (first in first out), or average cost methods, depending on the asset type and your preference.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate profit on a stock trade?</h3>
+      <p>
+        Stock profit is calculated as: (Sell Price x Shares) - (Buy Price x Shares) - Buy Commission - Sell Commission. This gives you the net profit or loss after all fees are deducted.
+      </p>
+
+      <h3>What is the difference between short-term and long-term capital gains?</h3>
+      <p>
+        Short-term capital gains apply to investments held for one year or less and are taxed as ordinary income (up to 37%). Long-term capital gains apply to investments held for more than one year and receive preferential tax rates of 0%, 15%, or 20% depending on your income level.
+      </p>
+
+      <h3>How do trading fees affect my returns?</h3>
+      <p>
+        Trading fees directly reduce your profit. Both buy and sell commissions are costs that must be subtracted from your returns. Many modern brokers offer commission-free trading for stocks, but options, international stocks, and certain ETFs may still carry fees.
+      </p>
+
+      <h3>What is ROI on a stock investment?</h3>
+      <p>
+        Return on Investment (ROI) measures the percentage gain or loss relative to your total cost. It is calculated as: (Net Profit / Total Cost) x 100. A positive ROI means you profited; a negative ROI means you lost money on the trade.
+      </p>
+
+      <h3>How is the break-even price calculated?</h3>
+      <p>
+        The break-even price is the minimum sell price needed to cover your total cost including all fees. It equals (Total Buy Cost + Sell Commission) / Number of Shares. Selling above this price results in a profit; selling below results in a loss.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Stock Profit Calculator", url: finance_stock_profit_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "ROI Calculator", description: "Calculate return on investment for any asset or project.", path: finance_roi_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Investment Calculator", description: "Project the future value of your investments with regular contributions.", path: finance_investment_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Dividend Yield Calculator", description: "Calculate dividend yield and annual income from your stock investments.", path: finance_dividend_yield_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("stock-profit-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

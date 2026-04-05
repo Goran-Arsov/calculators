@@ -1,0 +1,177 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Electricity Bill Calculator - Free Online Tool",
+  description: "Estimate your monthly electricity bill by entering appliance wattages, daily usage hours, and your electricity rate. See kWh consumption and cost breakdowns.",
+  canonical: everyday_electricity_bill_url,
+  og: {
+    title: "Electricity Bill Calculator - Free Online Tool | CalcWise",
+    description: "Estimate your monthly electricity bill from appliance wattages, daily usage, and electricity rates instantly.",
+    url: everyday_electricity_bill_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Electricity Bill Calculator", url: everyday_electricity_bill_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate my electricity cost?", answer: "Multiply the appliance wattage by hours of daily use, divide by 1,000 to get daily kWh, then multiply by 30 for monthly kWh. Multiply monthly kWh by your rate per kWh (check your utility bill) to get the monthly cost. For example, a 100W light running 8 hours/day uses 0.8 kWh/day or 24 kWh/month, costing $2.88/month at $0.12/kWh." },
+  { question: "What is a kilowatt-hour (kWh)?", answer: "A kilowatt-hour is a unit of energy equal to using 1,000 watts for one hour. For example, a 100-watt light bulb running for 10 hours uses 1 kWh. Your electricity bill charges you per kWh consumed. The average US household uses about 900 kWh per month." },
+  { question: "What appliances use the most electricity?", answer: "Central air conditioning (3,000-5,000W), electric water heaters (4,000-5,500W), clothes dryers (2,000-5,000W), electric ovens (2,000-5,000W), and space heaters (1,000-2,000W) are typically the biggest electricity consumers. Refrigerators use less wattage (100-400W) but run 24/7, making them significant contributors to monthly bills." },
+  { question: "How much does it cost to run a TV all day?", answer: "A modern LED TV uses about 50-100 watts. Running a 75W TV for 24 hours uses 1.8 kWh, costing about $0.22 at $0.12/kWh. A typical 4 hours of daily TV watching with a 75W set costs about $1.08 per month. Older plasma or CRT TVs use significantly more power." },
+  { question: "How can I reduce my electricity bill?", answer: "Switch to LED bulbs (use 75% less energy than incandescent), unplug devices when not in use (phantom loads can account for 5-10% of energy use), use a programmable thermostat, wash clothes in cold water, air-dry clothes when possible, and upgrade to Energy Star rated appliances. Even small changes like turning off lights when leaving a room add up over time." }
+]) %>
+
+<%= calculator_schema(
+  name: "Electricity Bill Calculator",
+  description: "Estimate monthly and yearly electricity costs from appliance wattages and daily usage hours.",
+  url: everyday_electricity_bill_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Electricity Bill Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Electricity Bill Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter appliance wattages, daily usage hours, and your electricity rate to estimate monthly and yearly costs.</p>
+
+    <div data-controller="electricity-bill-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Electricity Rate ($/kWh)</label>
+          <input type="number" data-electricity-bill-calculator-target="rate" data-action="input->electricity-bill-calculator#calculate" class="w-full md:w-1/3" placeholder="0.12" step="0.01" min="0" value="0.12">
+        </div>
+        <div class="grid grid-cols-3 gap-3 mt-4">
+          <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Watts</span>
+          <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Hours/Day</span>
+          <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Qty</span>
+        </div>
+        <% 6.times do |i| %>
+          <div class="grid grid-cols-3 gap-3">
+            <input type="number" data-electricity-bill-calculator-target="watts<%= i + 1 %>" data-action="input->electricity-bill-calculator#calculate" class="w-full" placeholder="Watts" step="1" min="0">
+            <input type="number" data-electricity-bill-calculator-target="hours<%= i + 1 %>" data-action="input->electricity-bill-calculator#calculate" class="w-full" placeholder="Hours" step="0.5" min="0" max="24">
+            <input type="number" data-electricity-bill-calculator-target="qty<%= i + 1 %>" data-action="input->electricity-bill-calculator#calculate" class="w-full" placeholder="1" step="1" min="1" value="1">
+          </div>
+        <% end %>
+      </div>
+
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 mt-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Daily Usage</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-electricity-bill-calculator-target="resultDailyKwh">0.00 kWh</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Monthly Usage</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-electricity-bill-calculator-target="resultMonthlyKwh">0.0 kWh</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Monthly Cost</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-electricity-bill-calculator-target="resultMonthlyCost">$0.00</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Yearly Usage</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-electricity-bill-calculator-target="resultYearlyKwh">0.0 kWh</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Yearly Cost</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-electricity-bill-calculator-target="resultYearlyCost">$0.00</span>
+          </div>
+        </div>
+        <button data-action="click->electricity-bill-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Electricity Bill Calculator</h2>
+      <p>
+        Enter the wattage of each appliance (found on the label or in the manual), how many hours per day you use it, and the quantity if you have multiples. Set your electricity rate in dollars per kilowatt-hour, which you can find on your utility bill. The calculator shows daily, monthly, and yearly energy consumption in kWh along with estimated costs. Results update instantly as you type.
+      </p>
+      <p>
+        You can add up to six appliances at a time. This lets you compare the energy impact of different devices or estimate your total household electricity consumption. Common appliances to check include air conditioners, refrigerators, washers, dryers, lighting, and entertainment systems. Rows with zero watts or zero hours are automatically excluded from the calculation.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Your Electricity Bill</h2>
+      <p>
+        Electricity is measured in kilowatt-hours (kWh). One kWh equals using 1,000 watts for one hour. The average US electricity rate is about $0.12-0.16 per kWh, though rates vary significantly by state and provider. Your bill may also include fixed charges, demand charges, and taxes on top of the per-kWh rate. This calculator focuses on the usage portion of your bill.
+      </p>
+
+      <h3>Energy-Saving Tips</h3>
+      <p>
+        The biggest opportunities for savings are in heating, cooling, and water heating, which together account for about 60% of the average home's energy use. Adjusting your thermostat by just 1-2 degrees can save 3-5% on heating and cooling costs. Using LED bulbs instead of incandescent saves about 75% of lighting energy. Running full loads in washers and dishwashers, using cold water for laundry, and air-drying clothes when possible are all effective strategies.
+      </p>
+
+      <h3>Phantom Load and Standby Power</h3>
+      <p>
+        Many devices draw power even when turned off. This phantom load can account for 5-10% of your total electricity bill. Common culprits include cable boxes, gaming consoles, chargers left plugged in, and devices with digital displays. Using power strips and switching them off when not needed, or unplugging devices entirely, can eliminate this waste. Smart power strips can automatically cut power to devices in standby mode.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate my electricity cost?</h3>
+      <p>
+        Multiply the appliance wattage by hours of daily use, divide by 1,000 to get daily kWh, then multiply by 30 for monthly kWh. Multiply monthly kWh by your rate per kWh (check your utility bill) to get the monthly cost. For example, a 100W light running 8 hours/day uses 0.8 kWh/day or 24 kWh/month, costing $2.88/month at $0.12/kWh.
+      </p>
+
+      <h3>What is a kilowatt-hour (kWh)?</h3>
+      <p>
+        A kilowatt-hour is a unit of energy equal to using 1,000 watts for one hour. For example, a 100-watt light bulb running for 10 hours uses 1 kWh. Your electricity bill charges you per kWh consumed. The average US household uses about 900 kWh per month.
+      </p>
+
+      <h3>What appliances use the most electricity?</h3>
+      <p>
+        Central air conditioning (3,000-5,000W), electric water heaters (4,000-5,500W), clothes dryers (2,000-5,000W), electric ovens (2,000-5,000W), and space heaters (1,000-2,000W) are typically the biggest electricity consumers. Refrigerators use less wattage (100-400W) but run 24/7, making them significant contributors to monthly bills.
+      </p>
+
+      <h3>How much does it cost to run a TV all day?</h3>
+      <p>
+        A modern LED TV uses about 50-100 watts. Running a 75W TV for 24 hours uses 1.8 kWh, costing about $0.22 at $0.12/kWh. A typical 4 hours of daily TV watching with a 75W set costs about $1.08 per month. Older plasma or CRT TVs use significantly more power.
+      </p>
+
+      <h3>How can I reduce my electricity bill?</h3>
+      <p>
+        Switch to LED bulbs (use 75% less energy than incandescent), unplug devices when not in use (phantom loads can account for 5-10% of energy use), use a programmable thermostat, wash clothes in cold water, air-dry clothes when possible, and upgrade to Energy Star rated appliances. Even small changes like turning off lights when leaving a room add up over time.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Electricity Bill Calculator", url: everyday_electricity_bill_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Fuel Cost Calculator", description: "Estimate fuel cost for trips based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("electricity-bill-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

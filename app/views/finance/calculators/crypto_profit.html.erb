@@ -1,0 +1,220 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Crypto Profit Calculator - Free Cryptocurrency Gain/Loss Tool",
+  description: "Calculate your cryptocurrency profit or loss, ROI, fees, and estimated capital gains tax. Enter buy/sell prices and quantity for instant results.",
+  canonical: finance_crypto_profit_url,
+  og: {
+    title: "Crypto Profit Calculator - Free Cryptocurrency Gain/Loss Tool | CalcWise",
+    description: "Calculate your cryptocurrency profit or loss, ROI, fees, and estimated capital gains tax. Enter buy/sell prices and quantity for instant results.",
+    url: finance_crypto_profit_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Crypto Profit Calculator", url: finance_crypto_profit_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate profit on a cryptocurrency trade?", answer: "Crypto profit equals (Sell Price x Quantity) minus (Buy Price x Quantity) minus all fees. The buy fee is a percentage of your purchase cost and the sell fee is a percentage of your sale proceeds. The net amount after subtracting both fees from the gross gain or loss is your actual profit." },
+  { question: "How is cryptocurrency taxed?", answer: "Cryptocurrency is taxed as property by the IRS. Short-term gains (held one year or less) are taxed at your ordinary income tax rate up to 37%. Long-term gains (held more than one year) are taxed at preferential rates of 0%, 15%, or 20% depending on your income. Every sale, trade, or exchange is a taxable event." },
+  { question: "What fees do crypto exchanges charge?", answer: "Most crypto exchanges charge trading fees ranging from 0.1% to 1.5% per transaction. Fees vary by exchange, trading volume, and payment method. Some exchanges charge maker/taker fees (lower for limit orders, higher for market orders). Withdrawal fees and network gas fees are additional costs." },
+  { question: "What is cost basis in crypto?", answer: "Cost basis is the original value of your cryptocurrency including any fees paid to acquire it. Accurate cost basis tracking is essential for tax reporting. The IRS accepts FIFO (first in first out), LIFO (last in first out), and specific identification methods for calculating gains on crypto assets." },
+  { question: "Do I owe taxes on crypto losses?", answer: "You do not owe taxes on losses, but you can use them to offset gains. Up to $3,000 in net capital losses can be deducted against ordinary income each year, with excess losses carried forward to future years. Tax-loss harvesting is a common strategy where you sell losing positions to offset gains from profitable trades." }
+]) %>
+
+<%= calculator_schema(
+  name: "Crypto Profit Calculator",
+  description: "Calculate cryptocurrency profit or loss, ROI, trading fees, and estimated capital gains tax from buy and sell transactions.",
+  url: finance_crypto_profit_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Crypto Profit Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Crypto Profit Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your cryptocurrency trading profit or loss, ROI, fees, and estimated capital gains tax.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="crypto-profit-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Buy Price (per coin/token) ($)</label>
+            <input type="number" data-crypto-profit-calculator-target="buyPrice" data-action="input->crypto-profit-calculator#calculate" class="w-full" placeholder="30000" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sell Price (per coin/token) ($)</label>
+            <input type="number" data-crypto-profit-calculator-target="sellPrice" data-action="input->crypto-profit-calculator#calculate" class="w-full" placeholder="45000" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Quantity</label>
+            <input type="number" data-crypto-profit-calculator-target="quantity" data-action="input->crypto-profit-calculator#calculate" class="w-full" placeholder="0.5" step="0.001" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Buy Fee (%)</label>
+            <input type="number" data-crypto-profit-calculator-target="buyFeePercent" data-action="input->crypto-profit-calculator#calculate" class="w-full" placeholder="0.5" step="0.01" min="0" value="0.5">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sell Fee (%)</label>
+            <input type="number" data-crypto-profit-calculator-target="sellFeePercent" data-action="input->crypto-profit-calculator#calculate" class="w-full" placeholder="0.5" step="0.01" min="0" value="0.5">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Holding Period</label>
+            <select data-crypto-profit-calculator-target="holdingPeriod" data-action="change->crypto-profit-calculator#calculate" class="w-full">
+              <option value="long">Long-term (over 1 year)</option>
+              <option value="short">Short-term (1 year or less)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Profit / Loss</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-crypto-profit-calculator-target="profit">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">ROI</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-crypto-profit-calculator-target="roi">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Price Change</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-crypto-profit-calculator-target="percentChange">0.00%</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Basis</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-crypto-profit-calculator-target="costBasis">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Cost (incl. fees)</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-crypto-profit-calculator-target="totalCost">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Gross Revenue</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-crypto-profit-calculator-target="grossRevenue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Revenue</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-crypto-profit-calculator-target="netRevenue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Fees</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-crypto-profit-calculator-target="totalFees">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Capital Gains Tax (est.)</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-crypto-profit-calculator-target="capitalGainsTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">After-Tax Profit</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-crypto-profit-calculator-target="afterTaxProfit">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Break-Even Price</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-crypto-profit-calculator-target="breakEvenPrice">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->crypto-profit-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Crypto Profit Calculator</h2>
+      <p>
+        Enter the price you paid per coin or token, the price you sold at, and the quantity traded. Set the buy and sell fee percentages charged by your exchange (typically 0.1% to 1.5%). Select whether you held the asset for more or less than one year to estimate your capital gains tax. The calculator instantly computes your profit or loss, return on investment, total fees, estimated tax liability, and the break-even sell price.
+      </p>
+      <p>
+        Cryptocurrency trading involves significant fees and tax obligations that many traders overlook. Exchange fees, network transaction fees, and capital gains taxes can collectively consume a meaningful portion of your gains. This calculator helps you understand your true net profit after all costs, which is essential for evaluating your actual trading performance.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Cryptocurrency Tax Obligations</h2>
+      <p>
+        The IRS treats cryptocurrency as property, not currency. This means every sale, trade, or exchange is a taxable event that must be reported. The tax rate depends on how long you held the asset. Short-term gains on crypto held for one year or less are taxed at your ordinary income rate, which can be as high as 37%. Long-term gains on crypto held for more than one year qualify for lower rates of 0%, 15%, or 20% depending on your total taxable income. Crypto-to-crypto swaps are also taxable events.
+      </p>
+
+      <h3>Tracking Your Cost Basis</h3>
+      <p>
+        Accurate cost basis tracking is essential for reporting crypto taxes. Your cost basis includes the purchase price plus any fees paid to acquire the asset. If you bought the same cryptocurrency at different times and prices, you need a consistent method for determining which coins you sold. The IRS accepts FIFO (first in first out) as the default, but specific identification allows you to choose which lot to sell, potentially minimizing your tax bill. Many crypto tax software tools can automate this tracking across multiple exchanges.
+      </p>
+
+      <h3>Strategies for Managing Crypto Taxes</h3>
+      <p>
+        Tax-loss harvesting involves selling losing positions to realize losses that offset gains from profitable trades. Up to $3,000 in net losses can be deducted against ordinary income each year, with excess losses carried forward indefinitely. Holding assets for more than one year to qualify for long-term rates can roughly halve your tax bill on gains. Donating appreciated cryptocurrency to qualified charities allows you to avoid capital gains tax entirely while receiving a deduction for the full market value. Consulting a tax professional who specializes in cryptocurrency is recommended for active traders.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate profit on a cryptocurrency trade?</h3>
+      <p>
+        Crypto profit equals (Sell Price x Quantity) minus (Buy Price x Quantity) minus all fees. The buy fee is a percentage of your purchase cost and the sell fee is a percentage of your sale proceeds. The net amount after subtracting both fees from the gross gain or loss is your actual profit.
+      </p>
+
+      <h3>How is cryptocurrency taxed?</h3>
+      <p>
+        Cryptocurrency is taxed as property by the IRS. Short-term gains (held one year or less) are taxed at your ordinary income tax rate up to 37%. Long-term gains (held more than one year) are taxed at preferential rates of 0%, 15%, or 20% depending on your income. Every sale, trade, or exchange is a taxable event.
+      </p>
+
+      <h3>What fees do crypto exchanges charge?</h3>
+      <p>
+        Most crypto exchanges charge trading fees ranging from 0.1% to 1.5% per transaction. Fees vary by exchange, trading volume, and payment method. Some exchanges charge maker/taker fees (lower for limit orders, higher for market orders). Withdrawal fees and network gas fees are additional costs.
+      </p>
+
+      <h3>What is cost basis in crypto?</h3>
+      <p>
+        Cost basis is the original value of your cryptocurrency including any fees paid to acquire it. Accurate cost basis tracking is essential for tax reporting. The IRS accepts FIFO (first in first out), LIFO (last in first out), and specific identification methods for calculating gains on crypto assets.
+      </p>
+
+      <h3>Do I owe taxes on crypto losses?</h3>
+      <p>
+        You do not owe taxes on losses, but you can use them to offset gains. Up to $3,000 in net capital losses can be deducted against ordinary income each year, with excess losses carried forward to future years. Tax-loss harvesting is a common strategy where you sell losing positions to offset gains from profitable trades.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Crypto Profit Calculator", url: finance_crypto_profit_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "ROI Calculator", description: "Calculate return on investment for any asset or project.", path: finance_roi_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Investment Calculator", description: "Project the future value of your investments with regular contributions.", path: finance_investment_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "DCA Calculator", description: "See how dollar-cost averaging performs over time.", path: finance_dca_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("crypto-profit-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

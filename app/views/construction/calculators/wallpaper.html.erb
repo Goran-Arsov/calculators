@@ -1,0 +1,185 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Wallpaper Calculator - Free Online Tool",
+  description: "Calculate how many rolls of wallpaper you need for any room. Enter room dimensions, doors, windows, and pattern repeat for accurate roll estimates.",
+  canonical: construction_wallpaper_url,
+  og: {
+    title: "Wallpaper Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how many rolls of wallpaper you need for any room. Enter room dimensions, doors, windows, and pattern repeat.",
+    url: construction_wallpaper_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Wallpaper Calculator", url: construction_wallpaper_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate how much wallpaper I need?", answer: "Measure the room perimeter by adding the length of all walls. Divide the perimeter by the width of one wallpaper strip (typically 20.5 inches for American rolls) to get the total number of strips. Then determine how many strips you can cut from one roll based on wall height and pattern repeat. Divide total strips by strips per roll and round up." },
+  { question: "What is a standard wallpaper roll size?", answer: "An American single roll is approximately 20.5 inches wide and 33 feet long, covering about 56 square feet before trimming. A European roll is typically 21 inches wide and 33 feet long. Double rolls are twice the length at 66 feet. Always check the specific roll dimensions printed on the packaging, as sizes vary by manufacturer." },
+  { question: "How does pattern repeat affect wallpaper quantity?", answer: "Pattern repeat is the vertical distance between identical points in the pattern. When hanging wallpaper, each strip must be aligned with the adjacent strip, which means you may need to cut extra paper to match the pattern. A large pattern repeat of 24 inches or more can increase waste by 20-30%. This calculator accounts for pattern repeat when estimating the number of strips per roll." },
+  { question: "Should I subtract doors and windows from wallpaper calculations?", answer: "Yes. Each standard door saves approximately one wallpaper strip and each window saves about one strip. The calculator subtracts these openings from the total strip count. However, do not subtract half-strips for small windows or narrow openings, as you may still need a full-width strip for that section of wall." },
+  { question: "How many extra rolls of wallpaper should I buy?", answer: "Buy at least one extra roll beyond the calculated amount for pattern matching waste, cutting errors, and future repairs. If the wallpaper has a large pattern repeat or the walls have many obstacles, buy two extra rolls. Always purchase all rolls from the same dye lot to ensure consistent color, as different print runs can vary slightly." }
+]) %>
+
+<%= calculator_schema(
+  name: "Wallpaper Calculator",
+  description: "Calculate the number of wallpaper rolls needed for any room based on dimensions, openings, and pattern repeat.",
+  url: construction_wallpaper_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Wallpaper Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Wallpaper Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate the number of wallpaper rolls you need based on room dimensions, openings, and pattern repeat.</p>
+
+    <div data-controller="wallpaper-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Room Length (ft)</label>
+            <input type="number" data-wallpaper-calculator-target="length" data-action="input->wallpaper-calculator#calculate" class="w-full" placeholder="14" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Room Width (ft)</label>
+            <input type="number" data-wallpaper-calculator-target="width" data-action="input->wallpaper-calculator#calculate" class="w-full" placeholder="12" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wall Height (ft)</label>
+            <input type="number" data-wallpaper-calculator-target="height" data-action="input->wallpaper-calculator#calculate" class="w-full" placeholder="8" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Doors</label>
+            <input type="number" data-wallpaper-calculator-target="doors" data-action="input->wallpaper-calculator#calculate" class="w-full" value="1" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Windows</label>
+            <input type="number" data-wallpaper-calculator-target="windows" data-action="input->wallpaper-calculator#calculate" class="w-full" value="2" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pattern Repeat (inches, 0 for none)</label>
+            <input type="number" data-wallpaper-calculator-target="patternRepeat" data-action="input->wallpaper-calculator#calculate" class="w-full" value="0" step="0.5" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Wall Area</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-wallpaper-calculator-target="resultWallArea">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Coverable Area</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-wallpaper-calculator-target="resultCoverable">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Strips</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-wallpaper-calculator-target="resultStrips">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Strips per Roll</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-wallpaper-calculator-target="resultStripsPerRoll">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Rolls Needed</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-wallpaper-calculator-target="resultRolls">0</span>
+            </div>
+          </div>
+          <button data-action="click->wallpaper-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Wallpaper Calculator</h2>
+      <p>
+        Buying the right amount of wallpaper avoids both shortages and wasted money on unused rolls. Enter your room length, width, and wall height in feet. Specify the number of doors and windows so the calculator can subtract those openings from the total strip count. If your wallpaper has a repeating pattern, enter the vertical pattern repeat distance in inches. The calculator determines the number of wallpaper strips needed, how many strips fit per roll, and the total number of rolls to purchase.
+      </p>
+      <p>
+        The calculation is based on American single rolls measuring 20.5 inches wide and 33 feet long. Each strip of wallpaper must be at least as tall as your wall height, and the number of strips that can be cut from one roll depends on the wall height and pattern repeat. A pattern repeat means each strip must be cut longer to align the design, which reduces the number of usable strips per roll and increases the total rolls needed.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Wallpaper Pattern Repeats</h2>
+      <p>
+        Wallpaper patterns are categorized as random match, straight match, or drop match. Random match patterns such as textures and vertical stripes have no repeat and produce the least waste. Straight match patterns align horizontally across adjacent strips at the same height. Drop match patterns offset the design by half the repeat distance on alternating strips, which requires the most careful planning and typically produces the most waste.
+      </p>
+
+      <h3>Preparing Walls for Wallpaper</h3>
+      <p>
+        Proper wall preparation is essential for a professional-looking wallpaper installation. Walls should be clean, smooth, dry, and primed with a wallpaper-specific primer or sizing. Fill any holes or cracks with spackling compound and sand smooth. Remove old wallpaper completely rather than hanging over it. New drywall must be primed to prevent the wallpaper adhesive from bonding permanently to the paper facing, which would make future removal extremely difficult.
+      </p>
+
+      <h3>Tips for Ordering Wallpaper</h3>
+      <p>
+        Always order all your wallpaper at once from the same dye lot number. Different print runs can have slight color variations that are noticeable when hung side by side. Most retailers allow returns of unopened rolls, so it is better to buy one or two extra rolls than to run short and risk a dye lot mismatch. Keep one leftover roll stored flat in a cool, dry place for future repairs or patching.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate how much wallpaper I need?</h3>
+      <p>
+        Measure the room perimeter by adding the length of all walls. Divide the perimeter by the width of one wallpaper strip, typically 20.5 inches for American rolls, to get the total number of strips. Then determine how many strips you can cut from one roll based on wall height and pattern repeat. Divide total strips by strips per roll and round up.
+      </p>
+
+      <h3>What is a standard wallpaper roll size?</h3>
+      <p>
+        An American single roll is approximately 20.5 inches wide and 33 feet long, covering about 56 square feet before trimming. A European roll is typically 21 inches wide and 33 feet long. Double rolls are twice the length at 66 feet.
+      </p>
+
+      <h3>How does pattern repeat affect wallpaper quantity?</h3>
+      <p>
+        Pattern repeat is the vertical distance between identical points in the pattern. Each strip must be aligned, so you may need to cut extra paper to match the pattern. A large pattern repeat of 24 inches or more can increase waste by 20 to 30 percent.
+      </p>
+
+      <h3>Should I subtract doors and windows from wallpaper calculations?</h3>
+      <p>
+        Yes. Each standard door and window saves approximately one wallpaper strip. The calculator subtracts these openings from the total strip count. However, do not subtract for small openings where you may still need a full-width strip.
+      </p>
+
+      <h3>How many extra rolls of wallpaper should I buy?</h3>
+      <p>
+        Buy at least one extra roll beyond the calculated amount for pattern matching waste, cutting errors, and future repairs. If the wallpaper has a large pattern repeat, buy two extra rolls. Always purchase from the same dye lot.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Wallpaper Calculator", url: construction_wallpaper_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Paint Calculator", description: "Calculate how many gallons of paint you need for any room.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
+      { name: "Flooring Calculator", description: "Calculate how much flooring material you need with waste allowance.", path: construction_flooring_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Tile Calculator", description: "Estimate tiles, grout, and adhesive for your tiling project.", path: construction_tile_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("wallpaper-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

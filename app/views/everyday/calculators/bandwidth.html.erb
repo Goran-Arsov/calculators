@@ -1,0 +1,203 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Bandwidth Calculator - Free Online Tool",
+  description: "Calculate download time from file size and internet speed, or find the speed needed to download a file in a given time. Supports bytes, KB, MB, GB, TB and Kbps, Mbps, Gbps.",
+  canonical: everyday_bandwidth_url,
+  og: {
+    title: "Bandwidth Calculator - Free Online Tool | CalcWise",
+    description: "Calculate download time from file size and speed. Supports all common file size and bandwidth units.",
+    url: everyday_bandwidth_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Bandwidth Calculator", url: everyday_bandwidth_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate download time?", answer: "Convert the file size to bits (multiply bytes by 8) and divide by the speed in bits per second. For example, a 1 GB file is 8,589,934,592 bits. At 100 Mbps (100,000,000 bits per second), it takes about 85.9 seconds or roughly 1 minute 26 seconds to download. Real-world speeds are often lower due to overhead and network conditions." },
+  { question: "What is the difference between Mbps and MBps?", answer: "Mbps (megabits per second) measures bandwidth/speed, while MBps (megabytes per second) measures data transfer rate. There are 8 bits in a byte, so 100 Mbps equals 12.5 MBps. Internet speeds are typically advertised in Mbps, while file sizes are shown in MB or GB (bytes). This distinction is important when estimating download times." },
+  { question: "Why is my actual download speed slower than advertised?", answer: "Several factors reduce actual speed: network overhead (protocols add extra data), router/WiFi limitations, distance from the server, congestion on the network, and your ISP's traffic management. Typical real-world speeds are 60-80% of the advertised maximum. WiFi connections are generally slower than wired Ethernet connections." },
+  { question: "How much bandwidth do I need for streaming?", answer: "For standard definition video: 3-5 Mbps. For HD (720p/1080p): 5-10 Mbps. For 4K/Ultra HD: 25-50 Mbps. For video calls: 3-5 Mbps up and down. These are per-stream requirements, so a household with multiple simultaneous users needs correspondingly more bandwidth. A 100 Mbps connection comfortably handles most household needs." },
+  { question: "What is the difference between KB and KiB?", answer: "KB (kilobyte) commonly means 1,024 bytes in computing contexts (technically KiB in the IEC standard). In the SI standard, 1 KB is exactly 1,000 bytes. This calculator uses binary units where 1 KB = 1,024 bytes, 1 MB = 1,048,576 bytes, etc., which matches how operating systems typically report file sizes." }
+]) %>
+
+<%= calculator_schema(
+  name: "Bandwidth Calculator",
+  description: "Calculate download time from file size and internet speed, with speed recommendations for target download times.",
+  url: everyday_bandwidth_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Bandwidth Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Bandwidth Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate download time from file size and internet speed, plus see the speed needed for 1-minute, 10-minute, and 1-hour downloads.</p>
+
+    <div data-controller="bandwidth-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-2">
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">File Size</label>
+              <input type="number" data-bandwidth-calculator-target="fileSize" data-action="input->bandwidth-calculator#calculate" class="w-full" placeholder="100" step="0.1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit</label>
+              <select data-bandwidth-calculator-target="fileUnit" data-action="change->bandwidth-calculator#calculate" class="w-full">
+                <option value="B">Bytes</option>
+                <option value="KB">KB</option>
+                <option value="MB" selected>MB</option>
+                <option value="GB">GB</option>
+                <option value="TB">TB</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-2">
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Connection Speed</label>
+              <input type="number" data-bandwidth-calculator-target="speed" data-action="input->bandwidth-calculator#calculate" class="w-full" placeholder="100" step="0.1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit</label>
+              <select data-bandwidth-calculator-target="speedUnit" data-action="change->bandwidth-calculator#calculate" class="w-full">
+                <option value="bps">bps</option>
+                <option value="Kbps">Kbps</option>
+                <option value="Mbps" selected>Mbps</option>
+                <option value="Gbps">Gbps</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Download Time</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-bandwidth-calculator-target="resultTime">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Exact Seconds</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-bandwidth-calculator-target="resultSeconds">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">File Size</span>
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400" data-bandwidth-calculator-target="resultFileMb">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Speed</span>
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400" data-bandwidth-calculator-target="resultSpeedMbps">--</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold">Speed needed to download in:</p>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">1 minute</span>
+              <span class="text-sm font-medium text-blue-600 dark:text-blue-400" data-bandwidth-calculator-target="resultSpeed1min">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">10 minutes</span>
+              <span class="text-sm font-medium text-blue-600 dark:text-blue-400" data-bandwidth-calculator-target="resultSpeed10min">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">1 hour</span>
+              <span class="text-sm font-medium text-blue-600 dark:text-blue-400" data-bandwidth-calculator-target="resultSpeed1hour">--</span>
+            </div>
+          </div>
+          <button data-action="click->bandwidth-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Bandwidth Calculator</h2>
+      <p>
+        Enter the file size and select the unit (bytes, KB, MB, GB, or TB). Then enter your internet connection speed and select the unit (bps, Kbps, Mbps, or Gbps). The calculator instantly shows the estimated download time, along with the speed you would need to complete the download in 1 minute, 10 minutes, or 1 hour. This helps you plan large downloads or evaluate whether your internet plan meets your needs.
+      </p>
+      <p>
+        This calculator uses binary units for file sizes (1 KB = 1,024 bytes) and decimal units for speeds (1 Mbps = 1,000,000 bits per second), matching how these values are conventionally reported by operating systems and ISPs respectively. The results assume maximum theoretical throughput without accounting for protocol overhead, latency, or congestion.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Bandwidth and Data Transfer</h2>
+      <p>
+        Bandwidth is the maximum rate at which data can be transferred over a network connection. It is measured in bits per second (bps), with common magnitudes being kilobits (Kbps), megabits (Mbps), and gigabits (Gbps). File sizes, by contrast, are measured in bytes. Since there are 8 bits in a byte, a 100 Mbps connection can transfer at most 12.5 megabytes per second under ideal conditions.
+      </p>
+
+      <h3>Common File Sizes</h3>
+      <p>
+        A typical MP3 song is 3-5 MB, a high-resolution photo is 3-10 MB, a one-hour HD video is 1-3 GB, a 4K movie is 20-100 GB, and a modern video game can be 30-150 GB. Knowing these typical sizes and your connection speed helps you estimate download times before starting a transfer. Operating system updates typically range from 500 MB to 5 GB.
+      </p>
+
+      <h3>Real-World vs. Theoretical Speed</h3>
+      <p>
+        Your actual download speed will almost always be lower than the advertised maximum. WiFi connections lose speed due to distance, walls, and interference. Network protocols add overhead that reduces usable bandwidth by 5-10%. Server-side limitations may throttle download speeds. Shared connections slow down as more devices use the network simultaneously. As a rule of thumb, expect 60-80% of your advertised speed for sustained downloads.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate download time?</h3>
+      <p>
+        Convert the file size to bits (multiply bytes by 8) and divide by the speed in bits per second. For example, a 1 GB file is 8,589,934,592 bits. At 100 Mbps, it takes about 85.9 seconds. Real-world speeds are often lower due to overhead and network conditions.
+      </p>
+
+      <h3>What is the difference between Mbps and MBps?</h3>
+      <p>
+        Mbps (megabits per second) measures bandwidth/speed, while MBps (megabytes per second) measures data transfer rate. There are 8 bits in a byte, so 100 Mbps equals 12.5 MBps. Internet speeds are typically advertised in Mbps, while file sizes are shown in MB or GB.
+      </p>
+
+      <h3>Why is my actual download speed slower than advertised?</h3>
+      <p>
+        Several factors reduce actual speed: network overhead, router/WiFi limitations, distance from the server, congestion on the network, and your ISP's traffic management. Typical real-world speeds are 60-80% of the advertised maximum.
+      </p>
+
+      <h3>How much bandwidth do I need for streaming?</h3>
+      <p>
+        For standard definition video: 3-5 Mbps. For HD (720p/1080p): 5-10 Mbps. For 4K/Ultra HD: 25-50 Mbps. For video calls: 3-5 Mbps up and down. A 100 Mbps connection comfortably handles most household needs.
+      </p>
+
+      <h3>What is the difference between KB and KiB?</h3>
+      <p>
+        KB commonly means 1,024 bytes in computing contexts (technically KiB in the IEC standard). In the SI standard, 1 KB is exactly 1,000 bytes. This calculator uses binary units where 1 KB = 1,024 bytes, matching how operating systems typically report file sizes.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Bandwidth Calculator", url: everyday_bandwidth_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "GPA Calculator", description: "Calculate your grade point average from course grades and credits.", path: everyday_gpa_path, icon_path: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("bandwidth-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

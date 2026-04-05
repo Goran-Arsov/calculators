@@ -1,0 +1,179 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Ovulation Calculator - Free Fertility Window Tool",
+  description: "Calculate your ovulation date, fertile window, and next period based on your cycle length. Track up to 3 upcoming cycles with our free instant calculator.",
+  canonical: health_ovulation_url,
+  og: {
+    title: "Ovulation Calculator - Free Fertility Window Tool | CalcWise",
+    description: "Calculate your ovulation date, fertile window, and next period. Track upcoming cycles based on your last period and cycle length.",
+    url: health_ovulation_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Ovulation Calculator", url: health_ovulation_url }
+]) %>
+
+<%= faq_schema([
+  { question: "When do I ovulate based on my cycle?", answer: "Ovulation typically occurs about 14 days before the start of your next period. For a 28-day cycle, this means around day 14. For a 30-day cycle, ovulation is around day 16. For a 26-day cycle, it is around day 12. The luteal phase (from ovulation to your next period) is relatively consistent at about 14 days, while the follicular phase (from your period to ovulation) varies with cycle length." },
+  { question: "What is the fertile window and when does it occur?", answer: "The fertile window is the 6-day period during which pregnancy can occur — the 5 days before ovulation and the day of ovulation itself. Sperm can survive in the reproductive tract for up to 5 days, while the egg is viable for only 12-24 hours after release. The highest probability of conception occurs on the day of ovulation and the two days before it." },
+  { question: "How accurate is an ovulation calculator?", answer: "Ovulation calculators provide estimates based on average cycle patterns and are accurate to within about 1-2 days for women with regular cycles. However, ovulation timing can vary from month to month due to stress, illness, travel, or hormonal fluctuations. For more precise ovulation tracking, combine calculator estimates with ovulation predictor kits (OPKs), basal body temperature charting, or cervical mucus monitoring." },
+  { question: "Can I get pregnant outside the fertile window?", answer: "Pregnancy outside the fertile window is extremely unlikely but not impossible. The fertile window is based on average sperm survival (up to 5 days) and egg viability (12-24 hours). In rare cases, sperm may survive slightly longer, or ovulation may occur at an unexpected time. However, the probability of conception drops dramatically outside the 6-day fertile window, approaching zero more than 5 days before or 1 day after ovulation." },
+  { question: "What if my cycle is irregular?", answer: "If your cycles vary in length, use the average of your last 3-6 cycles as the cycle length input. For very irregular cycles (varying by more than 7 days), calculator predictions become less reliable. Consider tracking ovulation with physical signs — basal body temperature rises about 0.5-1 degree Fahrenheit after ovulation, and cervical mucus becomes clear, stretchy, and egg-white-like around ovulation. Ovulation predictor kits detect the LH surge 24-36 hours before ovulation." }
+]) %>
+
+<%= calculator_schema(
+  name: "Ovulation Calculator",
+  description: "Calculate your ovulation date, fertile window, and next period date based on your last period and cycle length.",
+  url: health_ovulation_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Ovulation Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Ovulation Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your ovulation date, fertile window, and next period based on your last period and cycle length.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="ovulation-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">First Day of Last Period</label>
+            <input type="date" data-ovulation-calculator-target="lastPeriod" data-action="input->ovulation-calculator#calculate" class="w-full">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Average Cycle Length (days)</label>
+            <input type="number" data-ovulation-calculator-target="cycleLength" data-action="input->ovulation-calculator#calculate" class="w-full" placeholder="28" value="28" min="20" max="45">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Ovulation Date</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-ovulation-calculator-target="ovulationDate">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Fertile Window Start</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-ovulation-calculator-target="fertileStart">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Fertile Window End</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-ovulation-calculator-target="fertileEnd">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Next Period</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-ovulation-calculator-target="nextPeriod">—</span>
+            </div>
+          </div>
+          <button data-action="click->ovulation-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+
+      <%# Upcoming cycles table %>
+      <div class="mt-6">
+        <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Upcoming Cycles</h3>
+        <div data-ovulation-calculator-target="cycles" class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+          <p class="text-gray-400 dark:text-gray-500 text-sm">Enter your last period date to see upcoming cycles</p>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Ovulation Calculator</h2>
+      <p>
+        Our ovulation calculator helps you identify your most fertile days by estimating when ovulation will occur based on your menstrual cycle. Enter the first day of your last period and your average cycle length. The calculator instantly displays your estimated ovulation date, the 6-day fertile window when conception is most likely, your next expected period, and a forecast of the next three cycles with ovulation and fertile window dates for each.
+      </p>
+      <p>
+        Whether you are trying to conceive or simply want to understand your cycle better, knowing your ovulation date is essential. Ovulation is the release of a mature egg from the ovary, and it represents the brief window each month when pregnancy is possible. By identifying this window, you can time intercourse to maximize or avoid the chance of conception.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How Ovulation Timing Works</h2>
+      <p>
+        Ovulation is triggered by a surge in luteinizing hormone (LH) and typically occurs about <strong>14 days before the start of the next period</strong>. This means the day of ovulation depends on your total cycle length. For a 28-day cycle, ovulation occurs around day 14. For a 32-day cycle, it occurs around day 18. The calculator subtracts 14 (the typical luteal phase) from your cycle length to estimate your ovulation day relative to the start of your period.
+      </p>
+
+      <h3>The Fertile Window Explained</h3>
+      <p>
+        The fertile window spans approximately 6 days — from 5 days before ovulation to 1 day after. This accounts for the fact that sperm can survive in the female reproductive tract for up to 5 days, while the egg is viable for only about 12-24 hours after release. The highest probability of conception occurs during the 3 days ending on ovulation day. Studies show that intercourse on the day of ovulation has about a 33% chance of conception, while intercourse 5 days before ovulation has about an 8% chance.
+      </p>
+
+      <h3>Improving Prediction Accuracy</h3>
+      <p>
+        Calculator predictions are most accurate for women with regular cycles. To improve accuracy, track your cycle length for several months and use the average. You can supplement calculator predictions with physical ovulation signs: a slight rise in basal body temperature after ovulation, changes in cervical mucus (becoming clear, stretchy, and egg-white-like near ovulation), and ovulation predictor kits that detect the pre-ovulatory LH surge. Combining multiple tracking methods gives the most reliable picture of your fertile window.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>When do I ovulate based on my cycle?</h3>
+      <p>
+        Ovulation typically occurs about 14 days before the start of your next period. For a 28-day cycle, this means around day 14. For a 30-day cycle, ovulation is around day 16. The luteal phase is relatively consistent at about 14 days, while the follicular phase varies with cycle length.
+      </p>
+
+      <h3>What is the fertile window and when does it occur?</h3>
+      <p>
+        The fertile window is the 6-day period during which pregnancy can occur — the 5 days before ovulation and the day of ovulation itself. The highest probability of conception occurs on the day of ovulation and the two days before it.
+      </p>
+
+      <h3>How accurate is an ovulation calculator?</h3>
+      <p>
+        Ovulation calculators are accurate to within about 1-2 days for women with regular cycles. For more precise tracking, combine calculator estimates with ovulation predictor kits, basal body temperature charting, or cervical mucus monitoring.
+      </p>
+
+      <h3>Can I get pregnant outside the fertile window?</h3>
+      <p>
+        Pregnancy outside the fertile window is extremely unlikely. The probability of conception drops dramatically outside the 6-day fertile window, approaching zero more than 5 days before or 1 day after ovulation.
+      </p>
+
+      <h3>What if my cycle is irregular?</h3>
+      <p>
+        If your cycles vary in length, use the average of your last 3-6 cycles. For very irregular cycles, consider tracking ovulation with physical signs or ovulation predictor kits for more reliable results.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Ovulation Calculator", url: health_ovulation_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Pregnancy Due Date Calculator", description: "Calculate your expected due date based on your last menstrual period.", path: health_pregnancy_due_date_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Conception Calculator", description: "Estimate your conception date from your due date or last period.", path: health_conception_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Pregnancy Week Calculator", description: "Find out how many weeks pregnant you are and your current trimester.", path: health_pregnancy_week_path, icon_path: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("ovulation-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

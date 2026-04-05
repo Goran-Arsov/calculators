@@ -1,0 +1,211 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Lean Body Mass Calculator - Free LBM Calculator Tool",
+  description: "Calculate your lean body mass and fat mass using body fat percentage or the Boer, James, and Hume estimation formulas. Free instant results with multiple methods.",
+  canonical: health_lean_body_mass_url,
+  og: {
+    title: "Lean Body Mass Calculator - Free LBM Calculator Tool | CalcWise",
+    description: "Calculate your lean body mass using body fat percentage or proven estimation formulas. Compare results from Boer, James, and Hume methods.",
+    url: health_lean_body_mass_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Lean Body Mass Calculator", url: health_lean_body_mass_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is lean body mass?", answer: "Lean body mass (LBM) is your total body weight minus your fat mass. It includes muscle, bones, organs, skin, blood, water, and everything in your body that is not stored fat. LBM is a more useful indicator of fitness than total weight because it reflects the metabolically active tissue that burns calories and contributes to physical performance. A higher lean body mass relative to total weight indicates a healthier body composition." },
+  { question: "How is lean body mass calculated from body fat percentage?", answer: "If you know your body fat percentage, lean body mass is calculated simply as: LBM = Total Weight x (1 - Body Fat Percentage / 100). For example, if you weigh 80 kg with 20% body fat, your fat mass is 16 kg and your lean body mass is 64 kg. This is the most accurate method if you have a reliable body fat measurement from a DEXA scan, bioelectrical impedance, or other testing method." },
+  { question: "What is the Boer formula for lean body mass?", answer: "The Boer formula (1984) estimates lean body mass using weight and height without requiring a body fat measurement. For males: LBM = 0.407 x weight(kg) + 0.267 x height(cm) - 19.2. For females: LBM = 0.252 x weight(kg) + 0.473 x height(cm) - 48.3. It is considered one of the most accurate estimation formulas available and is widely used in clinical settings." },
+  { question: "Why does lean body mass matter for fitness?", answer: "Lean body mass determines your basal metabolic rate — more lean mass means you burn more calories at rest. It also directly correlates with physical strength, athletic performance, and bone density. When dieting, preserving lean mass is critical; losing muscle instead of fat reduces metabolism and makes weight regain more likely. Tracking LBM helps ensure your diet and exercise program is building muscle while losing fat." },
+  { question: "How can I increase my lean body mass?", answer: "To increase lean body mass, combine progressive resistance training (strength training) with adequate protein intake of 1.6-2.2 grams per kilogram of body weight per day. Eat in a slight caloric surplus (200-400 calories above TDEE) and prioritize sleep for recovery. Compound exercises like squats, deadlifts, bench press, and rows are most effective for building lean mass. Consistency over months and years is key — lean mass is built slowly at a rate of about 0.25-0.5 kg per month for intermediate lifters." }
+]) %>
+
+<%= calculator_schema(
+  name: "Lean Body Mass Calculator",
+  description: "Calculate your lean body mass and fat mass using body fat percentage or the Boer, James, and Hume estimation formulas.",
+  url: health_lean_body_mass_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Lean Body Mass Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Lean Body Mass Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your lean body mass and fat mass using body fat percentage or proven estimation formulas.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="lean-body-mass-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Calculation Method</label>
+            <select data-lean-body-mass-calculator-target="method" data-action="change->lean-body-mass-calculator#updateMethod" class="w-full" aria-label="Calculation Method">
+              <option value="body_fat">From Body Fat Percentage</option>
+              <option value="formula">From Height & Weight (Formula)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit System</label>
+            <select data-lean-body-mass-calculator-target="unitSystem" data-action="change->lean-body-mass-calculator#updateLabels" class="w-full" aria-label="Unit System">
+              <option value="metric">Metric (kg, cm)</option>
+              <option value="imperial">Imperial (lbs, in)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-lean-body-mass-calculator-target="weightLabel">Weight (kg)</label>
+            <input type="number" data-lean-body-mass-calculator-target="weight" data-action="input->lean-body-mass-calculator#calculate" class="w-full" placeholder="70" step="0.1" min="0">
+          </div>
+          <div class="field-group">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Body Fat Percentage (%)</label>
+            <input type="number" data-lean-body-mass-calculator-target="bodyFatPct" data-action="input->lean-body-mass-calculator#calculate" class="w-full" placeholder="20" step="0.1" min="1" max="70">
+          </div>
+          <div data-lean-body-mass-calculator-target="formulaFields" class="space-y-4 hidden">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gender</label>
+              <select data-lean-body-mass-calculator-target="gender" data-action="change->lean-body-mass-calculator#calculate" class="w-full" aria-label="Gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-lean-body-mass-calculator-target="heightLabel">Height (cm)</label>
+              <input type="number" data-lean-body-mass-calculator-target="height" data-action="input->lean-body-mass-calculator#calculate" class="w-full" placeholder="175" step="0.1" min="0">
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Lean Body Mass</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-lean-body-mass-calculator-target="leanMass">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Fat Mass</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-lean-body-mass-calculator-target="fatMass">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Body Fat %</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-lean-body-mass-calculator-target="bodyFatResult">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Lean %</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-lean-body-mass-calculator-target="leanPct">—</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="formula-row flex justify-between items-center hidden">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Boer Formula</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-lean-body-mass-calculator-target="boer">—</span>
+            </div>
+            <div class="formula-row flex justify-between items-center hidden">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">James Formula</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-lean-body-mass-calculator-target="james">—</span>
+            </div>
+            <div class="formula-row flex justify-between items-center hidden">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Hume Formula</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-lean-body-mass-calculator-target="hume">—</span>
+            </div>
+          </div>
+          <button data-action="click->lean-body-mass-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Lean Body Mass Calculator</h2>
+      <p>
+        This calculator offers two methods for determining your lean body mass. If you know your body fat percentage (from a DEXA scan, calipers, or bioelectrical impedance), select "From Body Fat Percentage" and enter your weight and body fat percentage for the most accurate result. If you do not know your body fat percentage, select "From Height & Weight (Formula)" and the calculator will estimate your LBM using three proven formulas — Boer, James, and Hume — so you can compare results. All calculations update in real time as you enter your data.
+      </p>
+      <p>
+        Understanding your lean body mass versus fat mass is fundamental to any effective fitness or nutrition program. Unlike total body weight, LBM separates what your body is made of — distinguishing between metabolically active lean tissue and stored fat. This distinction is crucial because two people at the same weight can have vastly different body compositions, health profiles, and caloric needs.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the Estimation Formulas</h2>
+      <p>
+        The <strong>Boer formula</strong> (1984) is widely considered the most accurate estimation method. For males: LBM = 0.407 x weight(kg) + 0.267 x height(cm) - 19.2. For females: LBM = 0.252 x weight(kg) + 0.473 x height(cm) - 48.3. The <strong>James formula</strong> (1976) uses a different approach: for males, LBM = 1.1 x weight - 128 x (weight/height)^2; for females, LBM = 1.07 x weight - 148 x (weight/height)^2. The <strong>Hume formula</strong> (1966) was one of the earliest: for males, LBM = 0.32810 x weight + 0.33929 x height - 29.5336; for females, LBM = 0.29569 x weight + 0.41813 x height - 43.2933.
+      </p>
+
+      <h3>When to Use Each Method</h3>
+      <p>
+        If you have a reliable body fat percentage measurement, always use the direct calculation method as it will be the most accurate. The formula-based methods are estimation tools for when body fat percentage is unknown. Among the formulas, Boer is recommended as the primary reference, with James and Hume provided for comparison. If the three formulas give significantly different results, the average may be the most reasonable estimate. All formulas work best for individuals of average body composition and may be less accurate for very lean or very heavy individuals.
+      </p>
+
+      <h3>Why Lean Body Mass Matters</h3>
+      <p>
+        Lean body mass is the primary driver of your resting metabolic rate — each kilogram of lean mass burns approximately 13-15 calories per day at rest, compared to about 4.5 calories per kilogram of fat mass. This means that gaining lean mass and losing fat mass increases your calorie burn even when you are not exercising. LBM also correlates with bone density, insulin sensitivity, functional strength, and overall longevity. For these reasons, body recomposition (gaining muscle while losing fat) is often a more meaningful goal than simply losing weight.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is lean body mass?</h3>
+      <p>
+        Lean body mass is your total body weight minus fat mass. It includes muscle, bones, organs, skin, blood, and water. A higher LBM relative to total weight indicates healthier body composition.
+      </p>
+
+      <h3>How is lean body mass calculated from body fat percentage?</h3>
+      <p>
+        LBM = Total Weight x (1 - Body Fat % / 100). For example, 80 kg with 20% body fat means 16 kg fat mass and 64 kg lean body mass.
+      </p>
+
+      <h3>What is the Boer formula for lean body mass?</h3>
+      <p>
+        For males: LBM = 0.407 x weight(kg) + 0.267 x height(cm) - 19.2. For females: LBM = 0.252 x weight(kg) + 0.473 x height(cm) - 48.3. It is considered one of the most accurate estimation formulas.
+      </p>
+
+      <h3>Why does lean body mass matter for fitness?</h3>
+      <p>
+        LBM determines your basal metabolic rate, correlates with strength and athletic performance, and tracks whether your diet/exercise program is building muscle while losing fat.
+      </p>
+
+      <h3>How can I increase my lean body mass?</h3>
+      <p>
+        Combine progressive resistance training with adequate protein (1.6-2.2 g/kg/day), a slight caloric surplus, and sufficient sleep. Compound exercises like squats and deadlifts are most effective.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Lean Body Mass Calculator", url: health_lean_body_mass_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Body Fat Calculator", description: "Estimate your body fat percentage using the U.S. Navy method.", path: health_body_fat_path, icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure to find your daily calorie target.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("lean-body-mass-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

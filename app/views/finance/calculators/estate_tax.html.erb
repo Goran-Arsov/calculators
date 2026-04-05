@@ -1,0 +1,184 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Estate Tax Calculator - Federal Estate Tax Estimator",
+  description: "Estimate your federal estate tax liability based on estate value, exemption, and filing status. See taxable estate, effective rate, and net amount to heirs.",
+  canonical: finance_estate_tax_url,
+  og: {
+    title: "Estate Tax Calculator - Federal Estate Tax Estimator | CalcWise",
+    description: "Estimate your federal estate tax liability based on estate value, exemption, and filing status. See taxable estate, effective rate, and net to heirs.",
+    url: finance_estate_tax_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Estate Tax Calculator", url: finance_estate_tax_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the federal estate tax exemption for 2024?", answer: "The 2024 federal estate tax exemption is $13.61 million per individual. Married couples can effectively shelter up to $27.22 million through portability of the unused exemption. Estates valued below the exemption amount owe no federal estate tax." },
+  { question: "How is estate tax calculated?", answer: "Estate tax is calculated on the taxable estate, which is the gross estate value minus deductions and the applicable exemption. The taxable amount is then subject to graduated rates from 18% to 40%. The highest rate of 40% applies to taxable amounts over $1 million above the exemption." },
+  { question: "What is portability for married couples?", answer: "Portability allows a surviving spouse to use the deceased spouse's unused estate tax exemption in addition to their own. This effectively doubles the exemption for married couples to $27.22 million in 2024. A timely filed estate tax return (Form 706) is required to elect portability." },
+  { question: "What deductions reduce the taxable estate?", answer: "Common estate tax deductions include the marital deduction (unlimited for transfers to a surviving U.S. citizen spouse), charitable deductions for gifts to qualified organizations, debts and liabilities of the estate, funeral expenses, and administrative costs of settling the estate." },
+  { question: "Will the estate tax exemption change?", answer: "The current high exemption is scheduled to sunset at the end of 2025 under the Tax Cuts and Jobs Act, potentially dropping to approximately $7 million per person (adjusted for inflation). Congress could extend the current levels, but estate planning professionals recommend planning for the possibility of a lower exemption." }
+]) %>
+
+<%= calculator_schema(
+  name: "Estate Tax Calculator",
+  description: "Estimate federal estate tax liability based on estate value, exemption, filing status, and deductions.",
+  url: finance_estate_tax_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Estate Tax Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Estate Tax Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your federal estate tax liability, effective rate, and net amount passing to your heirs.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="estate-tax-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Estate Value ($)</label>
+            <input type="number" data-estate-tax-calculator-target="estateValue" data-action="input->estate-tax-calculator#calculate" class="w-full" placeholder="15000000" step="100000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Filing Status</label>
+            <select data-estate-tax-calculator-target="filingStatus" data-action="change->estate-tax-calculator#calculate" class="w-full">
+              <option value="single" selected>Single / Individual</option>
+              <option value="married">Married (with portability)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Deductions ($)</label>
+            <input type="number" data-estate-tax-calculator-target="deductions" data-action="input->estate-tax-calculator#calculate" class="w-full" placeholder="0" step="10000" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Estate Tax</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-estate-tax-calculator-target="estateTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Effective Rate</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-estate-tax-calculator-target="effectiveRate">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net to Heirs</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-estate-tax-calculator-target="netToHeirs">$0.00</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Exemption</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-estate-tax-calculator-target="exemption">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Taxable Estate</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-estate-tax-calculator-target="taxableEstate">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->estate-tax-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Estate Tax Calculator</h2>
+      <p>
+        Enter the total gross value of the estate, select the filing status (single or married with portability), and optionally enter any deductions such as charitable gifts, debts, or administrative expenses. The calculator applies the 2024 federal estate tax exemption and graduated tax brackets to estimate the estate tax owed, effective tax rate, and net amount that will pass to the heirs.
+      </p>
+      <p>
+        Estate tax planning is critical for high-net-worth individuals and families. The federal estate tax affects only estates that exceed the exemption amount, but for those it does affect, the rates are steep at 18% to 40%. Understanding your potential liability early allows you to implement strategies that legally reduce the tax burden and preserve more wealth for your beneficiaries.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Federal Estate Tax</h2>
+      <p>
+        The federal estate tax is a tax on the transfer of wealth at death. It applies to the value of all assets owned by the deceased, including real estate, investments, business interests, retirement accounts, life insurance proceeds, and personal property. The gross estate is reduced by allowable deductions (debts, funeral expenses, charitable gifts, marital transfers) and the lifetime exemption to arrive at the taxable estate. Only the amount above the exemption is subject to tax.
+      </p>
+
+      <h3>The Lifetime Exemption and Portability</h3>
+      <p>
+        The 2024 lifetime exemption is $13.61 million per individual, meaning estates below this threshold owe no federal estate tax. For married couples, portability allows the surviving spouse to use any unused portion of the deceased spouse's exemption, effectively doubling the sheltered amount to $27.22 million. This exemption is historically high and is scheduled to decrease significantly after 2025 if current legislation sunsets as planned.
+      </p>
+
+      <h3>Estate Tax Planning Strategies</h3>
+      <p>
+        Common strategies to reduce estate tax exposure include making annual gifts (up to $18,000 per recipient in 2024 without reducing the lifetime exemption), establishing irrevocable trusts to remove assets from the estate, charitable giving through donor-advised funds or charitable remainder trusts, purchasing life insurance within an irrevocable life insurance trust (ILIT), and making direct payments for medical or educational expenses on behalf of others. Each strategy has specific requirements and trade-offs that should be evaluated with a qualified estate planning attorney and financial advisor.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the federal estate tax exemption for 2024?</h3>
+      <p>
+        The 2024 federal estate tax exemption is $13.61 million per individual. Married couples can effectively shelter up to $27.22 million through portability of the unused exemption. Estates valued below the exemption amount owe no federal estate tax.
+      </p>
+
+      <h3>How is estate tax calculated?</h3>
+      <p>
+        Estate tax is calculated on the taxable estate, which is the gross estate value minus deductions and the applicable exemption. The taxable amount is then subject to graduated rates from 18% to 40%. The highest rate of 40% applies to taxable amounts over $1 million above the exemption.
+      </p>
+
+      <h3>What is portability for married couples?</h3>
+      <p>
+        Portability allows a surviving spouse to use the deceased spouse's unused estate tax exemption in addition to their own. This effectively doubles the exemption for married couples to $27.22 million in 2024. A timely filed estate tax return (Form 706) is required to elect portability.
+      </p>
+
+      <h3>What deductions reduce the taxable estate?</h3>
+      <p>
+        Common estate tax deductions include the marital deduction (unlimited for transfers to a surviving U.S. citizen spouse), charitable deductions for gifts to qualified organizations, debts and liabilities of the estate, funeral expenses, and administrative costs of settling the estate.
+      </p>
+
+      <h3>Will the estate tax exemption change?</h3>
+      <p>
+        The current high exemption is scheduled to sunset at the end of 2025 under the Tax Cuts and Jobs Act, potentially dropping to approximately $7 million per person (adjusted for inflation). Congress could extend the current levels, but estate planning professionals recommend planning for the possibility of a lower exemption.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Estate Tax Calculator", url: finance_estate_tax_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Tax Bracket Calculator", description: "See your federal tax bracket and effective tax rate.", path: finance_tax_bracket_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Net Worth Calculator", description: "Calculate your total net worth from assets and liabilities.", path: finance_net_worth_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Retirement Calculator", description: "Estimate how much you need to save for a comfortable retirement.", path: finance_retirement_path, icon_path: "M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("estate-tax-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

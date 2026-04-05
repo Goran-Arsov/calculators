@@ -1,0 +1,196 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Amortization Schedule Calculator - Free Loan Breakdown",
+  description: "Generate a complete month-by-month amortization schedule for any loan. See principal, interest, and remaining balance for every payment with our free calculator.",
+  canonical: finance_amortization_url,
+  og: {
+    title: "Amortization Schedule Calculator - Free Loan Breakdown | CalcWise",
+    description: "Generate a complete month-by-month amortization schedule for any loan. See principal, interest, and remaining balance for every payment.",
+    url: finance_amortization_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Amortization Schedule Calculator", url: finance_amortization_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is an amortization schedule?", answer: "An amortization schedule is a complete table showing every monthly payment over the life of a loan, broken down into the principal portion, interest portion, and remaining balance. Early payments are mostly interest, while later payments are mostly principal." },
+  { question: "How does amortization work?", answer: "Amortization spreads a loan into equal monthly payments. Each payment covers that month's interest charge plus a portion of the principal. As the balance decreases over time, less of each payment goes to interest and more goes to principal, even though the total payment stays the same." },
+  { question: "Why do I pay more interest at the beginning of a loan?", answer: "Interest is calculated on the outstanding balance. At the start of a loan the balance is highest, so the interest charge is largest. As you pay down the principal over time, the interest portion shrinks and the principal portion grows within each fixed payment." },
+  { question: "How can I pay off my loan faster?", answer: "You can pay off a loan faster by making extra principal payments, switching to biweekly payments (which adds one extra payment per year), rounding up your monthly payment, or refinancing to a shorter term. Even small additional payments can save thousands in interest." },
+  { question: "What is the difference between amortization and simple interest?", answer: "Amortization means equal periodic payments that include both interest and principal, gradually paying off the loan to zero. Simple interest loans charge interest only on the current outstanding balance without a structured payoff schedule, which can result in a balloon payment." }
+]) %>
+
+<%= calculator_schema(
+  name: "Amortization Schedule Calculator",
+  description: "Generate a complete month-by-month amortization schedule showing principal, interest, and remaining balance for any loan.",
+  url: finance_amortization_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Amortization Schedule Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Amortization Schedule Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Generate a full month-by-month amortization table showing how each payment splits between principal and interest.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="amortization-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Amount ($)</label>
+            <input type="number" data-amortization-calculator-target="principal" data-action="input->amortization-calculator#calculate" class="w-full" placeholder="250000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-amortization-calculator-target="rate" data-action="input->amortization-calculator#calculate" class="w-full" placeholder="6.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-amortization-calculator-target="years" data-action="input->amortization-calculator#calculate" class="w-full" placeholder="30" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-amortization-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-amortization-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-amortization-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-amortization-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->amortization-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+
+      <%# Amortization schedule table %>
+      <div class="mt-8 hidden" data-amortization-calculator-target="scheduleContainer">
+        <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Amortization Schedule</h3>
+        <div class="overflow-x-auto max-h-96 overflow-y-auto">
+          <table class="w-full text-left">
+            <thead class="sticky top-0 bg-white dark:bg-gray-900">
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th class="py-2.5 pr-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Month</th>
+                <th class="py-2.5 pr-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Payment</th>
+                <th class="py-2.5 pr-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Principal</th>
+                <th class="py-2.5 pr-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Interest</th>
+                <th class="py-2.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Balance</th>
+              </tr>
+            </thead>
+            <tbody data-amortization-calculator-target="scheduleBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Amortization Schedule Calculator</h2>
+      <p>
+        Enter your loan amount, annual interest rate, and loan term in years to generate a complete amortization schedule. The calculator instantly computes your fixed monthly payment and creates a detailed month-by-month table showing exactly how each payment is split between principal reduction and interest charges. You can scroll through the full schedule to see your balance decrease over time.
+      </p>
+      <p>
+        This tool is invaluable for understanding the true cost of a mortgage, auto loan, or personal loan. By examining the schedule, you can see that early payments are heavily weighted toward interest, while later payments primarily reduce the principal. This knowledge helps you make informed decisions about extra payments and refinancing.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Loan Amortization</h2>
+      <p>
+        Loan amortization is the process of spreading out a loan into a series of fixed payments over time. The standard amortization formula ensures that each monthly payment covers the interest accrued that month plus a portion of the outstanding principal. Because interest is calculated on the remaining balance, the interest-to-principal ratio shifts dramatically over the life of the loan. In a typical 30-year mortgage, more than 60% of the first year's payments go to interest, but in the final year, nearly 100% goes to principal.
+      </p>
+
+      <h3>Benefits of Viewing the Full Schedule</h3>
+      <p>
+        Seeing the full amortization table reveals patterns that summary numbers cannot show. You can identify exactly when your principal payments exceed your interest payments (the tipping point), calculate how much interest you save by making an extra payment at any specific point, and compare the total interest cost of different loan terms. For example, switching from a 30-year to a 15-year mortgage roughly doubles the monthly payment but typically saves more than half the total interest.
+      </p>
+
+      <h3>Strategies for Accelerating Payoff</h3>
+      <p>
+        Extra payments applied directly to principal can dramatically shorten your loan term. Adding even $100 per month to a $250,000 mortgage at 6.5% saves over $50,000 in interest and pays off the loan more than 5 years early. Biweekly payment plans, where you pay half the monthly amount every two weeks, result in 26 half-payments (13 full payments) per year instead of 12, effectively adding one extra payment annually. Always confirm with your lender that extra payments are applied to principal and that there are no prepayment penalties.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is an amortization schedule?</h3>
+      <p>
+        An amortization schedule is a complete table showing every monthly payment over the life of a loan, broken down into the principal portion, interest portion, and remaining balance. Early payments are mostly interest, while later payments are mostly principal.
+      </p>
+
+      <h3>How does amortization work?</h3>
+      <p>
+        Amortization spreads a loan into equal monthly payments. Each payment covers that month's interest charge plus a portion of the principal. As the balance decreases over time, less of each payment goes to interest and more goes to principal, even though the total payment stays the same.
+      </p>
+
+      <h3>Why do I pay more interest at the beginning of a loan?</h3>
+      <p>
+        Interest is calculated on the outstanding balance. At the start of a loan the balance is highest, so the interest charge is largest. As you pay down the principal over time, the interest portion shrinks and the principal portion grows within each fixed payment.
+      </p>
+
+      <h3>How can I pay off my loan faster?</h3>
+      <p>
+        You can pay off a loan faster by making extra principal payments, switching to biweekly payments (which adds one extra payment per year), rounding up your monthly payment, or refinancing to a shorter term. Even small additional payments can save thousands in interest.
+      </p>
+
+      <h3>What is the difference between amortization and simple interest?</h3>
+      <p>
+        Amortization means equal periodic payments that include both interest and principal, gradually paying off the loan to zero. Simple interest loans charge interest only on the current outstanding balance without a structured payoff schedule, which can result in a balloon payment.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Amortization Schedule Calculator", url: finance_amortization_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment, total interest, and total cost.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Auto Loan Calculator", description: "Calculate your auto loan payments and total cost.", path: finance_auto_loan_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("amortization-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

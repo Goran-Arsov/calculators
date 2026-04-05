@@ -1,0 +1,177 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Staircase Calculator - Free Online Tool",
+  description: "Calculate staircase dimensions including number of steps, riser height, tread depth, stringer length, and angle. Enter floor-to-floor height for instant results.",
+  canonical: construction_staircase_url,
+  og: {
+    title: "Staircase Calculator - Free Online Tool | CalcWise",
+    description: "Calculate staircase dimensions including number of steps, riser height, tread depth, stringer length, and angle.",
+    url: construction_staircase_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Staircase Calculator", url: construction_staircase_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate the number of stairs I need?", answer: "Measure the total floor-to-floor height in inches, then divide by the ideal riser height of 7 inches and round to the nearest whole number. For a standard 9-foot ceiling (108 inches total rise including floor thickness), you would need approximately 15 to 16 risers. The IRC building code limits the maximum riser height to 7.75 inches." },
+  { question: "What is the ideal riser height and tread depth?", answer: "The ideal riser height is between 7 and 7.5 inches, and the ideal tread depth is between 10 and 11 inches. The IRC code requires a maximum riser of 7.75 inches and a minimum tread of 10 inches. The comfort rule states that the riser plus tread should equal approximately 17 to 18 inches." },
+  { question: "How do I calculate stringer length?", answer: "The stringer length is the hypotenuse of a right triangle formed by the total rise and total run. Use the Pythagorean theorem: stringer length equals the square root of (total rise squared plus total run squared). For a 108-inch rise with a 140-inch run, the stringer is about 177 inches or 14 feet 9 inches." },
+  { question: "What angle should stairs be?", answer: "Comfortable residential stairs are typically between 30 and 37 degrees from horizontal. Steeper stairs above 37 degrees feel uncomfortable and can be dangerous. Stairs below 30 degrees take up more floor space but are easier to climb. Building codes generally allow angles up to about 42 degrees." },
+  { question: "How much headroom do stairs need?", answer: "The IRC building code requires a minimum headroom of 6 feet 8 inches measured vertically from the stair nosing to any overhead obstruction. This clearance must be maintained for the entire length of the stairway. In basements, some codes allow 6 feet 4 inches minimum headroom." }
+]) %>
+
+<%= calculator_schema(
+  name: "Staircase Calculator",
+  description: "Calculate the number of steps, riser height, tread depth, stringer length, and angle for a staircase based on floor-to-floor height.",
+  url: construction_staircase_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Staircase Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Staircase Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the number of steps, riser height, tread depth, stringer length, and angle for your staircase based on floor-to-floor height.</p>
+
+    <div data-controller="staircase-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Floor-to-Floor Height (inches)</label>
+            <input type="number" data-staircase-calculator-target="floorHeight" data-action="input->staircase-calculator#calculate" class="w-full" placeholder="108" step="0.25" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Preferred Run per Step (inches, optional)</label>
+            <input type="number" data-staircase-calculator-target="runPreference" data-action="input->staircase-calculator#calculate" class="w-full" placeholder="Leave blank for auto" step="0.25" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Risers</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-staircase-calculator-target="resultRisers">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Treads</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-staircase-calculator-target="resultTreads">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Rise per Step</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-staircase-calculator-target="resultRise">0"</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Run per Step</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-staircase-calculator-target="resultRun">0"</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Run</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-staircase-calculator-target="resultTotalRun">0"</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Stringer Length</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-staircase-calculator-target="resultStringer">0"</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Angle</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-staircase-calculator-target="resultAngle">0&deg;</span>
+            </div>
+          </div>
+          <button data-action="click->staircase-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Staircase Calculator</h2>
+      <p>
+        Building stairs that are comfortable and code-compliant starts with accurate measurements. Enter the total floor-to-floor height in inches. This is the vertical distance from the surface of the lower finished floor to the surface of the upper finished floor, including any subfloor and finish material. Optionally, enter a preferred tread depth if you have specific requirements. If left blank, the calculator uses the comfort rule where the riser plus tread equals approximately 17.5 inches.
+      </p>
+      <p>
+        The calculator divides the total rise by the ideal riser height of 7 inches and rounds to the nearest whole number to determine the number of risers. It then calculates the exact riser height by dividing the total rise evenly among all risers. The number of treads is always one less than the number of risers because the top floor serves as the final landing. The total run, stringer length, and angle are computed automatically.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Building Code Requirements for Stairs</h2>
+      <p>
+        The International Residential Code sets specific limits for residential stairways. The maximum riser height is 7.75 inches, and the minimum tread depth is 10 inches. All risers in a flight must be uniform, with no more than a 3/8-inch variance between the tallest and shortest riser. The minimum stair width is 36 inches, and the minimum headroom is 6 feet 8 inches measured vertically from the nosing line.
+      </p>
+
+      <h3>Stringer Design and Materials</h3>
+      <p>
+        Stringers are the diagonal structural members that support the treads and risers. For residential stairs, 2x12 lumber is standard for cut stringers. The effective depth of the stringer after cutting the notches must be at least 3.5 inches. For spans over 6 feet, three stringers are recommended, with the center stringer placed midway between the two outer stringers. Engineered lumber or steel stringers are used for wider stairs or commercial applications.
+      </p>
+
+      <h3>The Comfort Rule for Stair Design</h3>
+      <p>
+        The most widely used comfort rule states that the riser height plus the tread depth should equal approximately 17 to 18 inches. Another common rule is that two risers plus one tread should equal 24 to 25 inches. A 7-inch riser with a 10.5-inch tread satisfies both rules and is considered the most comfortable combination for residential stairs. Steeper stairs with shorter treads feel cramped going down, while shallow stairs with deep treads waste floor space.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate the number of stairs I need?</h3>
+      <p>
+        Measure the total floor-to-floor height in inches, then divide by the ideal riser height of 7 inches and round to the nearest whole number. For a standard 9-foot ceiling with floor thickness, the total rise is typically 108 to 110 inches, requiring approximately 15 to 16 risers.
+      </p>
+
+      <h3>What is the ideal riser height and tread depth?</h3>
+      <p>
+        The ideal riser height is between 7 and 7.5 inches, and the ideal tread depth is between 10 and 11 inches. The IRC code requires a maximum riser of 7.75 inches and a minimum tread of 10 inches. The comfort rule states that the riser plus tread should equal approximately 17 to 18 inches.
+      </p>
+
+      <h3>How do I calculate stringer length?</h3>
+      <p>
+        The stringer length is the hypotenuse of a right triangle formed by the total rise and total run. Use the Pythagorean theorem: stringer length equals the square root of total rise squared plus total run squared.
+      </p>
+
+      <h3>What angle should stairs be?</h3>
+      <p>
+        Comfortable residential stairs are typically between 30 and 37 degrees from horizontal. Building codes generally allow angles up to about 42 degrees. Steeper stairs feel uncomfortable and can be dangerous.
+      </p>
+
+      <h3>How much headroom do stairs need?</h3>
+      <p>
+        The IRC building code requires a minimum headroom of 6 feet 8 inches measured vertically from the stair nosing to any overhead obstruction. This clearance must be maintained for the entire length of the stairway.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Staircase Calculator", url: construction_staircase_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Lumber Calculator", description: "Calculate board feet and pricing for lumber projects.", path: construction_lumber_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Deck Calculator", description: "Estimate boards, joists, posts, and screws for your deck.", path: construction_deck_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("staircase-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,208 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Keto Calculator - Free Keto Macro Calculator Tool",
+  description: "Calculate your daily keto macros for fat, protein, and net carbs. Personalized results based on your body stats, activity level, and weight goal.",
+  canonical: health_keto_url,
+  og: {
+    title: "Keto Calculator - Free Keto Macro Calculator Tool | CalcWise",
+    description: "Calculate your personalized keto macros for fat, protein, and net carbs based on your body stats and goals.",
+    url: health_keto_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Keto Calculator", url: health_keto_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What macros should I eat on keto?", answer: "A standard ketogenic diet typically targets 70% of calories from fat, 25% from protein, and 5% from carbohydrates. In practice, this means most people should aim for 20-25 grams of net carbs per day to maintain ketosis. Protein intake should be adequate to preserve muscle mass, and the remaining calories come from healthy fats. These ratios can be adjusted based on individual response and goals." },
+  { question: "How many carbs can I eat and stay in ketosis?", answer: "Most people need to limit net carbs to 20-25 grams per day to enter and maintain ketosis. Some individuals with higher activity levels may tolerate up to 50 grams. Net carbs are calculated as total carbohydrates minus fiber and sugar alcohols. The threshold varies by person — some are more carb-sensitive than others. Testing blood ketone levels is the most reliable way to confirm ketosis." },
+  { question: "How does the keto calculator determine my calories?", answer: "The calculator uses the Mifflin-St Jeor equation to estimate your Basal Metabolic Rate (BMR) based on your weight, height, age, and gender. It then multiplies BMR by an activity factor to calculate your Total Daily Energy Expenditure (TDEE). Finally, it adjusts calories based on your goal — maintaining weight, losing weight (500 calorie deficit), or gaining weight (500 calorie surplus)." },
+  { question: "Should I eat more fat or protein on keto?", answer: "On keto, fat is your primary energy source and should make up about 70% of your calories. Protein should be moderate at about 25% of calories — enough to preserve muscle but not so much that excess protein converts to glucose through gluconeogenesis. Eating too little fat can leave you hungry and low on energy, while eating too much protein may interfere with ketosis in some individuals." },
+  { question: "How long does it take to enter ketosis?", answer: "Most people enter ketosis within 2-4 days of restricting carbohydrates to 20-25 grams per day. The transition period, sometimes called 'keto flu,' can involve fatigue, headaches, and irritability as the body adapts to burning fat instead of carbohydrates. Staying well-hydrated and supplementing electrolytes (sodium, potassium, magnesium) can help ease this transition." }
+]) %>
+
+<%= calculator_schema(
+  name: "Keto Calculator",
+  description: "Calculate your personalized daily keto macros for fat, protein, and net carbs based on your body measurements and goals.",
+  url: health_keto_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Keto Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Keto Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your personalized daily keto macros for fat, protein, and net carbs based on your body stats and goals.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="keto-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit System</label>
+            <select data-keto-calculator-target="unitSystem" data-action="change->keto-calculator#updateLabels" class="w-full" aria-label="Unit System">
+              <option value="metric">Metric (kg, cm)</option>
+              <option value="imperial">Imperial (lbs, in)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-keto-calculator-target="weightLabel">Weight (kg)</label>
+            <input type="number" data-keto-calculator-target="weight" data-action="input->keto-calculator#calculate" class="w-full" placeholder="70" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-keto-calculator-target="heightLabel">Height (cm)</label>
+            <input type="number" data-keto-calculator-target="height" data-action="input->keto-calculator#calculate" class="w-full" placeholder="175" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Age</label>
+            <input type="number" data-keto-calculator-target="age" data-action="input->keto-calculator#calculate" class="w-full" placeholder="30" min="1" max="120">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gender</label>
+            <select data-keto-calculator-target="gender" data-action="change->keto-calculator#calculate" class="w-full" aria-label="Gender">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Activity Level</label>
+            <select data-keto-calculator-target="activityLevel" data-action="change->keto-calculator#calculate" class="w-full" aria-label="Activity Level">
+              <option value="sedentary">Sedentary (little or no exercise)</option>
+              <option value="light">Lightly active (1-3 days/week)</option>
+              <option value="moderate">Moderately active (3-5 days/week)</option>
+              <option value="active">Very active (6-7 days/week)</option>
+              <option value="very_active">Extra active (physical job + exercise)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Goal</label>
+            <select data-keto-calculator-target="goal" data-action="change->keto-calculator#calculate" class="w-full" aria-label="Goal">
+              <option value="maintain">Maintain Weight</option>
+              <option value="lose">Lose Weight</option>
+              <option value="gain">Gain Weight</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Your Keto Macros</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Daily Calories</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-keto-calculator-target="dailyCalories">—</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Fat</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400"><span data-keto-calculator-target="fatGrams">—</span> <span class="text-sm font-normal" data-keto-calculator-target="fatPercent"></span></span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Protein</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400"><span data-keto-calculator-target="proteinGrams">—</span> <span class="text-sm font-normal" data-keto-calculator-target="proteinPercent"></span></span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Carbs</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400"><span data-keto-calculator-target="carbGrams">—</span> <span class="text-sm font-normal" data-keto-calculator-target="carbPercent"></span></span>
+            </div>
+          </div>
+          <button data-action="click->keto-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Keto Calculator</h2>
+      <p>
+        Our keto macro calculator personalizes your daily fat, protein, and net carb targets for a ketogenic diet. Enter your body measurements (weight, height, age, gender), select your activity level and weight goal, and the calculator instantly computes your Total Daily Energy Expenditure (TDEE) and breaks it into keto-friendly macro ratios. Net carbs are automatically capped at 25 grams per day to help you maintain ketosis, with any excess carb calories redistributed to fat.
+      </p>
+      <p>
+        The ketogenic diet works by drastically reducing carbohydrate intake so your body shifts from burning glucose to burning fat for fuel — a metabolic state called ketosis. Getting the right macro balance is critical: too many carbs will kick you out of ketosis, while too little protein can lead to muscle loss. This calculator takes the guesswork out of keto meal planning by providing precise, science-based targets tailored to your body.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Science Behind Keto Macros</h2>
+      <p>
+        The standard ketogenic diet follows a macro ratio of approximately <strong>70% fat, 25% protein, and 5% carbohydrates</strong>. This ratio forces the liver to convert fatty acids into ketone bodies, which become the primary fuel source for the brain and muscles. The calculator uses the Mifflin-St Jeor equation to estimate your Basal Metabolic Rate, then applies an activity multiplier to determine your TDEE. From there, it distributes calories according to keto ratios and adjusts for your weight goal.
+      </p>
+
+      <h3>Why Net Carbs Are Capped at 25g</h3>
+      <p>
+        Research shows that most people enter ketosis when net carbohydrate intake drops below 20-50 grams per day. This calculator caps net carbs at 25 grams — a target that works for the vast majority of people regardless of body size. Any calories that would have come from excess carbs are automatically redirected to fat, ensuring your total calorie target remains accurate while keeping you firmly in ketosis territory.
+      </p>
+
+      <h3>Adjusting for Your Weight Goal</h3>
+      <p>
+        The calculator offers three goal settings. <strong>Maintain</strong> uses your full TDEE. <strong>Lose weight</strong> applies a 500-calorie daily deficit, which translates to roughly one pound of fat loss per week. <strong>Gain weight</strong> adds a 500-calorie surplus for lean mass building. All adjustments maintain the same keto macro percentages, so you stay in ketosis regardless of whether you are cutting, maintaining, or bulking.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What macros should I eat on keto?</h3>
+      <p>
+        A standard ketogenic diet typically targets 70% of calories from fat, 25% from protein, and 5% from carbohydrates. Most people should aim for 20-25 grams of net carbs per day to maintain ketosis. Protein intake should be adequate to preserve muscle mass, and the remaining calories come from healthy fats.
+      </p>
+
+      <h3>How many carbs can I eat and stay in ketosis?</h3>
+      <p>
+        Most people need to limit net carbs to 20-25 grams per day to enter and maintain ketosis. Some individuals with higher activity levels may tolerate up to 50 grams. Net carbs are calculated as total carbohydrates minus fiber and sugar alcohols.
+      </p>
+
+      <h3>How does the keto calculator determine my calories?</h3>
+      <p>
+        The calculator uses the Mifflin-St Jeor equation to estimate your Basal Metabolic Rate based on weight, height, age, and gender. It then multiplies by an activity factor for TDEE, and adjusts based on your weight goal.
+      </p>
+
+      <h3>Should I eat more fat or protein on keto?</h3>
+      <p>
+        On keto, fat is your primary energy source at about 70% of calories. Protein should be moderate at about 25% — enough to preserve muscle but not so much that excess converts to glucose through gluconeogenesis.
+      </p>
+
+      <h3>How long does it take to enter ketosis?</h3>
+      <p>
+        Most people enter ketosis within 2-4 days of restricting carbohydrates to 20-25 grams per day. Staying hydrated and supplementing electrolytes can help ease the transition period.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Keto Calculator", url: health_keto_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Macro Calculator", description: "Calculate your ideal daily macronutrient split for protein, carbs, and fat.", path: health_macro_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure to find your daily calorie target.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("keto-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

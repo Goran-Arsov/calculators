@@ -1,0 +1,176 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Blood Pressure Calculator - Free BP Category Checker",
+  description: "Check your blood pressure category instantly. Enter your systolic and diastolic readings to find out if your BP is normal, elevated, or hypertensive with personalized recommendations.",
+  canonical: health_blood_pressure_url,
+  og: {
+    title: "Blood Pressure Calculator - Free BP Category Checker | CalcWise",
+    description: "Check your blood pressure category instantly. Find out if your readings indicate normal, elevated, or high blood pressure.",
+    url: health_blood_pressure_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Blood Pressure Calculator", url: health_blood_pressure_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What do blood pressure numbers mean?", answer: "Blood pressure is measured with two numbers: systolic (top number) and diastolic (bottom number), expressed in millimeters of mercury (mmHg). Systolic pressure measures the force when your heart beats and pushes blood through the arteries. Diastolic pressure measures the force when your heart rests between beats. A reading of 120/80 mmHg means a systolic pressure of 120 and a diastolic pressure of 80." },
+  { question: "What is a normal blood pressure reading?", answer: "According to the American Heart Association, normal blood pressure is a systolic reading below 120 mmHg AND a diastolic reading below 80 mmHg. Elevated blood pressure is systolic 120-129 with diastolic below 80. Stage 1 hypertension is systolic 130-139 OR diastolic 80-89. Stage 2 hypertension is systolic 140 or higher OR diastolic 90 or higher. A hypertensive crisis requires systolic above 180 and/or diastolic above 120." },
+  { question: "What is pulse pressure and why does it matter?", answer: "Pulse pressure is the difference between systolic and diastolic blood pressure. A normal pulse pressure is between 40 and 60 mmHg. A wide pulse pressure (above 60) can indicate stiff arteries, heart valve problems, or hyperthyroidism. A narrow pulse pressure (below 40) may suggest heart failure or significant blood loss. Pulse pressure tends to increase with age as arteries become less elastic." },
+  { question: "What is mean arterial pressure (MAP)?", answer: "Mean arterial pressure (MAP) is the average pressure in your arteries during one cardiac cycle. It is calculated as diastolic pressure plus one-third of the pulse pressure: MAP = DBP + 1/3(SBP - DBP). A normal MAP is between 70 and 100 mmHg. MAP is important because it represents the actual driving pressure for blood flow to organs. A MAP below 60 mmHg may not provide adequate blood flow to vital organs." },
+  { question: "How often should I check my blood pressure?", answer: "The American Heart Association recommends that adults with normal blood pressure have it checked at least once a year during a regular health visit. If your readings are elevated or high, more frequent monitoring is needed — ideally at home with a validated blood pressure monitor. For home monitoring, take readings at the same time each day, sit quietly for 5 minutes beforehand, and average 2-3 readings taken one minute apart." }
+]) %>
+
+<%= calculator_schema(
+  name: "Blood Pressure Calculator",
+  description: "Check your blood pressure category based on systolic and diastolic readings with recommendations and risk assessment.",
+  url: health_blood_pressure_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Blood Pressure Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Blood Pressure Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter your blood pressure reading to find out your category, risk level, and get personalized recommendations.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="blood-pressure-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Systolic (top number, mmHg)</label>
+            <input type="number" data-blood-pressure-calculator-target="systolic" data-action="input->blood-pressure-calculator#calculate" class="w-full" placeholder="120" min="60" max="300">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Diastolic (bottom number, mmHg)</label>
+            <input type="number" data-blood-pressure-calculator-target="diastolic" data-action="input->blood-pressure-calculator#calculate" class="w-full" placeholder="80" min="30" max="200">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Category</span>
+              <span class="text-xl font-bold text-gray-400" data-blood-pressure-calculator-target="category">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Risk Level</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-blood-pressure-calculator-target="riskLevel">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Pulse Pressure</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-blood-pressure-calculator-target="pulsePressure">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mean Arterial Pressure</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-blood-pressure-calculator-target="map">—</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Recommendation</span>
+              <p class="text-sm font-medium text-gray-900 dark:text-white mt-1" data-blood-pressure-calculator-target="recommendation">Enter your blood pressure reading to see your results.</p>
+            </div>
+          </div>
+          <button data-action="click->blood-pressure-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Blood Pressure Calculator</h2>
+      <p>
+        Enter your systolic (top number) and diastolic (bottom number) blood pressure readings in millimeters of mercury (mmHg). The calculator instantly classifies your reading according to American Heart Association guidelines, showing your blood pressure category, risk level, pulse pressure, mean arterial pressure (MAP), and a personalized recommendation. Results update in real time as you type.
+      </p>
+      <p>
+        Blood pressure is one of the most important vital signs and a key indicator of cardiovascular health. High blood pressure (hypertension) is often called the "silent killer" because it typically has no symptoms but significantly increases the risk of heart attack, stroke, kidney disease, and other serious conditions. Regular monitoring and understanding your readings is essential for preventing and managing hypertension.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Blood Pressure Categories Explained</h2>
+      <p>
+        The American Heart Association and American College of Cardiology define five blood pressure categories for adults. <strong>Normal</strong> blood pressure is below 120/80 mmHg. <strong>Elevated</strong> blood pressure is systolic 120-129 with diastolic below 80 — this is a warning sign that hypertension may develop without intervention. <strong>Stage 1 Hypertension</strong> is systolic 130-139 or diastolic 80-89, and lifestyle changes plus possible medication may be recommended. <strong>Stage 2 Hypertension</strong> is systolic 140+ or diastolic 90+, typically requiring medication alongside lifestyle changes. A <strong>Hypertensive Crisis</strong> (systolic above 180 and/or diastolic above 120) requires immediate medical attention.
+      </p>
+
+      <h3>Understanding Pulse Pressure and MAP</h3>
+      <p>
+        <strong>Pulse pressure</strong> is the difference between systolic and diastolic readings. A normal range is 40-60 mmHg. Wide pulse pressure can indicate arterial stiffness, while narrow pulse pressure may suggest reduced cardiac output. <strong>Mean Arterial Pressure (MAP)</strong> represents the average pressure during the cardiac cycle and is calculated as diastolic plus one-third of pulse pressure. A MAP between 70 and 100 mmHg is normal. MAP below 60 mmHg may indicate inadequate organ perfusion.
+      </p>
+
+      <h3>Tips for Accurate Blood Pressure Measurement</h3>
+      <p>
+        For the most accurate readings: sit quietly for 5 minutes before measuring, keep your feet flat on the floor and your arm supported at heart level, do not smoke, exercise, or consume caffeine within 30 minutes of measurement, use a validated upper-arm monitor (wrist monitors are less accurate), take 2-3 readings one minute apart and average them, and measure at the same time each day for tracking purposes.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What do blood pressure numbers mean?</h3>
+      <p>
+        Blood pressure is measured with two numbers: systolic (top) and diastolic (bottom), in mmHg. Systolic measures force when the heart beats; diastolic measures force when the heart rests between beats. A reading of 120/80 means systolic 120 and diastolic 80.
+      </p>
+
+      <h3>What is a normal blood pressure reading?</h3>
+      <p>
+        Normal blood pressure is systolic below 120 AND diastolic below 80 mmHg. Elevated is systolic 120-129 with diastolic below 80. Stage 1 hypertension is systolic 130-139 or diastolic 80-89. Stage 2 is systolic 140+ or diastolic 90+.
+      </p>
+
+      <h3>What is pulse pressure and why does it matter?</h3>
+      <p>
+        Pulse pressure is the difference between systolic and diastolic pressure. Normal is 40-60 mmHg. Wide pulse pressure can indicate stiff arteries; narrow pulse pressure may suggest heart failure or blood loss.
+      </p>
+
+      <h3>What is mean arterial pressure (MAP)?</h3>
+      <p>
+        MAP is the average arterial pressure during one cardiac cycle: DBP + 1/3(SBP - DBP). Normal is 70-100 mmHg. MAP below 60 may not provide adequate blood flow to vital organs.
+      </p>
+
+      <h3>How often should I check my blood pressure?</h3>
+      <p>
+        Adults with normal BP should check at least yearly. If elevated or high, monitor more frequently — ideally at home with a validated monitor. Take readings at the same time daily and average 2-3 readings.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Blood Pressure Calculator", url: health_blood_pressure_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Heart Rate Zone Calculator", description: "Calculate your heart rate training zones based on age and resting heart rate.", path: health_heart_rate_zone_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("blood-pressure-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

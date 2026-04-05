@@ -1,0 +1,150 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Significant Figures Calculator - Free Online Tool",
+  description: "Count significant figures in any number and round to a specified number of sig figs instantly. Free sig figs calculator — no sign-up required.",
+  canonical: math_sig_figs_url,
+  og: {
+    title: "Significant Figures Calculator - Free Online Tool | CalcWise",
+    description: "Count significant figures in any number and round to a specified number of sig figs instantly.",
+    url: math_sig_figs_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Math", url: category_url("math") },
+  { name: "Significant Figures Calculator", url: math_sig_figs_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are significant figures?", answer: "Significant figures (sig figs) are the digits in a number that carry meaningful information about its precision. They include all non-zero digits, zeros between non-zero digits, and trailing zeros after a decimal point. For example, 0.00340 has 3 significant figures (3, 4, and the trailing 0)." },
+  { question: "How do you count significant figures?", answer: "Follow these rules: (1) All non-zero digits are significant. (2) Zeros between non-zero digits are significant. (3) Leading zeros are not significant. (4) Trailing zeros after a decimal point are significant. (5) Trailing zeros in a whole number without a decimal point are ambiguous. For example, 1050 has 3 sig figs, while 1050. has 4." },
+  { question: "How do you round to significant figures?", answer: "Identify the digit at the desired sig fig position. Look at the next digit: if it is 5 or greater, round up; if less than 5, round down. For example, rounding 3.14159 to 3 sig figs gives 3.14. Rounding 0.004567 to 2 sig figs gives 0.0046." },
+  { question: "Why are significant figures important in science?", answer: "Significant figures communicate the precision of a measurement. A length reported as 5.00 cm implies greater precision (measured to the nearest hundredth) than 5 cm (measured to the nearest unit). Using correct sig figs prevents overstating the accuracy of calculations and is required in scientific reporting." },
+  { question: "How do sig figs work in calculations?", answer: "For multiplication and division, the result should have the same number of sig figs as the measurement with the fewest sig figs. For addition and subtraction, the result should have the same number of decimal places as the measurement with the fewest decimal places. These rules ensure calculations do not imply false precision." }
+]) %>
+
+<%= calculator_schema(
+  name: "Significant Figures Calculator",
+  description: "Count significant figures in any number and round to a specified number of significant figures.",
+  url: math_sig_figs_url,
+  category: "EducationalApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Math", url: category_path("math") },
+  { name: "Significant Figures Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Significant Figures Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter any number to count its significant figures, see it in scientific notation, and optionally round to a specified number of sig figs.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="sig-figs-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">SF</div>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Count Significant Figures</h2>
+        <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">sig figs</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number</label>
+            <input type="text" data-sig-figs-calculator-target="value" data-action="input->sig-figs-calculator#calculate" class="w-full" placeholder="0.00340">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Round to sig figs <span class="font-normal text-gray-400">(optional)</span></label>
+            <input type="number" data-sig-figs-calculator-target="roundTo" data-action="input->sig-figs-calculator#calculate" class="w-full" placeholder="3" min="1" step="1">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sig Figs Count</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-sig-figs-calculator-target="sigFigs">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Scientific Notation</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono" data-sig-figs-calculator-target="scientific">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Rounded</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono" data-sig-figs-calculator-target="rounded">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->sig-figs-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Significant Figures Calculator</h2>
+      <p>Type or paste any number into the input field. The calculator instantly tells you how many significant figures it contains and displays the number in scientific notation. Optionally enter a target number of sig figs to see the number rounded to that precision. Results update as you type in real time.</p>
+
+      <p>Significant figures are a cornerstone of scientific measurement and reporting. They communicate the precision of a value, ensuring that calculations do not imply more accuracy than the original data supports. Students, scientists, and engineers all need to work with sig figs correctly.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Rules for Counting Significant Figures</h2>
+      <p>The rules are straightforward but have important nuances:</p>
+      <ul>
+        <li><strong>All non-zero digits</strong> are always significant. In 1234, all four digits are significant.</li>
+        <li><strong>Zeros between non-zero digits</strong> are significant. In 1002, all four digits are significant.</li>
+        <li><strong>Leading zeros</strong> are never significant. In 0.0045, only the 4 and 5 are significant (2 sig figs).</li>
+        <li><strong>Trailing zeros after a decimal point</strong> are significant. In 2.50, all three digits are significant.</li>
+        <li><strong>Trailing zeros in a whole number</strong> without a decimal point are ambiguous. 1500 could have 2, 3, or 4 sig figs depending on context. Using scientific notation (1.5 &times; 10<sup>3</sup> vs 1.500 &times; 10<sup>3</sup>) removes the ambiguity.</li>
+      </ul>
+
+      <h3>Rounding to Significant Figures</h3>
+      <p>To round to n significant figures, count from the first non-zero digit to the n-th digit. If the next digit is 5 or greater, round up; otherwise, round down. For example, rounding 0.004567 to 2 sig figs gives 0.0046 (the 4 and 6 are significant, with the 6 rounded up from 56).</p>
+
+      <h3>Sig Figs in Calculations</h3>
+      <p>For multiplication and division, your answer should have as many sig figs as the input with the fewest. For addition and subtraction, align by decimal place and keep as many decimal places as the least precise input. Following these rules prevents your results from claiming false precision.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What are significant figures?</h3>
+      <p>Significant figures are the digits that carry meaningful precision. They include all non-zero digits, zeros between them, and trailing zeros after a decimal point.</p>
+
+      <h3>How do you count significant figures?</h3>
+      <p>Non-zero digits always count. Zeros between non-zero digits count. Leading zeros do not count. Trailing zeros after a decimal count; without a decimal, they are ambiguous.</p>
+
+      <h3>How do you round to significant figures?</h3>
+      <p>Count to the n-th significant digit and check the next digit. Round up if it is 5 or greater, down if less.</p>
+
+      <h3>Why are significant figures important in science?</h3>
+      <p>They communicate measurement precision and prevent overstating accuracy in calculated results.</p>
+
+      <h3>How do sig figs work in calculations?</h3>
+      <p>For multiplication/division, keep the fewest sig figs. For addition/subtraction, keep the fewest decimal places.</p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Significant Figures Calculator", url: math_sig_figs_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Percentage Calculator", description: "Calculate percentages, percentage change, and more.", path: math_percentage_path, icon_path: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14" },
+      { name: "Exponent Calculator", description: "Raise any base to any power and get the result instantly.", path: math_exponent_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Standard Deviation Calculator", description: "Calculate mean, standard deviation, and variance from a set of numbers.", path: math_standard_deviation_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "math" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

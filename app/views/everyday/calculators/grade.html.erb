@@ -1,0 +1,164 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Grade Calculator - Free Online Tool",
+  description: "Calculate your weighted average grade and letter grade from assignment scores and weights. Enter up to 6 assignments to see your overall grade instantly.",
+  canonical: everyday_grade_url,
+  og: {
+    title: "Grade Calculator - Free Online Tool | CalcWise",
+    description: "Calculate your weighted average grade and letter grade from assignment scores and weights instantly.",
+    url: everyday_grade_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Grade Calculator", url: everyday_grade_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate my weighted grade?", answer: "Multiply each assignment score by its weight (as a percentage), sum all the products, then divide by the total weight. For example, if you scored 85% on an exam worth 40% and 92% on homework worth 60%, your weighted average is (85 x 40 + 92 x 60) / (40 + 60) = (3400 + 5520) / 100 = 89.2%." },
+  { question: "What is a weighted average?", answer: "A weighted average accounts for the relative importance of each component. Unlike a simple average where all items count equally, a weighted average gives more influence to components with higher weights. In grading, this means a final exam worth 40% of your grade has more impact than a quiz worth 5%." },
+  { question: "How are letter grades determined?", answer: "Letter grades are typically assigned using a standard scale: A+ (97-100), A (93-96), A- (90-92), B+ (87-89), B (83-86), B- (80-82), C+ (77-79), C (73-76), C- (70-72), D+ (67-69), D (63-66), D- (60-62), and F (below 60). Some schools use slightly different cutoffs." },
+  { question: "What grade do I need on my final to get an A?", answer: "Use the formula: Required Score = (Desired Average x Total Weight - Current Weighted Sum) / Final Exam Weight. For example, if your current average before the final is 88% on 70% of the total weight and you want a 90% overall, you need (90 x 100 - 88 x 70) / 30 = (9000 - 6160) / 30 = 94.7% on the final." },
+  { question: "Do all my assignment weights need to add up to 100%?", answer: "Ideally yes, but the calculator works regardless. If your weights total more or less than 100%, the calculator divides by the actual total weight to compute the correct average. For example, weights of 30, 30, and 30 (totaling 90) will still give an accurate weighted average based on those proportions." }
+]) %>
+
+<%= calculator_schema(
+  name: "Grade Calculator",
+  description: "Calculate your weighted average grade and letter grade from assignment scores and weights.",
+  url: everyday_grade_url,
+  category: "EducationalApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Grade Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Grade Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter your assignment scores and their weights to calculate your weighted average and letter grade.</p>
+
+    <div data-controller="grade-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Score (%)</span>
+            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Weight (%)</span>
+          </div>
+          <% 6.times do |i| %>
+            <div class="grid grid-cols-2 gap-3">
+              <input type="number" data-grade-calculator-target="score<%= i + 1 %>" data-action="input->grade-calculator#calculate" class="w-full" placeholder="Score" step="0.1" min="0" max="100">
+              <input type="number" data-grade-calculator-target="weight<%= i + 1 %>" data-action="input->grade-calculator#calculate" class="w-full" placeholder="Weight" step="0.1" min="0">
+            </div>
+          <% end %>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weighted Average</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-grade-calculator-target="resultAverage">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Letter Grade</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-grade-calculator-target="resultLetter">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Weight</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-grade-calculator-target="resultTotalWeight">0.0%</span>
+            </div>
+          </div>
+          <button data-action="click->grade-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Grade Calculator</h2>
+      <p>
+        Enter the percentage score and weight for each assignment, exam, or category. The weight represents how much that component counts toward your final grade. For example, if midterm exams are worth 30% of your grade and you scored 88%, enter 88 as the score and 30 as the weight. The calculator processes up to six assignments and updates results in real time. Rows with zero weight are excluded automatically.
+      </p>
+      <p>
+        The calculator computes a weighted average by multiplying each score by its weight, summing the products, and dividing by the total weight. It then maps the result to the standard US letter grade scale. This approach works whether your weights add to exactly 100% or not, making it flexible for partial-semester grade checks.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Weighted Grades</h2>
+      <p>
+        Most courses use weighted grading, where different assignment categories count for different percentages of your final grade. A typical breakdown might be: homework 20%, quizzes 15%, midterms 30%, final exam 25%, and participation 10%. Understanding the weights helps you prioritize your study time. A 5-point improvement on a category worth 30% of your grade has three times the impact of the same improvement on a 10% category.
+      </p>
+
+      <h3>Planning for Your Target Grade</h3>
+      <p>
+        To figure out what you need on remaining assignments, start by entering your completed scores and weights. Note the weighted average and the total weight accounted for. The remaining weight represents upcoming assignments. You can then estimate what scores you need on those future assignments to reach your desired overall grade. This is a powerful planning tool during the semester.
+      </p>
+
+      <h3>Common Grading Scales</h3>
+      <p>
+        While this calculator uses the standard US grading scale (A through F with plus and minus modifiers), some institutions use different systems. Pass/fail courses, percentage-only systems, and 10-point scales are also common. Some high schools weight honors and AP courses on a 5.0 scale. Always verify your school's specific grading policies when evaluating your performance.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate my weighted grade?</h3>
+      <p>
+        Multiply each assignment score by its weight (as a percentage), sum all the products, then divide by the total weight. For example, if you scored 85% on an exam worth 40% and 92% on homework worth 60%, your weighted average is (85 x 40 + 92 x 60) / (40 + 60) = (3400 + 5520) / 100 = 89.2%.
+      </p>
+
+      <h3>What is a weighted average?</h3>
+      <p>
+        A weighted average accounts for the relative importance of each component. Unlike a simple average where all items count equally, a weighted average gives more influence to components with higher weights. In grading, this means a final exam worth 40% of your grade has more impact than a quiz worth 5%.
+      </p>
+
+      <h3>How are letter grades determined?</h3>
+      <p>
+        Letter grades are typically assigned using a standard scale: A+ (97-100), A (93-96), A- (90-92), B+ (87-89), B (83-86), B- (80-82), C+ (77-79), C (73-76), C- (70-72), D+ (67-69), D (63-66), D- (60-62), and F (below 60). Some schools use slightly different cutoffs.
+      </p>
+
+      <h3>What grade do I need on my final to get an A?</h3>
+      <p>
+        Use the formula: Required Score = (Desired Average x Total Weight - Current Weighted Sum) / Final Exam Weight. For example, if your current average before the final is 88% on 70% of the total weight and you want a 90% overall, you need (90 x 100 - 88 x 70) / 30 = (9000 - 6160) / 30 = 94.7% on the final.
+      </p>
+
+      <h3>Do all my assignment weights need to add up to 100%?</h3>
+      <p>
+        Ideally yes, but the calculator works regardless. If your weights total more or less than 100%, the calculator divides by the actual total weight to compute the correct average. For example, weights of 30, 30, and 30 (totaling 90) will still give an accurate weighted average based on those proportions.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Grade Calculator", url: everyday_grade_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "GPA Calculator", description: "Calculate your grade point average from course grades and credits.", path: everyday_gpa_path, icon_path: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("grade-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

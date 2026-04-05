@@ -1,0 +1,185 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Deck Calculator - Free Online Tool",
+  description: "Calculate how many deck boards, joists, posts, and screws you need for your deck project. Enter dimensions and board size for instant material estimates and cost.",
+  canonical: construction_deck_url,
+  og: {
+    title: "Deck Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how many deck boards, joists, posts, and screws you need for your deck project. Enter dimensions and board size.",
+    url: construction_deck_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Deck Calculator", url: construction_deck_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate how many deck boards I need?", answer: "Divide the deck width by the board width (including a small gap for drainage) to find the number of boards across. If the deck length exceeds the board length, multiply by the number of runs needed to span the full length. For example, a 16x12 foot deck using 12-foot boards that are 5.5 inches wide needs about 27 boards across and 2 runs if the deck is 16 feet long, totaling 54 boards." },
+  { question: "How far apart should deck joists be spaced?", answer: "Standard deck joist spacing is 16 inches on center for most decking materials. Composite decking may require 12-inch spacing at a 45-degree angle or 16-inch spacing for perpendicular installation. Always check the decking manufacturer specifications, as some materials require closer spacing to prevent sagging or bouncing." },
+  { question: "How many posts does a deck need?", answer: "Posts are typically spaced every 6 to 8 feet along each beam line. A standard deck has two beam lines (front and back), so a 16-foot-long deck needs about 3 posts on each side, for 6 posts total. Larger decks or those supporting heavy loads like hot tubs may need additional posts. Posts must sit on concrete footings that extend below the frost line." },
+  { question: "How many screws do I need for a deck?", answer: "Plan for approximately 350 deck screws per 100 square feet of decking, or about 20 screws per board. Use 2.5-inch or 3-inch coated deck screws for face-fastening. Hidden fastener systems use fewer visible screws but require additional clips. A standard 1-pound box of deck screws contains approximately 75 screws, while a 5-pound box contains about 350." },
+  { question: "What size lumber do I need for a deck?", answer: "Decking boards are typically 5/4x6 (actual 1 inch by 5.5 inches). Joists are usually 2x8 or 2x10 depending on span. Beams are doubled 2x8 or 2x10 lumber. Posts are 4x4 for decks under 8 feet high or 6x6 for taller decks. Ledger boards attached to the house should match the joist depth." }
+]) %>
+
+<%= calculator_schema(
+  name: "Deck Calculator",
+  description: "Calculate the number of deck boards, joists, posts, and screws needed for your deck project with cost estimates.",
+  url: construction_deck_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Deck Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Deck Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate the number of deck boards, joists, posts, and screws you need, plus a cost estimate based on your board price.</p>
+
+    <div data-controller="deck-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Deck Length (ft)</label>
+            <input type="number" data-deck-calculator-target="length" data-action="input->deck-calculator#calculate" class="w-full" placeholder="16" step="0.5" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Deck Width (ft)</label>
+            <input type="number" data-deck-calculator-target="width" data-action="input->deck-calculator#calculate" class="w-full" placeholder="12" step="0.5" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Board Length (ft)</label>
+            <input type="number" data-deck-calculator-target="boardLength" data-action="input->deck-calculator#calculate" class="w-full" value="12" step="2" min="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Board Width (inches)</label>
+            <input type="number" data-deck-calculator-target="boardWidth" data-action="input->deck-calculator#calculate" class="w-full" value="5.5" step="0.5" min="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Price per Board ($)</label>
+            <input type="number" data-deck-calculator-target="pricePerBoard" data-action="input->deck-calculator#calculate" class="w-full" placeholder="8.50" step="0.01" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Deck Area</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-deck-calculator-target="resultArea">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Deck Boards</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-deck-calculator-target="resultBoards">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Joists</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-deck-calculator-target="resultJoists">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Posts</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-deck-calculator-target="resultPosts">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Screw Boxes</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-deck-calculator-target="resultScrewBoxes">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Est. Board Cost</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-deck-calculator-target="resultCost">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->deck-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Deck Calculator</h2>
+      <p>
+        Planning a deck project requires knowing how much material to buy. Enter the overall deck length and width in feet, along with the individual board length and width. The calculator determines how many decking boards you need by calculating how many boards fit across the width and how many runs are required to cover the length. It also computes the number of joists spaced at 16 inches on center, the number of support posts, and the total screws needed.
+      </p>
+      <p>
+        If you enter a price per board, the calculator provides a cost estimate for the decking material alone. This does not include joists, posts, concrete footings, hardware, or labor, but it gives you a solid starting point for budgeting the largest single material expense in most deck projects.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Deck Framing Basics</h2>
+      <p>
+        A typical deck consists of concrete footings, support posts, beams, joists, and decking boards. Footings must extend below the frost line in your area. Posts sit on top of footings using post anchors and support the beams. Beams run perpendicular to the joists and transfer the load to the posts. Joists span between the ledger board attached to the house and the outer beam, typically at 16-inch intervals. The decking boards run perpendicular to the joists.
+      </p>
+
+      <h3>Choosing Decking Material</h3>
+      <p>
+        Pressure-treated pine is the most affordable decking option at approximately $2 to $5 per linear foot. Cedar and redwood cost more but offer natural rot resistance and attractive grain patterns. Composite decking ranges from $5 to $13 per linear foot and provides excellent durability with minimal maintenance. PVC decking is the most expensive at $8 to $15 per linear foot but resists moisture, insects, and fading. Consider your budget, maintenance preferences, and local climate when choosing materials.
+      </p>
+
+      <h3>Permits and Structural Requirements</h3>
+      <p>
+        Most municipalities require a building permit for any deck attached to a house or elevated more than 30 inches above grade. The permit process typically requires a site plan, structural drawings, and an inspection at various stages of construction. Deck ledger boards must be properly flashed and fastened to the house rim joist with lag screws or through-bolts to prevent the deck from pulling away from the structure. Failure to properly attach the ledger is the leading cause of deck collapses.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate how many deck boards I need?</h3>
+      <p>
+        Divide the deck width by the board width to find the number of boards across. If the deck length exceeds the board length, multiply by the number of runs needed. For a 16x12 foot deck using 12-foot, 5.5-inch-wide boards, you need about 27 boards across in 2 runs, totaling 54 boards.
+      </p>
+
+      <h3>How far apart should deck joists be spaced?</h3>
+      <p>
+        Standard deck joist spacing is 16 inches on center for most decking materials. Composite decking may require 12-inch spacing at a 45-degree angle or 16-inch spacing for perpendicular installation. Always check the decking manufacturer specifications.
+      </p>
+
+      <h3>How many posts does a deck need?</h3>
+      <p>
+        Posts are typically spaced every 6 to 8 feet along each beam line. A standard deck has two beam lines, so a 16-foot-long deck needs about 3 posts on each side for 6 posts total.
+      </p>
+
+      <h3>How many screws do I need for a deck?</h3>
+      <p>
+        Plan for approximately 350 deck screws per 100 square feet of decking, or about 20 screws per board. A standard 5-pound box of deck screws contains approximately 350 screws.
+      </p>
+
+      <h3>What size lumber do I need for a deck?</h3>
+      <p>
+        Decking boards are typically 5/4x6 with an actual dimension of 1 inch by 5.5 inches. Joists are usually 2x8 or 2x10 depending on span. Posts are 4x4 for decks under 8 feet high or 6x6 for taller decks.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Deck Calculator", url: construction_deck_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Lumber Calculator", description: "Calculate board feet and pricing for lumber projects.", path: construction_lumber_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for post footings.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Fence Calculator", description: "Calculate posts, rails, and pickets for your fence project.", path: construction_fence_path, icon_path: "M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11m16-11v11" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("deck-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

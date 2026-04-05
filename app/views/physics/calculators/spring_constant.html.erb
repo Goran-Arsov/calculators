@@ -1,0 +1,191 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Spring Constant Calculator - Free Online Tool",
+  description: "Calculate the spring constant (k) using Hooke's Law or mass-spring oscillation. Get potential energy, frequency, and angular frequency — no sign-up required.",
+  canonical: physics_spring_constant_url,
+  og: {
+    title: "Spring Constant Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the spring constant (k) using Hooke's Law or mass-spring oscillation. Get potential energy, frequency, and angular frequency instantly.",
+    url: physics_spring_constant_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Spring Constant Calculator", url: physics_spring_constant_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the spring constant?", answer: "The spring constant (k) is a measure of a spring's stiffness, defined as the force required to extend or compress the spring by one unit of length. It is measured in newtons per meter (N/m). A higher spring constant means a stiffer spring that requires more force to deform. The spring constant depends on the material, wire diameter, coil diameter, and number of coils in the spring." },
+  { question: "What is Hooke's Law?", answer: "Hooke's Law states that the force needed to extend or compress a spring is directly proportional to the displacement from its natural (equilibrium) length: F = k * x, where F is the force in newtons, k is the spring constant in N/m, and x is the displacement in meters. This law holds as long as the spring is not stretched beyond its elastic limit, at which point permanent deformation occurs." },
+  { question: "How do you calculate spring constant from oscillation period?", answer: "For a mass-spring system oscillating freely, the period T relates to the spring constant k and mass m by T = 2*pi*sqrt(m/k). Solving for k gives k = (2*pi/T)^2 * m. This method is useful when you can measure the oscillation period and know the mass but cannot easily measure the force and displacement directly." },
+  { question: "What is elastic potential energy?", answer: "Elastic potential energy is the energy stored in a spring when it is compressed or stretched from its equilibrium position. It is calculated as PE = 1/2 * k * x^2, where k is the spring constant and x is the displacement. When the spring is released, this stored energy converts to kinetic energy. Elastic potential energy is always positive regardless of whether the spring is compressed or extended." },
+  { question: "What happens when a spring is stretched beyond its elastic limit?", answer: "When a spring is stretched beyond its elastic limit, it undergoes permanent (plastic) deformation and does not return to its original length when the force is removed. Hooke's Law no longer applies in this region. The elastic limit varies by material and spring design. High-quality springs are designed so that normal operating loads keep them well within their elastic range." }
+]) %>
+
+<%= calculator_schema(
+  name: "Spring Constant Calculator",
+  description: "Calculate the spring constant (k) using Hooke's Law (F = kx) or mass-spring oscillation period (T = 2pi*sqrt(m/k)).",
+  url: physics_spring_constant_url,
+  category: "EducationalApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Spring Constant Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Spring Constant Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the spring constant (k) using Hooke's Law from force and displacement, or from mass and oscillation period. Results update in real time.</p>
+
+    <div data-controller="spring-constant-calculator" class="space-y-5 mb-8">
+      <%# Card 1: Hooke's Law %>
+      <div data-card="Hooke's Law" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">F</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Hooke's Law: F = kx</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">k = F / x</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Force (N)</label>
+            <input type="number" data-spring-constant-calculator-target="force" data-action="input->spring-constant-calculator#calcHooke" class="w-full" placeholder="10" step="any">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Displacement (m)</label>
+            <input type="number" data-spring-constant-calculator-target="displacement" data-action="input->spring-constant-calculator#calcHooke" class="w-full" placeholder="0.05" step="any">
+          </div>
+        </div>
+
+        <div data-spring-constant-calculator-target="hookesResults" class="hidden">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Spring Constant (k)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-spring-constant-calculator-target="resultKHooke" data-result>&mdash;</span>
+            </div>
+            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Potential Energy (PE)</span>
+              <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400" data-spring-constant-calculator-target="resultPEHooke" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button data-action="click->spring-constant-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 2: Oscillation Method %>
+      <div data-card="Oscillation" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">T</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Mass-Spring Oscillation</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">T = 2&pi;&radic;(m/k)</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Mass (kg)</label>
+            <input type="number" data-spring-constant-calculator-target="mass" data-action="input->spring-constant-calculator#calcOscillation" class="w-full" placeholder="0.5" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Period (s)</label>
+            <input type="number" data-spring-constant-calculator-target="period" data-action="input->spring-constant-calculator#calcOscillation" class="w-full" placeholder="1" step="any" min="0">
+          </div>
+        </div>
+
+        <div data-spring-constant-calculator-target="oscResults" class="hidden">
+          <div class="grid grid-cols-3 gap-4">
+            <div class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Spring Constant (k)</span>
+              <span class="text-xl font-bold text-violet-600 dark:text-violet-400" data-spring-constant-calculator-target="resultKOsc" data-result>&mdash;</span>
+            </div>
+            <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Frequency (f)</span>
+              <span class="text-xl font-bold text-amber-600 dark:text-amber-400" data-spring-constant-calculator-target="resultFreqOsc" data-result>&mdash;</span>
+            </div>
+            <div class="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Angular Frequency (&omega;)</span>
+              <span class="text-xl font-bold text-rose-600 dark:text-rose-400" data-spring-constant-calculator-target="resultAngularFreqOsc" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button data-action="click->spring-constant-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding the Spring Constant</h2>
+      <p>The <strong>spring constant</strong> (k) is a fundamental measure of a spring's stiffness, expressed in newtons per meter (N/m). It quantifies the relationship between the force applied to a spring and the resulting displacement. A spring with a constant of 200 N/m requires 200 newtons of force to stretch or compress it by one meter. The concept was first described by English scientist Robert Hooke in 1676 and remains one of the cornerstones of classical mechanics, materials science, and engineering design.</p>
+
+      <p>This calculator provides two methods for determining the spring constant. The <strong>Hooke's Law method</strong> uses a measured force and displacement (k = F/x). The <strong>oscillation method</strong> uses the period of a mass-spring system and the attached mass to calculate k from the relationship T = 2&pi;&radic;(m/k). Both methods yield the same spring constant for an ideal spring operating within its elastic limit.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Hooke's Law and Elastic Potential Energy</h2>
+      <p><strong>Hooke's Law</strong> (F = kx) states that the restoring force exerted by a spring is proportional to its displacement from equilibrium. This linear relationship holds as long as the spring remains within its elastic region. The <strong>elastic potential energy</strong> stored in a deformed spring is PE = &frac12;kx&sup2;. This energy is always positive because displacement is squared — it does not matter whether the spring is stretched or compressed. When released, this stored energy converts to kinetic energy, which is the basic principle behind mechanical watches, pinball launchers, and vehicle suspension systems.</p>
+
+      <h3>Mass-Spring Oscillation</h3>
+      <p>When a mass is attached to a spring and displaced from equilibrium, it oscillates back and forth in <strong>simple harmonic motion</strong>. The period of oscillation is T = 2&pi;&radic;(m/k), which depends only on the mass and spring constant, not on the amplitude of oscillation (for small displacements). The <strong>frequency</strong> (f = 1/T) tells how many oscillations occur per second, and the <strong>angular frequency</strong> (&omega; = 2&pi;f) is useful in mathematical descriptions of the motion. This oscillation method is experimentally convenient because measuring a period is often easier and more accurate than measuring small forces and displacements.</p>
+
+      <h3>Real-World Applications</h3>
+      <p>Springs and spring constants appear throughout engineering. Vehicle <strong>suspension systems</strong> use springs with carefully chosen k values to balance ride comfort and handling. <strong>Mechanical keyboards</strong> use springs with different constants for varying key feel. <strong>Seismometers</strong> use extremely sensitive springs to detect ground motion. <strong>Atomic force microscopes</strong> use cantilevers with known spring constants to measure forces at the nanometer scale. In structural engineering, the stiffness of building components during earthquakes is often modeled using equivalent spring constants. Even the bonds between atoms in molecules behave approximately like tiny springs, and their force constants determine vibrational frequencies measured by infrared spectroscopy.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the spring constant?</h3>
+      <p>The spring constant (k) measures a spring's stiffness in newtons per meter (N/m). It is defined as the force required to extend or compress the spring by one meter. Higher values indicate stiffer springs.</p>
+
+      <h3>What is Hooke's Law?</h3>
+      <p>Hooke's Law states that F = kx: the force needed to extend or compress a spring is directly proportional to the displacement from its natural length. It holds within the spring's elastic limit.</p>
+
+      <h3>How do you calculate spring constant from oscillation period?</h3>
+      <p>Use k = (2&pi;/T)&sup2; &times; m, derived from T = 2&pi;&radic;(m/k). Measure the oscillation period T and know the mass m to find k without needing to measure force and displacement directly.</p>
+
+      <h3>What is elastic potential energy?</h3>
+      <p>Elastic potential energy is energy stored in a deformed spring: PE = &frac12;kx&sup2;. It is always positive regardless of compression or extension direction. When released, it converts to kinetic energy.</p>
+
+      <h3>What happens when a spring is stretched beyond its elastic limit?</h3>
+      <p>Beyond the elastic limit, the spring undergoes permanent deformation and does not return to its original length. Hooke's Law no longer applies. Springs are designed so normal loads stay within the elastic range.</p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Spring Constant Calculator", url: physics_spring_constant_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Force Calculator", description: "Calculate force, mass, or acceleration using Newton's second law F = ma.", path: physics_force_path, icon_path: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" },
+      { name: "Kinetic Energy Calculator", description: "Calculate kinetic energy, mass, or velocity using KE = 1/2 mv^2.", path: physics_kinetic_energy_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Velocity Calculator", description: "Calculate velocity, distance, or time using the fundamental motion equation v = d/t.", path: physics_velocity_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "physics" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("spring-constant-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

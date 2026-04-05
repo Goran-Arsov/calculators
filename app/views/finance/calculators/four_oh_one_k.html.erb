@@ -1,0 +1,192 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "401(k) Calculator - Free Retirement Savings Projection",
+  description: "Project your 401(k) retirement savings with employer match, annual contributions, and investment growth. See how your money grows over time with our free calculator.",
+  canonical: finance_four_oh_one_k_url,
+  og: {
+    title: "401(k) Calculator - Free Retirement Savings Projection | CalcWise",
+    description: "Project your 401(k) retirement savings with employer match, annual contributions, and investment growth. See how your money grows over time.",
+    url: finance_four_oh_one_k_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "401(k) Calculator", url: finance_four_oh_one_k_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much should I contribute to my 401(k)?", answer: "Financial experts generally recommend contributing at least enough to get the full employer match, which is essentially free money. Beyond that, aim to save 10-15% of your pre-tax income for retirement. The 2024 contribution limit is $23,000 ($30,500 if you are 50 or older)." },
+  { question: "What is an employer 401(k) match?", answer: "An employer match is when your company contributes additional money to your 401(k) based on your own contributions. A common example is a 50% match up to 6% of your salary, meaning if you contribute 6% of your pay, your employer adds an additional 3%." },
+  { question: "What is a good rate of return for a 401(k)?", answer: "The historical average annual return of the S&P 500 is about 10% before inflation and roughly 7% after inflation. A conservative estimate for long-term 401(k) planning is 6-8% annual returns, depending on your asset allocation between stocks and bonds." },
+  { question: "When can I withdraw from my 401(k) without penalty?", answer: "You can withdraw from a traditional 401(k) without the 10% early withdrawal penalty starting at age 59 and a half. Withdrawals are taxed as ordinary income. Required minimum distributions begin at age 73 for most people." },
+  { question: "Should I choose a traditional or Roth 401(k)?", answer: "A traditional 401(k) reduces your taxable income now and you pay taxes on withdrawals in retirement. A Roth 401(k) is funded with after-tax dollars but withdrawals in retirement are tax-free. If you expect to be in a higher tax bracket in retirement, a Roth may be better." }
+]) %>
+
+<%= calculator_schema(
+  name: "401(k) Calculator",
+  description: "Project your 401(k) retirement savings with employer match, annual contributions, and compound investment growth over time.",
+  url: finance_four_oh_one_k_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "401(k) Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">401(k) Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Project your retirement savings with employer match, annual contributions, and compound investment growth.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="four-oh-one-k-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current 401(k) Balance ($)</label>
+            <input type="number" data-four-oh-one-k-calculator-target="currentBalance" data-action="input->four-oh-one-k-calculator#calculate" class="w-full" placeholder="50000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Contribution ($)</label>
+            <input type="number" data-four-oh-one-k-calculator-target="annualContribution" data-action="input->four-oh-one-k-calculator#calculate" class="w-full" placeholder="19500" step="500" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Employer Match (%)</label>
+            <input type="number" data-four-oh-one-k-calculator-target="employerMatchPercent" data-action="input->four-oh-one-k-calculator#calculate" class="w-full" placeholder="50" step="1" min="0" max="100">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Employer Match Limit (% of contribution)</label>
+            <input type="number" data-four-oh-one-k-calculator-target="employerMatchLimit" data-action="input->four-oh-one-k-calculator#calculate" class="w-full" placeholder="100" step="1" min="0" max="100">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Expected Annual Return (%)</label>
+            <input type="number" data-four-oh-one-k-calculator-target="annualReturn" data-action="input->four-oh-one-k-calculator#calculate" class="w-full" placeholder="7" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Years to Retirement</label>
+            <input type="number" data-four-oh-one-k-calculator-target="yearsToRetirement" data-action="input->four-oh-one-k-calculator#calculate" class="w-full" placeholder="25" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Future Value</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-four-oh-one-k-calculator-target="futureValue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Your Contributions</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-four-oh-one-k-calculator-target="totalContributions">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Employer Match Total</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-four-oh-one-k-calculator-target="totalEmployerMatch">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Investment Growth</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-four-oh-one-k-calculator-target="totalGrowth">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Employer Annual Match</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-four-oh-one-k-calculator-target="employerAnnualMatch">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->four-oh-one-k-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the 401(k) Calculator</h2>
+      <p>
+        Our free 401(k) calculator helps you project how much your retirement savings will grow over time. Enter your current 401(k) balance, annual contribution amount, employer match details, expected annual rate of return, and the number of years until retirement. The calculator instantly shows your projected future value, broken down into personal contributions, employer match contributions, and investment growth from compound returns.
+      </p>
+      <p>
+        Understanding the power of compound growth and employer matching is essential for retirement planning. Even small increases in your annual contribution can produce dramatically different outcomes over 20 or 30 years. Use this tool to experiment with different contribution levels and see how maximizing your employer match accelerates your savings.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Maximizing Your 401(k) Growth</h2>
+      <p>
+        The most important step is to contribute at least enough to receive the full employer match. If your employer matches 50% of your contributions up to 6% of your salary, contributing less than 6% means leaving free money on the table. After capturing the full match, consider increasing contributions annually, especially after raises, until you reach the IRS annual limit ($23,000 for 2024, or $30,500 if you are age 50 or older).
+      </p>
+
+      <h3>The Power of Starting Early</h3>
+      <p>
+        Compound growth rewards time in the market more than any other factor. An employee who starts contributing $500 per month at age 25 will accumulate significantly more than someone contributing $1,000 per month starting at age 40, even though the late starter contributes more total dollars. Starting early gives your investments more years to compound, turning modest contributions into substantial wealth.
+      </p>
+
+      <h3>Choosing the Right Asset Allocation</h3>
+      <p>
+        Your expected rate of return depends heavily on your asset allocation. Younger investors with decades until retirement can typically afford a higher stock allocation (80-100%), which historically returns 7-10% annually. As you approach retirement, gradually shifting toward bonds reduces volatility and protects your accumulated savings. Target-date funds automatically adjust this balance based on your expected retirement year.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much should I contribute to my 401(k)?</h3>
+      <p>
+        Financial experts generally recommend contributing at least enough to get the full employer match, which is essentially free money. Beyond that, aim to save 10-15% of your pre-tax income for retirement. The 2024 contribution limit is $23,000 ($30,500 if you are 50 or older).
+      </p>
+
+      <h3>What is an employer 401(k) match?</h3>
+      <p>
+        An employer match is when your company contributes additional money to your 401(k) based on your own contributions. A common example is a 50% match up to 6% of your salary, meaning if you contribute 6% of your pay, your employer adds an additional 3%.
+      </p>
+
+      <h3>What is a good rate of return for a 401(k)?</h3>
+      <p>
+        The historical average annual return of the S&P 500 is about 10% before inflation and roughly 7% after inflation. A conservative estimate for long-term 401(k) planning is 6-8% annual returns, depending on your asset allocation between stocks and bonds.
+      </p>
+
+      <h3>When can I withdraw from my 401(k) without penalty?</h3>
+      <p>
+        You can withdraw from a traditional 401(k) without the 10% early withdrawal penalty starting at age 59 and a half. Withdrawals are taxed as ordinary income. Required minimum distributions begin at age 73 for most people.
+      </p>
+
+      <h3>Should I choose a traditional or Roth 401(k)?</h3>
+      <p>
+        A traditional 401(k) reduces your taxable income now and you pay taxes on withdrawals in retirement. A Roth 401(k) is funded with after-tax dollars but withdrawals in retirement are tax-free. If you expect to be in a higher tax bracket in retirement, a Roth may be better.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "401(k) Calculator", url: finance_four_oh_one_k_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Retirement Calculator", description: "Estimate how much you need to save for a comfortable retirement.", path: finance_retirement_path, icon_path: "M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" },
+      { name: "Investment Calculator", description: "Project the future value of your investments with regular contributions.", path: finance_investment_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Compound Interest Calculator", description: "See how your money grows over time with compound interest.", path: finance_compound_interest_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("401k-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

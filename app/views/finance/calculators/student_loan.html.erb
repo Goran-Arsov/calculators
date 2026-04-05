@@ -1,0 +1,197 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Student Loan Calculator - Free Repayment Estimator",
+  description: "Calculate your student loan monthly payment, total cost, and payoff date. Compare standard, graduated, extended, and income-driven repayment plans.",
+  canonical: finance_student_loan_url,
+  og: {
+    title: "Student Loan Calculator - Free Repayment Estimator | CalcWise",
+    description: "Calculate your student loan monthly payment, total cost, and payoff date. Compare standard, graduated, extended, and income-driven repayment plans.",
+    url: finance_student_loan_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Student Loan Calculator", url: finance_student_loan_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the standard student loan repayment plan?", answer: "The standard repayment plan is the default for federal student loans. It features fixed monthly payments over a 10-year term. While it has the highest monthly payment among the plans, it results in the lowest total interest paid because you pay off the loan in the shortest time." },
+  { question: "How does income-driven repayment work?", answer: "Income-driven repayment plans (including SAVE, PAYE, and IBR) cap your monthly payment at a percentage (typically 10%) of your discretionary income, which is income above 150% of the federal poverty level. After 20-25 years of qualifying payments, any remaining balance is forgiven." },
+  { question: "Should I refinance my student loans?", answer: "Refinancing can save money if you qualify for a lower interest rate, but it means giving up federal loan benefits like income-driven repayment, loan forgiveness programs, and deferment options. Only refinance federal loans into private loans if you are confident you will not need those protections." },
+  { question: "What is student loan forgiveness?", answer: "Public Service Loan Forgiveness (PSLF) forgives remaining federal loan balances after 120 qualifying payments (10 years) while working for a government or nonprofit employer. Income-driven repayment plans forgive remaining balances after 20-25 years, though the forgiven amount may be taxable." },
+  { question: "How do extra payments affect my student loan?", answer: "Extra payments reduce your principal balance faster, which decreases the total interest you pay and shortens your payoff timeline. When making extra payments, specify that the additional amount should go toward principal. Even an extra $50-$100 per month can save thousands over the life of the loan." }
+]) %>
+
+<%= calculator_schema(
+  name: "Student Loan Calculator",
+  description: "Calculate student loan monthly payments, total cost, and payoff date across standard, graduated, extended, and income-driven repayment plans.",
+  url: finance_student_loan_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Student Loan Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Student Loan Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your monthly student loan payment, total cost, and payoff date across different repayment plans.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="student-loan-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Balance ($)</label>
+            <input type="number" data-student-loan-calculator-target="balance" data-action="input->student-loan-calculator#calculate" class="w-full" placeholder="35000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-student-loan-calculator-target="annualRate" data-action="input->student-loan-calculator#calculate" class="w-full" placeholder="5.5" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-student-loan-calculator-target="loanTermYears" data-action="input->student-loan-calculator#calculate" class="w-full" placeholder="10" step="1" min="1" max="30">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Repayment Plan</label>
+            <select data-student-loan-calculator-target="planType" data-action="change->student-loan-calculator#calculate" class="w-full">
+              <option value="standard" selected>Standard (10-year fixed)</option>
+              <option value="graduated">Graduated (increasing payments)</option>
+              <option value="extended">Extended (25-year term)</option>
+              <option value="income_driven">Income-Driven (10% discretionary)</option>
+            </select>
+          </div>
+          <div class="hidden" data-student-loan-calculator-target="incomeField">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Gross Income ($)</label>
+            <input type="number" data-student-loan-calculator-target="monthlyIncome" data-action="input->student-loan-calculator#calculate" class="w-full" placeholder="4000" step="100" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-student-loan-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-student-loan-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-student-loan-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Payoff Time</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-student-loan-calculator-target="payoffMonths">0 months</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Payoff Date</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-student-loan-calculator-target="payoffDate">N/A</span>
+            </div>
+            <div class="flex justify-between items-center hidden" data-student-loan-calculator-target="forgivenRow">
+              <span class="text-gray-600 dark:text-gray-400">Forgiven Amount</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-student-loan-calculator-target="forgivenAmount">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->student-loan-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Student Loan Calculator</h2>
+      <p>
+        Enter your current loan balance, interest rate, and select a repayment plan to see your estimated monthly payment, total cost, and payoff timeline. The calculator supports four federal repayment plan types: Standard (10-year fixed payments), Graduated (lower payments that increase every two years), Extended (25-year term), and Income-Driven (based on 10% of discretionary income with forgiveness after 20 years). For the income-driven plan, enter your monthly gross income to calculate your payment.
+      </p>
+      <p>
+        Comparing different repayment plans is essential for managing student debt effectively. While lower monthly payments provide short-term relief, they typically result in significantly more total interest paid over the life of the loan. Use this tool to find the right balance between affordable monthly payments and minimizing total cost.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Student Loan Repayment Plans</h2>
+      <p>
+        The standard 10-year plan results in the lowest total cost because you pay off the principal quickly, minimizing interest accumulation. The graduated plan starts with payments approximately 40% lower than standard but increases them every two years, which can be helpful for borrowers expecting income growth early in their careers. The extended plan stretches payments over 25 years, significantly reducing the monthly amount but roughly doubling the total interest paid compared to the standard plan.
+      </p>
+
+      <h3>Income-Driven Repayment and Loan Forgiveness</h3>
+      <p>
+        Income-driven plans are designed for borrowers whose debt is high relative to their income. Monthly payments are capped at 10% of discretionary income (income above 150% of the federal poverty level). After 20 years of qualifying payments, any remaining balance is forgiven. While the monthly payments are much lower, the total cost can be higher due to extended interest accumulation, and forgiven amounts may be subject to income tax. Public Service Loan Forgiveness (PSLF) offers tax-free forgiveness after just 10 years for qualifying government and nonprofit employees.
+      </p>
+
+      <h3>Strategies for Paying Off Student Loans Faster</h3>
+      <p>
+        The avalanche method directs extra payments to the loan with the highest interest rate first, minimizing total interest. The snowball method targets the smallest balance first for psychological motivation. Autopay discounts (typically 0.25%) reduce your rate slightly. Employer student loan repayment benefits, available at a growing number of companies, provide tax-free contributions up to $5,250 per year. Any windfalls like tax refunds or bonuses can make significant dents in your principal when applied as lump-sum payments.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the standard student loan repayment plan?</h3>
+      <p>
+        The standard repayment plan is the default for federal student loans. It features fixed monthly payments over a 10-year term. While it has the highest monthly payment among the plans, it results in the lowest total interest paid because you pay off the loan in the shortest time.
+      </p>
+
+      <h3>How does income-driven repayment work?</h3>
+      <p>
+        Income-driven repayment plans (including SAVE, PAYE, and IBR) cap your monthly payment at a percentage (typically 10%) of your discretionary income, which is income above 150% of the federal poverty level. After 20-25 years of qualifying payments, any remaining balance is forgiven.
+      </p>
+
+      <h3>Should I refinance my student loans?</h3>
+      <p>
+        Refinancing can save money if you qualify for a lower interest rate, but it means giving up federal loan benefits like income-driven repayment, loan forgiveness programs, and deferment options. Only refinance federal loans into private loans if you are confident you will not need those protections.
+      </p>
+
+      <h3>What is student loan forgiveness?</h3>
+      <p>
+        Public Service Loan Forgiveness (PSLF) forgives remaining federal loan balances after 120 qualifying payments (10 years) while working for a government or nonprofit employer. Income-driven repayment plans forgive remaining balances after 20-25 years, though the forgiven amount may be taxable.
+      </p>
+
+      <h3>How do extra payments affect my student loan?</h3>
+      <p>
+        Extra payments reduce your principal balance faster, which decreases the total interest you pay and shortens your payoff timeline. When making extra payments, specify that the additional amount should go toward principal. Even an extra $50-$100 per month can save thousands over the life of the loan.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Student Loan Calculator", url: finance_student_loan_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Debt Payoff Calculator", description: "Create a plan to pay off your debts faster.", path: finance_debt_payoff_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Salary Calculator", description: "Convert between hourly, weekly, biweekly, monthly, and annual salary.", path: finance_salary_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("student-loan-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

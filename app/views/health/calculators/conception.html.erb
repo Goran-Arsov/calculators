@@ -1,0 +1,191 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pregnancy Conception Calculator - Free Conception Date Tool",
+  description: "Estimate your conception date from your due date or last period. Calculate your fertile window and conception range with our free instant calculator.",
+  canonical: health_conception_url,
+  og: {
+    title: "Pregnancy Conception Calculator - Free Conception Date Tool | CalcWise",
+    description: "Estimate your conception date from your due date or last period. Calculate your fertile window and likely conception range.",
+    url: health_conception_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Conception Calculator", url: health_conception_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is the conception date estimated?", answer: "The conception date is estimated based on ovulation timing. Ovulation typically occurs about 14 days before the next expected period, which means the cycle length minus 14 days after the last menstrual period (LMP). If working from a due date, the calculator subtracts 280 days to find the LMP, then adds the estimated ovulation day. Since sperm can survive up to 5 days, the actual conception could have occurred within a window around the ovulation date." },
+  { question: "Can I calculate conception from my due date?", answer: "Yes. If you know your due date, the calculator works backwards to estimate when conception likely occurred. It subtracts 280 days (40 weeks) from the due date to find the estimated last menstrual period, then calculates the ovulation date based on your cycle length. The conception date is estimated to be around the ovulation date, plus or minus a few days." },
+  { question: "How accurate is a conception date calculator?", answer: "Conception calculators provide estimates based on average cycle patterns and cannot pinpoint the exact day of conception. The actual conception date can vary by several days because sperm can survive inside the body for up to 5 days, and the egg is viable for about 24 hours after ovulation. For most women, the estimated date is accurate to within about 5 days of the actual conception." },
+  { question: "What is the fertile window?", answer: "The fertile window is the period during your menstrual cycle when pregnancy is most likely to occur. It spans approximately 6 days — the 5 days before ovulation and the day of ovulation itself. This is because sperm can survive in the reproductive tract for up to 5 days, while the egg is viable for about 12-24 hours after release." },
+  { question: "Does cycle length affect conception date?", answer: "Yes, cycle length directly affects the estimated conception date. Women with shorter cycles (e.g., 24 days) ovulate earlier, while women with longer cycles (e.g., 35 days) ovulate later. The calculator adjusts by subtracting 14 days (the typical luteal phase) from your cycle length to determine the ovulation day. This is why entering your actual cycle length improves accuracy." }
+]) %>
+
+<%= calculator_schema(
+  name: "Conception Calculator",
+  description: "Estimate your conception date, fertile window, and due date from your last period or expected due date.",
+  url: health_conception_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Conception Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pregnancy Conception Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your conception date, fertile window, and pregnancy timeline from your due date or last period.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="conception-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Calculate From</label>
+            <select data-conception-calculator-target="method" data-action="change->conception-calculator#updateFields" class="w-full" aria-label="Calculation Method">
+              <option value="due_date">Due Date</option>
+              <option value="lmp">Last Menstrual Period (LMP)</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Due Date</label>
+            <input type="date" data-conception-calculator-target="dueDate" data-action="input->conception-calculator#calculate" class="w-full">
+          </div>
+          <div class="field-group hidden">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Last Menstrual Period</label>
+            <input type="date" data-conception-calculator-target="lastPeriod" data-action="input->conception-calculator#calculate" class="w-full">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Average Cycle Length (days)</label>
+            <input type="number" data-conception-calculator-target="cycleLength" data-action="input->conception-calculator#calculate" class="w-full" placeholder="28" value="28" min="20" max="45">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Estimated Conception</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-conception-calculator-target="conceptionDate">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Fertile Window Start</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-conception-calculator-target="fertileStart">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Fertile Window End</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-conception-calculator-target="fertileEnd">—</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Estimated LMP</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-conception-calculator-target="estimatedLmp">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Due Date</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-conception-calculator-target="estimatedDueDate">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Conception Range</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-conception-calculator-target="conceptionRange">—</span>
+            </div>
+          </div>
+          <button data-action="click->conception-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Conception Calculator</h2>
+      <p>
+        Our pregnancy conception calculator helps you estimate when conception likely occurred based on either your due date or the first day of your last menstrual period (LMP). Choose your preferred method, enter the date, and optionally adjust your average cycle length for more accurate results. The calculator instantly displays your estimated conception date, fertile window, and a conception range that accounts for natural variation in ovulation timing and sperm survival.
+      </p>
+      <p>
+        Understanding your conception date can be helpful for confirming pregnancy dating, satisfying personal curiosity about when pregnancy began, or reconciling ultrasound-based and LMP-based dating. The fertile window shows when intercourse was most likely to have resulted in conception, which can also be useful for future family planning.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How Conception Dating Works</h2>
+      <p>
+        Pregnancy dating traditionally begins from the first day of the last menstrual period, even though conception does not occur until about two weeks later at ovulation. A standard pregnancy is 280 days (40 weeks) from LMP, which equals approximately 266 days from conception. Ovulation typically occurs <strong>cycle length minus 14 days</strong> after the start of a period, because the luteal phase (post-ovulation) is relatively constant at about 14 days for most women.
+      </p>
+
+      <h3>The Role of Cycle Length</h3>
+      <p>
+        Your menstrual cycle length directly affects when you ovulate. A woman with a 28-day cycle typically ovulates around day 14, while a woman with a 35-day cycle ovulates around day 21. By entering your actual cycle length instead of assuming the standard 28 days, you get a more accurate conception estimate. The default 28-day cycle is only an average — many healthy women have cycles ranging from 24 to 35 days.
+      </p>
+
+      <h3>Why Conception Date Is a Range</h3>
+      <p>
+        Conception is never pinpointed to a single day because sperm can survive in the reproductive tract for up to 5 days, and the egg is viable for about 12 to 24 hours after ovulation. This means that intercourse occurring anywhere from 5 days before to 1 day after ovulation could result in conception. The calculator provides a range reflecting this biological reality, showing the earliest and latest likely conception dates around the estimated ovulation day.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is the conception date estimated?</h3>
+      <p>
+        The conception date is estimated based on ovulation timing. Ovulation typically occurs about 14 days before the next expected period, which means the cycle length minus 14 days after the last menstrual period. If working from a due date, the calculator subtracts 280 days to find the LMP, then adds the estimated ovulation day.
+      </p>
+
+      <h3>Can I calculate conception from my due date?</h3>
+      <p>
+        Yes. If you know your due date, the calculator works backwards to estimate when conception likely occurred. It subtracts 280 days from the due date to find the estimated last menstrual period, then calculates the ovulation date based on your cycle length.
+      </p>
+
+      <h3>How accurate is a conception date calculator?</h3>
+      <p>
+        Conception calculators provide estimates based on average cycle patterns and cannot pinpoint the exact day of conception. The actual conception date can vary by several days. For most women, the estimated date is accurate to within about 5 days of the actual conception.
+      </p>
+
+      <h3>What is the fertile window?</h3>
+      <p>
+        The fertile window is the period during your menstrual cycle when pregnancy is most likely to occur. It spans approximately 6 days — the 5 days before ovulation and the day of ovulation itself.
+      </p>
+
+      <h3>Does cycle length affect conception date?</h3>
+      <p>
+        Yes, cycle length directly affects the estimated conception date. Women with shorter cycles ovulate earlier, while women with longer cycles ovulate later. The calculator adjusts by subtracting 14 days from your cycle length to determine the ovulation day.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Conception Calculator", url: health_conception_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Pregnancy Due Date Calculator", description: "Calculate your expected due date based on your last menstrual period.", path: health_pregnancy_due_date_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Pregnancy Week Calculator", description: "Find out how many weeks pregnant you are and your current trimester.", path: health_pregnancy_week_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("conception-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

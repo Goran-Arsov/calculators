@@ -1,0 +1,181 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Lumber Calculator - Board Feet & Pricing Tool",
+  description: "Calculate board feet from lumber dimensions and estimate costs per board foot. Enter thickness, width, length, and quantity for instant board feet and pricing.",
+  canonical: construction_lumber_url,
+  og: {
+    title: "Lumber Calculator - Board Feet & Pricing Tool | CalcWise",
+    description: "Calculate board feet from lumber dimensions and estimate costs per board foot. Enter thickness, width, length, and quantity.",
+    url: construction_lumber_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Lumber Calculator", url: construction_lumber_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a board foot?", answer: "A board foot is a standard unit for measuring lumber volume. One board foot equals a piece of wood 1 inch thick, 12 inches wide, and 12 inches long, which is 144 cubic inches. The formula is: board feet = (thickness in inches x width in inches x length in feet) / 12. Board feet are used to price hardwoods and specialty lumber." },
+  { question: "How do I calculate board feet?", answer: "Multiply the thickness in inches by the width in inches by the length in feet, then divide by 12. For example, a 2x6 board that is 8 feet long equals (2 x 6 x 8) / 12 = 8 board feet. For multiple pieces, multiply the board feet per piece by the quantity." },
+  { question: "What is the difference between nominal and actual lumber size?", answer: "Nominal size is the name used for the lumber (e.g., 2x4), while actual size is the true dimension after drying and planing. A nominal 2x4 actually measures 1.5 x 3.5 inches. A 2x6 is actually 1.5 x 5.5 inches. When calculating board feet for purchasing, use nominal dimensions as that is how lumber is priced." },
+  { question: "How much does lumber cost per board foot?", answer: "Lumber prices per board foot vary widely by species, grade, and market conditions. Common softwoods like pine and spruce range from $2 to $5 per board foot. Popular hardwoods like oak and maple range from $4 to $10 per board foot. Exotic species like walnut, cherry, and mahogany can cost $8 to $20 or more per board foot." },
+  { question: "How do I convert linear feet to board feet?", answer: "Linear feet measures only the length of a board, while board feet accounts for thickness, width, and length. To convert, multiply the linear feet by the thickness and width in inches, then divide by 12. For example, 10 linear feet of 1x6 lumber equals (1 x 6 x 10) / 12 = 5 board feet." }
+]) %>
+
+<%= calculator_schema(
+  name: "Lumber Calculator",
+  description: "Calculate board feet from lumber dimensions and estimate costs per board foot for any lumber project.",
+  url: construction_lumber_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Lumber Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Lumber Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate board feet and total cost from lumber dimensions. Enter thickness, width, length, quantity, and price per board foot.</p>
+
+    <div data-controller="lumber-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Thickness (inches)</label>
+            <input type="number" data-lumber-calculator-target="thickness" data-action="input->lumber-calculator#calculate" class="w-full" placeholder="2" step="0.25" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Width (inches)</label>
+            <input type="number" data-lumber-calculator-target="width" data-action="input->lumber-calculator#calculate" class="w-full" placeholder="6" step="0.25" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Length (feet)</label>
+            <input type="number" data-lumber-calculator-target="length" data-action="input->lumber-calculator#calculate" class="w-full" placeholder="8" step="0.5" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Quantity</label>
+            <input type="number" data-lumber-calculator-target="quantity" data-action="input->lumber-calculator#calculate" class="w-full" value="1" step="1" min="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Price per Board Foot ($)</label>
+            <input type="number" data-lumber-calculator-target="pricePerBf" data-action="input->lumber-calculator#calculate" class="w-full" placeholder="5.00" step="0.01" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Board Feet (each)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-lumber-calculator-target="resultBfEach">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Board Feet</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-lumber-calculator-target="resultTotalBf">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Linear Feet</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-lumber-calculator-target="resultLinearFt">0 ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost per Piece</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-lumber-calculator-target="resultCostEach">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Cost</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-lumber-calculator-target="resultTotalCost">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->lumber-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Lumber Calculator</h2>
+      <p>
+        The board foot is the standard unit for buying and selling hardwood lumber and specialty wood. Enter the board thickness in inches, the width in inches, and the length in feet. The calculator computes the board feet per piece using the formula: board feet equals thickness times width times length divided by 12. Enter a quantity to calculate total board feet for multiple pieces, and optionally enter a price per board foot to see the cost per piece and total cost.
+      </p>
+      <p>
+        When purchasing lumber from a hardwood dealer, prices are quoted per board foot rather than per linear foot. This calculator helps you compare costs across different sizes and species. For dimensional softwood lumber sold at home improvement stores, the price is typically listed per linear foot or per piece, so board foot pricing is less relevant for those purchases.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Board Feet</h2>
+      <p>
+        One board foot represents a volume of 144 cubic inches of wood, equivalent to a board measuring 1 inch thick, 12 inches wide, and 1 foot long. A 2x6 board that is 10 feet long contains (2 x 6 x 10) / 12 = 10 board feet. The board foot measurement uses nominal dimensions for thickness and width, not the actual milled dimensions. This means a nominal 1-inch board that has been planed to 3/4 inch is still calculated as 1 inch thick for pricing purposes.
+      </p>
+
+      <h3>Nominal vs Actual Lumber Dimensions</h3>
+      <p>
+        Dimensional lumber sold at retail stores uses nominal sizes that differ from the actual dimensions. A 2x4 actually measures 1.5 inches by 3.5 inches. A 2x6 is 1.5 by 5.5 inches. A 1x6 is 0.75 by 5.5 inches. When calculating board feet for purchasing hardwood from a mill, use the rough-sawn thickness, which is usually sold in quarter-inch increments as 4/4, 5/4, 6/4, 8/4, and so on, where 4/4 equals one inch thick.
+      </p>
+
+      <h3>Common Lumber Species and Pricing</h3>
+      <p>
+        Softwood species like pine, spruce, and fir are the most affordable and commonly used for framing and general construction. Poplar is an inexpensive hardwood suitable for painted projects. Red and white oak are mid-range hardwoods popular for furniture and cabinetry. Hard maple is prized for its durability and light color. Walnut, cherry, and mahogany are premium species that command higher prices but offer exceptional beauty and workability for fine woodworking projects.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a board foot?</h3>
+      <p>
+        A board foot is a standard unit for measuring lumber volume equal to 144 cubic inches, or a piece of wood 1 inch thick, 12 inches wide, and 12 inches long. The formula is thickness in inches times width in inches times length in feet divided by 12.
+      </p>
+
+      <h3>How do I calculate board feet?</h3>
+      <p>
+        Multiply the thickness in inches by the width in inches by the length in feet, then divide by 12. For multiple pieces, multiply the board feet per piece by the quantity.
+      </p>
+
+      <h3>What is the difference between nominal and actual lumber size?</h3>
+      <p>
+        Nominal size is the label, such as 2x4, while the actual size after drying and planing is 1.5 by 3.5 inches. When calculating board feet for purchasing, use nominal dimensions as that is how lumber is priced.
+      </p>
+
+      <h3>How much does lumber cost per board foot?</h3>
+      <p>
+        Prices vary by species and market. Softwoods range from $2 to $5, common hardwoods from $4 to $10, and exotic species from $8 to $20 or more per board foot.
+      </p>
+
+      <h3>How do I convert linear feet to board feet?</h3>
+      <p>
+        Multiply the linear feet by the thickness and width in inches, then divide by 12. For example, 10 linear feet of 1x6 equals 5 board feet.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Lumber Calculator", url: construction_lumber_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Deck Calculator", description: "Estimate boards, joists, posts, and screws for your deck.", path: construction_deck_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Fence Calculator", description: "Calculate posts, rails, and pickets for your fence project.", path: construction_fence_path, icon_path: "M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11m16-11v11" },
+      { name: "Staircase Calculator", description: "Calculate rise, run, and stringer dimensions for stairs.", path: construction_staircase_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("lumber-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

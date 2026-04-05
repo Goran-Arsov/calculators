@@ -1,0 +1,214 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "House Flip Calculator - Free Real Estate Flip Profit Estimator",
+  description: "Calculate your house flip profit, ROI, and break-even using the 70% rule. Enter purchase price, renovation costs, and ARV to estimate your real estate flip returns.",
+  canonical: finance_house_flip_url,
+  og: {
+    title: "House Flip Calculator - Free Real Estate Flip Profit Estimator | CalcWise",
+    description: "Calculate your house flip profit, ROI, and break-even using the 70% rule. Enter purchase price, renovation costs, and ARV to estimate returns.",
+    url: finance_house_flip_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "House Flip Calculator", url: finance_house_flip_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the 70% rule in house flipping?", answer: "The 70% rule states that you should pay no more than 70% of the After Repair Value (ARV) minus renovation costs. For example, if a home's ARV is $300,000 and repairs cost $50,000, the maximum purchase price should be $300,000 x 0.70 - $50,000 = $160,000. This rule builds in a profit margin and a buffer for unexpected costs." },
+  { question: "What are typical closing costs when flipping a house?", answer: "Buyer closing costs are typically 1-3% of the purchase price and include title insurance, inspections, and loan fees. Seller closing costs are higher at 5-8% of the sale price, primarily due to real estate agent commissions (typically 5-6%) plus transfer taxes and title fees." },
+  { question: "How do I calculate ARV (After Repair Value)?", answer: "ARV is estimated by analyzing comparable recently sold properties (comps) in the same neighborhood that are similar in size, condition, and features to what your property will look like after renovation. Look at 3-5 comps that sold within the past 3-6 months and are within a half mile." },
+  { question: "What is a good ROI for a house flip?", answer: "Most experienced flippers aim for a minimum ROI of 10-20% after all costs. Factoring in the time investment, risk, and capital tied up, many professionals will not pursue a flip unless the projected profit is at least $25,000-$50,000 or the ROI exceeds 15%." },
+  { question: "What holding costs should I budget for when flipping?", answer: "Monthly holding costs include mortgage payments (or hard money loan payments), property taxes, insurance, utilities, HOA fees if applicable, and any loan interest. These costs accumulate every month you own the property, so faster renovations and sales directly improve profitability." }
+]) %>
+
+<%= calculator_schema(
+  name: "House Flip Calculator",
+  description: "Calculate house flipping profit, ROI, closing costs, and the 70% rule maximum purchase price for real estate investment analysis.",
+  url: finance_house_flip_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "House Flip Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">House Flip Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your house flip profit, ROI, and maximum purchase price using the 70% rule.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="house-flip-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Purchase Price ($)</label>
+            <input type="number" data-house-flip-calculator-target="purchasePrice" data-action="input->house-flip-calculator#calculate" class="w-full" placeholder="150000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Renovation Cost ($)</label>
+            <input type="number" data-house-flip-calculator-target="renovationCost" data-action="input->house-flip-calculator#calculate" class="w-full" placeholder="40000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">After Repair Value / ARV ($)</label>
+            <input type="number" data-house-flip-calculator-target="afterRepairValue" data-action="input->house-flip-calculator#calculate" class="w-full" placeholder="280000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Holding Period (Months)</label>
+            <input type="number" data-house-flip-calculator-target="holdingMonths" data-action="input->house-flip-calculator#calculate" class="w-full" placeholder="6" step="1" min="1" max="36" value="6">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Holding Cost ($)</label>
+            <input type="number" data-house-flip-calculator-target="holdingCostMonthly" data-action="input->house-flip-calculator#calculate" class="w-full" placeholder="1500" step="100" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Buy Closing Costs (%)</label>
+            <input type="number" data-house-flip-calculator-target="closingCostBuyPercent" data-action="input->house-flip-calculator#calculate" class="w-full" placeholder="2" step="0.1" min="0" value="2">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sell Closing Costs (%)</label>
+            <input type="number" data-house-flip-calculator-target="closingCostSellPercent" data-action="input->house-flip-calculator#calculate" class="w-full" placeholder="6" step="0.1" min="0" value="6">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Profit</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-house-flip-calculator-target="netProfit">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">ROI</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-house-flip-calculator-target="roi">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Annualized ROI</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-house-flip-calculator-target="annualizedRoi">0.00%</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Investment</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-house-flip-calculator-target="totalInvestment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Costs (incl. sell)</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-house-flip-calculator-target="totalCosts">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Buy Closing Costs</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-house-flip-calculator-target="closingCostsBuy">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sell Closing Costs</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-house-flip-calculator-target="closingCostsSell">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Holding Costs</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-house-flip-calculator-target="totalHoldingCosts">$0.00</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">70% Rule Max Purchase</span>
+              <span class="text-sm font-semibold text-orange-600 dark:text-orange-400" data-house-flip-calculator-target="maxPurchase70Rule">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->house-flip-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the House Flip Calculator</h2>
+      <p>
+        Enter the property purchase price, estimated renovation costs, and the expected After Repair Value (ARV) to see your projected profit and ROI. Adjust the holding period, monthly holding costs, and closing cost percentages to model different scenarios. The calculator also computes the maximum purchase price according to the 70% rule, a widely used guideline in real estate investing that helps ensure a profitable flip.
+      </p>
+      <p>
+        Accurate inputs are essential for meaningful results. Get renovation estimates from multiple contractors, research comparable sales for your ARV estimate, and include all holding costs such as mortgage payments, taxes, insurance, and utilities. Underestimating costs is the most common mistake new flippers make.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Key Concepts in House Flipping</h2>
+      <p>
+        House flipping involves purchasing a property below market value, renovating it to increase its value, and selling it for a profit. Success depends on buying at the right price, controlling renovation costs, completing the project quickly, and selling at or above your ARV estimate. The 70% rule is a quick screening tool: multiply the ARV by 0.70 and subtract renovation costs to find the maximum you should pay. This builds in a margin for profit and unexpected expenses.
+      </p>
+
+      <h3>Understanding All the Costs</h3>
+      <p>
+        Total costs include more than just the purchase price and renovation budget. Buyer closing costs (1-3%) cover title insurance, inspections, and loan origination fees. Seller closing costs (5-8%) include real estate agent commissions, transfer taxes, and title fees. Monthly holding costs for mortgage, taxes, insurance, and utilities accumulate for every month you own the property. Hard money loans, commonly used by flippers, carry higher interest rates (8-15%) that add significantly to holding costs.
+      </p>
+
+      <h3>Maximizing Your Flip Profit</h3>
+      <p>
+        Focus renovations on the kitchen, bathrooms, curb appeal, and flooring as these deliver the highest return on investment. Avoid over-improving the property beyond what comparable homes in the neighborhood support. Build a reliable team of contractors, inspectors, and real estate agents who understand the local market. Speed matters: every additional month of holding costs directly reduces your profit. Aim to complete renovation and sale within 3-6 months for optimal returns.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the 70% rule in house flipping?</h3>
+      <p>
+        The 70% rule states that you should pay no more than 70% of the After Repair Value (ARV) minus renovation costs. For example, if a home's ARV is $300,000 and repairs cost $50,000, the maximum purchase price should be $300,000 x 0.70 - $50,000 = $160,000. This rule builds in a profit margin and a buffer for unexpected costs.
+      </p>
+
+      <h3>What are typical closing costs when flipping a house?</h3>
+      <p>
+        Buyer closing costs are typically 1-3% of the purchase price and include title insurance, inspections, and loan fees. Seller closing costs are higher at 5-8% of the sale price, primarily due to real estate agent commissions (typically 5-6%) plus transfer taxes and title fees.
+      </p>
+
+      <h3>How do I calculate ARV (After Repair Value)?</h3>
+      <p>
+        ARV is estimated by analyzing comparable recently sold properties (comps) in the same neighborhood that are similar in size, condition, and features to what your property will look like after renovation. Look at 3-5 comps that sold within the past 3-6 months and are within a half mile.
+      </p>
+
+      <h3>What is a good ROI for a house flip?</h3>
+      <p>
+        Most experienced flippers aim for a minimum ROI of 10-20% after all costs. Factoring in the time investment, risk, and capital tied up, many professionals will not pursue a flip unless the projected profit is at least $25,000-$50,000 or the ROI exceeds 15%.
+      </p>
+
+      <h3>What holding costs should I budget for when flipping?</h3>
+      <p>
+        Monthly holding costs include mortgage payments (or hard money loan payments), property taxes, insurance, utilities, HOA fees if applicable, and any loan interest. These costs accumulate every month you own the property, so faster renovations and sales directly improve profitability.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "House Flip Calculator", url: finance_house_flip_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment, total interest, and total cost.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "ROI Calculator", description: "Calculate return on investment for any asset or project.", path: finance_roi_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Home Affordability Calculator", description: "Find out how much house you can afford based on your income.", path: finance_home_affordability_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("house-flip-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

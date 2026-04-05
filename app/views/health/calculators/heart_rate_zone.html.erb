@@ -1,0 +1,187 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Heart Rate Zone Calculator - Free Training Zone Tool",
+  description: "Calculate your 5 heart rate training zones using the Karvonen method. Enter your age and resting heart rate to get personalized fat burn, cardio, and peak zones.",
+  canonical: health_heart_rate_zone_url,
+  og: {
+    title: "Heart Rate Zone Calculator - Free Training Zone Tool | CalcWise",
+    description: "Calculate your 5 heart rate training zones based on age and resting heart rate. Get personalized zones for fat burn, cardio, and peak performance.",
+    url: health_heart_rate_zone_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Heart Rate Zone Calculator", url: health_heart_rate_zone_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are heart rate training zones?", answer: "Heart rate training zones are ranges of heart beats per minute that correspond to different exercise intensities. There are typically 5 zones: Zone 1 (50-60% of heart rate reserve) for warm-up and recovery, Zone 2 (60-70%) for fat burning, Zone 3 (70-80%) for aerobic fitness, Zone 4 (80-90%) for anaerobic threshold training, and Zone 5 (90-100%) for maximum effort and VO2 max improvement." },
+  { question: "How is maximum heart rate calculated?", answer: "This calculator uses the Tanaka formula: HRmax = 208 - (0.7 x age). This formula is considered more accurate than the traditional 220 minus age formula, especially for older adults. The Tanaka formula was validated in a meta-analysis of 351 studies and 18,712 subjects, showing better accuracy across all age groups." },
+  { question: "What is the Karvonen method?", answer: "The Karvonen method calculates heart rate zones using heart rate reserve (HRR), which is the difference between your maximum heart rate and resting heart rate. The formula for each zone is: Target HR = Resting HR + (HRR x zone percentage). This method is more personalized than using maximum heart rate alone because it accounts for your individual fitness level through resting heart rate." },
+  { question: "Which heart rate zone burns the most fat?", answer: "Zone 2 (60-70% of heart rate reserve) is traditionally called the fat-burning zone because the body uses a higher percentage of fat as fuel at this intensity. However, higher-intensity zones burn more total calories per minute, which can lead to greater total fat loss over the same workout duration. For optimal fat loss, a combination of Zone 2 endurance work and Zone 4 interval training is most effective." },
+  { question: "How do I find my resting heart rate?", answer: "Measure your resting heart rate first thing in the morning, before getting out of bed. Place two fingers on your wrist or neck to find your pulse. Count the beats for 60 seconds, or count for 15 seconds and multiply by 4. Repeat for 3-5 consecutive mornings and take the average. A typical resting heart rate for adults is 60-100 bpm, with well-trained athletes often below 60 bpm." }
+]) %>
+
+<%= calculator_schema(
+  name: "Heart Rate Zone Calculator",
+  description: "Calculate your personalized heart rate training zones using the Karvonen method based on age and resting heart rate.",
+  url: health_heart_rate_zone_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Heart Rate Zone Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Heart Rate Zone Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your five heart rate training zones using the Karvonen method for targeted, effective workouts.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="heart-rate-zone-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Age (years)</label>
+            <input type="number" data-heart-rate-zone-calculator-target="age" data-action="input->heart-rate-zone-calculator#calculate" class="w-full" placeholder="30" min="1" max="120">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Resting Heart Rate (bpm)</label>
+            <input type="number" data-heart-rate-zone-calculator-target="restingHr" data-action="input->heart-rate-zone-calculator#calculate" class="w-full" placeholder="70" min="30" max="120">
+          </div>
+          <div class="pt-4 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Heart Rate</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-heart-rate-zone-calculator-target="maxHr">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Heart Rate Reserve</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-heart-rate-zone-calculator-target="hrr">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Training Zones</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Zone 1 – Recovery</span>
+              <span class="text-lg font-bold text-green-500" data-heart-rate-zone-calculator-target="zone1">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Zone 2 – Fat Burn</span>
+              <span class="text-lg font-bold text-lime-500" data-heart-rate-zone-calculator-target="zone2">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Zone 3 – Cardio</span>
+              <span class="text-lg font-bold text-yellow-500" data-heart-rate-zone-calculator-target="zone3">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Zone 4 – Threshold</span>
+              <span class="text-lg font-bold text-orange-500" data-heart-rate-zone-calculator-target="zone4">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Zone 5 – Peak</span>
+              <span class="text-lg font-bold text-red-500" data-heart-rate-zone-calculator-target="zone5">—</span>
+            </div>
+          </div>
+          <button data-action="click->heart-rate-zone-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Heart Rate Zone Calculator</h2>
+      <p>
+        This calculator determines your five personalized heart rate training zones using the Karvonen method. Enter your age and resting heart rate — the calculator uses the Tanaka formula (208 - 0.7 x age) to estimate your maximum heart rate, then applies the Karvonen method to generate precise training zones that account for your individual fitness level. Results update in real time as you adjust the inputs, giving you instant access to your optimal heart rate targets for each training intensity.
+      </p>
+      <p>
+        Heart rate zone training is used by athletes and fitness enthusiasts at every level to optimize workouts, improve endurance, burn fat, and build cardiovascular fitness. By training in the right zone, you ensure your body is working at the appropriate intensity for your specific goal, whether that is recovery, fat loss, aerobic conditioning, lactate threshold improvement, or maximum performance.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the Five Training Zones</h2>
+      <p>
+        <strong>Zone 1 (50-60% HRR) — Warm Up / Recovery:</strong> Very light intensity used for warm-ups, cool-downs, and active recovery days. You can hold a full conversation easily. This zone improves overall health and helps the body recover from harder sessions.
+      </p>
+      <p>
+        <strong>Zone 2 (60-70% HRR) — Fat Burn:</strong> Light to moderate intensity where the body burns the highest percentage of calories from fat. This is the foundation of endurance training. You can talk but may need to pause occasionally. Long sessions in Zone 2 build aerobic base and improve the body's fat metabolism efficiency.
+      </p>
+      <p>
+        <strong>Zone 3 (70-80% HRR) — Aerobic / Cardio:</strong> Moderate intensity that improves cardiovascular fitness and muscular endurance. Conversation becomes difficult. This zone strengthens the heart, improves oxygen transport, and increases the number and size of mitochondria in muscle cells.
+      </p>
+      <p>
+        <strong>Zone 4 (80-90% HRR) — Anaerobic / Threshold:</strong> Hard intensity at or near the lactate threshold. Speaking is limited to short phrases. Training here increases your lactate threshold, allowing you to sustain higher intensities for longer before fatigue sets in. Interval training in this zone is highly effective for performance improvement.
+      </p>
+      <p>
+        <strong>Zone 5 (90-100% HRR) — VO2 Max / Peak:</strong> Maximum effort that can only be sustained for very short periods. This zone improves VO2 max and speed. It is typically used in short intervals of 30 seconds to 3 minutes with full recovery between efforts. Zone 5 training should be used sparingly to avoid overtraining.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What are heart rate training zones?</h3>
+      <p>
+        Heart rate training zones are ranges of heart beats per minute that correspond to different exercise intensities. There are typically 5 zones ranging from warm-up/recovery (Zone 1) to maximum effort (Zone 5), each targeting different physiological adaptations.
+      </p>
+
+      <h3>How is maximum heart rate calculated?</h3>
+      <p>
+        This calculator uses the Tanaka formula: HRmax = 208 - (0.7 x age). This formula is considered more accurate than the traditional 220 minus age formula, especially for older adults, and was validated in a meta-analysis of 351 studies.
+      </p>
+
+      <h3>What is the Karvonen method?</h3>
+      <p>
+        The Karvonen method calculates heart rate zones using heart rate reserve (HRR) — the difference between maximum and resting heart rate. The target HR for each zone is: Resting HR + (HRR x zone percentage). This is more personalized than using max HR alone.
+      </p>
+
+      <h3>Which heart rate zone burns the most fat?</h3>
+      <p>
+        Zone 2 (60-70% HRR) uses the highest percentage of fat as fuel, but higher zones burn more total calories per minute. For optimal fat loss, combine Zone 2 endurance work with Zone 4 interval training.
+      </p>
+
+      <h3>How do I find my resting heart rate?</h3>
+      <p>
+        Measure first thing in the morning before getting out of bed. Count your pulse for 60 seconds. Repeat for 3-5 mornings and take the average. A typical resting heart rate is 60-100 bpm, with trained athletes often below 60 bpm.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Heart Rate Zone Calculator", url: health_heart_rate_zone_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure to find your daily calorie target.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("heart-rate-zone-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
