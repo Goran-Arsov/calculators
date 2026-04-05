@@ -180,7 +180,7 @@ module CalculatorHelper
     ALL_CATEGORIES.dig(category_slug, :calculators) || []
   end
 
-  def related_calculators(current_slug, category_slug, count: 3)
+  def related_calculators(current_slug, category_slug, count: 6)
     calculators_for_category(category_slug)
       .reject { |c| c[:slug] == current_slug }
       .sample(count)

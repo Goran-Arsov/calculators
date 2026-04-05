@@ -1,6 +1,23 @@
 module SeoHelper
+  # OG image paths per category — place images in public/images/og/
+  OG_IMAGES = {
+    "finance" => "/images/og/finance.png",
+    "math" => "/images/og/math.png",
+    "physics" => "/images/og/physics.png",
+    "health" => "/images/og/health.png",
+    "construction" => "/images/og/construction.png",
+    "everyday" => "/images/og/everyday.png"
+  }.freeze
+
+  OG_DEFAULT_IMAGE = "/images/og/default.png"
+
   def default_domain
     ENV.fetch("DOMAIN", "https://calcwise.com")
+  end
+
+  def og_image_url(category = nil)
+    path = OG_IMAGES[category.to_s] || OG_DEFAULT_IMAGE
+    "#{default_domain}#{path}"
   end
 
   def set_meta_tags_for_calculator(title:, description:, url:, category:)
@@ -13,12 +30,19 @@ module SeoHelper
         description: description,
         url: url,
         type: "website",
-        site_name: "CalcWise"
+        site_name: "CalcWise",
+        image: og_image_url(category)
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "#{title} | CalcWise",
+        description: description,
+        image: og_image_url(category)
       }
     )
   end
 
-  def set_meta_tags_for_category(title:, description:, url:)
+  def set_meta_tags_for_category(title:, description:, url:, category: nil)
     set_meta_tags(
       title: title,
       description: description,
@@ -28,7 +52,14 @@ module SeoHelper
         description: description,
         url: url,
         type: "website",
-        site_name: "CalcWise"
+        site_name: "CalcWise",
+        image: og_image_url(category)
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "#{title} | CalcWise",
+        description: description,
+        image: og_image_url(category)
       }
     )
   end

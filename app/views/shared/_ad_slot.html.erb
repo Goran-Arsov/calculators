@@ -5,9 +5,27 @@
 <% is_sidebar = slot == "sidebar" %>
 <% is_in_results = slot == "in_results" %>
 <% is_after_intro = slot == "after_intro" %>
+<% is_in_content = slot == "in_content" %>
+
+<%# CLS fix: reserve space for ads before they load %>
+<%
+  cls_style = if is_sidebar
+    "min-height:600px"
+  elsif is_multiplex
+    "min-height:120px"
+  elsif above_fold
+    "min-height:90px"
+  elsif is_in_results || is_after_intro
+    "min-height:250px"
+  elsif is_in_content
+    "min-height:100px"
+  else
+    "min-height:90px"
+  end
+%>
 
 <% if adsense_enabled? %>
-  <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>" data-ad-provider="<%= ad_provider %>">
+  <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>" data-ad-provider="<%= ad_provider %>" style="<%= cls_style unless is_anchor %>">
     <ins class="adsbygoogle"
          style="display:block<%= ';min-height:250px' if is_sidebar %>"
          data-ad-client="<%= adsense_pub_id %>"
@@ -42,8 +60,8 @@
 <% else %>
   <%# Placeholder for development — mimics real ad sizes to test layout %>
   <% unless is_anchor %>
-    <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>" data-ad-provider="<%= ad_provider %>">
-      <div class="bg-gray-100/50 dark:bg-gray-800/30 rounded-xl text-center text-xs text-gray-300 dark:text-gray-600 flex items-center justify-center border border-dashed border-gray-200/60 dark:border-gray-700/60
+    <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>" data-ad-provider="<%= ad_provider %>" style="<%= cls_style %>">
+      <div class="bg-gray-100/50 dark:bg-gray-800/30 rounded-xl text-center text-xs text-gray-300 dark:text-gray-600 flex items-center justify-center border border-dashed border-gray-200/60 dark:border-gray-700/60 h-full
         <%= 'p-4 min-h-[90px]' unless is_sidebar || is_multiplex || is_after_intro %>
         <%= 'p-4 min-h-[250px]' if is_sidebar %>
         <%= 'p-4 min-h-[120px]' if is_multiplex %>

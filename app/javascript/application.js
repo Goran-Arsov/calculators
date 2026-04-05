@@ -36,6 +36,55 @@ document.addEventListener("turbo:load", () => {
       })
     })
   }
+
+  // --- Shareable calculator URLs ---
+  // Read URL params and pre-fill matching calculator inputs on page load.
+  // Works by matching param names to Stimulus target attribute values.
+  const params = new URLSearchParams(window.location.search)
+  if (params.size > 0) {
+    const calcEl = document.querySelector("[data-controller*='calculator']")
+    if (calcEl) {
+      const inputs = calcEl.querySelectorAll("input, select")
+      inputs.forEach((input) => {
+        for (const attr of input.attributes) {
+          if (attr.name.endsWith("-target")) {
+            const targetName = attr.value
+            if (params.has(targetName)) {
+              input.value = params.get(targetName)
+              input.dispatchEvent(new Event("input", { bubbles: true }))
+              input.dispatchEvent(new Event("change", { bubbles: true }))
+            }
+          }
+        }
+      })
+    }
+  }
+
+  // --- Scroll-depth GA4 tracking ---
+  if (typeof gtag === "function") {
+    let scrollMarkers = { 25: false, 50: false, 75: false, 100: false }
+    const onScroll = () => {
+      const scrollTop = window.scrollY
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      if (docHeight <= 0) return
+      const pct = Math.round((scrollTop / docHeight) * 100)
+
+      for (const milestone of [25, 50, 75, 100]) {
+        if (pct >= milestone && !scrollMarkers[milestone]) {
+          scrollMarkers[milestone] = true
+          gtag("event", "scroll_depth", {
+            percent: milestone,
+            page_path: window.location.pathname
+          })
+        }
+      }
+      // Clean up after 100% reached
+      if (scrollMarkers[100]) {
+        window.removeEventListener("scroll", onScroll)
+      }
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+  }
 })
 
 // Clear ad state before Turbo caches the page to prevent duplicates
