@@ -1,0 +1,174 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Word Counter - Free Online Tool",
+  description: "Count words, characters, sentences, paragraphs, and estimate reading and speaking time. Paste your text for instant results with this free word counter tool.",
+  canonical: everyday_word_counter_url,
+  og: {
+    title: "Word Counter - Free Online Tool | CalcWise",
+    description: "Instantly count words, characters, sentences, and paragraphs. Get reading and speaking time estimates for any text.",
+    url: everyday_word_counter_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Word Counter", url: everyday_word_counter_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does the word counter work?", answer: "The word counter splits your text by whitespace to count words, scans for terminal punctuation (.!?) to count sentences, and detects blank lines to count paragraphs. Character counts include and exclude spaces separately. All counting happens instantly in your browser as you type." },
+  { question: "How is reading time calculated?", answer: "Reading time is calculated by dividing the total word count by 238 words per minute, which is the average adult reading speed for non-fiction content. The result is rounded up to the nearest minute. For example, a 500-word article would take approximately 3 minutes to read." },
+  { question: "How is speaking time calculated?", answer: "Speaking time uses 150 words per minute as the average speaking pace for presentations and public speaking. This is slower than reading speed because speakers need to pause for emphasis, audience comprehension, and natural breathing. A 1,500-word speech takes about 10 minutes to deliver." },
+  { question: "Does the word counter work with different languages?", answer: "Yes, the word counter works with any language that uses spaces to separate words, including English, Spanish, French, German, and most European languages. For languages like Chinese or Japanese that do not use spaces between words, the character counter may be more useful than the word counter." },
+  { question: "What counts as a sentence?", answer: "A sentence is counted each time a period (.), exclamation mark (!), or question mark (?) is detected. Multiple punctuation marks together (like '...' or '?!') count as one sentence ending. Abbreviations with periods (like 'Dr.' or 'U.S.') may slightly inflate the sentence count." }
+]) %>
+
+<%= calculator_schema(
+  name: "Word Counter",
+  description: "Count words, characters, sentences, and paragraphs with reading and speaking time estimates.",
+  url: everyday_word_counter_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Word Counter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Word Counter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste your text to instantly count words, characters, sentences, paragraphs, and estimate reading and speaking time.</p>
+
+    <div data-controller="word-counter-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Your Text</label>
+            <textarea data-word-counter-calculator-target="input" data-action="input->word-counter-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows="8" placeholder="Paste your text here..."></textarea>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Words</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-word-counter-calculator-target="resultWords">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Characters</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-word-counter-calculator-target="resultCharacters">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Characters (no spaces)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-word-counter-calculator-target="resultCharactersNoSpaces">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sentences</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-word-counter-calculator-target="resultSentences">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Paragraphs</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-word-counter-calculator-target="resultParagraphs">&mdash;</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Reading Time</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-word-counter-calculator-target="resultReadingTime">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Speaking Time</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-word-counter-calculator-target="resultSpeakingTime">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->word-counter-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Word Counter</h2>
+      <p>
+        Paste or type your text into the input area and the word counter instantly analyzes it. You get a complete breakdown of word count, character count with and without spaces, sentence count, and paragraph count. The tool also estimates how long it would take to read the text aloud or silently, based on average reading and speaking speeds. This is especially useful for writers, students, bloggers, and anyone working within word count limits.
+      </p>
+      <p>
+        The word counter works entirely in your browser. Your text is never sent to a server, so it is completely private and safe for sensitive content. Whether you are checking an essay against a word limit, estimating how long a speech will take, or analyzing the structure of a document, this tool gives you the numbers instantly.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Word Count Metrics</h2>
+      <p>
+        Word count is the most common measure of text length. Academic papers, blog posts, social media captions, and job applications all have word count requirements. Character count matters for platforms like Twitter (280 characters), SMS messages (160 characters), and meta descriptions (155-160 characters). The distinction between characters with and without spaces is important for certain publishing and translation contexts where spacing rules differ.
+      </p>
+
+      <h3>Reading Time vs Speaking Time</h3>
+      <p>
+        The average adult reads at approximately 238 words per minute for non-fiction content. Speaking pace is slower at about 150 words per minute, which accounts for natural pauses, emphasis, and audience comprehension time. A 1,000-word blog post takes about 4 minutes to read silently but nearly 7 minutes to read aloud. Content creators use these estimates to set reader expectations, plan video scripts, and time presentations accurately.
+      </p>
+
+      <h3>Common Word Count Benchmarks</h3>
+      <p>
+        A tweet maxes out around 50 words. An email averages 200 words. Blog posts perform best at 1,500 to 2,500 words for SEO. College essays typically range from 500 to 5,000 words. A novel averages 70,000 to 100,000 words. Knowing these benchmarks helps writers plan their content and meet expectations for different formats and audiences.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does the word counter work?</h3>
+      <p>
+        It splits your text by whitespace to count words, scans for punctuation to count sentences, and detects blank lines to count paragraphs. All processing happens in your browser.
+      </p>
+
+      <h3>How is reading time calculated?</h3>
+      <p>
+        Reading time divides word count by 238 words per minute, the average adult reading speed. The result is rounded up to the nearest minute.
+      </p>
+
+      <h3>How is speaking time calculated?</h3>
+      <p>
+        Speaking time uses 150 words per minute, the average speaking pace for presentations. This accounts for natural pauses and audience comprehension.
+      </p>
+
+      <h3>Does it work with other languages?</h3>
+      <p>
+        Yes, for any language that uses spaces between words. Character counting works universally across all languages.
+      </p>
+
+      <h3>Is my text stored anywhere?</h3>
+      <p>
+        No. All processing happens in your browser. Your text is never sent to any server or stored in any database.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Word Counter", url: everyday_word_counter_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Character Counter", description: "Detailed character analysis with letter, digit, and special character counts.", path: everyday_character_counter_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "Case Converter", description: "Convert text between UPPERCASE, lowercase, Title Case, camelCase, and more.", path: everyday_case_converter_path, icon_path: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" },
+      { name: "Words Per Minute", description: "Calculate your typing or reading speed in words per minute.", path: everyday_words_per_minute_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("word-counter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

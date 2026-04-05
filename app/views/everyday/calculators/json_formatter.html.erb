@@ -1,0 +1,167 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "JSON Formatter & Validator - Free Online Tool",
+  description: "Format, prettify, minify, and validate JSON instantly. See key count, nesting depth, and data type. Free online JSON formatter with copy buttons.",
+  canonical: everyday_json_formatter_url,
+  og: {
+    title: "JSON Formatter & Validator - Free Online Tool | CalcWise",
+    description: "Paste JSON to format, minify, and validate it. See key count, nesting depth, and root type instantly.",
+    url: everyday_json_formatter_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "JSON Formatter", url: everyday_json_formatter_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is JSON formatting?", answer: "JSON formatting (also called prettifying) adds indentation and line breaks to compressed JSON to make it human-readable. Each key-value pair gets its own line, and nested objects and arrays are indented with spaces. This makes it much easier to read, debug, and understand the structure of JSON data." },
+  { question: "What is JSON minification?", answer: "JSON minification removes all unnecessary whitespace, indentation, and line breaks from JSON, producing the smallest possible representation. Minified JSON is used for data transmission over networks because smaller file sizes mean faster transfers and lower bandwidth usage. The data content remains identical." },
+  { question: "How does JSON validation work?", answer: "The validator attempts to parse your input as JSON. If parsing succeeds, the JSON is valid. If parsing fails, the tool reports the specific error and its location. Common JSON errors include missing commas, trailing commas, single quotes instead of double quotes, unquoted keys, and missing closing brackets." },
+  { question: "What are key count and nesting depth?", answer: "Key count is the total number of keys across all objects in the JSON, including nested ones. Nesting depth measures how many levels deep the data structure goes. For example, {a: {b: {c: 1}}} has 3 keys and a nesting depth of 4. These metrics help you understand the complexity of your data." },
+  { question: "Does this tool support JSON5 or JSONC?", answer: "No, this tool validates against the strict JSON specification (RFC 8259). JSON5 features like comments, trailing commas, single-quoted strings, and unquoted keys will be reported as invalid. If you need JSON5 support, you would need to convert it to standard JSON first." }
+]) %>
+
+<%= calculator_schema(
+  name: "JSON Formatter",
+  description: "Format, prettify, minify, and validate JSON with key count and nesting depth analysis.",
+  url: everyday_json_formatter_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "JSON Formatter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">JSON Formatter & Validator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste JSON to instantly format, minify, and validate it. See key count, nesting depth, and root data type.</p>
+
+    <div data-controller="json-formatter-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Input JSON</label>
+          <textarea data-json-formatter-calculator-target="input" data-action="input->json-formatter-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="6" placeholder='{"name": "John", "age": 30, "city": "New York"}'></textarea>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Status</span>
+            <span class="text-sm font-bold" data-json-formatter-calculator-target="resultStatus">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Keys</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-formatter-calculator-target="resultKeyCount">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Depth</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-formatter-calculator-target="resultDepth">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Type</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-formatter-calculator-target="resultType">&mdash;</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Formatted</label>
+              <button data-action="click->json-formatter-calculator#copyFormatted" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+            </div>
+            <textarea data-json-formatter-calculator-target="outputFormatted" readonly
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+              rows="8" placeholder="Formatted JSON will appear here..."></textarea>
+          </div>
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Minified</label>
+              <button data-action="click->json-formatter-calculator#copyMinified" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+            </div>
+            <textarea data-json-formatter-calculator-target="outputMinified" readonly
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+              rows="8" placeholder="Minified JSON will appear here..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the JSON Formatter</h2>
+      <p>
+        Paste your JSON into the input area and the tool instantly validates it, displays a formatted (prettified) version with proper indentation, and produces a minified version with all whitespace removed. You also see the total key count, nesting depth, and root data type. If your JSON is invalid, the tool shows the specific parsing error so you can fix it.
+      </p>
+      <p>
+        This tool is essential for developers working with APIs, configuration files, and data exchanges. Whether you are debugging an API response, preparing a request body, or analyzing the structure of a JSON document, the formatter gives you everything you need instantly in your browser.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding JSON Structure</h2>
+      <p>
+        JSON (JavaScript Object Notation) is the most widely used data interchange format on the web. It supports objects (key-value pairs enclosed in curly braces), arrays (ordered lists in square brackets), strings, numbers, booleans, and null values. Understanding the key count and nesting depth helps you assess the complexity of JSON data and identify potential issues with deeply nested structures that can impact performance.
+      </p>
+
+      <h3>Formatting vs Minification</h3>
+      <p>
+        Formatted JSON is designed for humans. Each key-value pair gets its own line with indentation that shows the hierarchy. This makes it easy to read, edit, and debug. Minified JSON is designed for machines. It removes all whitespace to create the smallest possible string. Minification reduces file sizes significantly, often by 30-50%, which means faster network transfers and lower bandwidth costs in production systems.
+      </p>
+
+      <h3>Common JSON Errors</h3>
+      <p>
+        The most frequent JSON errors are missing commas between key-value pairs, trailing commas after the last item in an object or array, using single quotes instead of double quotes for strings, leaving keys unquoted, and mismatched brackets. JavaScript allows many of these patterns, but strict JSON does not. This validator helps you catch these errors before they cause runtime failures.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is JSON formatting?</h3>
+      <p>Adding indentation and line breaks to make JSON human-readable. The data content stays identical, only the whitespace changes.</p>
+
+      <h3>What is JSON minification?</h3>
+      <p>Removing all whitespace to produce the smallest possible JSON string. Used for network transmission and storage efficiency.</p>
+
+      <h3>How does validation work?</h3>
+      <p>The tool parses your input. If parsing succeeds, the JSON is valid. If it fails, you see the specific error and location.</p>
+
+      <h3>What are key count and nesting depth?</h3>
+      <p>Key count totals all keys across all nested objects. Nesting depth measures how many levels deep the structure goes.</p>
+
+      <h3>Does this support JSON5 or JSONC?</h3>
+      <p>No. This validates strict JSON per RFC 8259. Comments, trailing commas, and single quotes will be flagged as invalid.</p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "JSON Formatter & Validator", url: everyday_json_formatter_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Regex Tester", description: "Test regular expressions with live match highlighting and capture group display.", path: everyday_regex_tester_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "String Encoder/Decoder", description: "Encode and decode text with Base64, URL encoding, and HTML entities.", path: everyday_string_encoder_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "Markdown Preview", description: "Write markdown and see a live HTML preview with formatting applied.", path: everyday_markdown_preview_path, icon_path: "M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("json-formatter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
