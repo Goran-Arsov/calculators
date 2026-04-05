@@ -25,7 +25,7 @@ class EmbedsControllerTest < ActionDispatch::IntegrationTest
 
   test "should set cache headers" do
     get calculator_embed_url(category: "finance", slug: "mortgage-calculator")
-    assert_includes response.headers["Cache-Control"], "max-age=3600"
+    assert_includes response.headers["Cache-Control"], "max-age=21600"
     assert_includes response.headers["Cache-Control"], "public"
   end
 

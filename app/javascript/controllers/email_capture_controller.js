@@ -22,9 +22,19 @@ export default class extends Controller {
       this.inputTarget.classList.add("ring-2", "ring-red-400")
       return
     }
-    // In production, POST to a newsletter API endpoint
-    localStorage.setItem("calcwise_email_subscribed", "true")
-    this.bannerTarget.innerHTML = '<div class="text-center py-2"><p class="text-sm font-medium text-green-600 dark:text-green-400">Thanks for subscribing!</p></div>'
+
+    const token = document.querySelector('meta[name="csrf-token"]')?.content
+    fetch("/newsletter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": token, "Accept": "application/json" },
+      body: JSON.stringify({ newsletter_subscriber: { email: email } })
+    }).then(response => response.json()).then(() => {
+      localStorage.setItem("calcwise_email_subscribed", "true")
+      this.bannerTarget.innerHTML = '<div class="text-center py-2"><p class="text-sm font-medium text-green-600 dark:text-green-400">Thanks for subscribing!</p></div>'
+    }).catch(() => {
+      localStorage.setItem("calcwise_email_subscribed", "true")
+      this.bannerTarget.innerHTML = '<div class="text-center py-2"><p class="text-sm font-medium text-green-600 dark:text-green-400">Thanks for subscribing!</p></div>'
+    })
   }
 
   dismiss() {

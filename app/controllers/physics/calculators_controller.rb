@@ -1,7 +1,5 @@
 module Physics
   class CalculatorsController < ApplicationController
-    before_action :set_cache_headers
-
     def velocity; end
     def force; end
     def kinetic_energy; end
@@ -21,10 +19,5 @@ module Physics
     def heat_transfer; end
     def spring_constant; end
 
-    private
-
-    def set_cache_headers
-      expires_in 1.hour, public: true, stale_while_revalidate: 30.minutes
-    end
   end
 end

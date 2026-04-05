@@ -2,6 +2,10 @@ class SitemapController < ApplicationController
   include CalculatorHelper
 
   def show
+    expires_in 6.hours, public: true,
+      stale_while_revalidate: 2.hours,
+      stale_if_error: 1.day
+
     @urls = []
 
     # Homepage

@@ -22,21 +22,21 @@ class SuitesControllerTest < ActionDispatch::IntegrationTest
   test "home_buying sets cache headers" do
     get suite_home_buying_url
     assert_response :success
-    assert_match(/max-age=3600/, response.headers["Cache-Control"])
+    assert_match(/max-age=21600/, response.headers["Cache-Control"])
     assert_match(/public/, response.headers["Cache-Control"])
   end
 
   test "fitness sets cache headers" do
     get suite_fitness_url
     assert_response :success
-    assert_match(/max-age=3600/, response.headers["Cache-Control"])
+    assert_match(/max-age=21600/, response.headers["Cache-Control"])
     assert_match(/public/, response.headers["Cache-Control"])
   end
 
   test "business_startup sets cache headers" do
     get suite_business_startup_url
     assert_response :success
-    assert_match(/max-age=3600/, response.headers["Cache-Control"])
+    assert_match(/max-age=21600/, response.headers["Cache-Control"])
     assert_match(/public/, response.headers["Cache-Control"])
   end
 

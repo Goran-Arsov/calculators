@@ -1,6 +1,4 @@
 class SuitesController < ApplicationController
-  before_action :set_cache_headers
-
   def home_buying
     set_meta_tags(
       title: "Home Buying Calculator Suite - CalcWise",
@@ -22,9 +20,4 @@ class SuitesController < ApplicationController
     )
   end
 
-  private
-
-  def set_cache_headers
-    expires_in 1.hour, public: true, stale_while_revalidate: 30.minutes
-  end
 end

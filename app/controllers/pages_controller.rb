@@ -1,6 +1,4 @@
 class PagesController < ApplicationController
-  before_action :set_cache_headers
-
   def privacy_policy
     set_meta_tags(
       title: "Privacy Policy",
@@ -43,7 +41,14 @@ class PagesController < ApplicationController
 
   private
 
-  def set_cache_headers
-    expires_in 1.day, public: true, stale_while_revalidate: 6.hours
+  # Static pages change only on deploy — cache aggressively.
+  def set_http_cache
+    return unless request.get? || request.head?
+
+    expires_in 1.day, public: true,
+      stale_while_revalidate: 6.hours,
+      stale_if_error: 7.days
+
+    fresh_when etag: [CACHE_VERSION, request.path], public: true
   end
 end

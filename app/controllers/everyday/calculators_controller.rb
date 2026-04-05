@@ -1,7 +1,5 @@
 module Everyday
   class CalculatorsController < ApplicationController
-    before_action :set_cache_headers
-
     def tip; end
     def discount; end
     def age; end
@@ -58,10 +56,5 @@ module Everyday
     def regex_tester; end
     def markdown_preview; end
 
-    private
-
-    def set_cache_headers
-      expires_in 1.hour, public: true, stale_while_revalidate: 30.minutes
-    end
   end
 end

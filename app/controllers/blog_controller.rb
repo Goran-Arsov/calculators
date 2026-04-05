@@ -1,5 +1,7 @@
 class BlogController < ApplicationController
-  before_action :set_cache_headers
+  skip_before_action :set_http_cache
+  before_action :load_post, only: :show
+  before_action :set_blog_cache
 
   def index
     @posts = BlogPost.published.recent.by_category(params[:category])
@@ -19,8 +21,6 @@ class BlogController < ApplicationController
   end
 
   def show
-    @post = BlogPost.published.find_by!(slug: params[:slug])
-
     set_meta_tags(
       title: @post.meta_title.presence || @post.title,
       description: @post.meta_description.presence || @post.excerpt,
@@ -37,7 +37,27 @@ class BlogController < ApplicationController
 
   private
 
-  def set_cache_headers
-    expires_in 30.minutes, public: true, stale_while_revalidate: 15.minutes
+  def load_post
+    @post = BlogPost.published.find_by!(slug: params[:slug])
+  end
+
+  # Blog content changes without deploys, so use shorter TTLs and
+  # include post timestamps in the ETag for precise invalidation.
+  def set_blog_cache
+    return unless request.get? || request.head?
+
+    expires_in 30.minutes, public: true,
+      stale_while_revalidate: 15.minutes,
+      stale_if_error: 1.hour
+
+    etag_parts = [CACHE_VERSION, request.path]
+    if @post
+      etag_parts << @post.updated_at.to_i
+    else
+      etag_parts << BlogPost.published.maximum(:updated_at)&.to_i
+      etag_parts << params[:category]
+    end
+
+    fresh_when etag: etag_parts, public: true
   end
 end

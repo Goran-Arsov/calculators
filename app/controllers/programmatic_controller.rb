@@ -3,7 +3,6 @@ class ProgrammaticController < ApplicationController
   include CalculatorHelper
 
   before_action :load_page
-  before_action :set_cache_headers
 
   def show
     set_meta_tags(
@@ -29,7 +28,4 @@ class ProgrammaticController < ApplicationController
     @category = @page[:category]
   end
 
-  def set_cache_headers
-    expires_in 1.hour, public: true, stale_while_revalidate: 30.minutes
-  end
 end

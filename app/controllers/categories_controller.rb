@@ -2,7 +2,6 @@ class CategoriesController < ApplicationController
   include CalculatorHelper
 
   def show
-    expires_in 1.hour, public: true, stale_while_revalidate: 30.minutes
     @slug = params[:category]
     @category = ALL_CATEGORIES[@slug]
     raise ActionController::RoutingError, "Not Found" unless @category
@@ -32,5 +31,21 @@ class CategoriesController < ApplicationController
         site_name: "CalcWise"
       }
     )
+  end
+
+  private
+
+  # Category pages include DB-backed blog posts, so use a shorter TTL
+  # and include the latest blog post timestamp in the ETag.
+  def set_http_cache
+    return unless request.get? || request.head?
+
+    blog_latest = BlogPost.published.maximum(:updated_at)&.to_i || 0
+
+    expires_in 2.hours, public: true,
+      stale_while_revalidate: 1.hour,
+      stale_if_error: 1.day
+
+    fresh_when etag: [CACHE_VERSION, request.path, blog_latest], public: true
   end
 end

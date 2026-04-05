@@ -34,7 +34,7 @@ class ComparisonsControllerTest < ActionDispatch::IntegrationTest
   test "mortgage_terms sets cache headers" do
     get compare_mortgage_terms_url
     assert_response :success
-    assert_match(/max-age=3600/, response.headers["Cache-Control"])
+    assert_match(/max-age=21600/, response.headers["Cache-Control"])
     assert_match(/public/, response.headers["Cache-Control"])
   end
 

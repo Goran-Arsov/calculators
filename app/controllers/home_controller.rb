@@ -1,6 +1,5 @@
 class HomeController < ApplicationController
   def index
-    expires_in 1.hour, public: true, stale_while_revalidate: 30.minutes
     set_meta_tags(
       title: "Free Online Calculators",
       description: "CalcWise offers free online calculators for finance, math, and health. Mortgage, loan, BMI, percentage calculators and more — fast, accurate, and easy to use.",

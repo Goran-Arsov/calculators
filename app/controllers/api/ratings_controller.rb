@@ -1,5 +1,6 @@
 module Api
   class RatingsController < ApplicationController
+    skip_before_action :set_http_cache
     skip_forgery_protection
 
     def create

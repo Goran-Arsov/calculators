@@ -1,7 +1,5 @@
 module Finance
   class CalculatorsController < ApplicationController
-    before_action :set_cache_headers
-
     def mortgage; end
     def compound_interest; end
     def loan; end
@@ -64,10 +62,5 @@ module Finance
     def overtime; end
     def hourly_to_salary; end
 
-    private
-
-    def set_cache_headers
-      expires_in 1.hour, public: true, stale_while_revalidate: 30.minutes
-    end
   end
 end

@@ -248,7 +248,11 @@ Rails.application.routes.draw do
   get "terms-of-service", to: "pages#terms_of_service", as: :terms_of_service
   get "about", to: "pages#about", as: :about
   get "contact", to: "pages#contact", as: :contact
+  post "contact", to: "contact_messages#create"
   get "disclaimer", to: "pages#disclaimer", as: :disclaimer
+
+  # Newsletter
+  post "newsletter", to: "newsletter_subscriptions#create", as: :newsletter_subscribe
 
   # Calculator embeds
   get "embed/:category/:slug", to: "embeds#show", as: :calculator_embed

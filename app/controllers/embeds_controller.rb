@@ -1,6 +1,5 @@
 class EmbedsController < ApplicationController
   layout "embed"
-  before_action :set_cache_headers
   before_action :allow_iframe
   helper_method :embed_mode?
 
@@ -18,10 +17,6 @@ class EmbedsController < ApplicationController
   end
 
   private
-
-  def set_cache_headers
-    expires_in 1.hour, public: true, stale_while_revalidate: 30.minutes
-  end
 
   def allow_iframe
     response.headers.delete("X-Frame-Options")

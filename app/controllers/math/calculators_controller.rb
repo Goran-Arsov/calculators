@@ -1,7 +1,5 @@
 module Math
   class CalculatorsController < ApplicationController
-    before_action :set_cache_headers
-
     def percentage; end
     def fraction; end
     def area; end
@@ -25,10 +23,5 @@ module Math
     def percentage_decrease; end
     def percentage_off; end
 
-    private
-
-    def set_cache_headers
-      expires_in 1.hour, public: true, stale_while_revalidate: 30.minutes
-    end
   end
 end

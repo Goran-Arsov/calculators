@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_05_161010) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_05_210608) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -36,6 +36,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_161010) do
     t.datetime "updated_at", null: false
     t.index ["calculator_slug", "ip_hash"], name: "index_calculator_ratings_on_calculator_slug_and_ip_hash", unique: true
     t.index ["calculator_slug"], name: "index_calculator_ratings_on_calculator_slug"
+  end
+
+  create_table "contact_messages", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.string "ip_address"
+    t.text "message"
+    t.string "name"
+    t.boolean "read", default: false
+    t.string "subject"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "newsletter_subscribers", force: :cascade do |t|
+    t.boolean "confirmed", default: false
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.string "ip_address"
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_newsletter_subscribers_on_email", unique: true
   end
 
   create_table "user_formulas", force: :cascade do |t|
