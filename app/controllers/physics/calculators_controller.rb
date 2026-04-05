@@ -15,6 +15,11 @@ module Physics
     def decibel; end
     def wavelength_frequency; end
     def planet_weight; end
+    def resistor_color_code; end
+    def gear_ratio; end
+    def pressure_converter; end
+    def heat_transfer; end
+    def spring_constant; end
 
     private
 

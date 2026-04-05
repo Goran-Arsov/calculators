@@ -15,6 +15,15 @@ module Health
     def dog_age; end
     def pregnancy_week; end
     def dog_food; end
+    def ideal_weight; end
+    def bac; end
+    def conception; end
+    def heart_rate_zone; end
+    def keto; end
+    def intermittent_fasting; end
+    def ovulation; end
+    def blood_pressure; end
+    def lean_body_mass; end
 
     private
 

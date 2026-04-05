@@ -7,6 +7,13 @@ module Construction
     def concrete; end
     def gravel_mulch; end
     def fence; end
+    def roofing; end
+    def staircase; end
+    def deck; end
+    def wallpaper; end
+    def tile; end
+    def lumber; end
+    def hvac_btu; end
 
     private
 

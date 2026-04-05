@@ -146,7 +146,7 @@ class Health::BloodPressureCalculatorTest < ActiveSupport::TestCase
   # --- String coercion ---
 
   test "string inputs are coerced" do
-    result = Health::BloodPressureCalculator.new(systolic: "120", diastolic: "80").call
+    result = Health::BloodPressureCalculator.new(systolic: "115", diastolic: "75").call
     assert result[:valid]
     assert_equal "Normal", result[:category]
   end

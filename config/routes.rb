@@ -28,6 +28,16 @@ Rails.application.routes.draw do
     get "home-affordability-calculator", to: "calculators#home_affordability", as: :home_affordability
     get "business-loan-calculator", to: "calculators#business_loan", as: :business_loan
     get "currency-converter", to: "calculators#currency_converter", as: :currency_converter
+    get "paycheck-calculator", to: "calculators#paycheck", as: :paycheck
+    get "401k-calculator", to: "calculators#four_oh_one_k", as: :four_oh_one_k
+    get "amortization-calculator", to: "calculators#amortization", as: :amortization
+    get "stock-profit-calculator", to: "calculators#stock_profit", as: :stock_profit
+    get "cd-calculator", to: "calculators#cd", as: :cd
+    get "savings-interest-calculator", to: "calculators#savings_interest", as: :savings_interest
+    get "house-flip-calculator", to: "calculators#house_flip", as: :house_flip
+    get "student-loan-calculator", to: "calculators#student_loan", as: :student_loan
+    get "estate-tax-calculator", to: "calculators#estate_tax", as: :estate_tax
+    get "crypto-profit-calculator", to: "calculators#crypto_profit", as: :crypto_profit
   end
 
   # Math calculators
@@ -43,6 +53,14 @@ Rails.application.routes.draw do
     get "gcd-lcm-calculator", to: "calculators#gcd_lcm", as: :gcd_lcm
     get "sample-size-calculator", to: "calculators#sample_size", as: :sample_size
     get "aspect-ratio-calculator", to: "calculators#aspect_ratio", as: :aspect_ratio
+    get "matrix-calculator", to: "calculators#matrix", as: :matrix
+    get "logarithm-calculator", to: "calculators#logarithm", as: :logarithm
+    get "probability-calculator", to: "calculators#probability", as: :probability
+    get "permutation-combination-calculator", to: "calculators#permutation_combination", as: :permutation_combination
+    get "mean-median-mode-calculator", to: "calculators#mean_median_mode", as: :mean_median_mode
+    get "base-converter", to: "calculators#base_converter", as: :base_converter
+    get "significant-figures-calculator", to: "calculators#sig_figs", as: :sig_figs
+    get "scientific-notation-calculator", to: "calculators#scientific_notation", as: :scientific_notation
   end
 
   # Physics calculators
@@ -60,6 +78,11 @@ Rails.application.routes.draw do
     get "decibel-calculator", to: "calculators#decibel", as: :decibel
     get "wavelength-frequency-calculator", to: "calculators#wavelength_frequency", as: :wavelength_frequency
     get "planet-weight-calculator", to: "calculators#planet_weight", as: :planet_weight
+    get "resistor-color-code-calculator", to: "calculators#resistor_color_code", as: :resistor_color_code
+    get "gear-ratio-calculator", to: "calculators#gear_ratio", as: :gear_ratio
+    get "pressure-converter", to: "calculators#pressure_converter", as: :pressure_converter
+    get "heat-transfer-calculator", to: "calculators#heat_transfer", as: :heat_transfer
+    get "spring-constant-calculator", to: "calculators#spring_constant", as: :spring_constant
   end
 
   # Health calculators
@@ -77,6 +100,15 @@ Rails.application.routes.draw do
     get "dog-age-calculator", to: "calculators#dog_age", as: :dog_age
     get "pregnancy-week-calculator", to: "calculators#pregnancy_week", as: :pregnancy_week
     get "dog-food-calculator", to: "calculators#dog_food", as: :dog_food
+    get "ideal-weight-calculator", to: "calculators#ideal_weight", as: :ideal_weight
+    get "bac-calculator", to: "calculators#bac", as: :bac
+    get "conception-calculator", to: "calculators#conception", as: :conception
+    get "heart-rate-zone-calculator", to: "calculators#heart_rate_zone", as: :heart_rate_zone
+    get "keto-calculator", to: "calculators#keto", as: :keto
+    get "intermittent-fasting-calculator", to: "calculators#intermittent_fasting", as: :intermittent_fasting
+    get "ovulation-calculator", to: "calculators#ovulation", as: :ovulation
+    get "blood-pressure-calculator", to: "calculators#blood_pressure", as: :blood_pressure
+    get "lean-body-mass-calculator", to: "calculators#lean_body_mass", as: :lean_body_mass
   end
 
   # Construction calculators
@@ -86,6 +118,13 @@ Rails.application.routes.draw do
     get "concrete-calculator", to: "calculators#concrete", as: :concrete
     get "gravel-mulch-calculator", to: "calculators#gravel_mulch", as: :gravel_mulch
     get "fence-calculator", to: "calculators#fence", as: :fence
+    get "roofing-calculator", to: "calculators#roofing", as: :roofing
+    get "staircase-calculator", to: "calculators#staircase", as: :staircase
+    get "deck-calculator", to: "calculators#deck", as: :deck
+    get "wallpaper-calculator", to: "calculators#wallpaper", as: :wallpaper
+    get "tile-calculator", to: "calculators#tile", as: :tile
+    get "lumber-calculator", to: "calculators#lumber", as: :lumber
+    get "hvac-btu-calculator", to: "calculators#hvac_btu", as: :hvac_btu
   end
 
   # Everyday calculators
@@ -98,6 +137,15 @@ Rails.application.routes.draw do
     get "fuel-cost-calculator", to: "calculators#fuel_cost", as: :fuel_cost
     get "gpa-calculator", to: "calculators#gpa", as: :gpa
     get "cooking-converter", to: "calculators#cooking_converter", as: :cooking_converter
+    get "time-zone-converter", to: "calculators#time_zone_converter", as: :time_zone_converter
+    get "shoe-size-converter", to: "calculators#shoe_size", as: :shoe_size
+    get "grade-calculator", to: "calculators#grade", as: :grade
+    get "electricity-bill-calculator", to: "calculators#electricity_bill", as: :electricity_bill
+    get "moving-cost-calculator", to: "calculators#moving_cost", as: :moving_cost
+    get "password-strength-calculator", to: "calculators#password_strength", as: :password_strength
+    get "screen-size-calculator", to: "calculators#screen_size", as: :screen_size
+    get "bandwidth-calculator", to: "calculators#bandwidth", as: :bandwidth
+    get "unit-price-calculator", to: "calculators#unit_price", as: :unit_price
   end
 
   # Blog

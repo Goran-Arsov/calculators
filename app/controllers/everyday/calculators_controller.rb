@@ -10,6 +10,15 @@ module Everyday
     def fuel_cost; end
     def gpa; end
     def cooking_converter; end
+    def time_zone_converter; end
+    def shoe_size; end
+    def grade; end
+    def electricity_bill; end
+    def moving_cost; end
+    def password_strength; end
+    def screen_size; end
+    def bandwidth; end
+    def unit_price; end
 
     private
 

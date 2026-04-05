@@ -26,6 +26,16 @@ module Finance
     def home_affordability; end
     def business_loan; end
     def currency_converter; end
+    def paycheck; end
+    def four_oh_one_k; end
+    def amortization; end
+    def stock_profit; end
+    def cd; end
+    def savings_interest; end
+    def house_flip; end
+    def student_loan; end
+    def estate_tax; end
+    def crypto_profit; end
 
     private
 
