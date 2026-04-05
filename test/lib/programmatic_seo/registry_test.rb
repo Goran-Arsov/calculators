@@ -5,9 +5,9 @@ class ProgrammaticSeo::RegistryTest < ActiveSupport::TestCase
     assert ProgrammaticSeo::Registry.all_slugs.count > 0
   end
 
-  test "registry loads a substantial number of pages" do
-    # 5 hand-written bases (6 each = 30) + auto-generated from remaining bases
-    assert ProgrammaticSeo::Registry.all_slugs.count >= 30, "Expected at least 30 pages, got #{ProgrammaticSeo::Registry.all_slugs.count}"
+  test "registry loads hand-written pages by default" do
+    # 5 hand-written bases x 6 expansions each = 30 pages (auto-generated disabled by default)
+    assert_equal 30, ProgrammaticSeo::Registry.all_slugs.count
   end
 
   test "every page has required keys" do
@@ -108,7 +108,7 @@ class ProgrammaticSeo::RegistryTest < ActiveSupport::TestCase
 
   test "pages_for_base returns pages for known base" do
     fuel_cost_pages = ProgrammaticSeo::Registry.pages_for_base("fuel-cost")
-    assert fuel_cost_pages.length >= 6, "Expected at least 6 fuel-cost pages"
+    assert_equal 6, fuel_cost_pages.length
     fuel_cost_pages.each do |page|
       assert_equal "fuel-cost", page[:base_key]
     end

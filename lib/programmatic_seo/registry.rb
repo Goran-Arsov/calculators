@@ -1,5 +1,9 @@
 module ProgrammaticSeo
   module Registry
+    # Set PROGRAMMATIC_AUTO_PAGES=true to enable auto-generated pages beyond the hand-written ones.
+    # Default: only hand-written content files are live (safe for AdSense).
+    AUTO_PAGES_ENABLED = ENV.fetch("PROGRAMMATIC_AUTO_PAGES", "false") == "true"
+
     class << self
       def pages
         @pages ||= build_pages_index
@@ -38,7 +42,7 @@ module ProgrammaticSeo
       def build_pages_index
         index = {}
 
-        # Step 1: Load hand-written content files (high-quality, take precedence)
+        # Step 1: Load hand-written content files (always live — high-quality, AdSense-safe)
         hand_written_definitions.each do |defn|
           defn[:expansions].each do |expansion|
             slug = expansion[:slug]
@@ -52,29 +56,31 @@ module ProgrammaticSeo
           end
         end
 
-        # Step 2: Auto-generate pages from Generator config (skip if hand-written exists)
-        Generator::EXPANSIONS.each do |base_key, config|
-          config[:patterns].each do |pattern_key|
-            pattern = Generator::PATTERNS[pattern_key]
-            next unless pattern
+        # Step 2: Auto-generate pages from Generator config (only when enabled)
+        if AUTO_PAGES_ENABLED
+          Generator::EXPANSIONS.each do |base_key, config|
+            config[:patterns].each do |pattern_key|
+              pattern = Generator::PATTERNS[pattern_key]
+              next unless pattern
 
-            page = ContentTemplates.build_page(base_key, config, pattern_key, pattern)
-            slug = page[:slug]
+              page = ContentTemplates.build_page(base_key, config, pattern_key, pattern)
+              slug = page[:slug]
 
-            # Hand-written content takes precedence
-            next if index.key?(slug)
+              # Hand-written content takes precedence
+              next if index.key?(slug)
 
-            # Determine form partial: use extracted partial if it exists, otherwise nil (shows CTA)
-            form_partial_path = Rails.root.join("app", "views", "programmatic", "forms", "_#{base_key.tr('-', '_')}.html.erb")
-            form_partial = form_partial_path.exist? ? "programmatic/forms/#{base_key.tr('-', '_')}" : nil
+              # Determine form partial: use extracted partial if it exists, otherwise nil (shows CTA)
+              form_partial_path = Rails.root.join("app", "views", "programmatic", "forms", "_#{base_key.tr('-', '_')}.html.erb")
+              form_partial = form_partial_path.exist? ? "programmatic/forms/#{base_key.tr('-', '_')}" : nil
 
-            index[slug] = page.merge(
-              base_key: base_key,
-              category: config[:category],
-              stimulus_controller: config[:controller],
-              form_partial: form_partial,
-              icon_path: find_icon_path(base_key, config[:category])
-            )
+              index[slug] = page.merge(
+                base_key: base_key,
+                category: config[:category],
+                stimulus_controller: config[:controller],
+                form_partial: form_partial,
+                icon_path: find_icon_path(base_key, config[:category])
+              )
+            end
           end
         end
 
@@ -98,7 +104,6 @@ module ProgrammaticSeo
         return defs unless content_dir.exist?
 
         Dir[content_dir.join("*.rb")].each do |file|
-          # Module name from filename: fuel_cost.rb -> FuelCost
           module_name = File.basename(file, ".rb").split("_").map(&:capitalize).join
           begin
             defn = "ProgrammaticSeo::Content::#{module_name}::DEFINITION".constantize
@@ -111,7 +116,6 @@ module ProgrammaticSeo
       end
 
       def find_icon_path(base_key, category)
-        # Look up icon from calculator_helper arrays
         calc_slug = "#{base_key}-calculator"
         all_calcs = CalculatorHelper::ALL_CATEGORIES.values.flat_map { |c| c[:calculators] }
         match = all_calcs.find { |c| c[:slug] == calc_slug || c[:slug] == base_key }

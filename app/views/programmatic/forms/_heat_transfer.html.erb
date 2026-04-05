@@ -1,0 +1,99 @@
+    <div data-controller="heat-transfer-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-8 h-8 bg-gradient-to-br from-red-500 to-orange-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">Q</div>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Conduction Heat Transfer</h2>
+        <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">Q = k&middot;A&middot;&Delta;T / d</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label for="heat-transfer-material" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Material</label>
+          <select id="heat-transfer-material" data-heat-transfer-calculator-target="material" data-action="change->heat-transfer-calculator#toggleCustomK" class="w-full" aria-label="Material">
+            <optgroup label="Metals">
+              <option value="silver">Silver (429 W/(m&middot;K))</option>
+              <option value="copper" selected>Copper (401 W/(m&middot;K))</option>
+              <option value="gold">Gold (317 W/(m&middot;K))</option>
+              <option value="aluminum">Aluminum (237 W/(m&middot;K))</option>
+              <option value="brass">Brass (109 W/(m&middot;K))</option>
+              <option value="iron">Iron (80.2 W/(m&middot;K))</option>
+              <option value="steel">Steel - Carbon (50.2 W/(m&middot;K))</option>
+              <option value="stainless_steel">Stainless Steel (16.2 W/(m&middot;K))</option>
+            </optgroup>
+            <optgroup label="Building Materials">
+              <option value="concrete">Concrete (1.7 W/(m&middot;K))</option>
+              <option value="glass">Glass (1.05 W/(m&middot;K))</option>
+              <option value="brick">Brick (0.72 W/(m&middot;K))</option>
+              <option value="wood_oak">Wood - Oak (0.17 W/(m&middot;K))</option>
+              <option value="wood_pine">Wood - Pine (0.12 W/(m&middot;K))</option>
+            </optgroup>
+            <optgroup label="Insulators">
+              <option value="fiberglass">Fiberglass (0.04 W/(m&middot;K))</option>
+              <option value="styrofoam">Styrofoam (0.033 W/(m&middot;K))</option>
+            </optgroup>
+            <optgroup label="Fluids">
+              <option value="water">Water at 25&deg;C (0.607 W/(m&middot;K))</option>
+              <option value="air">Air at 25&deg;C (0.026 W/(m&middot;K))</option>
+            </optgroup>
+            <optgroup label="Other">
+              <option value="custom">Custom (enter value)</option>
+            </optgroup>
+          </select>
+        </div>
+        <div data-heat-transfer-calculator-target="customKGroup" class="hidden">
+          <label for="heat-transfer-custom-k" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Custom k (W/(m&middot;K))</label>
+          <input id="heat-transfer-custom-k" type="number" data-heat-transfer-calculator-target="customK" data-action="input->heat-transfer-calculator#calculate" class="w-full" placeholder="50" step="any" min="0">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div>
+          <label for="heat-transfer-area" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Area (m&sup2;)</label>
+          <input id="heat-transfer-area" type="number" data-heat-transfer-calculator-target="area" data-action="input->heat-transfer-calculator#calculate" class="w-full" placeholder="1" step="any" min="0">
+        </div>
+        <div>
+          <label for="heat-transfer-thickness" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Thickness (m)</label>
+          <input id="heat-transfer-thickness" type="number" data-heat-transfer-calculator-target="thickness" data-action="input->heat-transfer-calculator#calculate" class="w-full" placeholder="0.01" step="any" min="0">
+        </div>
+        <div>
+          <label for="heat-transfer-temp-difference" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Temp Difference (&Delta;T in &deg;C or K)</label>
+          <input id="heat-transfer-temp-difference" type="number" data-heat-transfer-calculator-target="tempDifference" data-action="input->heat-transfer-calculator#calculate" class="w-full" placeholder="50" step="any">
+        </div>
+      </div>
+
+      <%# Results %>
+      <div data-heat-transfer-calculator-target="resultsContainer" class="hidden">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div aria-live="polite" class="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Heat Transfer Rate</span>
+            <span class="text-xl font-bold text-red-600 dark:text-red-400" data-heat-transfer-calculator-target="resultQ" data-result>&mdash;</span>
+          </div>
+          <div aria-live="polite" class="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Heat Rate (BTU/hr)</span>
+            <span class="text-xl font-bold text-amber-600 dark:text-amber-400" data-heat-transfer-calculator-target="resultQBtu" data-result>&mdash;</span>
+          </div>
+          <div aria-live="polite" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Thermal Resistance</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-heat-transfer-calculator-target="resultThermalResistance" data-result>&mdash;</span>
+          </div>
+          <div aria-live="polite" class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Heat Flux</span>
+            <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400" data-heat-transfer-calculator-target="resultHeatFlux" data-result>&mdash;</span>
+          </div>
+          <div aria-live="polite" class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Conductivity (k)</span>
+            <span class="text-xl font-bold text-violet-600 dark:text-violet-400" data-heat-transfer-calculator-target="resultConductivity" data-result>&mdash;</span>
+          </div>
+          <div aria-live="polite" class="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-800/50 dark:to-gray-800/50 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Material</span>
+            <span class="text-xl font-bold text-slate-600 dark:text-slate-400" data-heat-transfer-calculator-target="resultMaterial" data-result>&mdash;</span>
+          </div>
+        </div>
+
+        <div class="mt-4 flex justify-end">
+          <button data-action="click->heat-transfer-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            Copy
+          </button>
+        </div>
+      </div>
+    </div>
