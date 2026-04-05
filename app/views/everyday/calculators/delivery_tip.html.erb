@@ -1,0 +1,166 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Delivery Tip Calculator - Free Online Tool",
+  description: "Calculate the right tip for food delivery, pizza delivery, or grocery delivery instantly. Adjust tip percentage and split the cost — free and easy to use.",
+  canonical: everyday_delivery_tip_url,
+  og: {
+    title: "Delivery Tip Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the right tip for food delivery, pizza delivery, or grocery delivery instantly. Adjust tip percentage and split the cost.",
+    url: everyday_delivery_tip_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Delivery Tip Calculator", url: everyday_delivery_tip_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much should I tip a delivery driver?", answer: "The standard delivery tip is 15-20% of the order total, with a minimum of $3-5 for small orders. For large or complex orders, tip 20% or more. Delivery drivers use their own vehicles and fuel in many cases, so a generous tip helps offset their costs." },
+  { question: "Should I tip more in bad weather?", answer: "Yes, tipping extra during rain, snow, or extreme heat is strongly encouraged. Drivers face increased risk and discomfort delivering in harsh conditions. Adding an extra $2-5 on top of your standard tip is a thoughtful way to acknowledge their effort during bad weather." },
+  { question: "How much should I tip a pizza delivery driver?", answer: "For pizza delivery, tip 15-20% of the total or at least $3-5, whichever is greater. If the order is large, such as multiple pizzas for a party, tip on the full order total. If the driver navigated difficult directions or bad weather, consider tipping above 20%." },
+  { question: "Do I need to tip for grocery delivery?", answer: "Yes, tipping grocery delivery drivers is expected. Tip 15-20% of the order total or a minimum of $5. Grocery delivery involves heavy lifting, multiple bags, and sometimes navigating stairs or long distances from the vehicle to your door. A larger tip is appropriate for very large orders." },
+  { question: "Is the delivery fee the same as a tip?", answer: "No, the delivery fee charged by the restaurant or app does not go to the driver. Delivery fees cover the platform's operational costs. Your tip is a separate payment that goes directly to the driver. Always tip on top of any delivery fees charged." }
+]) %>
+
+<%= calculator_schema(
+  name: "Delivery Tip Calculator",
+  description: "Calculate delivery tip amount, total cost, and per-person share for food, pizza, or grocery deliveries with customizable tip percentage.",
+  url: everyday_delivery_tip_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Delivery Tip Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Delivery Tip Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the right tip for your food delivery, pizza delivery, or grocery delivery and split the cost if ordering with others.</p>
+
+    <div data-controller="tip-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Order Total ($)</label>
+            <input type="number" data-tip-calculator-target="bill" data-action="input->tip-calculator#calculate" class="w-full" placeholder="35.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tip (%)</label>
+            <input type="number" data-tip-calculator-target="tipPercent" data-action="input->tip-calculator#calculate" class="w-full" value="18" step="1" min="0" max="100">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Split Between</label>
+            <input type="number" data-tip-calculator-target="split" data-action="input->tip-calculator#calculate" class="w-full" value="1" step="1" min="1">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tip Amount</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultTip">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultTotal">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Per Person</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultPerPerson">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->tip-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Much to Tip for Delivery</h2>
+      <p>
+        Delivery tipping has become an important part of everyday life as food delivery apps and services have exploded in popularity. The general guideline is to tip 15-20% of the order total, with a minimum of $3-5 for small orders. This minimum ensures that drivers receive a fair payment for their time and effort, even on low-cost orders. Delivery drivers depend on tips as a significant portion of their income, and many use their personal vehicles, paying for their own gas, insurance, and vehicle maintenance.
+      </p>
+      <p>
+        When placing orders through apps like DoorDash, Uber Eats, or Grubhub, keep in mind that the delivery fee charged by the platform does not go to the driver. That fee covers the company's operational costs. Your tip is a separate and direct payment to the person who brings your food to your door. Always calculate your tip on the food total before taxes and fees for the most accurate amount.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Tipping by Delivery Type</h2>
+      <p>
+        Different delivery scenarios call for slightly different tipping approaches. For pizza delivery, the long-standing custom is $3-5 or 15-20%, whichever is greater. Pizza drivers typically make multiple deliveries per hour and rely heavily on tips. For restaurant food delivery via apps, 15-20% is standard. For grocery delivery services like Instacart or Amazon Fresh, tip 15-20% of the order total or a minimum of $5, since grocery orders involve heavy lifting, careful selection of items, and often navigating stairs or long walkways.
+      </p>
+
+      <h3>When to Tip More</h3>
+      <p>
+        Several situations warrant a higher-than-usual tip. Bad weather is the most obvious: if your driver is navigating rain, snow, ice, or extreme heat, adding $2-5 on top of your standard tip acknowledges the added difficulty and risk. Late-night deliveries, deliveries to hard-to-find addresses, and very large orders also merit a more generous tip. If you live on an upper floor without elevator access, the extra physical effort justifies a higher amount. During holidays, when drivers could be spending time with their families, tipping 25% or more is a kind gesture.
+      </p>
+
+      <h3>Pre-Tipping vs. Post-Delivery Tipping</h3>
+      <p>
+        Most delivery apps ask you to set a tip before the order is placed. While this may feel backward, pre-tipping incentivizes drivers to accept your order promptly. Many apps allow you to adjust the tip after delivery, so you can increase it for excellent service or reduce it if there was a significant issue. Tipping in cash at the door is another option that some drivers prefer, since cash tips are not subject to platform reporting. Whichever method you choose, always ensure the driver receives a fair tip for their work.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much should I tip a delivery driver?</h3>
+      <p>
+        The standard delivery tip is 15-20% of the order total, with a minimum of $3-5 for small orders. For large or complex orders, tip 20% or more. Delivery drivers use their own vehicles and fuel in many cases, so a generous tip helps offset their costs.
+      </p>
+
+      <h3>Should I tip more in bad weather?</h3>
+      <p>
+        Yes, tipping extra during rain, snow, or extreme heat is strongly encouraged. Drivers face increased risk and discomfort delivering in harsh conditions. Adding an extra $2-5 on top of your standard tip is a thoughtful way to acknowledge their effort during bad weather.
+      </p>
+
+      <h3>How much should I tip a pizza delivery driver?</h3>
+      <p>
+        For pizza delivery, tip 15-20% of the total or at least $3-5, whichever is greater. If the order is large, such as multiple pizzas for a party, tip on the full order total. If the driver navigated difficult directions or bad weather, consider tipping above 20%.
+      </p>
+
+      <h3>Do I need to tip for grocery delivery?</h3>
+      <p>
+        Yes, tipping grocery delivery drivers is expected. Tip 15-20% of the order total or a minimum of $5. Grocery delivery involves heavy lifting, multiple bags, and sometimes navigating stairs or long distances from the vehicle to your door. A larger tip is appropriate for very large orders.
+      </p>
+
+      <h3>Is the delivery fee the same as a tip?</h3>
+      <p>
+        No, the delivery fee charged by the restaurant or app does not go to the driver. Delivery fees cover the platform's operational costs. Your tip is a separate payment that goes directly to the driver. Always tip on top of any delivery fees charged.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Delivery Tip Calculator", url: everyday_delivery_tip_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill for any service.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Fuel Cost Calculator", description: "Estimate the fuel cost for any trip based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("delivery-tip-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

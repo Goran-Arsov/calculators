@@ -44,6 +44,22 @@ Rails.application.routes.draw do
     get "student-loan-calculator", to: "calculators#student_loan", as: :student_loan
     get "estate-tax-calculator", to: "calculators#estate_tax", as: :estate_tax
     get "crypto-profit-calculator", to: "calculators#crypto_profit", as: :crypto_profit
+
+    # Micro-calculator variants
+    get "car-loan-calculator", to: "calculators#car_loan", as: :car_loan
+    get "motorcycle-loan-calculator", to: "calculators#motorcycle_loan", as: :motorcycle_loan
+    get "boat-loan-calculator", to: "calculators#boat_loan", as: :boat_loan
+    get "personal-loan-calculator", to: "calculators#personal_loan", as: :personal_loan
+    get "home-equity-loan-calculator", to: "calculators#home_equity_loan", as: :home_equity_loan
+    get "rv-loan-calculator", to: "calculators#rv_loan", as: :rv_loan
+    get "fha-mortgage-calculator", to: "calculators#fha_mortgage", as: :fha_mortgage
+    get "va-mortgage-calculator", to: "calculators#va_mortgage", as: :va_mortgage
+    get "refinance-calculator", to: "calculators#refinance", as: :refinance
+    get "jumbo-mortgage-calculator", to: "calculators#jumbo_mortgage", as: :jumbo_mortgage
+    get "savings-growth-calculator", to: "calculators#savings_growth", as: :savings_growth
+    get "money-market-calculator", to: "calculators#money_market", as: :money_market
+    get "hourly-paycheck-calculator", to: "calculators#hourly_paycheck", as: :hourly_paycheck
+    get "freelance-tax-calculator", to: "calculators#freelance_tax", as: :freelance_tax
   end
 
   # Math calculators
@@ -67,6 +83,11 @@ Rails.application.routes.draw do
     get "base-converter", to: "calculators#base_converter", as: :base_converter
     get "significant-figures-calculator", to: "calculators#sig_figs", as: :sig_figs
     get "scientific-notation-calculator", to: "calculators#scientific_notation", as: :scientific_notation
+
+    # Micro-calculator variants
+    get "percentage-increase-calculator", to: "calculators#percentage_increase", as: :percentage_increase
+    get "percentage-decrease-calculator", to: "calculators#percentage_decrease", as: :percentage_decrease
+    get "percentage-off-calculator", to: "calculators#percentage_off", as: :percentage_off
   end
 
   # Physics calculators
@@ -115,6 +136,13 @@ Rails.application.routes.draw do
     get "ovulation-calculator", to: "calculators#ovulation", as: :ovulation
     get "blood-pressure-calculator", to: "calculators#blood_pressure", as: :blood_pressure
     get "lean-body-mass-calculator", to: "calculators#lean_body_mass", as: :lean_body_mass
+    get "bmi-calculator-women", to: "calculators#bmi_women", as: :bmi_women
+    get "bmi-calculator-men", to: "calculators#bmi_men", as: :bmi_men
+    get "bmi-calculator-kids", to: "calculators#bmi_kids", as: :bmi_kids
+    get "calorie-deficit-calculator", to: "calculators#calorie_deficit", as: :calorie_deficit
+    get "weight-loss-calorie-calculator", to: "calculators#weight_loss_calories", as: :weight_loss_calories
+    get "pregnancy-calorie-calculator", to: "calculators#pregnancy_calories", as: :pregnancy_calories
+    get "bulking-calorie-calculator", to: "calculators#bulking_calories", as: :bulking_calories
   end
 
   # Construction calculators
@@ -152,6 +180,15 @@ Rails.application.routes.draw do
     get "screen-size-calculator", to: "calculators#screen_size", as: :screen_size
     get "bandwidth-calculator", to: "calculators#bandwidth", as: :bandwidth
     get "unit-price-calculator", to: "calculators#unit_price", as: :unit_price
+
+    # Micro-calculator variants
+    get "restaurant-tip-calculator", to: "calculators#restaurant_tip", as: :restaurant_tip
+    get "delivery-tip-calculator", to: "calculators#delivery_tip", as: :delivery_tip
+    get "hair-salon-tip-calculator", to: "calculators#hair_salon_tip", as: :hair_salon_tip
+    get "bar-tip-calculator", to: "calculators#bar_tip", as: :bar_tip
+    get "sale-price-calculator", to: "calculators#sale_price", as: :sale_price
+    get "coupon-calculator", to: "calculators#coupon", as: :coupon
+    get "clearance-calculator", to: "calculators#clearance", as: :clearance
   end
 
   # Blog

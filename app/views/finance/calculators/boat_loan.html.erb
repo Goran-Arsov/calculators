@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Boat Loan Calculator - Free Marine Financing Tool",
+  description: "Calculate your monthly boat loan payment, total interest, and financing cost. Compare marine loan rates and terms for new and used boats with our free calculator.",
+  canonical: finance_boat_loan_url,
+  og: {
+    title: "Boat Loan Calculator - Free Marine Financing Tool | CalcWise",
+    description: "Calculate your monthly boat loan payment, total interest, and financing cost. Compare marine loan rates and terms instantly.",
+    url: finance_boat_loan_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Boat Loan Calculator", url: finance_boat_loan_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a typical boat loan interest rate?", answer: "Boat loan interest rates typically range from 5% to 9% for secured marine loans, depending on your credit score, loan amount, and loan term. Borrowers with excellent credit financing newer boats can secure rates as low as 4.5%. Unsecured boat loans or loans for older vessels may carry rates of 10% to 15% or higher." },
+  { question: "How long can you finance a boat?", answer: "Boat loan terms range from 5 to 20 years depending on the loan amount and the age of the vessel. Boats priced over $50,000 often qualify for terms up to 15 or 20 years. Smaller boats under $25,000 typically have maximum terms of 5 to 10 years. Longer terms lower your monthly payment but increase total interest significantly." },
+  { question: "What is the difference between a secured and unsecured boat loan?", answer: "A secured boat loan uses the vessel as collateral, resulting in lower interest rates (typically 5-9%). An unsecured boat loan requires no collateral but carries higher rates (10-15%+) and shorter terms. For boats over $25,000, secured loans are almost always the better option due to the significant rate difference." },
+  { question: "How much should I put down on a boat?", answer: "Most marine lenders require a minimum down payment of 10% to 20% of the purchase price. Putting 20% or more down typically qualifies you for the best interest rates and lowest monthly payments. A larger down payment also protects against depreciation, as boats can lose 20-30% of their value in the first few years." },
+  { question: "Are boat loan interest payments tax deductible?", answer: "If your boat has a sleeping berth, cooking facilities, and a toilet, it may qualify as a second home under IRS rules, making the interest on your boat loan potentially tax deductible. Consult a tax professional to determine if your specific vessel and loan qualify for the mortgage interest deduction." }
+]) %>
+
+<%= calculator_schema(
+  name: "Boat Loan Calculator",
+  description: "Calculate your monthly boat loan payment, total interest, and total financing cost for marine purchases.",
+  url: finance_boat_loan_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Boat Loan Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Boat Loan Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your monthly boat payment, total interest, and the overall cost of financing your marine purchase.</p>
+
+    <%# Calculator UI — reuses loan-calculator Stimulus controller %>
+    <div data-controller="loan-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Boat Price ($)</label>
+            <input type="number" data-loan-calculator-target="amount" data-action="input->loan-calculator#calculate" class="w-full" placeholder="35000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-loan-calculator-target="rate" data-action="input->loan-calculator#calculate" class="w-full" placeholder="6.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-loan-calculator-target="years" data-action="input->loan-calculator#calculate" class="w-full" placeholder="10" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->loan-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Boat Loan Calculator</h2>
+      <p>
+        Our free boat loan calculator helps you understand the true cost of marine financing before you make a purchase. Enter the boat price or the amount you plan to finance after your down payment, the annual interest rate from your lender, and the loan term in years. The calculator instantly shows your monthly payment, total amount paid over the life of the loan, and total interest cost. Boat loans work differently from car loans because they often have longer repayment terms and the total ownership cost includes storage, insurance, and maintenance.
+      </p>
+      <p>
+        Understanding your boat loan payment is critical because the total cost of boat ownership goes well beyond the purchase price. Industry experts estimate that annual operating costs run 10% to 15% of the boat's value, covering insurance, storage, fuel, maintenance, and winterization. Use this calculator to ensure the monthly loan payment fits comfortably within your overall boating budget.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Marine Financing Options</h2>
+      <p>
+        Marine lenders offer both secured and unsecured loan options. Secured boat loans, where the vessel serves as collateral, offer significantly lower interest rates, typically between 5% and 9%. Unsecured loans do not require collateral but come with higher rates and shorter terms. For boats priced over $25,000, secured financing is almost always the more economical choice. Many marine lenders offer terms ranging from 5 to 20 years, with the maximum term depending on the loan amount and the age of the vessel.
+      </p>
+
+      <h3>New vs. Used Boat Financing</h3>
+      <p>
+        New boats typically qualify for the lowest interest rates and longest loan terms. However, boats depreciate significantly in the first few years, losing 20% to 30% of their value. Buying a used boat that is two to four years old can save you a substantial amount while still qualifying for competitive financing rates. Most lenders will finance used boats up to 15 or 20 years old, though the terms may be shorter and the rates slightly higher than for new vessels.
+      </p>
+
+      <h3>Potential Tax Benefits of Boat Loans</h3>
+      <p>
+        If your boat qualifies as a second home under IRS guidelines, meaning it has a sleeping berth, cooking facilities, and a toilet, the interest on your marine loan may be tax deductible under the mortgage interest deduction. This can provide meaningful tax savings, especially on larger loan amounts. However, tax laws change frequently, so consult with a qualified tax professional to determine whether your specific vessel and loan structure qualify for this deduction.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a typical boat loan interest rate?</h3>
+      <p>
+        Boat loan interest rates typically range from 5% to 9% for secured marine loans, depending on your credit score, loan amount, and loan term. Borrowers with excellent credit financing newer boats can secure rates as low as 4.5%. Unsecured boat loans or loans for older vessels may carry rates of 10% to 15% or higher.
+      </p>
+
+      <h3>How long can you finance a boat?</h3>
+      <p>
+        Boat loan terms range from 5 to 20 years depending on the loan amount and the age of the vessel. Boats priced over $50,000 often qualify for terms up to 15 or 20 years. Smaller boats under $25,000 typically have maximum terms of 5 to 10 years. Longer terms lower your monthly payment but increase total interest significantly.
+      </p>
+
+      <h3>What is the difference between a secured and unsecured boat loan?</h3>
+      <p>
+        A secured boat loan uses the vessel as collateral, resulting in lower interest rates (typically 5-9%). An unsecured boat loan requires no collateral but carries higher rates (10-15%+) and shorter terms. For boats over $25,000, secured loans are almost always the better option due to the significant rate difference.
+      </p>
+
+      <h3>How much should I put down on a boat?</h3>
+      <p>
+        Most marine lenders require a minimum down payment of 10% to 20% of the purchase price. Putting 20% or more down typically qualifies you for the best interest rates and lowest monthly payments. A larger down payment also protects against depreciation, as boats can lose 20-30% of their value in the first few years.
+      </p>
+
+      <h3>Are boat loan interest payments tax deductible?</h3>
+      <p>
+        If your boat has a sleeping berth, cooking facilities, and a toilet, it may qualify as a second home under IRS rules, making the interest on your boat loan potentially tax deductible. Consult a tax professional to determine if your specific vessel and loan qualify for the mortgage interest deduction.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Boat Loan Calculator", url: finance_boat_loan_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "RV Loan Calculator", description: "Calculate your monthly RV payment and total financing cost.", path: finance_rv_loan_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment and total interest.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("boat-loan-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

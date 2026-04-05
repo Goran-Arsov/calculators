@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Home Equity Loan Calculator - Free HELOC Payment Tool",
+  description: "Calculate your monthly home equity loan payment, total interest, and borrowing cost. Compare HELOC vs fixed home equity loan options with our free calculator.",
+  canonical: finance_home_equity_loan_url,
+  og: {
+    title: "Home Equity Loan Calculator - Free HELOC Payment Tool | CalcWise",
+    description: "Calculate your monthly home equity loan payment, total interest, and borrowing cost. Compare HELOC vs fixed home equity loan options.",
+    url: finance_home_equity_loan_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Home Equity Loan Calculator", url: finance_home_equity_loan_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the difference between a home equity loan and a HELOC?", answer: "A home equity loan provides a lump sum at a fixed interest rate with fixed monthly payments, similar to a traditional mortgage. A HELOC (Home Equity Line of Credit) works like a credit card with a variable rate, allowing you to draw funds as needed during a draw period (typically 10 years) and then repay during a repayment period (typically 20 years)." },
+  { question: "How much home equity can I borrow against?", answer: "Most lenders allow you to borrow up to 80% to 85% of your home's appraised value minus your existing mortgage balance. This is known as the loan-to-value (LTV) ratio. For example, if your home is worth $400,000 and you owe $250,000, your available equity is up to $70,000 to $90,000 at 80-85% LTV." },
+  { question: "Is home equity loan interest tax deductible?", answer: "Home equity loan interest may be tax deductible if the funds are used to buy, build, or substantially improve the home that secures the loan. Interest on funds used for other purposes, such as debt consolidation or personal expenses, is generally not deductible. The total mortgage debt eligible for the deduction is capped at $750,000." },
+  { question: "What credit score do I need for a home equity loan?", answer: "Most lenders require a minimum credit score of 620 to 680 for a home equity loan, though some may require 700 or above for the best rates. A higher credit score qualifies you for lower interest rates, potentially saving you thousands over the life of the loan." },
+  { question: "Can I lose my home with a home equity loan?", answer: "Yes, because a home equity loan uses your home as collateral, failing to make payments could result in foreclosure. This is the primary risk of home equity borrowing. Always ensure the monthly payments fit comfortably within your budget and maintain an emergency fund to cover payments during financial setbacks." }
+]) %>
+
+<%= calculator_schema(
+  name: "Home Equity Loan Calculator",
+  description: "Calculate your monthly home equity loan payment, total interest, and total borrowing cost.",
+  url: finance_home_equity_loan_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Home Equity Loan Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Home Equity Loan Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your monthly home equity loan payment, total interest, and the overall cost of borrowing against your home's equity.</p>
+
+    <%# Calculator UI — reuses loan-calculator Stimulus controller %>
+    <div data-controller="loan-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Amount ($)</label>
+            <input type="number" data-loan-calculator-target="amount" data-action="input->loan-calculator#calculate" class="w-full" placeholder="50000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-loan-calculator-target="rate" data-action="input->loan-calculator#calculate" class="w-full" placeholder="7.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-loan-calculator-target="years" data-action="input->loan-calculator#calculate" class="w-full" placeholder="15" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->loan-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Home Equity Loan Calculator</h2>
+      <p>
+        Our free home equity loan calculator helps you estimate the cost of borrowing against your home's equity. Enter the loan amount you want to borrow, the annual interest rate offered by your lender, and the repayment term in years. The calculator instantly shows your fixed monthly payment, total amount paid over the life of the loan, and total interest cost. This is especially useful for comparing different loan amounts and terms to find the right balance between affordable monthly payments and minimizing total interest.
+      </p>
+      <p>
+        Home equity loans allow homeowners to tap into the value they have built in their property. The amount you can borrow depends on your home's current market value, your outstanding mortgage balance, and your lender's maximum loan-to-value (LTV) ratio, typically 80% to 85%. Before applying, make sure you understand both the benefits and risks of using your home as collateral for additional borrowing.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>HELOC vs. Fixed Home Equity Loan</h2>
+      <p>
+        There are two primary ways to borrow against your home equity. A fixed-rate home equity loan provides a lump sum with predictable monthly payments and a set repayment schedule, making it ideal for one-time expenses like home renovations or debt consolidation. A HELOC (Home Equity Line of Credit) works more like a credit card with a variable interest rate, allowing you to draw funds as needed during a draw period of typically 10 years, followed by a repayment period of 10 to 20 years. HELOCs offer flexibility but carry the risk of rising rates.
+      </p>
+
+      <h3>Understanding Loan-to-Value Ratio</h3>
+      <p>
+        The loan-to-value (LTV) ratio determines how much you can borrow. To calculate your available equity, take your home's appraised value, multiply by your lender's maximum LTV percentage (usually 80% to 85%), and subtract your existing mortgage balance. For example, if your home is worth $400,000 and you owe $250,000, at 80% LTV you could borrow up to $70,000 ($400,000 x 0.80 - $250,000). Some lenders offer combined LTV ratios up to 90% for borrowers with excellent credit, but the higher the LTV, the greater the risk.
+      </p>
+
+      <h3>Tax Deductibility of Home Equity Loan Interest</h3>
+      <p>
+        Under current tax law, interest on home equity loans is deductible only if the funds are used to buy, build, or substantially improve your home. Interest on funds used for other purposes, such as paying off credit cards or funding a vacation, is not deductible. The total qualifying mortgage debt is capped at $750,000 for loans originated after December 15, 2017. Always consult a tax professional for advice specific to your situation, as tax rules can change and individual circumstances vary.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the difference between a home equity loan and a HELOC?</h3>
+      <p>
+        A home equity loan provides a lump sum at a fixed interest rate with fixed monthly payments, similar to a traditional mortgage. A HELOC (Home Equity Line of Credit) works like a credit card with a variable rate, allowing you to draw funds as needed during a draw period (typically 10 years) and then repay during a repayment period (typically 20 years).
+      </p>
+
+      <h3>How much home equity can I borrow against?</h3>
+      <p>
+        Most lenders allow you to borrow up to 80% to 85% of your home's appraised value minus your existing mortgage balance. This is known as the loan-to-value (LTV) ratio. For example, if your home is worth $400,000 and you owe $250,000, your available equity is up to $70,000 to $90,000 at 80-85% LTV.
+      </p>
+
+      <h3>Is home equity loan interest tax deductible?</h3>
+      <p>
+        Home equity loan interest may be tax deductible if the funds are used to buy, build, or substantially improve the home that secures the loan. Interest on funds used for other purposes, such as debt consolidation or personal expenses, is generally not deductible. The total mortgage debt eligible for the deduction is capped at $750,000.
+      </p>
+
+      <h3>What credit score do I need for a home equity loan?</h3>
+      <p>
+        Most lenders require a minimum credit score of 620 to 680 for a home equity loan, though some may require 700 or above for the best rates. A higher credit score qualifies you for lower interest rates, potentially saving you thousands over the life of the loan.
+      </p>
+
+      <h3>Can I lose my home with a home equity loan?</h3>
+      <p>
+        Yes, because a home equity loan uses your home as collateral, failing to make payments could result in foreclosure. This is the primary risk of home equity borrowing. Always ensure the monthly payments fit comfortably within your budget and maintain an emergency fund to cover payments during financial setbacks.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Home Equity Loan Calculator", url: finance_home_equity_loan_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment and total interest.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Refinance Calculator", description: "See if refinancing your mortgage could save you money.", path: finance_refinance_path, icon_path: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("home-equity-loan-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

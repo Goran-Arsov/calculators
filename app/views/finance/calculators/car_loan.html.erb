@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Car Loan Calculator - Free Auto Loan Payment Tool",
+  description: "Calculate your monthly car loan payment, total interest, and total cost of financing a vehicle. Compare new and used car loan rates with our free auto loan calculator.",
+  canonical: finance_car_loan_url,
+  og: {
+    title: "Car Loan Calculator - Free Auto Loan Payment Tool | CalcWise",
+    description: "Calculate your monthly car loan payment, total interest, and total cost of financing a vehicle. Compare new and used car loan rates instantly.",
+    url: finance_car_loan_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Car Loan Calculator", url: finance_car_loan_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a good interest rate for a car loan?", answer: "A good car loan interest rate depends on your credit score and whether the vehicle is new or used. For new cars, rates typically range from 3% to 7% for borrowers with good credit. Used car loans usually carry rates 1-2% higher. Excellent credit scores (750+) can qualify for promotional rates as low as 0% from some manufacturers." },
+  { question: "How long should a car loan be?", answer: "Most financial advisors recommend car loan terms of 36 to 60 months. While 72- and 84-month loans offer lower monthly payments, they result in significantly more interest paid and a higher risk of being upside-down on the loan, meaning you owe more than the car is worth." },
+  { question: "Should I finance through a dealer or a bank?", answer: "It is best to get pre-approved through a bank or credit union before visiting a dealer. This gives you a baseline rate to compare against dealer financing. Dealers sometimes offer manufacturer-subsidized rates (like 0% APR promotions) that can beat bank rates, but their standard markups are often higher." },
+  { question: "How much should I put down on a car?", answer: "A down payment of 20% for new cars and 10% for used cars is generally recommended. A larger down payment reduces your monthly payment, total interest, and the risk of negative equity. It may also help you qualify for a lower interest rate." },
+  { question: "Does a car loan affect my credit score?", answer: "Yes, a car loan affects your credit score in several ways. The initial credit inquiry causes a small temporary dip. Making on-time payments builds positive payment history, which is the largest factor in your credit score. The loan also adds to your credit mix, which can help your score over time." }
+]) %>
+
+<%= calculator_schema(
+  name: "Car Loan Calculator",
+  description: "Calculate your monthly car loan payment, total interest, and total cost of financing a new or used vehicle.",
+  url: finance_car_loan_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Car Loan Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Car Loan Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your monthly auto loan payment, total interest, and the overall cost of financing your next vehicle.</p>
+
+    <%# Calculator UI — reuses loan-calculator Stimulus controller %>
+    <div data-controller="loan-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Vehicle Price ($)</label>
+            <input type="number" data-loan-calculator-target="amount" data-action="input->loan-calculator#calculate" class="w-full" placeholder="25000" step="500" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-loan-calculator-target="rate" data-action="input->loan-calculator#calculate" class="w-full" placeholder="5.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-loan-calculator-target="years" data-action="input->loan-calculator#calculate" class="w-full" placeholder="5" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->loan-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Car Loan Calculator</h2>
+      <p>
+        Our free car loan calculator helps you estimate the true cost of financing a vehicle before you visit the dealership. Enter the vehicle price (or the amount you plan to finance after your down payment), the annual interest rate you expect based on your credit profile, and the loan term in years. The calculator instantly displays your monthly payment, the total amount you will pay over the life of the loan, and the total interest cost so you can make an informed decision.
+      </p>
+      <p>
+        Knowing your estimated payment before shopping gives you negotiating power. You can set a realistic budget, compare offers from different lenders, and avoid being pressured into unfavorable terms at the dealership. Use this calculator to test different scenarios, such as a larger down payment, a shorter loan term, or a different interest rate, to find the financing structure that works best for your financial situation.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>New vs. Used Car Loan Rates</h2>
+      <p>
+        Interest rates for new car loans are typically lower than used car loans because new vehicles carry less risk for lenders. In the current market, new car loan rates generally range from 3% to 7% for borrowers with good credit, while used car rates run 1% to 2% higher on average. Some manufacturers offer promotional financing at 0% to 2.9% APR on select new models, which can save thousands in interest over the life of the loan. However, these low-rate deals often require excellent credit scores of 720 or above.
+      </p>
+
+      <h3>Dealer Financing vs. Bank and Credit Union Loans</h3>
+      <p>
+        Dealerships act as intermediaries between you and their lending partners, often marking up the interest rate for a profit. Before visiting a dealer, get pre-approved through your bank or credit union. Credit unions in particular tend to offer competitive auto loan rates, sometimes 1% to 2% lower than traditional banks. Having a pre-approval in hand gives you leverage to negotiate a better rate with the dealer or simply use your own financing if their offer is not competitive.
+      </p>
+
+      <h3>Choosing the Right Loan Term</h3>
+      <p>
+        While longer loan terms of 72 or 84 months reduce your monthly payment, they significantly increase the total interest you pay and raise the risk of negative equity, where you owe more than the car is worth. A 60-month term is often the sweet spot, balancing an affordable monthly payment with reasonable total interest. If you can manage the payments, a 36- or 48-month loan will save you the most money overall. Always calculate the total cost of the loan, not just the monthly payment, before committing.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a good interest rate for a car loan?</h3>
+      <p>
+        A good car loan interest rate depends on your credit score and whether the vehicle is new or used. For new cars, rates typically range from 3% to 7% for borrowers with good credit. Used car loans usually carry rates 1-2% higher. Excellent credit scores (750+) can qualify for promotional rates as low as 0% from some manufacturers.
+      </p>
+
+      <h3>How long should a car loan be?</h3>
+      <p>
+        Most financial advisors recommend car loan terms of 36 to 60 months. While 72- and 84-month loans offer lower monthly payments, they result in significantly more interest paid and a higher risk of being upside-down on the loan, meaning you owe more than the car is worth.
+      </p>
+
+      <h3>Should I finance through a dealer or a bank?</h3>
+      <p>
+        It is best to get pre-approved through a bank or credit union before visiting a dealer. This gives you a baseline rate to compare against dealer financing. Dealers sometimes offer manufacturer-subsidized rates (like 0% APR promotions) that can beat bank rates, but their standard markups are often higher.
+      </p>
+
+      <h3>How much should I put down on a car?</h3>
+      <p>
+        A down payment of 20% for new cars and 10% for used cars is generally recommended. A larger down payment reduces your monthly payment, total interest, and the risk of negative equity. It may also help you qualify for a lower interest rate.
+      </p>
+
+      <h3>Does a car loan affect my credit score?</h3>
+      <p>
+        Yes, a car loan affects your credit score in several ways. The initial credit inquiry causes a small temporary dip. Making on-time payments builds positive payment history, which is the largest factor in your credit score. The loan also adds to your credit mix, which can help your score over time.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Car Loan Calculator", url: finance_car_loan_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Auto Loan Calculator", description: "Detailed auto loan calculator with trade-in and down payment.", path: finance_auto_loan_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment and total interest.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("car-loan-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "RV Loan Calculator - Free Recreational Vehicle Financing Tool",
+  description: "Calculate your monthly RV loan payment, total interest, and financing cost. Compare rates and terms for new and used recreational vehicle loans with our free calculator.",
+  canonical: finance_rv_loan_url,
+  og: {
+    title: "RV Loan Calculator - Free Recreational Vehicle Financing Tool | CalcWise",
+    description: "Calculate your monthly RV loan payment, total interest, and financing cost. Compare rates for new and used recreational vehicles.",
+    url: finance_rv_loan_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "RV Loan Calculator", url: finance_rv_loan_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a good interest rate for an RV loan?", answer: "RV loan interest rates typically range from 5% to 10% for secured loans, depending on your credit score, loan amount, and term. Borrowers with excellent credit financing new Class A motorhomes can secure rates as low as 4.5%. Used RV loans and smaller units like travel trailers may carry rates 1-2% higher." },
+  { question: "How long can you finance an RV?", answer: "RV loan terms can range from 5 to 20 years, with some lenders offering up to 20-year terms for high-value motorhomes priced over $50,000. Travel trailers and smaller units typically qualify for terms of 5 to 12 years. Longer terms reduce monthly payments but significantly increase total interest paid over the life of the loan." },
+  { question: "How much should I put down on an RV?", answer: "Most lenders require a 10% to 20% down payment on an RV loan. Putting 20% or more down helps you qualify for better rates and avoids being upside-down on the loan, since RVs can depreciate 20% or more in the first year. Some lenders offer lower down payment options for borrowers with excellent credit." },
+  { question: "Can I deduct RV loan interest on my taxes?", answer: "If your RV has sleeping, cooking, and bathroom facilities, it may qualify as a second home under IRS rules, making the loan interest potentially tax deductible under the mortgage interest deduction. The total qualifying mortgage debt (primary home plus RV) is capped at $750,000. Consult a tax professional to confirm eligibility." },
+  { question: "Is it better to buy a new or used RV?", answer: "Used RVs can save you 30% to 50% compared to new, since depreciation is steepest in the first 3 to 5 years. However, new RVs come with manufacturer warranties and may qualify for lower interest rates. A 2-3 year old used RV often offers the best balance of value and reliability, with significant depreciation already absorbed by the first owner." }
+]) %>
+
+<%= calculator_schema(
+  name: "RV Loan Calculator",
+  description: "Calculate your monthly RV loan payment, total interest, and total financing cost for recreational vehicle purchases.",
+  url: finance_rv_loan_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "RV Loan Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">RV Loan Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your monthly RV payment, total interest, and the overall cost of financing your recreational vehicle.</p>
+
+    <%# Calculator UI — reuses loan-calculator Stimulus controller %>
+    <div data-controller="loan-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">RV Price ($)</label>
+            <input type="number" data-loan-calculator-target="amount" data-action="input->loan-calculator#calculate" class="w-full" placeholder="45000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-loan-calculator-target="rate" data-action="input->loan-calculator#calculate" class="w-full" placeholder="6.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-loan-calculator-target="years" data-action="input->loan-calculator#calculate" class="w-full" placeholder="10" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->loan-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the RV Loan Calculator</h2>
+      <p>
+        Our free RV loan calculator helps you estimate the cost of financing a recreational vehicle before you buy. Enter the RV price or the amount you plan to finance after your down payment, the annual interest rate from your lender, and the loan term in years. The calculator instantly shows your monthly payment, total amount paid, and total interest. RV loans can span much longer terms than car loans, so understanding the true cost of financing is essential before committing.
+      </p>
+      <p>
+        Recreational vehicle financing is unique because the wide range of RV types, from small travel trailers to luxury Class A motorhomes, means loan amounts, terms, and rates vary dramatically. A $15,000 pop-up camper loan looks very different from a $200,000 diesel pusher loan. Use this calculator to compare scenarios and find the financing structure that matches your budget and travel goals.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>RV Financing Options and Rates</h2>
+      <p>
+        RV loan rates typically range from 5% to 10% for secured loans, with the best rates reserved for borrowers with excellent credit financing newer motorhomes. Credit unions, banks, and specialized RV lenders all offer recreational vehicle financing. Credit unions frequently offer the most competitive rates, often 1% to 2% below bank rates. Dealer financing is convenient but may include rate markups. Always compare at least three lending sources before finalizing your RV purchase.
+      </p>
+
+      <h3>Extended Loan Terms for RVs</h3>
+      <p>
+        One unique aspect of RV financing is the availability of extended loan terms. While car loans typically max out at 72 to 84 months, RV loans can stretch to 15 or even 20 years for high-value units. This dramatically reduces monthly payments but also increases total interest. For example, a $45,000 RV loan at 6.5% costs about $19,742 in total interest over 10 years, but that jumps to $31,893 over 15 years and $44,811 over 20 years. Choose the shortest term you can afford to minimize total cost.
+      </p>
+
+      <h3>New vs. Used RV Considerations</h3>
+      <p>
+        New RVs depreciate rapidly, often losing 20% to 30% of their value in the first year alone. A 2 to 3 year old used RV can offer substantial savings while still being in excellent condition. However, new RVs come with full manufacturer warranties and may qualify for lower interest rates and longer loan terms. Used RV loans often have shorter maximum terms and slightly higher rates. Consider the total cost of ownership, including the purchase price, financing costs, insurance, storage, and maintenance, when deciding between new and used.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a good interest rate for an RV loan?</h3>
+      <p>
+        RV loan interest rates typically range from 5% to 10% for secured loans, depending on your credit score, loan amount, and term. Borrowers with excellent credit financing new Class A motorhomes can secure rates as low as 4.5%. Used RV loans and smaller units like travel trailers may carry rates 1-2% higher.
+      </p>
+
+      <h3>How long can you finance an RV?</h3>
+      <p>
+        RV loan terms can range from 5 to 20 years, with some lenders offering up to 20-year terms for high-value motorhomes priced over $50,000. Travel trailers and smaller units typically qualify for terms of 5 to 12 years. Longer terms reduce monthly payments but significantly increase total interest paid over the life of the loan.
+      </p>
+
+      <h3>How much should I put down on an RV?</h3>
+      <p>
+        Most lenders require a 10% to 20% down payment on an RV loan. Putting 20% or more down helps you qualify for better rates and avoids being upside-down on the loan, since RVs can depreciate 20% or more in the first year. Some lenders offer lower down payment options for borrowers with excellent credit.
+      </p>
+
+      <h3>Can I deduct RV loan interest on my taxes?</h3>
+      <p>
+        If your RV has sleeping, cooking, and bathroom facilities, it may qualify as a second home under IRS rules, making the loan interest potentially tax deductible under the mortgage interest deduction. The total qualifying mortgage debt (primary home plus RV) is capped at $750,000. Consult a tax professional to confirm eligibility.
+      </p>
+
+      <h3>Is it better to buy a new or used RV?</h3>
+      <p>
+        Used RVs can save you 30% to 50% compared to new, since depreciation is steepest in the first 3 to 5 years. However, new RVs come with manufacturer warranties and may qualify for lower interest rates. A 2-3 year old used RV often offers the best balance of value and reliability, with significant depreciation already absorbed by the first owner.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "RV Loan Calculator", url: finance_rv_loan_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Boat Loan Calculator", description: "Calculate your monthly boat payment and marine financing cost.", path: finance_boat_loan_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Car Loan Calculator", description: "Estimate your monthly car loan payment and total interest.", path: finance_car_loan_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("rv-loan-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

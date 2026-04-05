@@ -1,0 +1,166 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Bar Tip Calculator - Free Online Tool",
+  description: "Calculate the right tip for your bartender instantly. Whether tipping per drink or on a full tab, adjust tip percentage and split the bill — free and easy to use.",
+  canonical: everyday_bar_tip_url,
+  og: {
+    title: "Bar Tip Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the right tip for your bartender instantly. Whether tipping per drink or on a full tab, adjust tip percentage and split the bill.",
+    url: everyday_bar_tip_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Bar Tip Calculator", url: everyday_bar_tip_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much should I tip a bartender?", answer: "The standard bar tip is $1-2 per drink for simple pours like beer or wine, or 18-20% of the total tab for cocktails and mixed drinks. If the bartender provides exceptional service, free pours, or personalized attention, tipping 25% or more on the tab is a generous acknowledgment." },
+  { question: "Should I tip per drink or on the total tab?", answer: "Both methods are acceptable. Tipping $1-2 per drink works well when paying cash for individual rounds. If you open a tab and pay at the end, tip 18-20% of the total tab. The per-drink method often results in a higher overall tip, which bartenders appreciate during busy shifts." },
+  { question: "How much should I tip for cocktails vs. beer?", answer: "For a simple beer or glass of wine that requires minimal effort, $1 per drink is standard. For cocktails that require multiple ingredients, shaking, muddling, or special preparation, $2 per drink or 20% of the drink price is more appropriate given the extra time and skill involved." },
+  { question: "Should I tip at an open bar event?", answer: "Yes, you should still tip at an open bar even though the drinks are free to you. The host or event organizer is paying for the alcohol, but the bartenders still depend on tips. Tip $1-2 per drink or bring cash specifically for tipping. Some open bar events include a tip in the service contract, so ask the event host if unsure." },
+  { question: "How do I tip when splitting a bar tab?", answer: "When splitting a bar tab among friends, divide the total bill plus tip equally, or have each person calculate their individual share plus a proportional tip. If one person closes the tab and pays the full tip, the group should reimburse that person accordingly. Our calculator makes even splitting simple." }
+]) %>
+
+<%= calculator_schema(
+  name: "Bar Tip Calculator",
+  description: "Calculate bar tip amount, total tab, and per-person share for drinks and cocktails with customizable tip percentage and split count.",
+  url: everyday_bar_tip_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Bar Tip Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Bar Tip Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the right tip for your bartender, whether you are paying per drink or closing out a full tab.</p>
+
+    <div data-controller="tip-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tab Total ($)</label>
+            <input type="number" data-tip-calculator-target="bill" data-action="input->tip-calculator#calculate" class="w-full" placeholder="45.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tip (%)</label>
+            <input type="number" data-tip-calculator-target="tipPercent" data-action="input->tip-calculator#calculate" class="w-full" value="20" step="1" min="0" max="100">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Split Between</label>
+            <input type="number" data-tip-calculator-target="split" data-action="input->tip-calculator#calculate" class="w-full" value="1" step="1" min="1">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tip Amount</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultTip">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultTotal">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Per Person</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultPerPerson">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->tip-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Bar Tipping Etiquette: What You Need to Know</h2>
+      <p>
+        Tipping at a bar follows a slightly different convention than restaurant tipping. The two most common approaches are tipping per drink or tipping a percentage on the total tab. For individual drink purchases paid in cash, the standard tip is $1-2 per drink. For running a tab and paying at the end of the night, 18-20% of the total is appropriate. Bartenders rely heavily on tips, often earning a base wage below the standard minimum because gratuities are expected to supplement their income.
+      </p>
+      <p>
+        The amount you tip can depend on the complexity of your order. Popping open a bottle of beer or pouring a glass of wine takes minimal effort, so $1 per drink is standard for these orders. Cocktails, on the other hand, may require the bartender to measure multiple spirits, muddle fresh ingredients, shake or stir the drink, and garnish it carefully. For craft cocktails and complex mixed drinks, $2 per drink or 20% of the drink price better reflects the bartender's skill and time investment.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Per Drink vs. Tab Tipping</h2>
+      <p>
+        Whether you pay as you go or open a tab depends on the type of bar and your personal preference. Paying cash per round and tipping $1-2 per drink is straightforward and immediately rewards the bartender. Opening a tab is convenient for longer visits and allows you to tip once at the end based on the total. Interestingly, the per-drink method often results in a higher total tip than a flat percentage on the tab. For example, six $8 beers with a $1-per-drink tip yields $6, while 20% on the $48 tab is $9.60. Bartenders appreciate either method, but the percentage approach on a full tab tends to be more generous for cocktail-heavy tabs.
+      </p>
+
+      <h3>Tipping at Open Bar Events</h3>
+      <p>
+        Open bar events at weddings, corporate functions, and parties present a unique tipping situation. Even though the drinks are complimentary to guests, the bartenders still provide a service and typically depend on tips. Bring small bills to tip $1-2 per drink throughout the event. Some event hosts include a gratuity in the bar service contract, but this is not always the case. If a tip jar is present, use it. Tipping at an open bar ensures prompt, friendly service throughout the event and is considered good etiquette.
+      </p>
+
+      <h3>Splitting a Bar Tab with Friends</h3>
+      <p>
+        Going out with a group of friends often means splitting the bar tab at the end of the night. The simplest approach is to divide the total bill plus tip equally among everyone. If some people in the group drank significantly more than others, each person can estimate their individual share and add a proportional tip. When one person puts the entire tab on their card and handles the tip, the rest of the group should reimburse that person promptly. Use the split feature in this calculator to quickly determine each person's share including the tip.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much should I tip a bartender?</h3>
+      <p>
+        The standard bar tip is $1-2 per drink for simple pours like beer or wine, or 18-20% of the total tab for cocktails and mixed drinks. If the bartender provides exceptional service, free pours, or personalized attention, tipping 25% or more on the tab is a generous acknowledgment.
+      </p>
+
+      <h3>Should I tip per drink or on the total tab?</h3>
+      <p>
+        Both methods are acceptable. Tipping $1-2 per drink works well when paying cash for individual rounds. If you open a tab and pay at the end, tip 18-20% of the total tab. The per-drink method often results in a higher overall tip, which bartenders appreciate during busy shifts.
+      </p>
+
+      <h3>How much should I tip for cocktails vs. beer?</h3>
+      <p>
+        For a simple beer or glass of wine that requires minimal effort, $1 per drink is standard. For cocktails that require multiple ingredients, shaking, muddling, or special preparation, $2 per drink or 20% of the drink price is more appropriate given the extra time and skill involved.
+      </p>
+
+      <h3>Should I tip at an open bar event?</h3>
+      <p>
+        Yes, you should still tip at an open bar even though the drinks are free to you. The host or event organizer is paying for the alcohol, but the bartenders still depend on tips. Tip $1-2 per drink or bring cash specifically for tipping. Some open bar events include a tip in the service contract, so ask the event host if unsure.
+      </p>
+
+      <h3>How do I tip when splitting a bar tab?</h3>
+      <p>
+        When splitting a bar tab among friends, divide the total bill plus tip equally, or have each person calculate their individual share plus a proportional tip. If one person closes the tab and pays the full tip, the group should reimburse that person accordingly. Our calculator makes even splitting simple.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Bar Tip Calculator", url: everyday_bar_tip_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill for any service.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "GPA Calculator", description: "Calculate your grade point average from course grades and credits.", path: everyday_gpa_path, icon_path: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("bar-tip-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

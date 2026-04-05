@@ -1,0 +1,178 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "BMI Calculator for Kids - Child & Teen Body Mass Index",
+  description: "Calculate BMI for children and teens aged 2-19. Learn about BMI percentiles, CDC growth charts, age-specific interpretation, and when to consult a pediatrician about your child's weight.",
+  canonical: health_bmi_kids_url,
+  og: {
+    title: "BMI Calculator for Kids - Child & Teen Body Mass Index | CalcWise",
+    description: "Calculate BMI for children and teens. Learn about BMI percentiles, CDC growth charts, and age-specific weight interpretation.",
+    url: health_bmi_kids_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "BMI Calculator for Kids", url: health_bmi_kids_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is BMI calculated for children?", answer: "BMI for children is calculated using the same formula as adults — weight in kilograms divided by height in meters squared. However, the result is interpreted differently. Instead of fixed categories, children's BMI is plotted on age- and sex-specific growth charts to determine a percentile ranking. A child at the 60th percentile, for example, has a BMI higher than 60% of children of the same age and sex." },
+  { question: "What BMI percentile is considered healthy for kids?", answer: "For children and teens aged 2-19, a BMI between the 5th and 84th percentile is considered a healthy weight. Below the 5th percentile is classified as underweight, the 85th to 94th percentile is overweight, and the 95th percentile or above is classified as obese. These categories account for the natural changes in body fat that occur as children grow." },
+  { question: "Why is BMI measured differently for children than adults?", answer: "Children's body fat levels change naturally as they grow, and they differ between boys and girls at various ages. A BMI of 18 might be perfectly healthy for a 10-year-old but underweight for an adult. Age- and sex-specific percentiles account for these normal developmental variations, making BMI a more meaningful screening tool for young people." },
+  { question: "At what point should I consult a pediatrician about my child's BMI?", answer: "Consult a pediatrician if your child's BMI falls below the 5th percentile (underweight) or at or above the 85th percentile (overweight). Also seek guidance if there has been a significant jump in BMI percentile between checkups, if your child shows signs of disordered eating, or if you have concerns about their growth pattern. A pediatrician can assess the full picture including growth velocity, family history, and pubertal stage." },
+  { question: "Does puberty affect BMI in children and teens?", answer: "Yes, puberty significantly affects body composition and BMI. Girls typically gain more body fat during puberty, while boys gain more muscle mass. Growth spurts can temporarily change BMI as height and weight increase at different rates. A teen's BMI percentile may shift during puberty without indicating a health problem. Tracking BMI over time on a growth chart reveals trends more meaningful than any single measurement." }
+]) %>
+
+<%= calculator_schema(
+  name: "BMI Calculator for Kids",
+  description: "Calculate Body Mass Index for children and teens aged 2-19, with guidance on BMI percentiles and CDC growth chart interpretation.",
+  url: health_bmi_kids_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "BMI Calculator for Kids" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">BMI Calculator for Kids</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your child's Body Mass Index and learn how to interpret the result using age- and sex-specific percentiles from CDC growth charts.</p>
+
+    <%# Calculator UI — reuses bmi-calculator Stimulus controller %>
+    <div data-controller="bmi-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit System</label>
+            <select data-bmi-calculator-target="unitSystem" data-action="change->bmi-calculator#updateLabels" class="w-full" aria-label="Unit System">
+              <option value="metric">Metric (kg, cm)</option>
+              <option value="imperial">Imperial (lbs, in)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-bmi-calculator-target="weightLabel">Weight (kg)</label>
+            <input type="number" data-bmi-calculator-target="weight" data-action="input->bmi-calculator#calculate" class="w-full" placeholder="35" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-bmi-calculator-target="heightLabel">Height (cm)</label>
+            <input type="number" data-bmi-calculator-target="height" data-action="input->bmi-calculator#calculate" class="w-full" placeholder="140" step="0.1" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Your BMI</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="bmi">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Category</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="category">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Healthy Weight Min</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="healthyMin">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Healthy Weight Max</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="healthyMax">—</span>
+            </div>
+          </div>
+          <button data-action="click->bmi-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding BMI for Children and Teens</h2>
+      <p>
+        BMI for children and teenagers works differently than it does for adults. While the mathematical formula is the same — weight in kilograms divided by height in meters squared — the interpretation relies on age- and sex-specific percentile charts rather than fixed categories. This is because body fatness changes naturally as children grow, and it differs between boys and girls at each stage of development. A BMI number that is normal for a 12-year-old might indicate underweight in a 16-year-old. The CDC growth charts, based on data from large population studies, allow you to compare your child's BMI to that of other children of the same age and sex.
+      </p>
+      <p>
+        This calculator provides a raw BMI number based on the height and weight you enter. To determine your child's percentile, you will need to plot that BMI value on a CDC BMI-for-age growth chart appropriate for your child's sex. Your pediatrician does this at every well-child visit, and the CDC provides free printable charts and an online percentile calculator. A single BMI reading is a useful snapshot, but tracking the trend over multiple measurements is far more informative for assessing your child's growth trajectory.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>BMI Percentiles and CDC Growth Charts</h2>
+      <p>
+        The CDC recommends using BMI-for-age percentiles to screen children and teens aged 2 through 19 for weight status. The percentile indicates where your child's BMI falls relative to other children of the same age and sex. A child at the 50th percentile has a BMI higher than half and lower than half of their peers — it does not mean they are at 50% of a "target" BMI. The weight status categories for children are: underweight (below the 5th percentile), healthy weight (5th to 84th percentile), overweight (85th to 94th percentile), and obese (95th percentile and above).
+      </p>
+
+      <h3>Age-Specific Interpretation</h3>
+      <p>
+        Body composition changes substantially as children mature. Infants and toddlers naturally have higher body fat percentages, which decrease during the preschool years. Around age 5-6, body fat begins to increase again in a normal process called the "adiposity rebound." Children who experience this rebound earlier than age 5 may have a higher risk of obesity later in life. During puberty, girls typically gain more body fat while boys gain more lean muscle mass. These normal developmental changes mean that BMI percentiles — not raw BMI numbers — are the appropriate tool for assessing children's weight. A jump in raw BMI during a growth spurt is often completely normal.
+      </p>
+
+      <h3>When to Consult a Pediatrician</h3>
+      <p>
+        Schedule a conversation with your child's pediatrician if their BMI falls below the 5th percentile or at or above the 85th percentile. You should also raise concerns if you notice a significant shift in percentile rank between visits — for example, moving from the 50th to the 80th percentile within a year. Other reasons to consult include signs of disordered eating, excessive concern about weight or body image, or a family history of obesity-related conditions. A pediatrician can evaluate the full clinical picture, including growth velocity, pubertal development, dietary habits, physical activity levels, and family medical history, before recommending any intervention.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is BMI calculated for children?</h3>
+      <p>
+        BMI for children is calculated using the same formula as adults — weight in kilograms divided by height in meters squared. However, the result is interpreted differently. Instead of fixed categories, children's BMI is plotted on age- and sex-specific growth charts to determine a percentile ranking. A child at the 60th percentile, for example, has a BMI higher than 60% of children of the same age and sex.
+      </p>
+
+      <h3>What BMI percentile is considered healthy for kids?</h3>
+      <p>
+        For children and teens aged 2-19, a BMI between the 5th and 84th percentile is considered a healthy weight. Below the 5th percentile is classified as underweight, the 85th to 94th percentile is overweight, and the 95th percentile or above is classified as obese. These categories account for the natural changes in body fat that occur as children grow.
+      </p>
+
+      <h3>Why is BMI measured differently for children than adults?</h3>
+      <p>
+        Children's body fat levels change naturally as they grow, and they differ between boys and girls at various ages. A BMI of 18 might be perfectly healthy for a 10-year-old but underweight for an adult. Age- and sex-specific percentiles account for these normal developmental variations, making BMI a more meaningful screening tool for young people.
+      </p>
+
+      <h3>At what point should I consult a pediatrician about my child's BMI?</h3>
+      <p>
+        Consult a pediatrician if your child's BMI falls below the 5th percentile (underweight) or at or above the 85th percentile (overweight). Also seek guidance if there has been a significant jump in BMI percentile between checkups, if your child shows signs of disordered eating, or if you have concerns about their growth pattern. A pediatrician can assess the full picture including growth velocity, family history, and pubertal stage.
+      </p>
+
+      <h3>Does puberty affect BMI in children and teens?</h3>
+      <p>
+        Yes, puberty significantly affects body composition and BMI. Girls typically gain more body fat during puberty, while boys gain more muscle mass. Growth spurts can temporarily change BMI as height and weight increase at different rates. A teen's BMI percentile may shift during puberty without indicating a health problem. Tracking BMI over time on a growth chart reveals trends more meaningful than any single measurement.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "BMI Calculator for Kids", url: health_bmi_kids_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category and healthy weight range.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Ideal Weight Calculator", description: "Find your ideal body weight based on height, frame size, and sex.", path: health_ideal_weight_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("bmi-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,208 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Calorie Deficit Calculator - How Many Calories to Lose Weight",
+  description: "Calculate your ideal calorie deficit for safe, sustainable weight loss. Learn how a 500-1000 calorie daily deficit leads to 1-2 lbs per week of fat loss, plus tips to avoid metabolic adaptation.",
+  canonical: health_calorie_deficit_url,
+  og: {
+    title: "Calorie Deficit Calculator - How Many Calories to Lose Weight | CalcWise",
+    description: "Calculate your ideal calorie deficit for safe weight loss. Learn the science behind calorie deficits and sustainable fat loss strategies.",
+    url: health_calorie_deficit_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Calorie Deficit Calculator", url: health_calorie_deficit_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a calorie deficit?", answer: "A calorie deficit occurs when you consume fewer calories than your body burns in a day. Your body makes up the energy difference by tapping into stored energy, primarily body fat. For example, if your body burns 2,500 calories per day and you eat 2,000, you are in a 500-calorie deficit. Over time, this sustained deficit leads to weight loss." },
+  { question: "How big should my calorie deficit be to lose weight safely?", answer: "A moderate calorie deficit of 500 to 1,000 calories per day is generally considered safe and sustainable, leading to approximately 0.5 to 1 kg (1 to 2 lbs) of weight loss per week. Deficits larger than 1,000 calories per day increase the risk of muscle loss, nutrient deficiencies, metabolic slowdown, and are difficult to maintain long-term." },
+  { question: "Is it true that 3,500 calories equals one pound of fat?", answer: "The 3,500-calorie rule is a rough estimate that has been widely used since the 1950s. It suggests that a cumulative deficit of 3,500 calories leads to one pound of fat loss. While it provides a useful starting point, the actual relationship is more complex because metabolism adapts over time, and weight loss includes some water and lean tissue, not just fat." },
+  { question: "What is metabolic adaptation and how does it affect calorie deficits?", answer: "Metabolic adaptation (also called adaptive thermogenesis) is your body's response to prolonged calorie restriction. As you lose weight, your body burns fewer calories at rest and during activity, effectively reducing your TDEE. This means a deficit that initially produced weight loss may become insufficient over time. Strategies like diet breaks, refeed days, and gradual deficit reduction can help manage metabolic adaptation." },
+  { question: "Should I create a calorie deficit through diet or exercise?", answer: "The most effective approach combines both dietary changes and increased physical activity. Relying solely on exercise to create a large deficit is difficult because workouts burn fewer calories than most people expect. Relying solely on diet restriction can lead to muscle loss. A balanced approach — reducing intake by 250-500 calories and increasing activity to burn an additional 250-500 calories — preserves muscle mass and supports long-term adherence." }
+]) %>
+
+<%= calculator_schema(
+  name: "Calorie Deficit Calculator",
+  description: "Calculate your daily calorie needs and determine the right deficit for safe, sustainable weight loss based on your personal stats and activity level.",
+  url: health_calorie_deficit_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Calorie Deficit Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Calorie Deficit Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find out how many calories you need to eat each day to create a safe, effective calorie deficit for steady weight loss.</p>
+
+    <%# Calculator UI — reuses calorie-calculator Stimulus controller %>
+    <div data-controller="calorie-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit System</label>
+            <select data-calorie-calculator-target="unitSystem" data-action="change->calorie-calculator#updateLabels" class="w-full" aria-label="Unit System">
+              <option value="metric">Metric (kg, cm)</option>
+              <option value="imperial">Imperial (lbs, in)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Age (years)</label>
+            <input type="number" data-calorie-calculator-target="age" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="30" step="1" min="1" max="120">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sex</label>
+            <select data-calorie-calculator-target="sex" data-action="change->calorie-calculator#calculate" class="w-full" aria-label="Sex">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-calorie-calculator-target="weightLabel">Weight (kg)</label>
+            <input type="number" data-calorie-calculator-target="weight" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="80" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-calorie-calculator-target="heightLabel">Height (cm)</label>
+            <input type="number" data-calorie-calculator-target="height" data-action="input->calorie-calculator#calculate" class="w-full" placeholder="175" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Activity Level</label>
+            <select data-calorie-calculator-target="activityLevel" data-action="change->calorie-calculator#calculate" class="w-full" aria-label="Activity Level">
+              <option value="sedentary">Sedentary (little or no exercise)</option>
+              <option value="light">Light (exercise 1-3 days/week)</option>
+              <option value="moderate">Moderate (exercise 3-5 days/week)</option>
+              <option value="active">Active (exercise 6-7 days/week)</option>
+              <option value="very_active">Very Active (intense exercise daily)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Basal Metabolic Rate</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-calorie-calculator-target="bmr">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Maintenance (TDEE)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-calorie-calculator-target="tdee">— cal</span>
+            </div>
+            <hr class="border-green-200 dark:border-green-800">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mild Weight Loss (-0.25 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="mildLoss">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weight Loss (-0.5 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="weightLoss">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mild Weight Gain (+0.25 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="mildGain">— cal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weight Gain (+0.5 kg/wk)</span>
+              <span class="text-lg font-semibold text-green-600 dark:text-green-400" data-calorie-calculator-target="weightGain">— cal</span>
+            </div>
+          </div>
+          <button data-action="click->calorie-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How a Calorie Deficit Works</h2>
+      <p>
+        A calorie deficit is the foundation of all weight loss. It occurs when the energy you consume from food and drink is less than the energy your body expends through basal metabolism, daily activities, and exercise. When you sustain a deficit over time, your body draws on stored energy — primarily body fat — to make up the difference, and you lose weight. This calculator estimates your Total Daily Energy Expenditure (TDEE) using the Mifflin-St Jeor equation and then shows you calorie targets for different rates of weight loss so you can choose a deficit that fits your lifestyle.
+      </p>
+      <p>
+        The commonly cited guideline is that a deficit of approximately 3,500 calories leads to one pound (0.45 kg) of fat loss. While this figure is a simplification — real-world weight loss involves water fluctuations, lean tissue changes, and metabolic adaptation — it provides a useful planning framework. A daily deficit of 500 calories should produce roughly one pound of loss per week, while a 1,000-calorie daily deficit targets two pounds per week. Most health professionals recommend staying within this range for safe, sustainable results.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Creating a Safe Calorie Deficit</h2>
+      <p>
+        The size of your deficit matters. A moderate deficit of 500 to 750 calories per day is the sweet spot for most people — it produces meaningful progress without excessive hunger, energy crashes, or muscle loss. Aggressive deficits exceeding 1,000 calories per day can backfire: they increase the risk of binge eating, accelerate muscle loss (especially without resistance training), impair workout performance, and trigger stronger metabolic adaptation. As a general safety floor, women should not eat below 1,200 calories per day and men should not go below 1,500 without medical supervision.
+      </p>
+
+      <h3>The 3,500 Calorie Rule and Its Limitations</h3>
+      <p>
+        The idea that 3,500 calories equals one pound of body fat has been a dieting staple for decades, but modern research reveals a more nuanced picture. Early in a diet, weight loss often exceeds the 3,500-calorie prediction because of water loss, especially if you reduce carbohydrate or sodium intake. Over time, weight loss slows as your body adapts — your BMR decreases as you weigh less, and hormonal changes can increase appetite and reduce non-exercise activity. Dynamic energy balance models suggest that for every 10 calories of sustained daily deficit, you can expect to lose about one pound over three years, with half that loss occurring in the first year.
+      </p>
+
+      <h3>Metabolic Adaptation Warnings</h3>
+      <p>
+        Metabolic adaptation is a survival mechanism: when calorie intake drops significantly, your body reduces energy expenditure to conserve fuel. This happens through lower BMR, reduced spontaneous movement (fidgeting, posture changes), decreased body temperature, and hormonal shifts that increase hunger. The effect is proportional to the size and duration of the deficit. To counteract metabolic adaptation, consider periodic diet breaks (eating at maintenance for one to two weeks every 8-12 weeks), refeed days (one to two days per week at maintenance calories with higher carbohydrate intake), and gradual deficit reduction rather than sudden large cuts. Resistance training is also critical, as maintaining or building muscle mass helps keep your metabolic rate elevated.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a calorie deficit?</h3>
+      <p>
+        A calorie deficit occurs when you consume fewer calories than your body burns in a day. Your body makes up the energy difference by tapping into stored energy, primarily body fat. For example, if your body burns 2,500 calories per day and you eat 2,000, you are in a 500-calorie deficit. Over time, this sustained deficit leads to weight loss.
+      </p>
+
+      <h3>How big should my calorie deficit be to lose weight safely?</h3>
+      <p>
+        A moderate calorie deficit of 500 to 1,000 calories per day is generally considered safe and sustainable, leading to approximately 0.5 to 1 kg (1 to 2 lbs) of weight loss per week. Deficits larger than 1,000 calories per day increase the risk of muscle loss, nutrient deficiencies, metabolic slowdown, and are difficult to maintain long-term.
+      </p>
+
+      <h3>Is it true that 3,500 calories equals one pound of fat?</h3>
+      <p>
+        The 3,500-calorie rule is a rough estimate that has been widely used since the 1950s. It suggests that a cumulative deficit of 3,500 calories leads to one pound of fat loss. While it provides a useful starting point, the actual relationship is more complex because metabolism adapts over time, and weight loss includes some water and lean tissue, not just fat.
+      </p>
+
+      <h3>What is metabolic adaptation and how does it affect calorie deficits?</h3>
+      <p>
+        Metabolic adaptation (also called adaptive thermogenesis) is your body's response to prolonged calorie restriction. As you lose weight, your body burns fewer calories at rest and during activity, effectively reducing your TDEE. This means a deficit that initially produced weight loss may become insufficient over time. Strategies like diet breaks, refeed days, and gradual deficit reduction can help manage metabolic adaptation.
+      </p>
+
+      <h3>Should I create a calorie deficit through diet or exercise?</h3>
+      <p>
+        The most effective approach combines both dietary changes and increased physical activity. Relying solely on exercise to create a large deficit is difficult because workouts burn fewer calories than most people expect. Relying solely on diet restriction can lead to muscle loss. A balanced approach — reducing intake by 250-500 calories and increasing activity to burn an additional 250-500 calories — preserves muscle mass and supports long-term adherence.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Calorie Deficit Calculator", url: health_calorie_deficit_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure based on activity level.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Macro Calculator", description: "Calculate your ideal macronutrient split for your fitness goals.", path: health_macro_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("calorie-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

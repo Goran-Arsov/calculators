@@ -37,6 +37,22 @@ module Finance
     def estate_tax; end
     def crypto_profit; end
 
+    # Micro-calculator variants (reuse existing Stimulus controllers)
+    def car_loan; end
+    def motorcycle_loan; end
+    def boat_loan; end
+    def personal_loan; end
+    def home_equity_loan; end
+    def rv_loan; end
+    def fha_mortgage; end
+    def va_mortgage; end
+    def refinance; end
+    def jumbo_mortgage; end
+    def savings_growth; end
+    def money_market; end
+    def hourly_paycheck; end
+    def freelance_tax; end
+
     private
 
     def set_cache_headers

@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Personal Loan Calculator - Free Monthly Payment Estimator",
+  description: "Calculate your monthly personal loan payment, total interest, and total cost. Compare rates for debt consolidation, home improvement, and other unsecured loans.",
+  canonical: finance_personal_loan_url,
+  og: {
+    title: "Personal Loan Calculator - Free Monthly Payment Estimator | CalcWise",
+    description: "Calculate your monthly personal loan payment, total interest, and total cost. Compare rates for debt consolidation and other unsecured loans.",
+    url: finance_personal_loan_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Personal Loan Calculator", url: finance_personal_loan_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a good interest rate for a personal loan?", answer: "Personal loan interest rates typically range from 6% to 36%, depending on your credit score, income, and lender. Borrowers with excellent credit (720+) can expect rates between 6% and 12%. Those with good credit (680-719) typically see rates of 12% to 18%. Fair credit borrowers may face rates of 18% to 25% or higher." },
+  { question: "How does a personal loan affect my credit score?", answer: "A personal loan can help or hurt your credit score. Applying triggers a hard inquiry that temporarily lowers your score by a few points. However, making on-time payments builds positive payment history, and using a personal loan to consolidate credit card debt can lower your credit utilization ratio, which may boost your score significantly." },
+  { question: "What can I use a personal loan for?", answer: "Personal loans can be used for almost any purpose including debt consolidation, home improvements, medical bills, wedding expenses, moving costs, emergency expenses, and major purchases. Most lenders do not restrict how you use the funds, though some prohibit using them for business investments or education expenses." },
+  { question: "Is a personal loan better than a credit card?", answer: "Personal loans typically offer lower interest rates than credit cards, especially for borrowers with good credit. They also have fixed monthly payments and a definite payoff date, which makes budgeting easier. Credit cards are better for smaller purchases you can pay off quickly, while personal loans are better for larger amounts with a structured repayment plan." },
+  { question: "How long does it take to get a personal loan?", answer: "Online lenders can approve and fund personal loans within 1 to 3 business days. Banks and credit unions may take 3 to 7 business days. Some lenders offer same-day funding for qualified borrowers. The timeline depends on the lender, your application completeness, and whether additional documentation is required for verification." }
+]) %>
+
+<%= calculator_schema(
+  name: "Personal Loan Calculator",
+  description: "Calculate your monthly personal loan payment, total interest, and total cost for unsecured personal loans.",
+  url: finance_personal_loan_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Personal Loan Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Personal Loan Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your monthly payment, total interest, and overall cost for an unsecured personal loan.</p>
+
+    <%# Calculator UI — reuses loan-calculator Stimulus controller %>
+    <div data-controller="loan-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Amount ($)</label>
+            <input type="number" data-loan-calculator-target="amount" data-action="input->loan-calculator#calculate" class="w-full" placeholder="10000" step="500" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-loan-calculator-target="rate" data-action="input->loan-calculator#calculate" class="w-full" placeholder="9.0" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-loan-calculator-target="years" data-action="input->loan-calculator#calculate" class="w-full" placeholder="3" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->loan-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Personal Loan Calculator</h2>
+      <p>
+        Our free personal loan calculator helps you estimate the monthly payment and total cost of an unsecured personal loan. Enter the amount you want to borrow, the annual interest rate from your lender, and the repayment term in years. The calculator instantly computes your monthly payment, total amount paid, and total interest cost. Personal loans are one of the most flexible forms of borrowing, and understanding the numbers before you apply helps you choose the right loan amount and term for your financial goals.
+      </p>
+      <p>
+        Personal loans are unsecured, meaning they do not require collateral like a car or home. Because of this, interest rates are generally higher than secured loans but lower than credit cards. Most personal loans range from $1,000 to $50,000 with terms of 1 to 7 years. Use this calculator to compare different scenarios and determine what monthly payment fits comfortably within your budget.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Debt Consolidation with Personal Loans</h2>
+      <p>
+        One of the most popular uses for personal loans is debt consolidation, combining multiple high-interest debts like credit cards into a single loan with a lower interest rate. If you have $10,000 in credit card debt at 22% APR and consolidate it into a personal loan at 9% APR, you could save thousands in interest and pay off the debt faster with a fixed monthly payment. The key is ensuring the personal loan rate is meaningfully lower than your current debts and that you avoid running up the credit card balances again after consolidation.
+      </p>
+
+      <h3>How Your Credit Score Affects Personal Loan Rates</h3>
+      <p>
+        Your credit score is the primary factor determining your personal loan interest rate. Borrowers with excellent credit scores of 720 and above typically qualify for rates between 6% and 12%. Good credit scores of 680 to 719 may see rates from 12% to 18%. Fair credit borrowers with scores of 640 to 679 often face rates of 18% to 25%. Rates above 25% are common for borrowers with credit scores below 640. Before applying, check your credit report for errors and take steps to improve your score if possible, as even a small improvement can result in a meaningfully lower rate.
+      </p>
+
+      <h3>Comparing Personal Loan Lenders</h3>
+      <p>
+        Online lenders, banks, and credit unions all offer personal loans with different strengths. Online lenders typically provide the fastest approval and funding, sometimes within one business day. Credit unions often offer the lowest rates to their members, especially for smaller loan amounts. Banks may offer rate discounts for existing customers with deposit accounts. Always compare offers from at least three lenders, paying attention not only to the interest rate but also to origination fees, which can range from 1% to 8% of the loan amount and are deducted from your proceeds.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a good interest rate for a personal loan?</h3>
+      <p>
+        Personal loan interest rates typically range from 6% to 36%, depending on your credit score, income, and lender. Borrowers with excellent credit (720+) can expect rates between 6% and 12%. Those with good credit (680-719) typically see rates of 12% to 18%. Fair credit borrowers may face rates of 18% to 25% or higher.
+      </p>
+
+      <h3>How does a personal loan affect my credit score?</h3>
+      <p>
+        A personal loan can help or hurt your credit score. Applying triggers a hard inquiry that temporarily lowers your score by a few points. However, making on-time payments builds positive payment history, and using a personal loan to consolidate credit card debt can lower your credit utilization ratio, which may boost your score significantly.
+      </p>
+
+      <h3>What can I use a personal loan for?</h3>
+      <p>
+        Personal loans can be used for almost any purpose including debt consolidation, home improvements, medical bills, wedding expenses, moving costs, emergency expenses, and major purchases. Most lenders do not restrict how you use the funds, though some prohibit using them for business investments or education expenses.
+      </p>
+
+      <h3>Is a personal loan better than a credit card?</h3>
+      <p>
+        Personal loans typically offer lower interest rates than credit cards, especially for borrowers with good credit. They also have fixed monthly payments and a definite payoff date, which makes budgeting easier. Credit cards are better for smaller purchases you can pay off quickly, while personal loans are better for larger amounts with a structured repayment plan.
+      </p>
+
+      <h3>How long does it take to get a personal loan?</h3>
+      <p>
+        Online lenders can approve and fund personal loans within 1 to 3 business days. Banks and credit unions may take 3 to 7 business days. Some lenders offer same-day funding for qualified borrowers. The timeline depends on the lender, your application completeness, and whether additional documentation is required for verification.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Personal Loan Calculator", url: finance_personal_loan_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Debt Payoff Calculator", description: "Find out when you'll be debt-free and how much interest you'll pay.", path: finance_debt_payoff_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Credit Card Payoff Calculator", description: "See how long it will take to pay off your credit card balance.", path: finance_credit_card_payoff_path, icon_path: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("personal-loan-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

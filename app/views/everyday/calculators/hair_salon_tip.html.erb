@@ -1,0 +1,166 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Hair Salon Tip Calculator - Free Online Tool",
+  description: "Calculate the right tip for your hairstylist, colorist, or spa service instantly. Adjust tip percentage and split between multiple services — free and easy to use.",
+  canonical: everyday_hair_salon_tip_url,
+  og: {
+    title: "Hair Salon Tip Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the right tip for your hairstylist, colorist, or spa service instantly. Adjust tip percentage and split between multiple services.",
+    url: everyday_hair_salon_tip_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Hair Salon Tip Calculator", url: everyday_hair_salon_tip_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much should I tip my hairstylist?", answer: "The standard tip for a hairstylist is 15-25% of the total service cost. For a basic haircut, 20% is a generous and commonly given amount. For more complex services like color treatments, highlights, or perms, 20-25% is appropriate given the time, skill, and materials involved." },
+  { question: "Should I tip the salon owner?", answer: "Traditionally, salon owners were not tipped because they set their own prices. However, modern etiquette has shifted, and most experts now agree that tipping the owner is appropriate and appreciated. Tip the owner the same percentage you would tip any other stylist, typically 15-20%." },
+  { question: "How do I tip when multiple people work on my hair?", answer: "When multiple professionals contribute to your service, such as a colorist and a stylist, tip each person individually based on the value of their specific service. Ask the front desk to split the tip or hand cash tips directly to each person. A common approach is 15-20% of each service portion." },
+  { question: "Should I tip more during the holidays?", answer: "Yes, it is customary to give a larger tip or a separate holiday gift to your regular stylist during the holiday season, typically in December. A common practice is to tip the equivalent of one full service session. For example, if your regular haircut costs $50, give an extra $50 as a holiday tip." },
+  { question: "Do I tip for a free or discounted service?", answer: "Yes, if you receive a complimentary service, a discounted appointment, or a service correction, you should still tip. Base your tip on the full retail value of the service, not the discounted price. This shows appreciation for the stylist's time and skill regardless of the price you paid." }
+]) %>
+
+<%= calculator_schema(
+  name: "Hair Salon Tip Calculator",
+  description: "Calculate tip amount, total cost, and per-service share for hair salon and spa visits with customizable tip percentage.",
+  url: everyday_hair_salon_tip_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Hair Salon Tip Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Hair Salon Tip Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the perfect tip for your hairstylist, colorist, or any salon and spa service.</p>
+
+    <div data-controller="tip-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Service Total ($)</label>
+            <input type="number" data-tip-calculator-target="bill" data-action="input->tip-calculator#calculate" class="w-full" placeholder="120.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tip (%)</label>
+            <input type="number" data-tip-calculator-target="tipPercent" data-action="input->tip-calculator#calculate" class="w-full" value="20" step="1" min="0" max="100">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Split Between</label>
+            <input type="number" data-tip-calculator-target="split" data-action="input->tip-calculator#calculate" class="w-full" value="1" step="1" min="1">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tip Amount</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultTip">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultTotal">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Per Person</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultPerPerson">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->tip-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Hair Salon and Spa Tipping Guide</h2>
+      <p>
+        Tipping at a hair salon or spa is an important way to show appreciation for the skill and artistry of your service provider. The standard tip for hair salon services ranges from 15-25%, with 20% being the most common amount for good service. This applies to haircuts, blowouts, styling, and basic treatments. For more involved services like full color, balayage, highlights, keratin treatments, or perms, tipping on the higher end of 20-25% is appropriate because these services require specialized training, expensive products, and significantly more time.
+      </p>
+      <p>
+        Hair stylists are skilled professionals who invest years in training and continuing education. Many work as independent contractors who rent their chairs and pay for their own supplies. Your tip is not just a courtesy but a meaningful part of their income. When you find a stylist who consistently delivers great results, generous tipping helps build a strong professional relationship and often leads to priority scheduling and extra attention during your appointments.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Should You Tip the Salon Owner?</h2>
+      <p>
+        For decades, the conventional wisdom held that you should not tip the salon owner because they set the prices and keep the full revenue. However, modern etiquette experts have updated this guidance. Today, most agree that tipping the owner is appropriate and welcomed. Salon owners often perform services themselves and appreciate the recognition just like any other stylist. Tip the owner the same 15-20% you would give to any other service provider in the salon.
+      </p>
+
+      <h3>Tipping for Multiple Services</h3>
+      <p>
+        If your salon visit involves multiple professionals, such as a colorist, a stylist for the cut, and an assistant for the shampoo, tip each person individually based on the portion of the total service they provided. Ask the receptionist to help allocate the tip if you are unsure how to divide it. For assistants who wash or blow-dry your hair, a $5-10 tip is customary. For the primary stylist and colorist, calculate 15-20% of their respective service charges.
+      </p>
+
+      <h3>Holiday Tipping at the Salon</h3>
+      <p>
+        The holiday season in December is traditionally a time to give your regular stylist a larger tip or a separate gift. The widely accepted guideline is to tip the equivalent of one regular service session. If your standard haircut is $60, consider tipping an extra $60 during your December visit. A thoughtful gift card, high-quality product, or personal gift is also appreciated. This gesture acknowledges the year-round relationship and encourages continued excellent service.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much should I tip my hairstylist?</h3>
+      <p>
+        The standard tip for a hairstylist is 15-25% of the total service cost. For a basic haircut, 20% is a generous and commonly given amount. For more complex services like color treatments, highlights, or perms, 20-25% is appropriate given the time, skill, and materials involved.
+      </p>
+
+      <h3>Should I tip the salon owner?</h3>
+      <p>
+        Traditionally, salon owners were not tipped because they set their own prices. However, modern etiquette has shifted, and most experts now agree that tipping the owner is appropriate and appreciated. Tip the owner the same percentage you would tip any other stylist, typically 15-20%.
+      </p>
+
+      <h3>How do I tip when multiple people work on my hair?</h3>
+      <p>
+        When multiple professionals contribute to your service, such as a colorist and a stylist, tip each person individually based on the value of their specific service. Ask the front desk to split the tip or hand cash tips directly to each person. A common approach is 15-20% of each service portion.
+      </p>
+
+      <h3>Should I tip more during the holidays?</h3>
+      <p>
+        Yes, it is customary to give a larger tip or a separate holiday gift to your regular stylist during the holiday season, typically in December. A common practice is to tip the equivalent of one full service session. For example, if your regular haircut costs $50, give an extra $50 as a holiday tip.
+      </p>
+
+      <h3>Do I tip for a free or discounted service?</h3>
+      <p>
+        Yes, if you receive a complimentary service, a discounted appointment, or a service correction, you should still tip. Base your tip on the full retail value of the service, not the discounted price. This shows appreciation for the stylist's time and skill regardless of the price you paid.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Hair Salon Tip Calculator", url: everyday_hair_salon_tip_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill for any service.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "GPA Calculator", description: "Calculate your grade point average from course grades and credits.", path: everyday_gpa_path, icon_path: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("hair-salon-tip-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -24,6 +24,13 @@ module Health
     def ovulation; end
     def blood_pressure; end
     def lean_body_mass; end
+    def bmi_women; end
+    def bmi_men; end
+    def bmi_kids; end
+    def calorie_deficit; end
+    def weight_loss_calories; end
+    def pregnancy_calories; end
+    def bulking_calories; end
 
     private
 

@@ -1,0 +1,178 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "BMI Calculator for Men - Check Your Body Mass Index",
+  description: "Calculate BMI specifically interpreted for men. Learn about healthy BMI ranges for males, how muscle mass affects BMI readings, visceral fat risks, and ideal BMI targets.",
+  canonical: health_bmi_men_url,
+  og: {
+    title: "BMI Calculator for Men - Check Your Body Mass Index | CalcWise",
+    description: "Calculate BMI specifically interpreted for men. Learn about healthy BMI ranges, muscle mass effects, and visceral fat risks.",
+    url: health_bmi_men_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "BMI Calculator for Men", url: health_bmi_men_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a healthy BMI for a man?", answer: "A healthy BMI for men falls between 18.5 and 24.9. However, men with significant muscle mass may have a BMI in the overweight range (25-29.9) while having a perfectly healthy body fat percentage. Men should also consider waist circumference — a measurement above 102 cm (40 inches) indicates elevated health risk regardless of BMI." },
+  { question: "Can BMI be misleading for muscular men?", answer: "Yes, BMI frequently overestimates body fat in muscular men because it cannot distinguish between lean muscle mass and fat tissue. A man who weighs 100 kg at 180 cm due to muscle will have the same BMI (30.9) as a sedentary man of the same height and weight carrying mostly fat. For men who resistance train regularly, body fat percentage or waist circumference are more informative metrics." },
+  { question: "What is visceral fat and why should men be concerned?", answer: "Visceral fat is the deep abdominal fat that surrounds internal organs. Men are more likely than women to accumulate visceral fat, which is strongly linked to type 2 diabetes, heart disease, and metabolic syndrome. A waist circumference above 94 cm (37 inches) signals moderate risk, and above 102 cm (40 inches) signals high risk, even with a normal BMI." },
+  { question: "What is the ideal BMI for men over 50?", answer: "The healthy BMI range of 18.5-24.9 applies to men over 50, though some research suggests a BMI between 23 and 28 may be associated with lower mortality in older men. Age-related muscle loss (sarcopenia) can cause BMI to drop while body fat percentage increases. Older men should focus on maintaining muscle through resistance exercise and adequate protein intake." },
+  { question: "How does BMI relate to body fat percentage in men?", answer: "For men, a healthy body fat percentage ranges from approximately 10-20% depending on age. A BMI of 22 in a man typically corresponds to about 15-18% body fat, while a BMI of 27 may correspond to 22-28% body fat. The correlation is imperfect because BMI does not measure fat directly — two men with identical BMIs can have very different body fat levels depending on their muscle mass." }
+]) %>
+
+<%= calculator_schema(
+  name: "BMI Calculator for Men",
+  description: "Calculate your Body Mass Index with interpretation specific to men, including muscle mass considerations and visceral fat context.",
+  url: health_bmi_men_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "BMI Calculator for Men" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">BMI Calculator for Men</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your Body Mass Index and understand what the results mean for men, including how muscle mass affects your reading and when to look beyond BMI.</p>
+
+    <%# Calculator UI — reuses bmi-calculator Stimulus controller %>
+    <div data-controller="bmi-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit System</label>
+            <select data-bmi-calculator-target="unitSystem" data-action="change->bmi-calculator#updateLabels" class="w-full" aria-label="Unit System">
+              <option value="metric">Metric (kg, cm)</option>
+              <option value="imperial">Imperial (lbs, in)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-bmi-calculator-target="weightLabel">Weight (kg)</label>
+            <input type="number" data-bmi-calculator-target="weight" data-action="input->bmi-calculator#calculate" class="w-full" placeholder="80" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5" data-bmi-calculator-target="heightLabel">Height (cm)</label>
+            <input type="number" data-bmi-calculator-target="height" data-action="input->bmi-calculator#calculate" class="w-full" placeholder="178" step="0.1" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Your BMI</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="bmi">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Category</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="category">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Healthy Weight Min</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="healthyMin">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Healthy Weight Max</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bmi-calculator-target="healthyMax">—</span>
+            </div>
+          </div>
+          <button data-action="click->bmi-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding BMI for Men</h2>
+      <p>
+        Body Mass Index uses a straightforward formula — weight divided by height squared — that applies identically to men and women. But the way that number translates to actual body composition differs significantly between the sexes. Men naturally carry more muscle mass and less essential body fat than women, which means the same BMI reading can represent very different body compositions. For men who exercise regularly, especially those who lift weights, understanding these nuances is essential to interpreting BMI results accurately.
+      </p>
+      <p>
+        The standard BMI categories place normal weight between 18.5 and 24.9, overweight between 25 and 29.9, and obese at 30 and above. For the average sedentary man, these thresholds correlate reasonably well with health risk. However, large-scale studies show that men in the overweight BMI range who are physically active and have a healthy waist circumference often have lower mortality risk than sedentary men with a "normal" BMI. This underscores the importance of looking at the full picture rather than relying on a single number.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Muscle Mass Skews BMI for Men</h2>
+      <p>
+        Muscle tissue is denser than fat tissue — it weighs more per unit of volume. A man who has been strength training for years may carry 10-15 kg more muscle than a sedentary man of the same height, pushing his BMI into the overweight or even obese category despite having low body fat. Professional athletes routinely demonstrate this: many rugby players, wrestlers, and bodybuilders have BMIs above 30 while maintaining body fat percentages below 15%. If you resistance train regularly, consider supplementing your BMI check with a body fat measurement using calipers, a DEXA scan, or bioelectrical impedance.
+      </p>
+
+      <h3>Visceral Fat: The Hidden Risk for Men</h3>
+      <p>
+        Men are biologically predisposed to store excess fat in the abdominal cavity as visceral fat, which wraps around internal organs like the liver, pancreas, and intestines. Unlike subcutaneous fat (the fat you can pinch), visceral fat is metabolically active and releases inflammatory compounds that increase risk of type 2 diabetes, cardiovascular disease, and certain cancers. A waist circumference above 94 cm (37 inches) signals moderate risk for men, and above 102 cm (40 inches) signals high risk. This is true even when BMI falls in the normal range, which is why healthcare providers increasingly recommend measuring waist circumference alongside BMI.
+      </p>
+
+      <h3>Ideal BMI Range and Aging</h3>
+      <p>
+        As men age, body composition shifts even without changes in weight. Sarcopenia — the gradual loss of muscle mass — begins as early as the mid-30s and accelerates after 50. This means a man's BMI may remain stable while his body fat percentage creeps upward. Some epidemiological research suggests that a slightly higher BMI range (23-27) may be protective in men over 65, possibly because modest reserves provide resilience during illness. Regardless of age, maintaining muscle through resistance training and consuming adequate protein (1.2-1.6 g per kg of body weight) are among the most effective strategies for healthy aging.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a healthy BMI for a man?</h3>
+      <p>
+        A healthy BMI for men falls between 18.5 and 24.9. However, men with significant muscle mass may have a BMI in the overweight range (25-29.9) while having a perfectly healthy body fat percentage. Men should also consider waist circumference — a measurement above 102 cm (40 inches) indicates elevated health risk regardless of BMI.
+      </p>
+
+      <h3>Can BMI be misleading for muscular men?</h3>
+      <p>
+        Yes, BMI frequently overestimates body fat in muscular men because it cannot distinguish between lean muscle mass and fat tissue. A man who weighs 100 kg at 180 cm due to muscle will have the same BMI (30.9) as a sedentary man of the same height and weight carrying mostly fat. For men who resistance train regularly, body fat percentage or waist circumference are more informative metrics.
+      </p>
+
+      <h3>What is visceral fat and why should men be concerned?</h3>
+      <p>
+        Visceral fat is the deep abdominal fat that surrounds internal organs. Men are more likely than women to accumulate visceral fat, which is strongly linked to type 2 diabetes, heart disease, and metabolic syndrome. A waist circumference above 94 cm (37 inches) signals moderate risk, and above 102 cm (40 inches) signals high risk, even with a normal BMI.
+      </p>
+
+      <h3>What is the ideal BMI for men over 50?</h3>
+      <p>
+        The healthy BMI range of 18.5-24.9 applies to men over 50, though some research suggests a BMI between 23 and 28 may be associated with lower mortality in older men. Age-related muscle loss (sarcopenia) can cause BMI to drop while body fat percentage increases. Older men should focus on maintaining muscle through resistance exercise and adequate protein intake.
+      </p>
+
+      <h3>How does BMI relate to body fat percentage in men?</h3>
+      <p>
+        For men, a healthy body fat percentage ranges from approximately 10-20% depending on age. A BMI of 22 in a man typically corresponds to about 15-18% body fat, while a BMI of 27 may correspond to 22-28% body fat. The correlation is imperfect because BMI does not measure fat directly — two men with identical BMIs can have very different body fat levels depending on their muscle mass.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "BMI Calculator for Men", url: health_bmi_men_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category and healthy weight range.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Body Fat Calculator", description: "Estimate your body fat percentage using the U.S. Navy method.", path: health_body_fat_path, icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure based on activity level.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("bmi-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

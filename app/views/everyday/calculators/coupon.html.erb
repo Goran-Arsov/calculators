@@ -1,0 +1,183 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Coupon Calculator - Free Online Tool",
+  description: "Calculate your savings from coupon discounts instantly. See the final price after applying a coupon or find the coupon percentage between two prices — free and easy to use.",
+  canonical: everyday_coupon_url,
+  og: {
+    title: "Coupon Calculator - Free Online Tool | CalcWise",
+    description: "Calculate your savings from coupon discounts instantly. See the final price after applying a coupon or find the coupon percentage between two prices.",
+    url: everyday_coupon_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Coupon Calculator", url: everyday_coupon_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate savings from a coupon?", answer: "Multiply the item price by the coupon percentage divided by 100 to find your savings. Subtract that from the original price to get the final price. For example, a 15% coupon on a $60 item: $60 x 0.15 = $9 savings, making the final price $51." },
+  { question: "Can I stack coupons on top of sale prices?", answer: "Many retailers allow stacking a manufacturer coupon with a store coupon, but policies vary. When stacking is allowed, the second coupon applies to the already-reduced price, not the original. A $100 item at 20% off with an additional 10% coupon becomes $100 x 0.80 x 0.90 = $72, not $70." },
+  { question: "What is the difference between manufacturer and store coupons?", answer: "Manufacturer coupons are issued by the product brand and can be used at any retailer that accepts them. Store coupons are issued by a specific retailer and can only be used at that store. Many stores allow you to use one of each on a single item for maximum savings." },
+  { question: "Are digital coupons better than paper coupons?", answer: "Digital coupons offer the same savings as paper coupons but are more convenient. They load directly to your loyalty card or app and apply automatically at checkout. Some retailers offer exclusive digital-only deals that are not available in paper form. Digital coupons also cannot be lost or forgotten at home." },
+  { question: "How do cashback apps work with coupons?", answer: "Cashback apps like Rakuten, Ibotta, and Honey provide rebates on purchases you make through their platform. These rebates stack on top of coupons and sale prices since they are a separate form of savings. You can often use a store coupon, a manufacturer coupon, and a cashback offer on the same purchase for triple savings." }
+]) %>
+
+<%= calculator_schema(
+  name: "Coupon Calculator",
+  description: "Calculate savings from coupon discounts, see the final price after a coupon, or determine the coupon percentage between two prices.",
+  url: everyday_coupon_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Coupon Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Coupon Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your coupon savings instantly. Find the final price after a coupon discount or determine the coupon percentage between two prices.</p>
+
+    <div data-controller="discount-calculator" class="space-y-5 mb-8">
+      <%# Card 1: Find Price After Coupon %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">$</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Apply Coupon</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Original Price ($)</label>
+            <input type="number" data-discount-calculator-target="priceA" data-action="input->discount-calculator#calcSalePrice" class="w-full" placeholder="100.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Coupon (%)</label>
+            <input type="number" data-discount-calculator-target="discountPercent" data-action="input->discount-calculator#calcSalePrice" class="w-full" placeholder="15" step="0.1" min="0" max="100">
+          </div>
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Final Price</span>
+            <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-discount-calculator-target="resultSalePrice">&mdash;</span>
+          </div>
+          <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">You Save</span>
+            <span class="text-lg font-bold text-green-600 dark:text-green-400" data-discount-calculator-target="resultSavingsA">&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Card 2: Find Coupon Percentage %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">%</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Find Coupon %</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Original Price ($)</label>
+            <input type="number" data-discount-calculator-target="originalB" data-action="input->discount-calculator#calcDiscountPercent" class="w-full" placeholder="120.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Price After Coupon ($)</label>
+            <input type="number" data-discount-calculator-target="salePriceB" data-action="input->discount-calculator#calcDiscountPercent" class="w-full" placeholder="90.00" step="0.01" min="0">
+          </div>
+          <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Coupon Value</span>
+            <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400" data-discount-calculator-target="resultDiscountPercent">&mdash;</span>
+          </div>
+          <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">You Save</span>
+            <span class="text-lg font-bold text-green-600 dark:text-green-400" data-discount-calculator-target="resultSavingsB">&mdash;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Maximize Coupon Savings</h2>
+      <p>
+        Coupons remain one of the most effective ways to save money on everyday purchases. Whether you clip paper coupons, use digital codes, or load offers to a loyalty card, understanding how coupons work mathematically helps you maximize your savings. This calculator shows you the exact dollar amount you save when applying a coupon percentage, or helps you determine the effective coupon percentage when you know the before and after prices.
+      </p>
+      <p>
+        The basic coupon calculation is straightforward: multiply the item price by the coupon percentage and divide by 100. A 20% coupon on a $75 purchase saves $15, bringing the final price to $60. But the real savings come from combining strategies: using a coupon on an item that is already on sale, stacking manufacturer coupons with store coupons, and layering cashback offers on top.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Coupon Stacking Strategies</h2>
+      <p>
+        Coupon stacking is the practice of combining multiple discounts on a single purchase. The most common stack involves using a manufacturer coupon together with a store coupon. Manufacturer coupons are produced by the brand that makes the product and can be redeemed at any participating retailer. Store coupons are issued by a specific retailer and apply only at their locations. Many stores allow one of each per item, effectively doubling your savings. However, always check the store's coupon policy, as some retailers have restrictions on stacking.
+      </p>
+
+      <h3>Manufacturer vs. Store Coupons</h3>
+      <p>
+        Understanding the difference between manufacturer and store coupons is key to effective coupon stacking. Manufacturer coupons typically include fine print stating "manufacturer coupon" and a remittance address. They are funded by the brand and redeemable anywhere. Store coupons are specific to a single retailer and often appear in weekly circulars, loyalty apps, or email promotions. When a store accepts both types simultaneously, your savings multiply. For example, a $1 manufacturer coupon plus a $0.75 store coupon on a $4 item brings the price down to $2.25, a combined savings of 43.75%.
+      </p>
+
+      <h3>Digital Coupons and Cashback Apps</h3>
+      <p>
+        The coupon landscape has expanded significantly with digital technology. Retailer apps offer digital coupons that load directly to your account and apply automatically at checkout. Browser extensions automatically search for and apply coupon codes when shopping online. Cashback apps provide rebates after purchase, effectively adding another layer of savings on top of any coupons used. The best strategy combines all three: apply a coupon code at checkout, use a cashback browser extension, and submit the receipt to a rebate app. These layers of savings can reduce your effective cost by 30-50% on some purchases.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate savings from a coupon?</h3>
+      <p>
+        Multiply the item price by the coupon percentage divided by 100 to find your savings. Subtract that from the original price to get the final price. For example, a 15% coupon on a $60 item: $60 x 0.15 = $9 savings, making the final price $51.
+      </p>
+
+      <h3>Can I stack coupons on top of sale prices?</h3>
+      <p>
+        Many retailers allow stacking a manufacturer coupon with a store coupon, but policies vary. When stacking is allowed, the second coupon applies to the already-reduced price, not the original. A $100 item at 20% off with an additional 10% coupon becomes $100 x 0.80 x 0.90 = $72, not $70.
+      </p>
+
+      <h3>What is the difference between manufacturer and store coupons?</h3>
+      <p>
+        Manufacturer coupons are issued by the product brand and can be used at any retailer that accepts them. Store coupons are issued by a specific retailer and can only be used at that store. Many stores allow you to use one of each on a single item for maximum savings.
+      </p>
+
+      <h3>Are digital coupons better than paper coupons?</h3>
+      <p>
+        Digital coupons offer the same savings as paper coupons but are more convenient. They load directly to your loyalty card or app and apply automatically at checkout. Some retailers offer exclusive digital-only deals that are not available in paper form. Digital coupons also cannot be lost or forgotten at home.
+      </p>
+
+      <h3>How do cashback apps work with coupons?</h3>
+      <p>
+        Cashback apps like Rakuten, Ibotta, and Honey provide rebates on purchases you make through their platform. These rebates stack on top of coupons and sale prices since they are a separate form of savings. You can often use a store coupon, a manufacturer coupon, and a cashback offer on the same purchase for triple savings.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Coupon Calculator", url: everyday_coupon_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Unit Price Calculator", description: "Compare unit prices to find the best deal on any product.", path: everyday_unit_price_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("coupon-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

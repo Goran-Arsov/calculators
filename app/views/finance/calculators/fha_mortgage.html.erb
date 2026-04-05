@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "FHA Mortgage Calculator - Free FHA Loan Payment Tool",
+  description: "Calculate your monthly FHA mortgage payment including MIP, total interest, and total loan cost. Understand FHA loan requirements with our free calculator.",
+  canonical: finance_fha_mortgage_url,
+  og: {
+    title: "FHA Mortgage Calculator - Free FHA Loan Payment Tool | CalcWise",
+    description: "Calculate your monthly FHA mortgage payment including MIP, total interest, and total loan cost. Understand FHA loan requirements.",
+    url: finance_fha_mortgage_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "FHA Mortgage Calculator", url: finance_fha_mortgage_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is an FHA loan and who qualifies?", answer: "An FHA loan is a mortgage insured by the Federal Housing Administration, designed for borrowers who may not qualify for conventional loans. You need a minimum credit score of 580 for a 3.5% down payment or 500-579 for a 10% down payment. FHA loans have more flexible debt-to-income requirements, typically allowing up to 43% DTI, and sometimes higher with compensating factors." },
+  { question: "What is FHA mortgage insurance premium (MIP)?", answer: "FHA loans require two types of mortgage insurance: an upfront MIP of 1.75% of the loan amount (which can be rolled into the loan) and an annual MIP of 0.55% to 1.05% of the loan balance, paid monthly. Unlike conventional PMI, FHA MIP is required for the life of the loan if you put less than 10% down." },
+  { question: "What are the FHA loan limits?", answer: "FHA loan limits vary by county and are updated annually. For 2024, the floor limit for single-family homes is $498,257 in most areas, while the ceiling in high-cost areas is $1,149,825. You can check the specific limit for your county on the HUD website. These limits determine the maximum amount you can borrow with an FHA loan." },
+  { question: "Can I use an FHA loan for any type of property?", answer: "FHA loans can be used for single-family homes, duplexes, triplexes, and fourplexes (as long as you live in one unit), FHA-approved condos, and manufactured homes on permanent foundations. FHA loans cannot be used for investment properties or vacation homes — the property must be your primary residence." },
+  { question: "How does an FHA loan compare to a conventional mortgage?", answer: "FHA loans require lower credit scores (580 vs. 620+) and smaller down payments (3.5% vs. 3-5% conventional). However, FHA loans require mortgage insurance for the life of the loan (vs. PMI that can be removed at 80% LTV), have lower loan limits, and require the property to meet FHA appraisal standards. For borrowers with credit scores above 700 and 10%+ down, conventional loans may be more cost-effective." }
+]) %>
+
+<%= calculator_schema(
+  name: "FHA Mortgage Calculator",
+  description: "Calculate your monthly FHA mortgage payment, total interest, and total loan cost including mortgage insurance premium.",
+  url: finance_fha_mortgage_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "FHA Mortgage Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">FHA Mortgage Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your monthly FHA loan payment, total interest, and the overall cost of an FHA-insured mortgage.</p>
+
+    <%# Calculator UI — reuses mortgage-calculator Stimulus controller %>
+    <div data-controller="mortgage-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Home Price ($)</label>
+            <input type="number" data-mortgage-calculator-target="principal" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="250000" step="1000" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-mortgage-calculator-target="rate" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="6.0" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-mortgage-calculator-target="years" data-action="input->mortgage-calculator#calculate" class="w-full" placeholder="30" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-mortgage-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->mortgage-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the FHA Mortgage Calculator</h2>
+      <p>
+        Our free FHA mortgage calculator helps you estimate the monthly payment on an FHA-insured home loan. Enter the home price you are considering, the expected annual interest rate, and the loan term in years. The calculator shows your estimated monthly principal and interest payment, total amount paid, and total interest over the life of the loan. Keep in mind that your actual FHA payment will also include mortgage insurance premiums (MIP), property taxes, and homeowners insurance, which are not included in this base calculation.
+      </p>
+      <p>
+        FHA loans are backed by the Federal Housing Administration and are specifically designed for borrowers who may not qualify for conventional mortgages. They offer lower credit score requirements, smaller down payments, and more flexible qualification guidelines. Understanding your base principal and interest payment is the first step in determining whether an FHA loan is affordable for your situation.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>FHA Loan Requirements</h2>
+      <p>
+        FHA loans have specific requirements that distinguish them from conventional mortgages. The minimum credit score is 580 for a 3.5% down payment, or 500 to 579 with a 10% down payment. Your debt-to-income ratio should generally be 43% or less, though some lenders allow up to 50% with strong compensating factors like a large down payment or significant cash reserves. The property must be your primary residence, meet FHA appraisal standards, and fall within FHA loan limits for your county.
+      </p>
+
+      <h3>Understanding FHA Mortgage Insurance Premium</h3>
+      <p>
+        One of the most important costs to understand with FHA loans is the mortgage insurance premium. FHA requires an upfront MIP of 1.75% of the loan amount, which is typically rolled into the loan balance. Additionally, an annual MIP of 0.55% to 1.05% of the loan balance is charged monthly for the life of the loan if your down payment is less than 10%. If you put 10% or more down, annual MIP can be removed after 11 years. This is a significant ongoing cost that makes FHA loans more expensive than conventional mortgages for borrowers who could qualify for either option.
+      </p>
+
+      <h3>FHA vs. Conventional Mortgage</h3>
+      <p>
+        Choosing between an FHA and conventional loan depends on your financial profile. FHA loans are better for borrowers with credit scores below 700 or limited savings for a down payment. Conventional loans are typically cheaper overall for borrowers with credit scores above 720 and at least 10% to 20% down, because conventional private mortgage insurance (PMI) can be removed once you reach 80% loan-to-value, while FHA MIP generally stays for the life of the loan. Many first-time buyers start with FHA and refinance to a conventional loan once they build equity and improve their credit.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is an FHA loan and who qualifies?</h3>
+      <p>
+        An FHA loan is a mortgage insured by the Federal Housing Administration, designed for borrowers who may not qualify for conventional loans. You need a minimum credit score of 580 for a 3.5% down payment or 500-579 for a 10% down payment. FHA loans have more flexible debt-to-income requirements, typically allowing up to 43% DTI, and sometimes higher with compensating factors.
+      </p>
+
+      <h3>What is FHA mortgage insurance premium (MIP)?</h3>
+      <p>
+        FHA loans require two types of mortgage insurance: an upfront MIP of 1.75% of the loan amount (which can be rolled into the loan) and an annual MIP of 0.55% to 1.05% of the loan balance, paid monthly. Unlike conventional PMI, FHA MIP is required for the life of the loan if you put less than 10% down.
+      </p>
+
+      <h3>What are the FHA loan limits?</h3>
+      <p>
+        FHA loan limits vary by county and are updated annually. For 2024, the floor limit for single-family homes is $498,257 in most areas, while the ceiling in high-cost areas is $1,149,825. You can check the specific limit for your county on the HUD website. These limits determine the maximum amount you can borrow with an FHA loan.
+      </p>
+
+      <h3>Can I use an FHA loan for any type of property?</h3>
+      <p>
+        FHA loans can be used for single-family homes, duplexes, triplexes, and fourplexes (as long as you live in one unit), FHA-approved condos, and manufactured homes on permanent foundations. FHA loans cannot be used for investment properties or vacation homes — the property must be your primary residence.
+      </p>
+
+      <h3>How does an FHA loan compare to a conventional mortgage?</h3>
+      <p>
+        FHA loans require lower credit scores (580 vs. 620+) and smaller down payments (3.5% vs. 3-5% conventional). However, FHA loans require mortgage insurance for the life of the loan (vs. PMI that can be removed at 80% LTV), have lower loan limits, and require the property to meet FHA appraisal standards. For borrowers with credit scores above 700 and 10%+ down, conventional loans may be more cost-effective.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "FHA Mortgage Calculator", url: finance_fha_mortgage_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment and total interest.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "VA Mortgage Calculator", description: "Calculate your VA loan payment with no down payment required.", path: finance_va_mortgage_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" },
+      { name: "Home Affordability Calculator", description: "Find out how much house you can afford.", path: finance_home_affordability_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("fha-mortgage-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

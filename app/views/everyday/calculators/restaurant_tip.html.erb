@@ -1,0 +1,166 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Restaurant Tip Calculator - Free Online Tool",
+  description: "Calculate the perfect restaurant tip instantly. Adjust tip percentage for dine-in, buffet, or takeout and split the bill among your group — free and easy to use.",
+  canonical: everyday_restaurant_tip_url,
+  og: {
+    title: "Restaurant Tip Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the perfect restaurant tip instantly. Adjust tip percentage for dine-in, buffet, or takeout and split the bill among your group.",
+    url: everyday_restaurant_tip_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Restaurant Tip Calculator", url: everyday_restaurant_tip_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much should I tip at a restaurant?", answer: "The standard restaurant tip in the United States is 15-20% of the pre-tax bill. For exceptional service, 20-25% is appropriate. At a buffet, 10% is customary since servers still clear plates and refill drinks. For counter service or takeout, 0-10% is generally accepted." },
+  { question: "Should I tip on the pre-tax or post-tax amount?", answer: "Etiquette experts recommend tipping on the pre-tax subtotal. Sales tax varies by location and does not reflect the quality of service. However, many people tip on the post-tax total for simplicity. The difference is usually small, and either approach is considered acceptable in practice." },
+  { question: "How do I tip for a large group dinner?", answer: "Many restaurants automatically add an 18-20% gratuity for parties of six or more. Check your bill before adding an additional tip. If no automatic gratuity is included, tip 18-20% on the entire pre-tax total. For very large groups that require extra coordination from the server, 20% or more is a generous gesture." },
+  { question: "Should I tip differently at a buffet?", answer: "At a buffet, a 10% tip is standard. Even though you serve yourself, the server still brings beverages, clears plates, and maintains the table. If the server provides attentive drink refills and excellent table maintenance, tipping 15% is a kind acknowledgment of their work." },
+  { question: "Is it appropriate to tip on takeout orders?", answer: "Tipping on takeout is optional but increasingly common, with 0-10% being typical. The staff still packages your food, includes condiments, and ensures accuracy. During busy periods, a small tip of 5-10% is appreciated. Some diners leave no tip for simple pickups, and that is also considered acceptable." }
+]) %>
+
+<%= calculator_schema(
+  name: "Restaurant Tip Calculator",
+  description: "Calculate the tip amount, total bill, and per-person share for restaurant dining with customizable tip percentage and split count.",
+  url: everyday_restaurant_tip_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Restaurant Tip Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Restaurant Tip Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Quickly calculate the right tip for your restaurant meal and split the check among your dining companions.</p>
+
+    <div data-controller="tip-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Bill Amount ($)</label>
+            <input type="number" data-tip-calculator-target="bill" data-action="input->tip-calculator#calculate" class="w-full" placeholder="85.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tip (%)</label>
+            <input type="number" data-tip-calculator-target="tipPercent" data-action="input->tip-calculator#calculate" class="w-full" value="18" step="1" min="0" max="100">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Split Between</label>
+            <input type="number" data-tip-calculator-target="split" data-action="input->tip-calculator#calculate" class="w-full" value="1" step="1" min="1">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tip Amount</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultTip">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultTotal">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Per Person</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-tip-calculator-target="resultPerPerson">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->tip-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Restaurant Tipping Etiquette: A Complete Guide</h2>
+      <p>
+        Tipping at a restaurant is one of the most common social customs in the United States, yet many diners feel uncertain about the right amount to leave. The widely accepted standard is 15-20% of the pre-tax bill for sit-down dining. A tip of 15% signals satisfactory service, while 18% reflects good service and 20% or more acknowledges exceptional attention. Understanding these benchmarks helps you navigate any dining experience confidently.
+      </p>
+      <p>
+        The tip percentage you choose should reflect the type of dining experience and quality of service. At a casual diner or family restaurant, 15-18% is typical. At a fine dining establishment, where servers are highly trained and the experience is more involved, 20% or above is expected. If the service is truly outstanding, going beyond 25% is a meaningful way to show appreciation to your server.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Pre-Tax vs. Post-Tax Tipping</h2>
+      <p>
+        A common question is whether to calculate the tip on the pre-tax subtotal or the post-tax total. Technically, tipping on the pre-tax amount is correct because tax is a government charge unrelated to service quality. In practice, many diners tip on the post-tax total because it is the number most visible on the receipt. The difference between the two methods is usually just a few dollars, so either approach is socially acceptable.
+      </p>
+
+      <h3>Tipping for Group Dining</h3>
+      <p>
+        Group dinners bring unique tipping considerations. Many restaurants apply an automatic gratuity of 18-20% for parties of six or more guests. Always check the bottom of the receipt to see if a gratuity has already been added before leaving extra. If no automatic gratuity is applied, coordinate with your group to ensure the full tip amount is covered. When splitting the bill, remember to split the tip proportionally as well. This calculator makes it simple by dividing the total evenly among all diners.
+      </p>
+
+      <h3>Buffets, Takeout, and Counter Service</h3>
+      <p>
+        Not every restaurant scenario calls for a full 20% tip. At buffets, 10% is standard because the server's role is limited to drink refills and table clearing. For takeout orders, tipping is optional but a gesture of 5-10% is appreciated, especially when the order is large or complex. At counter-service restaurants where you order at a register, tipping is not expected, though many establishments place a tip jar or offer suggested amounts on the payment terminal. Use your judgment based on the level of service provided.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much should I tip at a restaurant?</h3>
+      <p>
+        The standard restaurant tip in the United States is 15-20% of the pre-tax bill. For exceptional service, 20-25% is appropriate. At a buffet, 10% is customary since servers still clear plates and refill drinks. For counter service or takeout, 0-10% is generally accepted.
+      </p>
+
+      <h3>Should I tip on the pre-tax or post-tax amount?</h3>
+      <p>
+        Etiquette experts recommend tipping on the pre-tax subtotal. Sales tax varies by location and does not reflect the quality of service. However, many people tip on the post-tax total for simplicity. The difference is usually small, and either approach is considered acceptable in practice.
+      </p>
+
+      <h3>How do I tip for a large group dinner?</h3>
+      <p>
+        Many restaurants automatically add an 18-20% gratuity for parties of six or more. Check your bill before adding an additional tip. If no automatic gratuity is included, tip 18-20% on the entire pre-tax total. For very large groups that require extra coordination from the server, 20% or more is a generous gesture.
+      </p>
+
+      <h3>Should I tip differently at a buffet?</h3>
+      <p>
+        At a buffet, a 10% tip is standard. Even though you serve yourself, the server still brings beverages, clears plates, and maintains the table. If the server provides attentive drink refills and excellent table maintenance, tipping 15% is a kind acknowledgment of their work.
+      </p>
+
+      <h3>Is it appropriate to tip on takeout orders?</h3>
+      <p>
+        Tipping on takeout is optional but increasingly common, with 0-10% being typical. The staff still packages your food, includes condiments, and ensures accuracy. During busy periods, a small tip of 5-10% is appreciated. Some diners leave no tip for simple pickups, and that is also considered acceptable.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Restaurant Tip Calculator", url: everyday_restaurant_tip_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill for any service.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Fuel Cost Calculator", description: "Estimate the fuel cost for any trip based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("restaurant-tip-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

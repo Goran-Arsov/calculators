@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Motorcycle Loan Calculator - Free Monthly Payment Estimator",
+  description: "Calculate your monthly motorcycle loan payment, total interest, and financing cost. Compare rates for new and used motorcycles with our free calculator.",
+  canonical: finance_motorcycle_loan_url,
+  og: {
+    title: "Motorcycle Loan Calculator - Free Monthly Payment Estimator | CalcWise",
+    description: "Calculate your monthly motorcycle loan payment, total interest, and financing cost. Compare rates for new and used motorcycles instantly.",
+    url: finance_motorcycle_loan_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Motorcycle Loan Calculator", url: finance_motorcycle_loan_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a typical motorcycle loan interest rate?", answer: "Motorcycle loan interest rates typically range from 4% to 12%, depending on your credit score, loan term, and whether the bike is new or used. Borrowers with excellent credit (750+) can often secure rates between 4% and 6%, while those with fair credit may see rates of 8% to 12% or higher." },
+  { question: "How long can you finance a motorcycle?", answer: "Motorcycle loan terms typically range from 36 to 72 months. Shorter terms of 36 to 48 months are recommended because motorcycles depreciate faster than cars. Some lenders offer terms up to 84 months for high-value bikes, but longer terms mean more interest paid overall." },
+  { question: "Do you need a down payment for a motorcycle loan?", answer: "While some lenders offer zero-down motorcycle loans, putting 10% to 20% down is strongly recommended. A down payment reduces your monthly payment, lowers your total interest cost, and helps prevent negative equity, which is especially important given the faster depreciation rate of motorcycles." },
+  { question: "Is it harder to get a motorcycle loan than a car loan?", answer: "Motorcycle loans can be slightly harder to obtain because lenders consider motorcycles riskier collateral due to higher accident rates and faster depreciation. You may need a higher credit score for the best rates, and some banks do not offer motorcycle-specific financing at all. Credit unions and specialty lenders are often better options." },
+  { question: "Should I buy a new or used motorcycle?", answer: "Used motorcycles can save you 20% to 40% off the new price, and depreciation is steepest in the first two years. However, used bikes may carry higher interest rates and shorter loan terms. Certified pre-owned programs from major manufacturers offer a middle ground with warranty coverage and more competitive financing." }
+]) %>
+
+<%= calculator_schema(
+  name: "Motorcycle Loan Calculator",
+  description: "Calculate your monthly motorcycle loan payment, total interest, and total financing cost for new or used motorcycles.",
+  url: finance_motorcycle_loan_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Motorcycle Loan Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Motorcycle Loan Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your monthly motorcycle payment, total interest, and overall financing cost before you ride off the lot.</p>
+
+    <%# Calculator UI — reuses loan-calculator Stimulus controller %>
+    <div data-controller="loan-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Motorcycle Price ($)</label>
+            <input type="number" data-loan-calculator-target="amount" data-action="input->loan-calculator#calculate" class="w-full" placeholder="12000" step="500" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input type="number" data-loan-calculator-target="rate" data-action="input->loan-calculator#calculate" class="w-full" placeholder="7.0" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Years)</label>
+            <input type="number" data-loan-calculator-target="years" data-action="input->loan-calculator#calculate" class="w-full" placeholder="4" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Payments</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-loan-calculator-target="numPayments">0</span>
+            </div>
+          </div>
+          <button data-action="click->loan-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Motorcycle Loan Calculator</h2>
+      <p>
+        Our free motorcycle loan calculator helps you estimate the cost of financing your next bike. Enter the motorcycle price or the amount you plan to finance after any down payment, the annual interest rate from your lender, and the loan term in years. The calculator instantly shows your monthly payment, total amount paid, and total interest so you can plan your budget before committing to a loan.
+      </p>
+      <p>
+        Motorcycle financing works differently from car loans in several important ways. Loan terms are generally shorter, interest rates tend to be higher, and depreciation is faster. Understanding these differences before you shop for a bike helps you avoid overextending financially and ensures you get the best deal possible on your motorcycle loan.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Motorcycle Loan Rates</h2>
+      <p>
+        Motorcycle loan rates typically range from 4% to 12%, with the exact rate depending on your credit score, the loan term, and whether the bike is new or used. New motorcycles from major manufacturers sometimes come with promotional rates as low as 2.99% or 3.99% for qualified buyers. Used motorcycle rates are usually 1% to 3% higher than new bike rates because the collateral carries more risk for the lender. Credit unions often offer the most competitive motorcycle loan rates, sometimes beating bank rates by a full percentage point or more.
+      </p>
+
+      <h3>Shorter Terms Save You Money</h3>
+      <p>
+        Because motorcycles depreciate faster than cars, financial advisors recommend keeping loan terms between 36 and 60 months. A 36-month loan on a $12,000 motorcycle at 7% costs about $1,314 in total interest, while stretching the same loan to 72 months increases total interest to roughly $2,696. The shorter term not only saves money but also reduces the risk of being upside-down on the loan, where you owe more than the bike is worth.
+      </p>
+
+      <h3>Where to Get a Motorcycle Loan</h3>
+      <p>
+        Credit unions, banks, online lenders, and dealership financing are the main sources for motorcycle loans. Credit unions typically offer the lowest rates for members with good credit. Online lenders like LightStream provide competitive rates with no collateral requirements on some loans. Dealership financing is convenient but often includes rate markups. Always compare at least three offers before accepting a loan to ensure you are getting the best terms available for your credit profile and loan amount.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a typical motorcycle loan interest rate?</h3>
+      <p>
+        Motorcycle loan interest rates typically range from 4% to 12%, depending on your credit score, loan term, and whether the bike is new or used. Borrowers with excellent credit (750+) can often secure rates between 4% and 6%, while those with fair credit may see rates of 8% to 12% or higher.
+      </p>
+
+      <h3>How long can you finance a motorcycle?</h3>
+      <p>
+        Motorcycle loan terms typically range from 36 to 72 months. Shorter terms of 36 to 48 months are recommended because motorcycles depreciate faster than cars. Some lenders offer terms up to 84 months for high-value bikes, but longer terms mean more interest paid overall.
+      </p>
+
+      <h3>Do you need a down payment for a motorcycle loan?</h3>
+      <p>
+        While some lenders offer zero-down motorcycle loans, putting 10% to 20% down is strongly recommended. A down payment reduces your monthly payment, lowers your total interest cost, and helps prevent negative equity, which is especially important given the faster depreciation rate of motorcycles.
+      </p>
+
+      <h3>Is it harder to get a motorcycle loan than a car loan?</h3>
+      <p>
+        Motorcycle loans can be slightly harder to obtain because lenders consider motorcycles riskier collateral due to higher accident rates and faster depreciation. You may need a higher credit score for the best rates, and some banks do not offer motorcycle-specific financing at all. Credit unions and specialty lenders are often better options.
+      </p>
+
+      <h3>Should I buy a new or used motorcycle?</h3>
+      <p>
+        Used motorcycles can save you 20% to 40% off the new price, and depreciation is steepest in the first two years. However, used bikes may carry higher interest rates and shorter loan terms. Certified pre-owned programs from major manufacturers offer a middle ground with warranty coverage and more competitive financing.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Motorcycle Loan Calculator", url: finance_motorcycle_loan_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Car Loan Calculator", description: "Estimate your monthly car loan payment and total interest.", path: finance_car_loan_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Personal Loan Calculator", description: "Calculate payments for unsecured personal loans.", path: finance_personal_loan_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("motorcycle-loan-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

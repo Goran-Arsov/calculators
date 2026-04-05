@@ -19,6 +19,13 @@ module Everyday
     def screen_size; end
     def bandwidth; end
     def unit_price; end
+    def restaurant_tip; end
+    def delivery_tip; end
+    def hair_salon_tip; end
+    def bar_tip; end
+    def sale_price; end
+    def coupon; end
+    def clearance; end
 
     private
 
