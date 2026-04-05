@@ -1,0 +1,165 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Business Days Calculator - Free Online Tool",
+  description: "Calculate business days between two dates. See weekdays, weekend days, and calendar days. Excludes Saturdays and Sundays automatically for accurate work-day counts.",
+  canonical: everyday_business_days_url,
+  og: {
+    title: "Business Days Calculator - Free Online Tool | CalcWise",
+    description: "Count business days between any two dates. See weekdays, weekends, and total calendar days instantly.",
+    url: everyday_business_days_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Business Days Calculator", url: everyday_business_days_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How are business days calculated?", answer: "Business days are weekdays from Monday through Friday. The calculator counts every day between your start and end dates and excludes Saturdays and Sundays. The start date is counted if it falls on a weekday, and the end date is excluded from the count (the range is start-inclusive, end-exclusive)." },
+  { question: "Does the calculator exclude public holidays?", answer: "The basic calculation excludes only weekends. Public holidays vary by country, state, and employer. For the most accurate business day count, note the number of holidays that fall within your date range and subtract them from the result manually." },
+  { question: "What is the difference between business days and calendar days?", answer: "Calendar days count every day including weekends and holidays. Business days count only weekdays (Monday through Friday). A 7-calendar-day week contains 5 business days. For a 30-calendar-day month, there are typically 21 to 23 business days depending on the month." },
+  { question: "Why do I need to know the number of business days?", answer: "Many deadlines, shipping estimates, legal timelines, and payment terms are expressed in business days. A '5 business day' processing time means 5 weekdays, which is a full calendar week. Confusing business days with calendar days can cause you to miss deadlines or set incorrect expectations." },
+  { question: "How do I calculate a future date from business days?", answer: "To find a date that is N business days from a start date, count forward through weekdays only. For example, 10 business days from a Monday is two weeks later (the Monday after next). This calculator shows business days between two dates; enter different end dates to find the one that gives you the business day count you need." }
+]) %>
+
+<%= calculator_schema(
+  name: "Business Days Calculator",
+  description: "Calculate the number of business days between two dates, excluding weekends.",
+  url: everyday_business_days_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Business Days Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Business Days Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Count the number of business days (weekdays) between any two dates, along with weekend days and total calendar days.</p>
+
+    <div data-controller="business-days-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Start Date</label>
+            <input type="date" data-business-days-calculator-target="startDate" data-action="input->business-days-calculator#calculate" class="w-full">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">End Date</label>
+            <input type="date" data-business-days-calculator-target="endDate" data-action="input->business-days-calculator#calculate" class="w-full">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Business Days</span>
+              <span class="text-xl font-bold text-cyan-600 dark:text-cyan-400" data-business-days-calculator-target="resultBusinessDays">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Calendar Days</span>
+              <span class="text-xl font-bold text-cyan-600 dark:text-cyan-400" data-business-days-calculator-target="resultCalendarDays">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weekend Days</span>
+              <span class="text-xl font-bold text-cyan-600 dark:text-cyan-400" data-business-days-calculator-target="resultWeekendDays">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weeks</span>
+              <span class="text-xl font-bold text-cyan-600 dark:text-cyan-400" data-business-days-calculator-target="resultWeeks">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->business-days-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white rounded-xl shadow-sm shadow-cyan-500/20 hover:shadow-md hover:shadow-cyan-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Business Days Calculator</h2>
+      <p>
+        Select a start date and an end date using the date pickers. The calculator instantly counts the number of business days (Monday through Friday) between the two dates, excluding weekends. It also shows the total calendar days, the number of weekend days, and the duration in weeks. This makes it easy to convert between business days and calendar days for any date range.
+      </p>
+      <p>
+        The calculator uses start-inclusive, end-exclusive counting. This means if your start date is a Monday and your end date is the following Monday, the result is 5 business days (the five weekdays of that week). This is the standard convention used in most business and legal contexts.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Business Day Calculations Matter</h2>
+      <p>
+        Many professional and legal processes operate on business day timelines. Bank transfers typically process within 1 to 3 business days. Shipping services quote delivery windows in business days. Legal filing deadlines, regulatory response periods, and contractual notice requirements are frequently specified in business days. Using calendar days instead of business days in these situations can lead to costly errors.
+      </p>
+
+      <h3>Financial and Banking Timelines</h3>
+      <p>
+        Banks and financial institutions process most transactions only on business days. ACH transfers take 1 to 3 business days. Wire transfers are completed within 1 business day. Credit card disputes have resolution deadlines measured in business days. Understanding the distinction helps you plan cash flow and avoid late payments or penalties from miscounting days.
+      </p>
+
+      <h3>Project Management</h3>
+      <p>
+        Project timelines are almost always expressed in business days because team members work on weekdays. A task estimated at 10 business days translates to two full calendar weeks. When building a project schedule, converting between business and calendar days ensures accurate deadline setting. This calculator eliminates the mental math of counting weekdays on a calendar.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How are business days calculated?</h3>
+      <p>
+        Business days are weekdays from Monday through Friday. The calculator counts every day between your start and end dates and excludes Saturdays and Sundays.
+      </p>
+
+      <h3>Does the calculator exclude public holidays?</h3>
+      <p>
+        The basic calculation excludes only weekends. Public holidays vary by country, state, and employer. For the most accurate count, subtract any holidays that fall within your range from the result.
+      </p>
+
+      <h3>What is the difference between business days and calendar days?</h3>
+      <p>
+        Calendar days count every day including weekends and holidays. Business days count only weekdays. A 7-calendar-day week contains 5 business days.
+      </p>
+
+      <h3>Why do I need to know the number of business days?</h3>
+      <p>
+        Many deadlines, shipping estimates, legal timelines, and payment terms are expressed in business days. Confusing business days with calendar days can cause you to miss deadlines or set incorrect expectations.
+      </p>
+
+      <h3>How do I calculate a future date from business days?</h3>
+      <p>
+        Count forward through weekdays only. For example, 10 business days from a Monday is two weeks later. Enter different end dates in this calculator to find the one that gives you the business day count you need.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Business Days Calculator", url: everyday_business_days_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Date Difference Calculator", description: "Calculate the exact difference between any two dates.", path: everyday_date_difference_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Age Calculator", description: "Calculate your exact age in years, months, and days.", path: everyday_age_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Cost Per Day Calculator", description: "Calculate the daily cost of any product or subscription.", path: everyday_cost_per_day_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("business-days-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

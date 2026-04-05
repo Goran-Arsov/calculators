@@ -1,0 +1,184 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Hourly to Salary Calculator - Free Online Tool",
+  description: "Convert hourly rate to annual salary or annual salary to hourly rate. See daily, weekly, biweekly, and monthly pay with customizable hours and weeks per year.",
+  canonical: finance_hourly_to_salary_url,
+  og: {
+    title: "Hourly to Salary Calculator - Free Online Tool | CalcWise",
+    description: "Convert between hourly rate and annual salary. See all pay periods with custom hours per week and weeks per year.",
+    url: finance_hourly_to_salary_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Hourly to Salary Calculator", url: finance_hourly_to_salary_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I convert an hourly rate to an annual salary?", answer: "Multiply your hourly rate by your hours per week and then by weeks per year. For standard full-time work: hourly rate x 40 hours x 52 weeks. For example, $25/hour = $25 x 40 x 52 = $52,000 per year. Adjust hours and weeks to match your actual schedule for an accurate result." },
+  { question: "How do I convert an annual salary to an hourly rate?", answer: "Divide your annual salary by total working hours per year. For standard full-time: annual salary / (40 x 52) = annual salary / 2,080. For example, $60,000 / 2,080 = $28.85 per hour. Use the salary-to-hourly direction in this calculator for instant results." },
+  { question: "What hours per week and weeks per year should I use?", answer: "Standard full-time is 40 hours per week and 52 weeks per year (2,080 hours annually). If you have unpaid vacation, reduce weeks (e.g., 50 weeks for 2 weeks unpaid leave). For part-time, enter your actual hours. These settings significantly affect the conversion, so use values that reflect your real schedule." },
+  { question: "How does this differ from a salary converter?", answer: "A salary converter takes any pay period amount and converts to all others. This calculator is specifically designed for the hourly-to-salary and salary-to-hourly conversion, with a direction toggle and emphasis on the relationship between hourly rates and annual compensation. Both tools produce the same mathematical results." },
+  { question: "Should I factor in benefits when comparing hourly vs salary?", answer: "Yes. Salaried positions often include health insurance, retirement contributions, paid time off, and other benefits worth 20-40% of the salary. An hourly position at $30/hour may seem higher than a $55,000 salary, but when you add $15,000-$22,000 in benefits to the salary, the total compensation may be comparable or higher." }
+]) %>
+
+<%= calculator_schema(
+  name: "Hourly to Salary Calculator",
+  description: "Convert hourly rate to annual salary and salary to hourly rate. See all pay periods with customizable hours and weeks.",
+  url: finance_hourly_to_salary_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Hourly to Salary Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Hourly to Salary Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert between hourly rate and annual salary. See every pay period breakdown with customizable hours per week and weeks per year.</p>
+
+    <div data-controller="hourly-to-salary-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Direction</label>
+            <select data-hourly-to-salary-calculator-target="direction" data-action="change->hourly-to-salary-calculator#calculate" class="w-full" aria-label="Conversion direction">
+              <option value="hourly_to_salary" selected>Hourly Rate to Salary</option>
+              <option value="salary_to_hourly">Annual Salary to Hourly Rate</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Amount ($)</label>
+            <input type="number" data-hourly-to-salary-calculator-target="amount" data-action="input->hourly-to-salary-calculator#calculate" class="w-full" placeholder="25.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Hours per Week</label>
+            <input type="number" data-hourly-to-salary-calculator-target="hoursPerWeek" data-action="input->hourly-to-salary-calculator#calculate" class="w-full" value="40" step="0.5" min="1" max="168">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Weeks per Year</label>
+            <input type="number" data-hourly-to-salary-calculator-target="weeksPerYear" data-action="input->hourly-to-salary-calculator#calculate" class="w-full" value="52" step="1" min="1" max="52">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Pay Breakdown</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Hourly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-hourly-to-salary-calculator-target="resultHourly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Daily</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-hourly-to-salary-calculator-target="resultDaily">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Weekly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-hourly-to-salary-calculator-target="resultWeekly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Biweekly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-hourly-to-salary-calculator-target="resultBiweekly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Monthly</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-hourly-to-salary-calculator-target="resultMonthly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Annual</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-hourly-to-salary-calculator-target="resultAnnual">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->hourly-to-salary-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-sm shadow-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Hourly to Salary Calculator</h2>
+      <p>
+        Select your conversion direction: either hourly rate to salary or annual salary to hourly rate. Enter the amount, then customize the hours per week and weeks per year to match your actual work schedule. The calculator instantly converts your input into all six pay periods: hourly, daily, weekly, biweekly, monthly, and annual. This gives you a complete picture of your compensation from a single number.
+      </p>
+      <p>
+        The bidirectional design makes this tool especially useful when comparing job offers. If one position pays $28 per hour and another offers $55,000 annually, you can quickly convert both to the same basis for a fair comparison. The customizable hours and weeks settings ensure the comparison reflects your real working conditions, not just a theoretical 2,080-hour year.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Hourly vs. Salary: Key Differences</h2>
+      <p>
+        The distinction between hourly and salaried compensation goes beyond just the pay structure. Hourly employees are typically paid for every hour worked and receive overtime for hours exceeding 40 per week. Salaried employees receive a fixed amount regardless of hours, and many are classified as exempt from overtime. Understanding these differences is crucial when evaluating job offers and negotiating compensation.
+      </p>
+
+      <h3>The 2,080-Hour Standard</h3>
+      <p>
+        The number 2,080 comes from multiplying 40 hours per week by 52 weeks per year. This is the standard assumption for full-time annual work hours. However, many workers do not actually work all 52 weeks. Paid vacation, sick leave, and holidays effectively reduce the actual working weeks. If you have 2 weeks of paid vacation and 10 paid holidays, your effective working time is about 49 weeks, though your salary still covers the full 52. This is why salaried positions with good benefits can be more valuable than they initially appear when compared to hourly rates.
+      </p>
+
+      <h3>When to Choose Hourly Over Salary</h3>
+      <p>
+        Hourly pay is advantageous when you regularly work overtime, because you are compensated for every extra hour at a premium rate. It also provides flexibility for those who want to control their schedule. Salaried positions offer income stability, often come with better benefits, and may provide career advancement opportunities. The best choice depends on your work style, financial needs, and the specific opportunities available to you.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I convert an hourly rate to an annual salary?</h3>
+      <p>
+        Multiply your hourly rate by hours per week and weeks per year. For standard full-time: hourly rate x 40 x 52. For example, $25/hour = $52,000 per year.
+      </p>
+
+      <h3>How do I convert an annual salary to an hourly rate?</h3>
+      <p>
+        Divide your annual salary by total working hours per year. For standard full-time: salary / 2,080. For example, $60,000 / 2,080 = $28.85 per hour.
+      </p>
+
+      <h3>What hours and weeks per year should I use?</h3>
+      <p>
+        Standard full-time is 40 hours per week and 52 weeks per year. Reduce weeks for unpaid leave and adjust hours for part-time schedules.
+      </p>
+
+      <h3>How does this differ from a salary converter?</h3>
+      <p>
+        This calculator focuses specifically on the hourly-to-salary and salary-to-hourly conversion with a direction toggle. A salary converter accepts any pay period as input.
+      </p>
+
+      <h3>Should I factor in benefits when comparing hourly vs salary?</h3>
+      <p>
+        Yes. Benefits like health insurance, retirement matching, and paid time off can add 20-40% to the value of a salaried position. Factor these in for an accurate comparison.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Hourly to Salary Calculator", url: finance_hourly_to_salary_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Salary Converter", description: "Convert salary between all pay periods from any starting amount.", path: finance_salary_converter_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Salary Calculator", description: "Calculate salary breakdowns across all pay periods.", path: finance_salary_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Paycheck Calculator", description: "Estimate your take-home pay after taxes and deductions.", path: finance_paycheck_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("hourly-to-salary-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

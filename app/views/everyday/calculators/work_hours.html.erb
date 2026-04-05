@@ -1,0 +1,179 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Work Hours Calculator - Free Online Tool",
+  description: "Calculate total work hours between two dates. Enter start date, end date, hours per day, and days per week to get total work hours, work days, and weeks.",
+  canonical: everyday_work_hours_url,
+  og: {
+    title: "Work Hours Calculator - Free Online Tool | CalcWise",
+    description: "Calculate total work hours between two dates. Get work days, weeks, and total hours instantly.",
+    url: everyday_work_hours_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Work Hours Calculator", url: everyday_work_hours_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate total work hours between two dates?", answer: "Enter your start date and end date, then specify your hours per day and days per week. The calculator counts only working days (based on your schedule) and multiplies by your daily hours. For a standard 5-day, 8-hour schedule, one work week equals 40 hours." },
+  { question: "Does the calculator exclude weekends?", answer: "Yes. When set to 5 days per week, the calculator counts only Monday through Friday. For 6-day weeks it includes Saturday, and for 7-day weeks it counts every day. The days-per-week setting determines which days are treated as work days." },
+  { question: "Can I use this for part-time work schedules?", answer: "Absolutely. Set the hours per day to your actual daily hours (for example 4 or 6) and the days per week to however many days you work. The calculator will accurately reflect your part-time schedule when computing total work hours." },
+  { question: "How are partial weeks handled?", answer: "The calculator counts individual days rather than rounding to whole weeks. If your date range includes a partial week, only the working days within that partial week are counted. This ensures an accurate result for any date range." },
+  { question: "Can I calculate work hours for a multi-year period?", answer: "Yes, the calculator works for any date range from a single day to multiple years. It iterates through every day in the range and counts those that fall on your scheduled work days, so the result is precise regardless of the time span." }
+]) %>
+
+<%= calculator_schema(
+  name: "Work Hours Calculator",
+  description: "Calculate total work hours between two dates based on your daily hours and weekly schedule.",
+  url: everyday_work_hours_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Work Hours Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Work Hours Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate total work hours, work days, and weeks between any two dates based on your schedule.</p>
+
+    <div data-controller="work-hours-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Start Date</label>
+            <input type="date" data-work-hours-calculator-target="startDate" data-action="input->work-hours-calculator#calculate" class="w-full">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">End Date</label>
+            <input type="date" data-work-hours-calculator-target="endDate" data-action="input->work-hours-calculator#calculate" class="w-full">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Hours per Day</label>
+            <input type="number" data-work-hours-calculator-target="hoursPerDay" data-action="input->work-hours-calculator#calculate" class="w-full" value="8" min="0.5" max="24" step="0.5">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Days per Week</label>
+            <select data-work-hours-calculator-target="daysPerWeek" data-action="change->work-hours-calculator#calculate" class="w-full" aria-label="Days per week">
+              <option value="5" selected>5 days (Mon-Fri)</option>
+              <option value="6">6 days (Mon-Sat)</option>
+              <option value="7">7 days</option>
+              <option value="4">4 days (Mon-Thu)</option>
+              <option value="3">3 days</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Work Hours</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-work-hours-calculator-target="resultTotalHours">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Work Days</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-work-hours-calculator-target="resultWorkDays">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Calendar Days</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-work-hours-calculator-target="resultCalendarDays">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weeks</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-work-hours-calculator-target="resultWeeks">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->work-hours-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Work Hours Calculator</h2>
+      <p>
+        This calculator helps you determine the total number of work hours between any two dates. Select your start and end dates, then customize your schedule by setting the hours you work each day and how many days per week you work. The results update instantly, showing you the total work hours, number of work days, calendar days, and total weeks in the period.
+      </p>
+      <p>
+        The calculator is designed for a wide range of schedules. Standard full-time employees typically work 8 hours per day, 5 days per week, but the tool accommodates part-time workers, compressed schedules, and six- or seven-day work weeks. It accurately counts only the days that match your selected schedule, skipping weekends or other non-work days as appropriate.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Tracking Work Hours Matters</h2>
+      <p>
+        Accurate work hour tracking is essential for payroll processing, project planning, and labor law compliance. Employers need to know total hours worked to calculate wages, overtime, and benefits. Project managers use work hour estimates to set realistic timelines and allocate resources. Freelancers and contractors rely on hour tracking to bill clients correctly and forecast income.
+      </p>
+
+      <h3>Project Planning and Estimation</h3>
+      <p>
+        When planning a project, knowing the available work hours helps you set achievable deadlines. If a project requires 200 hours of effort and your team has two members working 40-hour weeks, you can estimate roughly 2.5 weeks for completion. This calculator gives you the exact number of available work hours in any date range so your estimates are grounded in reality rather than rough approximations.
+      </p>
+
+      <h3>Payroll and Overtime Calculations</h3>
+      <p>
+        Understanding total work hours over a period is the foundation of payroll calculations. Many jurisdictions require overtime pay for hours exceeding a weekly threshold. By knowing the total work hours in a pay period, you can verify that paychecks are accurate and that overtime is being calculated correctly. This is particularly important for hourly employees and contractors who are paid based on time worked.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate total work hours between two dates?</h3>
+      <p>
+        Enter your start date and end date, then specify your hours per day and days per week. The calculator counts only working days (based on your schedule) and multiplies by your daily hours. For a standard 5-day, 8-hour schedule, one work week equals 40 hours.
+      </p>
+
+      <h3>Does the calculator exclude weekends?</h3>
+      <p>
+        Yes. When set to 5 days per week, the calculator counts only Monday through Friday. For 6-day weeks it includes Saturday, and for 7-day weeks it counts every day. The days-per-week setting determines which days are treated as work days.
+      </p>
+
+      <h3>Can I use this for part-time work schedules?</h3>
+      <p>
+        Absolutely. Set the hours per day to your actual daily hours (for example 4 or 6) and the days per week to however many days you work. The calculator will accurately reflect your part-time schedule when computing total work hours.
+      </p>
+
+      <h3>How are partial weeks handled?</h3>
+      <p>
+        The calculator counts individual days rather than rounding to whole weeks. If your date range includes a partial week, only the working days within that partial week are counted. This ensures an accurate result for any date range.
+      </p>
+
+      <h3>Can I calculate work hours for a multi-year period?</h3>
+      <p>
+        Yes, the calculator works for any date range from a single day to multiple years. It iterates through every day in the range and counts those that fall on your scheduled work days, so the result is precise regardless of the time span.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Work Hours Calculator", url: everyday_work_hours_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Date Difference Calculator", description: "Calculate the exact difference between any two dates.", path: everyday_date_difference_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Cost Per Hour Calculator", description: "Determine the cost per hour for any service or activity.", path: everyday_cost_per_hour_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Age Calculator", description: "Calculate your exact age in years, months, and days.", path: everyday_age_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("work-hours-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

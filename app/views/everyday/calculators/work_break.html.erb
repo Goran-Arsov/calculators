@@ -1,0 +1,181 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Work Break Calculator - Free Online Tool",
+  description: "Calculate required work breaks based on shift length. See rest breaks, meal breaks, total break time, net work time, and a detailed break schedule.",
+  canonical: everyday_work_break_url,
+  og: {
+    title: "Work Break Calculator - Free Online Tool | CalcWise",
+    description: "Calculate required breaks for any shift length. See break schedule, total break time, and net work hours.",
+    url: everyday_work_break_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Work Break Calculator", url: everyday_work_break_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many breaks do I get for an 8-hour shift?", answer: "For a standard 8-hour shift, most workers are entitled to a 30-minute meal break and two 15-minute rest breaks. The exact requirements vary by state. The meal break is typically unpaid and taken around the midpoint of the shift. Rest breaks are usually paid and taken in the first and second halves of the shift." },
+  { question: "Are rest breaks paid or unpaid?", answer: "Short rest breaks (typically 10-15 minutes) are generally paid time under federal guidelines. The Department of Labor considers breaks under 20 minutes as compensable work time. Meal breaks of 30 minutes or longer are typically unpaid, provided the employee is completely relieved of duties during the break." },
+  { question: "What break rules apply to my state?", answer: "Break rules vary significantly by state. California requires a 30-minute meal break for shifts over 5 hours and a second meal break for shifts over 10 hours. Other states have different thresholds. Some states have no mandatory break requirements for adult workers at all. Check your state labor department for specific rules." },
+  { question: "Can I skip my break and leave early instead?", answer: "This depends on your state law and employer policy. Some states, like California, impose penalties on employers who deny or discourage breaks. In other states, employers may allow waiving breaks. Even where permitted, working without breaks reduces productivity and increases fatigue. Consult your employer's policy and local labor laws." },
+  { question: "How is net work time calculated?", answer: "Net work time equals your total shift length minus all break time. For example, an 8-hour shift with a 30-minute meal break and two 15-minute rest breaks has 60 minutes of breaks, leaving 7 hours of net work time. Note that paid rest breaks may still count as work time for payroll purposes even though you are not actively working." }
+]) %>
+
+<%= calculator_schema(
+  name: "Work Break Calculator",
+  description: "Calculate required work breaks, total break time, and net work hours based on shift length and break rules.",
+  url: everyday_work_break_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Work Break Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Work Break Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate required breaks, total break time, net work time, and get a detailed break schedule based on your shift length.</p>
+
+    <div data-controller="work-break-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Shift Length (hours)</label>
+            <input type="number" data-work-break-calculator-target="shiftHours" data-action="input->work-break-calculator#calculate" class="w-full" placeholder="8" value="8" min="0.5" max="24" step="0.5">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Meal Break After (hours)</label>
+            <input type="number" data-work-break-calculator-target="breakThreshold" data-action="input->work-break-calculator#calculate" class="w-full" value="6" min="1" max="12" step="0.5">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Meal Break Duration (min)</label>
+            <input type="number" data-work-break-calculator-target="breakDuration" data-action="input->work-break-calculator#calculate" class="w-full" value="30" min="5" max="60" step="5">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Second Meal After (hours)</label>
+            <input type="number" data-work-break-calculator-target="mealThreshold" data-action="input->work-break-calculator#calculate" class="w-full" value="10" min="4" max="24" step="0.5">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Second Meal Duration (min)</label>
+            <input type="number" data-work-break-calculator-target="mealDuration" data-action="input->work-break-calculator#calculate" class="w-full" value="30" min="5" max="60" step="5">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Break Summary</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Breaks</span>
+              <span class="text-xl font-bold text-rose-600 dark:text-rose-400" data-work-break-calculator-target="resultTotalBreaks">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Break Time</span>
+              <span class="text-xl font-bold text-rose-600 dark:text-rose-400"><span data-work-break-calculator-target="resultTotalBreakMinutes">&mdash;</span> min</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Work Hours</span>
+              <span class="text-xl font-bold text-rose-600 dark:text-rose-400" data-work-break-calculator-target="resultNetWorkHours">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Work Minutes</span>
+              <span class="text-xl font-bold text-rose-600 dark:text-rose-400" data-work-break-calculator-target="resultNetWorkMinutes">&mdash;</span>
+            </div>
+          </div>
+          <div class="mt-5">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Break Schedule</h3>
+            <div data-work-break-calculator-target="resultBreakSchedule" class="text-sm"></div>
+          </div>
+          <button data-action="click->work-break-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white rounded-xl shadow-sm shadow-rose-500/20 hover:shadow-md hover:shadow-rose-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Work Break Calculator</h2>
+      <p>
+        Enter your total shift length in hours and customize the break rules to match your workplace policies or state requirements. The calculator generates a break schedule showing when each break should occur, its duration, and whether it is paid or unpaid. You will also see the total number of breaks, total break time in minutes, and your net work time after all breaks are deducted.
+      </p>
+      <p>
+        The default settings follow common workplace practices: a 15-minute paid rest break after 2 hours, a 30-minute unpaid meal break for shifts of 6 or more hours, a second rest break after 6 hours for 8-hour shifts, and a second meal break for shifts of 10 or more hours. Adjust the thresholds and durations to match your specific situation.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Break Requirements</h2>
+      <p>
+        Break requirements vary widely by jurisdiction. The federal government does not mandate breaks for adult workers, but the Department of Labor requires that short breaks (under 20 minutes) be compensated if they are offered. Most states have their own break laws, with California, Colorado, Washington, and Oregon among the most employee-friendly. Some states have no mandatory break requirements at all for adults.
+      </p>
+
+      <h3>Rest Breaks vs. Meal Breaks</h3>
+      <p>
+        Rest breaks are short (typically 10-15 minutes) and are almost always paid. They are meant for brief rest, using the restroom, getting water, or stretching. Meal breaks are longer (30-60 minutes) and are typically unpaid if the employee is completely relieved of all duties. If an employee must remain on call or perform any tasks during a meal break, it is considered a working meal and must be compensated.
+      </p>
+
+      <h3>Productivity and Breaks</h3>
+      <p>
+        Research consistently shows that regular breaks improve productivity, reduce errors, and prevent burnout. The human brain can maintain focused attention for roughly 90 minutes before performance declines. Taking breaks at appropriate intervals helps maintain cognitive function and physical well-being throughout long shifts. Even though breaks reduce net work time, the quality of work during active periods is significantly higher with proper rest intervals.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many breaks do I get for an 8-hour shift?</h3>
+      <p>
+        For a standard 8-hour shift, most workers receive a 30-minute meal break and two 15-minute rest breaks. The exact requirements vary by state and employer policy.
+      </p>
+
+      <h3>Are rest breaks paid or unpaid?</h3>
+      <p>
+        Short rest breaks (under 20 minutes) are generally paid time. The Department of Labor considers them compensable work time. Meal breaks of 30 minutes or longer are typically unpaid when the employee is fully relieved of duties.
+      </p>
+
+      <h3>What break rules apply to my state?</h3>
+      <p>
+        Break rules vary by state. California requires a meal break after 5 hours and a second after 10 hours. Other states have different or no requirements for adult workers. Check your state labor department for specifics.
+      </p>
+
+      <h3>Can I skip my break and leave early instead?</h3>
+      <p>
+        This depends on state law and employer policy. Some states penalize employers who deny breaks, while others allow waiving breaks. Consult your employer and local labor laws.
+      </p>
+
+      <h3>How is net work time calculated?</h3>
+      <p>
+        Net work time equals total shift length minus all break time. An 8-hour shift with 60 minutes of total breaks has 7 hours of net work time. Paid rest breaks may still count as work time for payroll.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Work Break Calculator", url: everyday_work_break_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Cost Per Hour Calculator", description: "Determine the cost per hour for any service or activity.", path: everyday_cost_per_hour_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Date Difference Calculator", description: "Calculate the exact difference between any two dates.", path: everyday_date_difference_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Age Calculator", description: "Calculate your exact age in years, months, and days.", path: everyday_age_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("work-break-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

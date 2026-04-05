@@ -61,6 +61,8 @@ module Finance
     def revenue_per_employee; end
     def earnings_per_share; end
     def savings_per_month; end
+    def overtime; end
+    def hourly_to_salary; end
 
     private
 

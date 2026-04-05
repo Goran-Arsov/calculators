@@ -69,6 +69,8 @@ Rails.application.routes.draw do
     get "revenue-per-employee-calculator", to: "calculators#revenue_per_employee", as: :revenue_per_employee
     get "earnings-per-share-calculator", to: "calculators#earnings_per_share", as: :earnings_per_share
     get "savings-per-month-calculator", to: "calculators#savings_per_month", as: :savings_per_month
+    get "overtime-calculator", to: "calculators#overtime", as: :overtime
+    get "hourly-to-salary-calculator", to: "calculators#hourly_to_salary", as: :hourly_to_salary
   end
 
   # Math calculators
@@ -219,6 +221,12 @@ Rails.application.routes.draw do
     get "price-per-liter-calculator", to: "calculators#price_per_liter", as: :price_per_liter
     get "words-per-minute-calculator", to: "calculators#words_per_minute", as: :words_per_minute
     get "cost-per-mile-calculator", to: "calculators#cost_per_mile", as: :cost_per_mile
+    get "work-hours-calculator", to: "calculators#work_hours", as: :work_hours
+    get "shift-duration-calculator", to: "calculators#shift_duration", as: :shift_duration
+    get "days-until-calculator", to: "calculators#days_until", as: :days_until
+    get "business-days-calculator", to: "calculators#business_days", as: :business_days
+    get "time-card-calculator", to: "calculators#time_card", as: :time_card
+    get "work-break-calculator", to: "calculators#work_break", as: :work_break
   end
 
   # Blog

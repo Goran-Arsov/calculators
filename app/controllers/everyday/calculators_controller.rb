@@ -41,6 +41,12 @@ module Everyday
     def price_per_liter; end
     def words_per_minute; end
     def cost_per_mile; end
+    def work_hours; end
+    def shift_duration; end
+    def days_until; end
+    def business_days; end
+    def time_card; end
+    def work_break; end
 
     private
 

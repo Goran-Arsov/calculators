@@ -1,0 +1,177 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Shift Duration Calculator - Free Online Tool",
+  description: "Calculate shift duration from start and end times. Handles overnight shifts, break deductions, and shows total hours, paid hours, and minutes worked.",
+  canonical: everyday_shift_duration_url,
+  og: {
+    title: "Shift Duration Calculator - Free Online Tool | CalcWise",
+    description: "Calculate shift length including overnight shifts. Deduct breaks and see total and paid hours instantly.",
+    url: everyday_shift_duration_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Shift Duration Calculator", url: everyday_shift_duration_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate the length of my shift?", answer: "Enter your shift start time and end time. The calculator subtracts the start from the end to give you total shift hours and minutes. If you have a break, enter the break duration in minutes and the calculator will show both total shift time and paid (net) time after the break is deducted." },
+  { question: "Does the calculator handle overnight shifts?", answer: "Yes. If your end time is earlier than your start time (for example, starting at 10 PM and ending at 6 AM), the calculator automatically detects an overnight shift and calculates the correct duration by adding 24 hours to the end time before subtracting." },
+  { question: "What is the difference between total hours and paid hours?", answer: "Total hours is the full duration from start to end. Paid hours is the total minus any unpaid break time. For example, an 8-hour shift with a 30-minute unpaid lunch results in 8 total hours but 7.5 paid hours. Paid breaks would not reduce this number." },
+  { question: "Can I enter break time in minutes?", answer: "Yes, enter your total break time in minutes. Common values include 15 (short rest break), 30 (standard lunch), 45, or 60 minutes. The calculator subtracts this from the total shift time to calculate your paid hours." },
+  { question: "How accurate is the shift duration for payroll?", answer: "The calculator provides exact time calculations based on the times you enter. For payroll purposes, verify that the times match your actual clock-in and clock-out records. Some employers round to the nearest quarter hour, which this calculator does not do. Always confirm with your payroll department for official calculations." }
+]) %>
+
+<%= calculator_schema(
+  name: "Shift Duration Calculator",
+  description: "Calculate shift duration from start and end times with break deductions and overnight shift support.",
+  url: everyday_shift_duration_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Shift Duration Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Shift Duration Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate total shift hours and paid hours from your start time, end time, and break duration. Handles overnight shifts automatically.</p>
+
+    <div data-controller="shift-duration-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Shift Start Time</label>
+            <input type="time" data-shift-duration-calculator-target="startTime" data-action="input->shift-duration-calculator#calculate" class="w-full">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Shift End Time</label>
+            <input type="time" data-shift-duration-calculator-target="endTime" data-action="input->shift-duration-calculator#calculate" class="w-full">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Break Duration (minutes)</label>
+            <input type="number" data-shift-duration-calculator-target="breakMinutes" data-action="input->shift-duration-calculator#calculate" class="w-full" value="30" min="0" step="5">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Hours</span>
+              <span class="text-xl font-bold text-purple-600 dark:text-purple-400" data-shift-duration-calculator-target="resultTotalHours">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Minutes</span>
+              <span class="text-xl font-bold text-purple-600 dark:text-purple-400" data-shift-duration-calculator-target="resultTotalMinutes">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Paid Hours</span>
+              <span class="text-xl font-bold text-purple-600 dark:text-purple-400" data-shift-duration-calculator-target="resultPaidHours">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Paid Minutes</span>
+              <span class="text-xl font-bold text-purple-600 dark:text-purple-400" data-shift-duration-calculator-target="resultPaidMinutes">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Break</span>
+              <span class="text-xl font-bold text-purple-600 dark:text-purple-400" data-shift-duration-calculator-target="resultBreakMinutes">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Overnight?</span>
+              <span class="text-xl font-bold text-purple-600 dark:text-purple-400" data-shift-duration-calculator-target="resultOvernight">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->shift-duration-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl shadow-sm shadow-purple-500/20 hover:shadow-md hover:shadow-purple-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Shift Duration Calculator</h2>
+      <p>
+        Select your shift start and end times using the time pickers, then enter any break time in minutes. The calculator instantly shows your total shift duration in both hours and minutes, and separately shows your paid time after break deductions. If your shift crosses midnight (for example, 10 PM to 6 AM), the calculator automatically detects this as an overnight shift and calculates the correct duration.
+      </p>
+      <p>
+        This tool is particularly useful for shift workers, nurses, factory employees, retail staff, and anyone who works non-standard hours. Instead of manually calculating time differences and worrying about midnight crossings, you get an instant and accurate result. The break deduction feature ensures you see both your total time on-site and your actual paid working time.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Shift Duration and Pay</h2>
+      <p>
+        Shift duration directly impacts your pay, fatigue levels, and work-life balance. In many industries, shifts range from 4 to 12 hours. Healthcare workers often work 12-hour shifts, while retail and hospitality shifts are commonly 6 to 8 hours. Understanding the exact length of your shift, minus breaks, helps you verify that your paycheck accurately reflects the time you worked.
+      </p>
+
+      <h3>Overnight Shift Calculations</h3>
+      <p>
+        Overnight shifts require special attention because the clock resets at midnight. A shift from 11 PM to 7 AM spans two calendar days but lasts only 8 hours. This calculator handles the midnight crossing automatically. Some employers also pay a shift differential for overnight work, which is a premium on top of the base hourly rate, typically ranging from $1 to $5 per hour extra.
+      </p>
+
+      <h3>Break Time and Labor Laws</h3>
+      <p>
+        Federal law does not mandate meal or rest breaks, but most states have their own requirements. California requires a 30-minute meal break for shifts over 5 hours and a second 30-minute break for shifts over 10 hours. Many states require paid 10- or 15-minute rest breaks in addition to unpaid meal breaks. Knowing your total shift time and break entitlements helps ensure compliance and fair pay.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate the length of my shift?</h3>
+      <p>
+        Enter your shift start time and end time. The calculator subtracts the start from the end to give you total shift hours and minutes. If you have a break, enter the break duration in minutes and the calculator will show both total shift time and paid time after the break is deducted.
+      </p>
+
+      <h3>Does the calculator handle overnight shifts?</h3>
+      <p>
+        Yes. If your end time is earlier than your start time, the calculator automatically detects an overnight shift and calculates the correct duration by adding 24 hours to the end time before subtracting.
+      </p>
+
+      <h3>What is the difference between total hours and paid hours?</h3>
+      <p>
+        Total hours is the full duration from start to end. Paid hours is the total minus any unpaid break time. For example, an 8-hour shift with a 30-minute unpaid lunch results in 8 total hours but 7.5 paid hours.
+      </p>
+
+      <h3>Can I enter break time in minutes?</h3>
+      <p>
+        Yes, enter your total break time in minutes. Common values include 15, 30, 45, or 60 minutes. The calculator subtracts this from the total shift time to calculate your paid hours.
+      </p>
+
+      <h3>How accurate is the shift duration for payroll?</h3>
+      <p>
+        The calculator provides exact time calculations based on the times you enter. For payroll purposes, verify that the times match your actual clock-in and clock-out records. Some employers round to the nearest quarter hour, which this calculator does not do.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Shift Duration Calculator", url: everyday_shift_duration_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Date Difference Calculator", description: "Calculate the exact difference between any two dates.", path: everyday_date_difference_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Cost Per Hour Calculator", description: "Determine the cost per hour for any service or activity.", path: everyday_cost_per_hour_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Time Zone Converter", description: "Convert times between different time zones worldwide.", path: everyday_time_zone_converter_path, icon_path: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("shift-duration-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

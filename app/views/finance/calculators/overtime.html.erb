@@ -1,0 +1,186 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Overtime Calculator - Free Online Tool",
+  description: "Calculate overtime pay, regular pay, and total pay. Enter hourly rate, regular hours, overtime hours, and OT multiplier to see your complete pay breakdown.",
+  canonical: finance_overtime_url,
+  og: {
+    title: "Overtime Calculator - Free Online Tool | CalcWise",
+    description: "Calculate overtime pay with custom multipliers. See regular pay, OT pay, total pay, and effective hourly rate.",
+    url: finance_overtime_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Overtime Calculator", url: finance_overtime_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is overtime pay calculated?", answer: "Overtime pay equals your hourly rate multiplied by the overtime multiplier (usually 1.5x for time-and-a-half) multiplied by the number of overtime hours. For example, at $20/hour with 10 overtime hours at 1.5x, overtime pay is $20 x 1.5 x 10 = $300." },
+  { question: "What is the standard overtime multiplier?", answer: "The most common overtime multiplier in the United States is 1.5x (time-and-a-half) for hours worked beyond 40 in a workweek under the Fair Labor Standards Act. Some employers offer 2x (double time) for holidays, weekends, or hours beyond a higher threshold." },
+  { question: "What is the effective hourly rate?", answer: "The effective hourly rate is your total pay divided by your total hours worked. When you work overtime at a higher multiplier, your effective rate rises above your base rate. For example, 40 regular hours plus 10 overtime hours at 1.5x with a $20 base rate yields an effective rate of $22/hour." },
+  { question: "Do salaried employees get overtime?", answer: "It depends on your classification. Non-exempt salaried employees are entitled to overtime pay under the FLSA. Exempt employees (typically earning above a salary threshold and performing executive, administrative, or professional duties) generally do not receive overtime pay. Check with your employer or the Department of Labor for your specific situation." },
+  { question: "How do I calculate weekly pay with overtime?", answer: "Add your regular pay (hourly rate times regular hours) to your overtime pay (hourly rate times OT multiplier times OT hours). For a $25/hour worker doing 40 regular hours and 8 overtime hours at 1.5x: ($25 x 40) + ($25 x 1.5 x 8) = $1,000 + $300 = $1,300 per week." }
+]) %>
+
+<%= calculator_schema(
+  name: "Overtime Calculator",
+  description: "Calculate regular pay, overtime pay, total pay, and effective hourly rate with custom overtime multipliers.",
+  url: finance_overtime_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Overtime Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Overtime Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your regular pay, overtime pay, total earnings, and effective hourly rate with any overtime multiplier.</p>
+
+    <div data-controller="overtime-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Hourly Rate ($)</label>
+            <input type="number" data-overtime-calculator-target="hourlyRate" data-action="input->overtime-calculator#calculate" class="w-full" placeholder="25.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Regular Hours</label>
+            <input type="number" data-overtime-calculator-target="regularHours" data-action="input->overtime-calculator#calculate" class="w-full" placeholder="40" value="40" step="0.5" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Overtime Hours</label>
+            <input type="number" data-overtime-calculator-target="overtimeHours" data-action="input->overtime-calculator#calculate" class="w-full" placeholder="10" step="0.5" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">OT Multiplier</label>
+            <select data-overtime-calculator-target="otMultiplier" data-action="change->overtime-calculator#calculate" class="w-full" aria-label="Overtime multiplier">
+              <option value="1.5" selected>1.5x (Time and a Half)</option>
+              <option value="2.0">2.0x (Double Time)</option>
+              <option value="2.5">2.5x</option>
+              <option value="3.0">3.0x (Triple Time)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Pay Breakdown</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Regular Pay</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-overtime-calculator-target="resultRegularPay">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Overtime Pay</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-overtime-calculator-target="resultOvertimePay">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-3">
+              <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Total Pay</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-overtime-calculator-target="resultTotalPay">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">OT Hourly Rate</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-overtime-calculator-target="resultOvertimeRate">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Total Hours</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-overtime-calculator-target="resultTotalHours">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Effective Rate</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-overtime-calculator-target="resultEffectiveRate">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->overtime-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-sm shadow-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Overtime Calculator</h2>
+      <p>
+        Enter your base hourly rate, the number of regular hours worked, and your overtime hours. Select the overtime multiplier that applies to your situation. Most employees in the United States receive 1.5x (time-and-a-half) for overtime hours, though some positions earn double time or higher rates for holidays and weekends. The calculator instantly breaks down your regular pay, overtime pay, and total earnings.
+      </p>
+      <p>
+        The effective hourly rate shown at the bottom tells you what you actually earn per hour when overtime is factored in. This is useful for comparing the real value of a week with overtime versus a standard week. It also helps when negotiating compensation or deciding whether extra hours are worth the time.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Overtime Laws</h2>
+      <p>
+        The Fair Labor Standards Act (FLSA) requires most employers to pay overtime at 1.5 times the regular rate for hours worked beyond 40 in a workweek. Some states have additional overtime rules. California, for example, requires daily overtime after 8 hours and double time after 12 hours. Alaska requires overtime after 8 hours per day for most employees. Always check your state and local laws to understand what overtime rules apply to your situation.
+      </p>
+
+      <h3>Who Qualifies for Overtime?</h3>
+      <p>
+        Most hourly employees are non-exempt and qualify for overtime pay. Salaried employees may be exempt if they earn above a minimum salary threshold and perform certain types of work classified as executive, administrative, or professional. The Department of Labor periodically updates the salary threshold for exemption. If you are unsure of your status, consult your HR department or review the FLSA exemption criteria.
+      </p>
+
+      <h3>Maximizing Your Earnings</h3>
+      <p>
+        Understanding how overtime affects your total compensation helps you make informed decisions about accepting extra shifts. The effective hourly rate metric is especially valuable because it shows the blended rate across all hours. When negotiating pay or comparing job offers, consider how overtime opportunities affect your real earnings. A lower base rate with generous overtime can sometimes yield higher total pay than a higher base rate with no overtime.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is overtime pay calculated?</h3>
+      <p>
+        Overtime pay equals your hourly rate multiplied by the overtime multiplier (usually 1.5x for time-and-a-half) multiplied by the number of overtime hours. For example, at $20/hour with 10 overtime hours at 1.5x, overtime pay is $20 x 1.5 x 10 = $300.
+      </p>
+
+      <h3>What is the standard overtime multiplier?</h3>
+      <p>
+        The most common overtime multiplier in the United States is 1.5x (time-and-a-half) for hours worked beyond 40 in a workweek under the Fair Labor Standards Act. Some employers offer 2x (double time) for holidays, weekends, or hours beyond a higher threshold.
+      </p>
+
+      <h3>What is the effective hourly rate?</h3>
+      <p>
+        The effective hourly rate is your total pay divided by your total hours worked. When you work overtime at a higher multiplier, your effective rate rises above your base rate. For example, 40 regular hours plus 10 overtime hours at 1.5x with a $20 base rate yields an effective rate of $22/hour.
+      </p>
+
+      <h3>Do salaried employees get overtime?</h3>
+      <p>
+        It depends on your classification. Non-exempt salaried employees are entitled to overtime pay under the FLSA. Exempt employees (typically earning above a salary threshold and performing executive, administrative, or professional duties) generally do not receive overtime pay.
+      </p>
+
+      <h3>How do I calculate weekly pay with overtime?</h3>
+      <p>
+        Add your regular pay (hourly rate times regular hours) to your overtime pay (hourly rate times OT multiplier times OT hours). For a $25/hour worker doing 40 regular hours and 8 overtime hours at 1.5x: ($25 x 40) + ($25 x 1.5 x 8) = $1,000 + $300 = $1,300 per week.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Overtime Calculator", url: finance_overtime_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Salary Calculator", description: "Calculate salary breakdowns across all pay periods.", path: finance_salary_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Paycheck Calculator", description: "Estimate your take-home pay after taxes and deductions.", path: finance_paycheck_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Salary Converter", description: "Convert salary between hourly, weekly, monthly, and annual.", path: finance_salary_converter_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("overtime-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

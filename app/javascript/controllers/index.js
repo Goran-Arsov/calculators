@@ -133,6 +133,14 @@ import ProteinPerMealCalculatorController from "controllers/protein_per_meal_cal
 import CaloriesPer100gCalculatorController from "controllers/calories_per_100g_calculator_controller"
 import StepsPerMileCalculatorController from "controllers/steps_per_mile_calculator_controller"
 import PricePerSqmCalculatorController from "controllers/price_per_sqm_calculator_controller"
+import WorkHoursCalculatorController from "controllers/work_hours_calculator_controller"
+import OvertimeCalculatorController from "controllers/overtime_calculator_controller"
+import ShiftDurationCalculatorController from "controllers/shift_duration_calculator_controller"
+import DaysUntilCalculatorController from "controllers/days_until_calculator_controller"
+import BusinessDaysCalculatorController from "controllers/business_days_calculator_controller"
+import TimeCardCalculatorController from "controllers/time_card_calculator_controller"
+import HourlyToSalaryCalculatorController from "controllers/hourly_to_salary_calculator_controller"
+import WorkBreakCalculatorController from "controllers/work_break_calculator_controller"
 
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
@@ -308,6 +316,14 @@ application.register("protein-per-meal-calculator", ProteinPerMealCalculatorCont
 application.register("calories-per-100g-calculator", CaloriesPer100gCalculatorController)
 application.register("steps-per-mile-calculator", StepsPerMileCalculatorController)
 application.register("price-per-sqm-calculator", PricePerSqmCalculatorController)
+application.register("work-hours-calculator", WorkHoursCalculatorController)
+application.register("overtime-calculator", OvertimeCalculatorController)
+application.register("shift-duration-calculator", ShiftDurationCalculatorController)
+application.register("days-until-calculator", DaysUntilCalculatorController)
+application.register("business-days-calculator", BusinessDaysCalculatorController)
+application.register("time-card-calculator", TimeCardCalculatorController)
+application.register("hourly-to-salary-calculator", HourlyToSalaryCalculatorController)
+application.register("work-break-calculator", WorkBreakCalculatorController)
 
 // Construction
 application.register("paint-calculator", PaintCalculatorController)
