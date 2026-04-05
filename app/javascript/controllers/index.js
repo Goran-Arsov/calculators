@@ -102,6 +102,18 @@ import OvulationCalculatorController from "controllers/ovulation_calculator_cont
 import BloodPressureCalculatorController from "controllers/blood_pressure_calculator_controller"
 import LeanBodyMassCalculatorController from "controllers/lean_body_mass_calculator_controller"
 
+// Contextual converters
+import CostPerKmCalculatorController from "controllers/cost_per_km_calculator_controller"
+import KwhToCostCalculatorController from "controllers/kwh_to_cost_calculator_controller"
+import SalaryConverterCalculatorController from "controllers/salary_converter_calculator_controller"
+import RentPerSqmCalculatorController from "controllers/rent_per_sqm_calculator_controller"
+import PricePerWeightCalculatorController from "controllers/price_per_weight_calculator_controller"
+import FuelCostTripCalculatorController from "controllers/fuel_cost_trip_calculator_controller"
+import CostOfLivingCalculatorController from "controllers/cost_of_living_calculator_controller"
+import DataUsageCostCalculatorController from "controllers/data_usage_cost_calculator_controller"
+import HourlyToProjectCalculatorController from "controllers/hourly_to_project_calculator_controller"
+import SqftCostCalculatorController from "controllers/sqft_cost_calculator_controller"
+
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
 import FlooringCalculatorController from "controllers/flooring_calculator_controller"
@@ -244,6 +256,18 @@ application.register("intermittent-fasting-calculator", IntermittentFastingCalcu
 application.register("ovulation-calculator", OvulationCalculatorController)
 application.register("blood-pressure-calculator", BloodPressureCalculatorController)
 application.register("lean-body-mass-calculator", LeanBodyMassCalculatorController)
+
+// Contextual converters
+application.register("cost-per-km-calculator", CostPerKmCalculatorController)
+application.register("kwh-to-cost-calculator", KwhToCostCalculatorController)
+application.register("salary-converter-calculator", SalaryConverterCalculatorController)
+application.register("rent-per-sqm-calculator", RentPerSqmCalculatorController)
+application.register("price-per-weight-calculator", PricePerWeightCalculatorController)
+application.register("fuel-cost-trip-calculator", FuelCostTripCalculatorController)
+application.register("cost-of-living-calculator", CostOfLivingCalculatorController)
+application.register("data-usage-cost-calculator", DataUsageCostCalculatorController)
+application.register("hourly-to-project-calculator", HourlyToProjectCalculatorController)
+application.register("sqft-cost-calculator", SqftCostCalculatorController)
 
 // Construction
 application.register("paint-calculator", PaintCalculatorController)

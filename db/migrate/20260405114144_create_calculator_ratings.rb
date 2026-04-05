@@ -9,6 +9,6 @@ class CreateCalculatorRatings < ActiveRecord::Migration[8.1]
     end
 
     add_index :calculator_ratings, :calculator_slug
-    add_index :calculator_ratings, [:calculator_slug, :ip_hash], unique: true
+    add_index :calculator_ratings, [ :calculator_slug, :ip_hash ], unique: true
   end
 end

@@ -60,6 +60,9 @@ Rails.application.routes.draw do
     get "money-market-calculator", to: "calculators#money_market", as: :money_market
     get "hourly-paycheck-calculator", to: "calculators#hourly_paycheck", as: :hourly_paycheck
     get "freelance-tax-calculator", to: "calculators#freelance_tax", as: :freelance_tax
+    get "salary-converter", to: "calculators#salary_converter", as: :salary_converter
+    get "cost-of-living-calculator", to: "calculators#cost_of_living", as: :cost_of_living
+    get "hourly-to-project-calculator", to: "calculators#hourly_to_project", as: :hourly_to_project
   end
 
   # Math calculators
@@ -159,6 +162,7 @@ Rails.application.routes.draw do
     get "tile-calculator", to: "calculators#tile", as: :tile
     get "lumber-calculator", to: "calculators#lumber", as: :lumber
     get "hvac-btu-calculator", to: "calculators#hvac_btu", as: :hvac_btu
+    get "sqft-cost-calculator", to: "calculators#sqft_cost", as: :sqft_cost
   end
 
   # Everyday calculators
@@ -189,6 +193,12 @@ Rails.application.routes.draw do
     get "sale-price-calculator", to: "calculators#sale_price", as: :sale_price
     get "coupon-calculator", to: "calculators#coupon", as: :coupon
     get "clearance-calculator", to: "calculators#clearance", as: :clearance
+    get "cost-per-km-calculator", to: "calculators#cost_per_km", as: :cost_per_km
+    get "kwh-to-cost-calculator", to: "calculators#kwh_to_cost", as: :kwh_to_cost
+    get "rent-per-sqm-calculator", to: "calculators#rent_per_sqm", as: :rent_per_sqm
+    get "price-per-weight-calculator", to: "calculators#price_per_weight", as: :price_per_weight
+    get "fuel-cost-trip-calculator", to: "calculators#fuel_cost_trip", as: :fuel_cost_trip
+    get "data-usage-cost-calculator", to: "calculators#data_usage_cost", as: :data_usage_cost
   end
 
   # Blog

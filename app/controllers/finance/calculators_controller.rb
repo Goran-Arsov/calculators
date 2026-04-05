@@ -52,6 +52,9 @@ module Finance
     def money_market; end
     def hourly_paycheck; end
     def freelance_tax; end
+    def salary_converter; end
+    def cost_of_living; end
+    def hourly_to_project; end
 
     private
 

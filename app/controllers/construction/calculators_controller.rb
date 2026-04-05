@@ -14,6 +14,7 @@ module Construction
     def tile; end
     def lumber; end
     def hvac_btu; end
+    def sqft_cost; end
 
     private
 

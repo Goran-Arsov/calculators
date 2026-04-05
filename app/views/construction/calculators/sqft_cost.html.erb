@@ -1,0 +1,169 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Square Footage Cost Calculator - Free Online Tool",
+  description: "Calculate cost per square foot, cost per square meter, and cost per acre from total project cost and area. Essential for construction and real estate.",
+  canonical: construction_sqft_cost_url,
+  og: {
+    title: "Square Footage Cost Calculator - Free Online Tool | CalcWise",
+    description: "Calculate cost per square foot, per square meter, and per acre from total cost and area. Essential for construction and real estate.",
+    url: construction_sqft_cost_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Square Footage Cost Calculator", url: construction_sqft_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate cost per square foot?", answer: "Divide the total cost by the total area in square feet. For example, if a 2,000 sqft home costs $400,000, the cost per square foot is $400,000 / 2,000 = $200/sqft. This metric is widely used in real estate and construction to compare property values and building costs." },
+  { question: "How do I convert cost per sqft to cost per sqm?", answer: "Multiply the cost per square foot by 10.7639 to get cost per square meter. Since 1 square meter = 10.7639 square feet, a cost of $200/sqft equals $200 x 10.7639 = $2,152.78/sqm. This calculator handles the conversion automatically." },
+  { question: "What is a typical cost per square foot for new construction?", answer: "In the United States, new home construction typically costs $100-$400 per square foot depending on location, materials, and finishes. Economy builds start around $100/sqft, mid-range homes average $150-$250/sqft, and custom luxury homes can exceed $400/sqft. Commercial construction varies even more widely." },
+  { question: "Does cost per sqft include land cost?", answer: "It depends on the context. In real estate listings, cost per sqft usually includes the land. In construction estimates, it typically refers to building costs only, excluding land purchase. Always clarify what is included when comparing cost-per-sqft figures from different sources." },
+  { question: "How is cost per acre calculated?", answer: "Divide the total cost by the area in acres. One acre equals 43,560 square feet. For a 10,000 sqft lot that costs $250,000, the area is 10,000 / 43,560 = 0.2296 acres, and the cost per acre is $250,000 / 0.2296 = approximately $1,088,850 per acre." }
+]) %>
+
+<%= calculator_schema(
+  name: "Square Footage Cost Calculator",
+  description: "Calculate cost per square foot, cost per square meter, and cost per acre from total project cost and area in square feet.",
+  url: construction_sqft_cost_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Square Footage Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Square Footage Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate cost per square foot, cost per square meter, and cost per acre from any total cost and area measurement.</p>
+
+    <div data-controller="sqft-cost-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Cost ($)</label>
+            <input type="number" data-sqft-cost-calculator-target="totalCost" data-action="input->sqft-cost-calculator#calculate" class="w-full" placeholder="400000" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Area (sqft)</label>
+            <input type="number" data-sqft-cost-calculator-target="areaSqft" data-action="input->sqft-cost-calculator#calculate" class="w-full" placeholder="2000" step="1" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Cost Breakdown</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Cost per sqft</span>
+              <span class="text-xl font-bold text-orange-600 dark:text-orange-400" data-sqft-cost-calculator-target="costPerSqft">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Cost per m&sup2;</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-sqft-cost-calculator-target="costPerSqm">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Cost per acre</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-sqft-cost-calculator-target="costPerAcre">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-3">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Area (m&sup2;)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-sqft-cost-calculator-target="areaSqm">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Area (acres)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-sqft-cost-calculator-target="areaAcres">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->sqft-cost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-xl shadow-sm shadow-orange-500/20 hover:shadow-md hover:shadow-orange-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Square Footage Cost Calculator</h2>
+      <p>
+        Cost per square foot is the universal metric for comparing property values, construction costs, and renovation budgets. Whether you are evaluating a home purchase, estimating a building project, or comparing commercial leases, this calculator converts any total cost and area into the per-area metrics professionals use. Enter the total cost and the area in square feet, and the calculator instantly shows cost per square foot, cost per square meter, and cost per acre, along with area conversions.
+      </p>
+      <p>
+        Real estate agents use cost per sqft to compare homes of different sizes within the same market. Contractors use it to estimate building costs and provide competitive quotes. Investors use it to evaluate whether a property is priced above or below market averages. The metric is simple but powerful because it normalizes costs across different property sizes, making comparisons meaningful.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Cost Per Area Formulas</h2>
+      <p>
+        <strong>Cost per sqft = Total Cost / Area in sqft</strong>. <strong>Cost per m&sup2; = Total Cost / (Area in sqft / 10.7639)</strong>. <strong>Cost per acre = Total Cost / (Area in sqft / 43,560)</strong>. The conversion factors are: 1 m&sup2; = 10.7639 sqft, 1 acre = 43,560 sqft. These formulas work for any type of cost: purchase price, construction cost, renovation budget, or annual lease rate.
+      </p>
+
+      <h3>Using Cost Per Sqft in Real Estate</h3>
+      <p>
+        When comparing homes, cost per square foot helps identify value within a neighborhood. Research the average cost per sqft for recent sales in the area, then compare any listing against that benchmark. A home priced significantly below the average may be a bargain or may have issues. One priced above average should offer justification such as premium finishes, recent renovations, or a better lot. Keep in mind that smaller homes tend to have a higher cost per sqft because fixed costs like the kitchen and bathrooms are spread across fewer total square feet.
+      </p>
+
+      <h3>Construction Cost Estimation</h3>
+      <p>
+        For new construction, cost per sqft depends heavily on the type of build and finish quality. Gather quotes from multiple contractors and compare them on a per-sqft basis. Be sure each quote includes the same scope of work. A quote of $180/sqft that includes landscaping and appliances is very different from a $160/sqft quote for the shell only. Always ask what is included and excluded when comparing construction estimates by cost per square foot.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate cost per square foot?</h3>
+      <p>
+        Divide the total cost by the total area in square feet. For example, if a 2,000 sqft home costs $400,000, the cost per square foot is $400,000 / 2,000 = $200/sqft.
+      </p>
+
+      <h3>How do I convert cost per sqft to cost per sqm?</h3>
+      <p>
+        Multiply the cost per square foot by 10.7639 to get cost per square meter. A cost of $200/sqft equals $200 x 10.7639 = $2,152.78/sqm. This calculator handles the conversion automatically.
+      </p>
+
+      <h3>What is a typical cost per square foot for new construction?</h3>
+      <p>
+        In the United States, new home construction typically costs $100-$400 per square foot depending on location, materials, and finishes. Economy builds start around $100/sqft, mid-range homes average $150-$250/sqft, and custom luxury homes can exceed $400/sqft.
+      </p>
+
+      <h3>Does cost per sqft include land cost?</h3>
+      <p>
+        It depends on context. In real estate listings, cost per sqft usually includes land. In construction estimates, it typically refers to building costs only. Always clarify what is included when comparing figures from different sources.
+      </p>
+
+      <h3>How is cost per acre calculated?</h3>
+      <p>
+        Divide the total cost by the area in acres. One acre equals 43,560 square feet. For a 10,000 sqft lot costing $250,000, the area is 0.2296 acres, and cost per acre is approximately $1,088,850.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Square Footage Cost Calculator", url: construction_sqft_cost_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Concrete Calculator", description: "Calculate cubic yards and bags of concrete needed for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Flooring Calculator", description: "Calculate flooring materials needed for any room size.", path: construction_flooring_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" },
+      { name: "Paint Calculator", description: "Calculate how much paint you need for walls, ceilings, and trim.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("sqft-cost-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

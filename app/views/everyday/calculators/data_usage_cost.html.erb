@@ -1,0 +1,189 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Data Usage Cost Calculator - Free Online Tool",
+  description: "Calculate your data plan's cost per GB, overage charges, unused data value, and effective cost. Optimize your mobile data plan spending.",
+  canonical: everyday_data_usage_cost_url,
+  og: {
+    title: "Data Usage Cost Calculator - Free Online Tool | CalcWise",
+    description: "Calculate your data plan's cost per GB, overage charges, and unused data value. Optimize your mobile data spending.",
+    url: everyday_data_usage_cost_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Data Usage Cost Calculator", url: everyday_data_usage_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate cost per GB for my data plan?", answer: "Divide your monthly plan cost by the data allowance in GB. For example, a $50/month plan with 20 GB costs $50 / 20 = $2.50 per GB. This is your base cost per GB before considering any overages or unused data." },
+  { question: "How are data overage charges calculated?", answer: "Overage charges apply when you exceed your plan's data limit. The calculator multiplies the overage amount (usage minus plan size) by the overage rate per GB. For example, using 25 GB on a 20 GB plan with a $10/GB overage rate results in 5 x $10 = $50 in overage charges, raising your total bill to $100." },
+  { question: "What is unused data value?", answer: "Unused data value represents the money you are effectively wasting by not using all the data in your plan. It is calculated as unused GB multiplied by the base cost per GB. If your 20 GB plan costs $50 ($2.50/GB) and you only use 12 GB, you are wasting 8 x $2.50 = $20 in unused data value." },
+  { question: "Should I upgrade or downgrade my data plan?", answer: "If you consistently use less than 70% of your data allowance, consider downgrading to a smaller plan. If you regularly exceed your limit and pay overage fees, upgrading is usually cheaper. Use this calculator monthly to track your actual cost per GB and usage percentage over time." },
+  { question: "How much data does streaming use?", answer: "Streaming music uses about 0.07-0.15 GB per hour. Standard definition video uses about 1 GB per hour. HD video uses 3-5 GB per hour. 4K streaming uses 7-15 GB per hour. Social media browsing uses approximately 0.1-0.3 GB per hour depending on video content." }
+]) %>
+
+<%= calculator_schema(
+  name: "Data Usage Cost Calculator",
+  description: "Calculate data plan cost per GB, overage charges, unused data value, and effective cost per GB based on actual usage.",
+  url: everyday_data_usage_cost_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Data Usage Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Data Usage Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Analyze your data plan's true cost per GB, overage charges, and unused data value to optimize your mobile spending.</p>
+
+    <div data-controller="data-usage-cost-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Plan Size (GB)</label>
+            <input type="number" data-data-usage-cost-calculator-target="planSize" data-action="input->data-usage-cost-calculator#calculate" class="w-full" placeholder="20" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Plan Cost ($)</label>
+            <input type="number" data-data-usage-cost-calculator-target="planCost" data-action="input->data-usage-cost-calculator#calculate" class="w-full" placeholder="50" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Actual Usage (GB)</label>
+            <input type="number" data-data-usage-cost-calculator-target="actualUsage" data-action="input->data-usage-cost-calculator#calculate" class="w-full" placeholder="15" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Overage Rate ($/GB)</label>
+            <input type="number" data-data-usage-cost-calculator-target="overageRate" data-action="input->data-usage-cost-calculator#calculate" class="w-full" placeholder="10" step="0.01" min="0" value="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-900/20 dark:to-teal-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Data Cost Analysis</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Cost per GB</span>
+              <span class="text-lg font-bold text-cyan-600 dark:text-cyan-400" data-data-usage-cost-calculator-target="costPerGb">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Usage</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-data-usage-cost-calculator-target="usagePercentage">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Overage</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-data-usage-cost-calculator-target="overageGb">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Overage Cost</span>
+              <span class="text-lg font-bold text-red-600 dark:text-red-400" data-data-usage-cost-calculator-target="overageCost">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Unused Data</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-data-usage-cost-calculator-target="unusedGb">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Unused Value</span>
+              <span class="text-lg font-bold text-amber-600 dark:text-amber-400" data-data-usage-cost-calculator-target="unusedDataValue">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Total Cost</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-data-usage-cost-calculator-target="totalCost">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Effective $/GB</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-data-usage-cost-calculator-target="effectiveCostPerGb">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->data-usage-cost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl shadow-sm shadow-cyan-500/20 hover:shadow-md hover:shadow-cyan-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Data Usage Cost Calculator</h2>
+      <p>
+        Most people pay for mobile data they never use or get surprised by overage charges. This calculator helps you understand the true cost of your data plan by breaking it down into meaningful metrics. Enter your plan's data allowance in gigabytes, the monthly cost, how much data you actually used, and the overage rate per GB if applicable. The calculator then shows your base cost per GB, whether you went over or under, the financial impact of either scenario, and your effective cost per GB.
+      </p>
+      <p>
+        The effective cost per GB is particularly revealing. If you pay $50 for 20 GB but only use 10 GB, your effective cost is $5 per GB rather than the $2.50 base rate. That means you are paying double per gigabyte what you expected. On the other hand, if you use 25 GB and pay overage, the effective cost shows the blended rate of your plan cost plus overage fees divided by total usage.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Data Cost Formulas</h2>
+      <p>
+        <strong>Base Cost per GB = Plan Cost / Plan Size</strong>. <strong>Overage Cost = Max(Actual Usage - Plan Size, 0) x Overage Rate</strong>. <strong>Unused Data Value = Max(Plan Size - Actual Usage, 0) x Base Cost per GB</strong>. <strong>Total Cost = Plan Cost + Overage Cost</strong>. <strong>Effective Cost per GB = Total Cost / Actual Usage</strong>. Usage Percentage = (Actual Usage / Plan Size) x 100.
+      </p>
+
+      <h3>Optimizing Your Data Plan</h3>
+      <p>
+        Track your usage for three months to establish a pattern. If you consistently use less than 70% of your plan, you are likely overpaying. Downgrading to a smaller plan saves money even if the per-GB rate is slightly higher, because you eliminate waste. If you regularly hit 90%+ or go over, upgrading to the next tier almost always costs less than paying overage fees. The sweet spot is using 80-95% of your plan each month.
+      </p>
+
+      <h3>Reducing Data Usage</h3>
+      <p>
+        Connect to Wi-Fi whenever available, download music and podcasts for offline listening, reduce video streaming quality on mobile, disable auto-play videos in social media apps, and turn off background app refresh for apps you do not need live updates from. These changes can reduce mobile data consumption by 30-50% without meaningfully affecting your phone experience.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate cost per GB for my data plan?</h3>
+      <p>
+        Divide your monthly plan cost by the data allowance in GB. For example, a $50/month plan with 20 GB costs $50 / 20 = $2.50 per GB. This is your base cost per GB before considering any overages or unused data.
+      </p>
+
+      <h3>How are data overage charges calculated?</h3>
+      <p>
+        Overage charges apply when you exceed your plan's data limit. The calculator multiplies the overage amount by the overage rate per GB. Using 25 GB on a 20 GB plan with a $10/GB overage rate results in 5 x $10 = $50 in overage charges.
+      </p>
+
+      <h3>What is unused data value?</h3>
+      <p>
+        Unused data value represents the money you are effectively wasting by not using all the data in your plan. It is calculated as unused GB multiplied by the base cost per GB.
+      </p>
+
+      <h3>Should I upgrade or downgrade my data plan?</h3>
+      <p>
+        If you consistently use less than 70% of your data allowance, consider downgrading. If you regularly exceed your limit and pay overage fees, upgrading is usually cheaper. Track your usage over a few months to make the best decision.
+      </p>
+
+      <h3>How much data does streaming use?</h3>
+      <p>
+        Streaming music uses about 0.07-0.15 GB per hour. Standard definition video uses about 1 GB per hour. HD video uses 3-5 GB per hour. 4K streaming uses 7-15 GB per hour. Social media browsing uses approximately 0.1-0.3 GB per hour.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Data Usage Cost Calculator", url: everyday_data_usage_cost_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Gas Mileage Calculator", description: "Calculate fuel efficiency in MPG or L/100km for any vehicle.", path: everyday_gas_mileage_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("data-usage-cost-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -26,6 +26,12 @@ module Everyday
     def sale_price; end
     def coupon; end
     def clearance; end
+    def cost_per_km; end
+    def kwh_to_cost; end
+    def rent_per_sqm; end
+    def price_per_weight; end
+    def fuel_cost_trip; end
+    def data_usage_cost; end
 
     private
 

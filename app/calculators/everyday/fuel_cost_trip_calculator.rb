@@ -26,10 +26,10 @@ module Everyday
 
       # Convert efficiency to L/100km
       l_per_100km = case @efficiency_unit
-                    when "l_per_100km" then @fuel_efficiency
-                    when "mpg" then LITERS_PER_GALLON * 100.0 / (@fuel_efficiency * KM_PER_MILE)
-                    when "km_per_l" then 100.0 / @fuel_efficiency
-                    end
+      when "l_per_100km" then @fuel_efficiency
+      when "mpg" then LITERS_PER_GALLON * 100.0 / (@fuel_efficiency * KM_PER_MILE)
+      when "km_per_l" then 100.0 / @fuel_efficiency
+      end
 
       fuel_needed_liters = distance_km * l_per_100km / 100.0
       fuel_needed_gallons = fuel_needed_liters / LITERS_PER_GALLON

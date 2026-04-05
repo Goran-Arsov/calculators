@@ -1,0 +1,181 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Hourly Rate to Project Cost Calculator - Free Online Tool",
+  description: "Calculate total project cost from your hourly rate, estimated hours, expenses, and tax rate. See effective rate and after-tax income instantly.",
+  canonical: finance_hourly_to_project_url,
+  og: {
+    title: "Hourly Rate to Project Cost Calculator - Free Online Tool | CalcWise",
+    description: "Calculate total project cost from hourly rate, hours, expenses, and tax. See effective rate and after-tax income instantly.",
+    url: finance_hourly_to_project_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Hourly Rate to Project Cost Calculator", url: finance_hourly_to_project_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate project cost from an hourly rate?", answer: "Multiply your hourly rate by the estimated number of hours, add any project expenses (software, materials, travel), then add applicable tax. For example, $75/hour x 40 hours = $3,000 labor + $200 expenses = $3,200 subtotal + 20% tax = $3,840 project total." },
+  { question: "What is the effective hourly rate?", answer: "The effective hourly rate is the total project cost (including expenses and tax) divided by the number of hours worked. It represents what the client actually pays per hour of your time. If the project total is $3,840 for 40 hours, the effective rate is $96/hour, even though your base rate is $75/hour." },
+  { question: "How should I estimate project hours?", answer: "Break the project into specific tasks and estimate each one separately. Add 15-25% buffer for revisions, communication, and unexpected issues. Track your time on similar past projects for better accuracy. It is almost always better to slightly overestimate than to underquote and eat the extra hours." },
+  { question: "Should I include tax in my project quote?", answer: "This depends on your jurisdiction and the type of service. In many places, service tax or VAT must be added to the invoice. Clearly separate the tax from your labor and expenses in the quote so the client sees the breakdown. This calculator shows the tax as a separate line item for transparency." },
+  { question: "What expenses should I include in a project quote?", answer: "Include any out-of-pocket costs directly related to the project: software licenses, stock photos, hosting, travel, printing, subcontractor fees, and materials. Do not include general business overhead like office rent or internet -- those should be factored into your hourly rate itself." }
+]) %>
+
+<%= calculator_schema(
+  name: "Hourly Rate to Project Cost Calculator",
+  description: "Calculate total project cost from hourly rate, estimated hours, expenses, and tax rate. Shows effective rate and after-tax income.",
+  url: finance_hourly_to_project_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Hourly Rate to Project Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Hourly Rate to Project Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the total cost to quote for a project based on your hourly rate, estimated hours, expenses, and tax rate.</p>
+
+    <div data-controller="hourly-to-project-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Hourly Rate ($)</label>
+            <input type="number" data-hourly-to-project-calculator-target="hourlyRate" data-action="input->hourly-to-project-calculator#calculate" class="w-full" placeholder="75" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Estimated Hours</label>
+            <input type="number" data-hourly-to-project-calculator-target="estimatedHours" data-action="input->hourly-to-project-calculator#calculate" class="w-full" placeholder="40" step="0.5" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Project Expenses ($)</label>
+            <input type="number" data-hourly-to-project-calculator-target="expenses" data-action="input->hourly-to-project-calculator#calculate" class="w-full" placeholder="200" step="0.01" min="0" value="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tax Rate (%)</label>
+            <input type="number" data-hourly-to-project-calculator-target="taxRate" data-action="input->hourly-to-project-calculator#calculate" class="w-full" placeholder="20" step="0.1" min="0" max="100" value="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 dark:from-purple-900/20 dark:to-fuchsia-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Project Breakdown</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Labor Cost</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-hourly-to-project-calculator-target="laborCost">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Subtotal</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-hourly-to-project-calculator-target="subtotal">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Tax</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-hourly-to-project-calculator-target="taxAmount">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-3">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Project Total</span>
+              <span class="text-xl font-bold text-purple-600 dark:text-purple-400" data-hourly-to-project-calculator-target="projectTotal">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Effective Rate</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-hourly-to-project-calculator-target="effectiveRate">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">After-Tax Income</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-hourly-to-project-calculator-target="afterTaxIncome">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->hourly-to-project-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-xl shadow-sm shadow-purple-500/20 hover:shadow-md hover:shadow-purple-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Hourly Rate to Project Cost Calculator</h2>
+      <p>
+        Freelancers, consultants, and agencies need to translate their hourly rate into a clear project quote that accounts for all costs. This calculator takes your hourly rate, the estimated number of hours, any project-specific expenses, and an optional tax rate, then produces a complete project cost breakdown. You see the labor cost, subtotal with expenses, tax amount, total project cost, the effective hourly rate the client is paying, and your after-tax income from the labor portion.
+      </p>
+      <p>
+        The effective hourly rate is a valuable metric because it shows what the client actually pays per hour of your work when expenses and tax are included. This helps you understand whether your quotes are competitive and profitable. The after-tax income figure gives you a realistic picture of what you will actually keep from the project, which is essential for budgeting as a self-employed worker.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Project Cost Formulas</h2>
+      <p>
+        <strong>Labor Cost = Hourly Rate x Estimated Hours</strong>. <strong>Subtotal = Labor Cost + Expenses</strong>. <strong>Tax Amount = Subtotal x (Tax Rate / 100)</strong>. <strong>Project Total = Subtotal + Tax Amount</strong>. <strong>Effective Rate = Project Total / Estimated Hours</strong>. <strong>After-Tax Income = Labor Cost - (Labor Cost x Tax Rate / 100)</strong>. The after-tax calculation applies the same tax rate to your labor income to estimate take-home pay.
+      </p>
+
+      <h3>Setting the Right Hourly Rate</h3>
+      <p>
+        Your hourly rate should cover not just your desired income but also business overhead, health insurance, retirement savings, vacation time, and non-billable hours like marketing, invoicing, and professional development. A common approach is to calculate your desired annual salary, add overhead costs, and divide by billable hours per year (typically 1,000-1,500 hours, not the full 2,080). This usually results in a rate two to three times higher than what an equivalent full-time employee earns per hour.
+      </p>
+
+      <h3>Quoting Projects Effectively</h3>
+      <p>
+        Break complex projects into phases and quote each phase separately. This gives the client flexibility and gives you natural checkpoints. Include a clear scope of work and specify what triggers additional charges. Adding a 15-25% buffer for revisions and unforeseen complexity protects both you and the client from scope creep surprises. Present the quote as a total project cost rather than just an hourly rate, because clients focus more on the total investment than the rate.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate project cost from an hourly rate?</h3>
+      <p>
+        Multiply your hourly rate by the estimated number of hours, add any project expenses, then add applicable tax. For example, $75/hour x 40 hours = $3,000 labor + $200 expenses = $3,200 subtotal + 20% tax = $3,840 project total.
+      </p>
+
+      <h3>What is the effective hourly rate?</h3>
+      <p>
+        The effective hourly rate is the total project cost divided by the number of hours worked. It represents what the client pays per hour of your time including expenses and tax.
+      </p>
+
+      <h3>How should I estimate project hours?</h3>
+      <p>
+        Break the project into specific tasks and estimate each one separately. Add 15-25% buffer for revisions, communication, and unexpected issues. Track your time on similar past projects for better accuracy.
+      </p>
+
+      <h3>Should I include tax in my project quote?</h3>
+      <p>
+        This depends on your jurisdiction and service type. In many places, service tax or VAT must be added. Clearly separate the tax from your labor and expenses so the client sees the breakdown.
+      </p>
+
+      <h3>What expenses should I include in a project quote?</h3>
+      <p>
+        Include out-of-pocket costs directly related to the project: software licenses, stock photos, hosting, travel, printing, subcontractor fees, and materials. Do not include general business overhead like office rent, which should be factored into your hourly rate.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Hourly Rate to Project Cost Calculator", url: finance_hourly_to_project_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Salary Calculator", description: "Convert salary between pay periods for income planning.", path: finance_salary_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Profit Margin Calculator", description: "Calculate profit margins and markups for your business.", path: finance_profit_margin_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "ROI Calculator", description: "Calculate return on investment for projects and decisions.", path: finance_roi_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("hourly-to-project-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

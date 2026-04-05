@@ -18,8 +18,8 @@ module Everyday
 
       cost_per_gb = @plan_cost / @plan_size_gb
 
-      overage_gb = [@actual_usage_gb - @plan_size_gb, 0].max
-      unused_gb = [@plan_size_gb - @actual_usage_gb, 0].max
+      overage_gb = [ @actual_usage_gb - @plan_size_gb, 0 ].max
+      unused_gb = [ @plan_size_gb - @actual_usage_gb, 0 ].max
 
       overage_cost = overage_gb * @overage_rate_per_gb
       unused_data_value = unused_gb * cost_per_gb
