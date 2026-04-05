@@ -159,9 +159,19 @@ Rails.application.routes.draw do
   get "contact", to: "pages#contact", as: :contact
   get "disclaimer", to: "pages#disclaimer", as: :disclaimer
 
+  # Calculator embeds
+  get "embed/:category/:slug", to: "embeds#show", as: :calculator_embed
+
   # SEO
   get "sitemap.xml", to: "sitemap#show", defaults: { format: :xml }
   get "robots.txt", to: "robots#show", defaults: { format: :text }
+
+  # Comparison pages
+  get "finance/15-year-vs-30-year-mortgage", to: "comparisons#mortgage_terms", as: :compare_mortgage_terms
+  get "health/bmi-vs-body-fat", to: "comparisons#bmi_vs_body_fat", as: :compare_bmi_vs_body_fat
+  get "finance/stocks-vs-crypto", to: "comparisons#stocks_vs_crypto", as: :compare_stocks_vs_crypto
+  get "health/keto-vs-standard-macros", to: "comparisons#keto_vs_macros", as: :compare_keto_vs_macros
+  get "finance/simple-vs-compound-interest", to: "comparisons#simple_vs_compound", as: :compare_simple_vs_compound
 
   # Category landing pages (must be last to avoid catching other routes)
   get ":category", to: "categories#show", as: :category,

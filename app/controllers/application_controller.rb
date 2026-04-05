@@ -7,6 +7,12 @@ class ApplicationController < ActionController::Base
 
   before_action :set_default_meta_tags
 
+  helper_method :embed_mode?
+
+  def embed_mode?
+    false
+  end
+
   private
 
   def set_default_meta_tags

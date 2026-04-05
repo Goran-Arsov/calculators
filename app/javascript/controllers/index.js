@@ -35,6 +35,7 @@ import HouseFlipCalculatorController from "controllers/house_flip_calculator_con
 import StudentLoanCalculatorController from "controllers/student_loan_calculator_controller"
 import EstateTaxCalculatorController from "controllers/estate_tax_calculator_controller"
 import CryptoProfitCalculatorController from "controllers/crypto_profit_calculator_controller"
+import SimpleInterestCalculatorController from "controllers/simple_interest_calculator_controller"
 
 // Math calculators
 import PercentageCalculatorController from "controllers/percentage_calculator_controller"
@@ -140,6 +141,7 @@ import NavbarController from "controllers/navbar_controller"
 import CalculatorSearchController from "controllers/calculator_search_controller"
 import CookieConsentController from "controllers/cookie_consent_controller"
 import AdEngagementController from "controllers/ad_engagement_controller"
+import CalculatorRatingController from "controllers/calculator_rating_controller"
 
 // Finance
 application.register("mortgage-calculator", MortgageCalculatorController)
@@ -176,6 +178,7 @@ application.register("house-flip-calculator", HouseFlipCalculatorController)
 application.register("student-loan-calculator", StudentLoanCalculatorController)
 application.register("estate-tax-calculator", EstateTaxCalculatorController)
 application.register("crypto-profit-calculator", CryptoProfitCalculatorController)
+application.register("simple-interest-calculator", SimpleInterestCalculatorController)
 
 // Math
 application.register("percentage-calculator", PercentageCalculatorController)
@@ -281,3 +284,4 @@ application.register("navbar", NavbarController)
 application.register("calculator-search", CalculatorSearchController)
 application.register("cookie-consent", CookieConsentController)
 application.register("ad-engagement", AdEngagementController)
+application.register("calculator-rating", CalculatorRatingController)
