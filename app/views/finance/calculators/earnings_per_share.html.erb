@@ -1,0 +1,180 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Earnings Per Share Calculator - Free Online EPS Tool",
+  description: "Calculate basic earnings per share (EPS), P/E ratio, and earnings yield instantly. Free EPS calculator for stock analysis — no sign-up required.",
+  canonical: finance_earnings_per_share_url,
+  og: {
+    title: "Earnings Per Share Calculator - Free Online EPS Tool | CalcWise",
+    description: "Calculate basic earnings per share (EPS), P/E ratio, and earnings yield instantly. Free EPS calculator for stock analysis.",
+    url: finance_earnings_per_share_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Earnings Per Share Calculator", url: finance_earnings_per_share_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do you calculate earnings per share?", answer: "Basic earnings per share (EPS) is calculated by subtracting preferred dividends from net income, then dividing by the number of outstanding common shares. The formula is: EPS = (Net Income - Preferred Dividends) / Shares Outstanding. For example, if a company earns $10 million, pays $1 million in preferred dividends, and has 1 million shares outstanding, the EPS is ($10M - $1M) / 1M = $9.00." },
+  { question: "What is a good earnings per share?", answer: "There is no universal 'good' EPS because it varies by industry, company size, and growth stage. What matters more is the trend: consistently growing EPS indicates a healthy business. Investors also compare EPS relative to the stock price via the P/E ratio. A company earning $5 per share at a $50 stock price (P/E of 10) may be a better value than one earning $10 per share at a $300 stock price (P/E of 30)." },
+  { question: "What is the P/E ratio and how does it relate to EPS?", answer: "The price-to-earnings (P/E) ratio is calculated by dividing the stock price by the earnings per share: P/E = Stock Price / EPS. It indicates how much investors are willing to pay for each dollar of earnings. A P/E of 20 means investors pay $20 for every $1 of annual earnings. Lower P/E ratios may indicate undervaluation, while higher P/E ratios suggest growth expectations." },
+  { question: "What is the difference between basic and diluted EPS?", answer: "Basic EPS uses only the actual number of outstanding shares. Diluted EPS accounts for all potential shares that could be created from stock options, convertible bonds, warrants, and other dilutive securities. Diluted EPS is always equal to or lower than basic EPS and gives a more conservative picture of per-share earnings." },
+  { question: "Can earnings per share be negative?", answer: "Yes, EPS is negative when a company reports a net loss (net income minus preferred dividends is negative). Negative EPS is common for startups, companies in turnaround situations, or during economic downturns. When EPS is negative, the P/E ratio is not meaningful, which is why many analysts use other valuation metrics for unprofitable companies." }
+]) %>
+
+<%= calculator_schema(
+  name: "Earnings Per Share Calculator",
+  description: "Calculate basic earnings per share (EPS), P/E ratio, and earnings yield for stock analysis.",
+  url: finance_earnings_per_share_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Earnings Per Share Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Earnings Per Share Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter net income, preferred dividends, and shares outstanding to calculate basic EPS. Add the stock price for P/E ratio and earnings yield.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="earnings-per-share-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Net Income ($)</label>
+            <input type="number" data-earnings-per-share-calculator-target="netIncome" data-action="input->earnings-per-share-calculator#calculate" class="w-full" placeholder="10000000" step="any">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Preferred Dividends ($)</label>
+            <input type="number" data-earnings-per-share-calculator-target="preferredDividends" data-action="input->earnings-per-share-calculator#calculate" class="w-full" placeholder="0" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Shares Outstanding</label>
+            <input type="number" data-earnings-per-share-calculator-target="sharesOutstanding" data-action="input->earnings-per-share-calculator#calculate" class="w-full" placeholder="1000000" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Stock Price ($) <span class="text-gray-400 font-normal">(optional)</span></label>
+            <input type="number" data-earnings-per-share-calculator-target="stockPrice" data-action="input->earnings-per-share-calculator#calculate" class="w-full" placeholder="50" step="any" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Basic EPS</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-earnings-per-share-calculator-target="resultEps">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Earnings Available</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-earnings-per-share-calculator-target="resultEarningsAvailable">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">P/E Ratio</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-earnings-per-share-calculator-target="resultPeRatio">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Earnings Yield</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-earnings-per-share-calculator-target="resultEarningsYield">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->earnings-per-share-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Earnings Per Share Calculator</h2>
+      <p>
+        This EPS calculator helps you determine how much profit a company earns for each outstanding share of common stock. Enter the company's net income from its income statement, the total preferred dividends paid, and the number of common shares outstanding. The calculator instantly shows the basic earnings per share and the total earnings available to common shareholders. For deeper valuation analysis, enter the current stock price to see the price-to-earnings ratio and earnings yield.
+      </p>
+      <p>
+        Earnings per share is one of the most widely followed metrics in stock analysis. It distills a company's profitability down to a per-share basis, making it easy to compare companies of different sizes and to track a single company's profitability trends over time. EPS is a key component of the P/E ratio, one of the most commonly used stock valuation metrics by both individual and institutional investors.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The EPS Formula Explained</h2>
+      <p>
+        The basic EPS formula is: <strong>EPS = (Net Income - Preferred Dividends) / Shares Outstanding</strong>. Preferred dividends are subtracted because they must be paid before common shareholders receive any earnings. If a company earns $50 million in net income, pays $5 million in preferred dividends, and has 10 million shares outstanding, the basic EPS is ($50M - $5M) / 10M = $4.50 per share. This means each share of common stock effectively earned $4.50 during the period.
+      </p>
+
+      <h3>Understanding the P/E Ratio</h3>
+      <p>
+        The price-to-earnings ratio divides the stock price by the EPS: <strong>P/E = Stock Price / EPS</strong>. A P/E of 15 means investors are paying $15 for every $1 of annual earnings. Growth companies typically have higher P/E ratios because investors expect future earnings growth to justify the premium. Value stocks tend to have lower P/E ratios. The average P/E of the S&P 500 has historically been around 15-17, though it fluctuates with market conditions and interest rates.
+      </p>
+
+      <h3>Earnings Yield: The Inverse of P/E</h3>
+      <p>
+        Earnings yield is the inverse of the P/E ratio: <strong>Earnings Yield = (EPS / Stock Price) &times; 100</strong>. It expresses earnings as a percentage of the stock price, making it easier to compare stock returns with bond yields and other fixed-income investments. A stock with a P/E of 20 has an earnings yield of 5%. When the earnings yield exceeds the yield on risk-free government bonds by a meaningful margin, stocks are generally considered attractively valued.
+      </p>
+
+      <h3>Basic vs. Diluted EPS</h3>
+      <p>
+        This calculator computes basic EPS, which uses the actual number of shares outstanding. Companies also report diluted EPS, which assumes all convertible securities, stock options, and warrants have been exercised, increasing the share count. Diluted EPS is always equal to or lower than basic EPS and provides a more conservative estimate. Both figures are reported on a company's income statement and are required by accounting standards. When evaluating a company with significant stock-based compensation, diluted EPS is the more relevant metric.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do you calculate earnings per share?</h3>
+      <p>
+        Basic EPS is calculated by subtracting preferred dividends from net income, then dividing by the number of outstanding common shares: EPS = (Net Income - Preferred Dividends) / Shares Outstanding.
+      </p>
+
+      <h3>What is a good earnings per share?</h3>
+      <p>
+        There is no universal good EPS. What matters more is the trend and the P/E ratio. Consistently growing EPS indicates a healthy business. Compare EPS relative to the stock price using the P/E ratio to assess value.
+      </p>
+
+      <h3>What is the P/E ratio and how does it relate to EPS?</h3>
+      <p>
+        The P/E ratio equals stock price divided by EPS. It indicates how much investors pay for each dollar of earnings. Lower P/E ratios may indicate undervaluation, while higher P/E ratios suggest growth expectations.
+      </p>
+
+      <h3>What is the difference between basic and diluted EPS?</h3>
+      <p>
+        Basic EPS uses actual outstanding shares. Diluted EPS accounts for all potential shares from options, convertible bonds, and warrants. Diluted EPS is always equal to or lower than basic EPS.
+      </p>
+
+      <h3>Can earnings per share be negative?</h3>
+      <p>
+        Yes, EPS is negative when a company reports a net loss. Negative EPS is common for startups and during downturns. When EPS is negative, the P/E ratio is not meaningful.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Earnings Per Share Calculator", url: finance_earnings_per_share_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Dividend Yield Calculator", description: "Calculate dividend yield from stock price and annual dividend.", path: finance_dividend_yield_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Stock Profit Calculator", description: "Calculate profit or loss from stock trades including fees.", path: finance_stock_profit_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "ROI Calculator", description: "Calculate return on investment, gain, or cost using the ROI formula.", path: finance_roi_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("earnings-per-share-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

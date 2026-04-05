@@ -1,0 +1,186 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cost Per Person Calculator - Free Online Tool",
+  description: "Split any cost evenly among a group. Enter total cost, number of people, and optional tip and tax to calculate each person's share instantly.",
+  canonical: everyday_cost_per_person_url,
+  og: {
+    title: "Cost Per Person Calculator - Free Online Tool | CalcWise",
+    description: "Split any cost evenly among a group with optional tip and tax. Calculate each person's fair share instantly.",
+    url: everyday_cost_per_person_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Cost Per Person Calculator", url: everyday_cost_per_person_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate cost per person?", answer: "Divide the total cost by the number of people. For example, a $120 dinner bill split among 4 people is $120 / 4 = $30 per person. If you need to include tip and tax, add those amounts to the total first, then divide by the number of people." },
+  { question: "Should I split the tip evenly too?", answer: "When splitting a bill, it is standard to split the total including tip evenly among all diners. Calculate the tip on the pre-tax subtotal, add it to the bill, then divide by the number of people. This ensures the server receives the correct tip amount regardless of how the bill is divided." },
+  { question: "How do I split costs fairly when people ordered different amounts?", answer: "For a fair split when orders vary significantly, each person can calculate their individual subtotal, add the agreed-upon tip percentage, and pay their share. However, for simplicity, many groups prefer to split evenly. Our calculator handles the even-split method with optional tip and tax included." },
+  { question: "Is it better to split before or after tax and tip?", answer: "Always split after adding tax and tip. Calculate the total bill first, add the tax amount, then add the tip (calculated on the pre-tax subtotal), and finally divide by the number of people. This ensures everyone pays their fair share of all charges." },
+  { question: "How do I handle uneven splits with large groups?", answer: "For large groups, rounding each person's share to the nearest dollar or half-dollar makes collection easier. One person can cover any small remainder. For very large events, consider using a payment app that handles exact splits and allows everyone to pay directly." }
+]) %>
+
+<%= calculator_schema(
+  name: "Cost Per Person Calculator",
+  description: "Calculate cost per person by splitting total cost among a group with optional tip and tax.",
+  url: everyday_cost_per_person_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Cost Per Person Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cost Per Person Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Split any bill or expense evenly among a group, with optional tip and tax included in the calculation.</p>
+
+    <div data-controller="cost-per-person-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Cost ($)</label>
+            <input type="number" data-cost-per-person-calculator-target="totalCost" data-action="input->cost-per-person-calculator#calculate" class="w-full" placeholder="120.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of People</label>
+            <input type="number" data-cost-per-person-calculator-target="people" data-action="input->cost-per-person-calculator#calculate" class="w-full" value="2" step="1" min="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tip (%)</label>
+            <input type="number" data-cost-per-person-calculator-target="tipPercent" data-action="input->cost-per-person-calculator#calculate" class="w-full" value="0" step="1" min="0" max="100">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tax (%)</label>
+            <input type="number" data-cost-per-person-calculator-target="taxPercent" data-action="input->cost-per-person-calculator#calculate" class="w-full" value="0" step="0.1" min="0" max="100">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per Person</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-person-calculator-target="resultCostPerPerson">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Grand Total</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-person-calculator-target="resultGrandTotal">--</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Base Per Person</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cost-per-person-calculator-target="resultBasePerPerson">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tax Amount</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cost-per-person-calculator-target="resultTaxAmount">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tip Amount</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cost-per-person-calculator-target="resultTipAmount">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tip Per Person</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cost-per-person-calculator-target="resultTipPerPerson">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tax Per Person</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cost-per-person-calculator-target="resultTaxPerPerson">--</span>
+            </div>
+          </div>
+          <button data-action="click->cost-per-person-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Cost Per Person Calculator</h2>
+      <p>
+        Enter the total cost of the event, dinner, trip, or any shared expense, then specify how many people are splitting the bill. Optionally add a tip percentage and tax rate to include those amounts in the split. The calculator instantly shows each person's share, the grand total, and a detailed breakdown of tip and tax amounts per person.
+      </p>
+      <p>
+        This calculator is ideal for restaurant bills, group vacations, shared subscriptions, office parties, roommate expenses, and any situation where costs need to be divided fairly. The tip and tax fields are optional and default to zero, so you can use the calculator for simple even splits as well.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Tips for Splitting Costs Fairly</h2>
+      <p>
+        Splitting costs evenly is the simplest approach and works well when everyone's share is roughly similar. For restaurant dining, add tip and tax to the total before dividing. Most etiquette experts suggest calculating the tip on the pre-tax subtotal, which is what this calculator does. A standard 15-20% tip is appropriate for sit-down restaurants in the United States.
+      </p>
+
+      <h3>Common Scenarios for Cost Splitting</h3>
+      <p>
+        Group dinners are the most common scenario, but cost per person calculations apply to many situations: splitting an Airbnb or hotel room among travelers, dividing grocery costs among roommates, sharing the cost of a group gift, splitting fuel costs on a road trip, or dividing the expenses for a party or event. In each case, adding all costs together and dividing by the number of participants gives the fairest result.
+      </p>
+
+      <h3>Handling Uneven Orders at Restaurants</h3>
+      <p>
+        When one person orders significantly more or less than others, an even split may feel unfair. In these cases, consider asking the server for separate checks, having each person calculate their individual subtotal, or using the even split as a baseline and adjusting for outliers. Many payment apps now support itemized bill splitting, making it easier to divide costs proportionally.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate cost per person?</h3>
+      <p>
+        Divide the total cost by the number of people. For example, a $120 dinner bill split among 4 people is $120 / 4 = $30 per person. Include tip and tax in the total before dividing for the most accurate per-person amount.
+      </p>
+
+      <h3>Should I split the tip evenly too?</h3>
+      <p>
+        Yes, when splitting a bill it is standard to split the total including tip evenly among all diners. Calculate the tip on the pre-tax subtotal, add it to the bill, then divide by the number of people.
+      </p>
+
+      <h3>How do I split costs fairly when people ordered different amounts?</h3>
+      <p>
+        For a fair split when orders vary significantly, each person can calculate their individual subtotal and add the agreed-upon tip percentage. However, for simplicity, many groups prefer to split evenly.
+      </p>
+
+      <h3>Is it better to split before or after tax and tip?</h3>
+      <p>
+        Always split after adding tax and tip. Calculate the total bill first, add the tax, then add the tip calculated on the pre-tax subtotal, and finally divide by the number of people.
+      </p>
+
+      <h3>How do I handle uneven splits with large groups?</h3>
+      <p>
+        For large groups, rounding each person's share to the nearest dollar makes collection easier. One person can cover any small remainder. For very large events, consider using a payment app that handles exact splits.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Cost Per Person Calculator", url: everyday_cost_per_person_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Unit Price Calculator", description: "Compare unit prices to find the best deal on any product.", path: everyday_unit_price_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("cost-per-person-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

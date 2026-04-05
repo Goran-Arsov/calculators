@@ -1,0 +1,186 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cost Per Wear Calculator - Free Online Tool",
+  description: "Calculate the cost per wear for any clothing item or accessory. Compare against a cheaper alternative to find which is the better value over time.",
+  canonical: everyday_cost_per_wear_url,
+  og: {
+    title: "Cost Per Wear Calculator - Free Online Tool | CalcWise",
+    description: "Calculate cost per wear to find the true value of clothing and accessories. Compare items to make smarter shopping decisions.",
+    url: everyday_cost_per_wear_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Cost Per Wear Calculator", url: everyday_cost_per_wear_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate cost per wear?", answer: "Divide the purchase price by the estimated number of times you will wear the item. For example, a $200 jacket worn 100 times costs $2.00 per wear. A $50 jacket worn only 10 times costs $5.00 per wear, making the expensive jacket the better value in this scenario." },
+  { question: "What is a good cost per wear?", answer: "A good target is under $1 per wear for everyday basics like jeans, t-shirts, and shoes. For special occasion items, under $5-10 per wear is reasonable. Workwear should aim for under $2-3 per wear. The lower the cost per wear, the better the value. Items you wear frequently always have a lower cost per wear." },
+  { question: "Is expensive clothing always a better value per wear?", answer: "Not always, but often. Higher-quality clothing tends to last longer and maintain its appearance through more wears and washes, resulting in a lower cost per wear. However, trendy items worn only a few times have a high cost per wear regardless of price. The key factor is how often you actually wear the item, not just its durability." },
+  { question: "How do I estimate the number of wears for an item?", answer: "Consider how often you would wear the item per week and for how many years. A pair of jeans worn twice a week for 3 years is 312 wears. A winter coat worn daily for 4 months annually over 5 years is about 600 wears. A formal dress worn 4 times a year for 5 years is 20 wears. Be realistic about your habits." },
+  { question: "Should I consider resale value in cost per wear?", answer: "Yes. If you plan to resell an item, subtract the expected resale price from the purchase price before calculating cost per wear. A $300 handbag resold for $150 has an effective cost of $150. If you carry it 200 times, the adjusted cost per wear is $0.75 instead of $1.50." }
+]) %>
+
+<%= calculator_schema(
+  name: "Cost Per Wear Calculator",
+  description: "Calculate cost per wear for clothing and accessories with optional comparison against a cheaper alternative.",
+  url: everyday_cost_per_wear_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Cost Per Wear Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cost Per Wear Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find the true value of clothing by calculating cost per wear, with an optional comparison against a cheaper alternative.</p>
+
+    <div data-controller="cost-per-wear-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 space-y-3">
+            <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300">Main Item</h3>
+            <div>
+              <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Item Price ($)</label>
+              <input type="number" data-cost-per-wear-calculator-target="itemPrice" data-action="input->cost-per-wear-calculator#calculate" class="w-full" placeholder="200.00" step="0.01" min="0">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Estimated Wears</label>
+              <input type="number" data-cost-per-wear-calculator-target="estimatedWears" data-action="input->cost-per-wear-calculator#calculate" class="w-full" placeholder="100" step="1" min="1">
+            </div>
+          </div>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 space-y-3">
+            <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300">Alternative (optional)</h3>
+            <div>
+              <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Alternative Price ($)</label>
+              <input type="number" data-cost-per-wear-calculator-target="alternativePrice" data-action="input->cost-per-wear-calculator#calculate" class="w-full" placeholder="50.00" step="0.01" min="0">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Alternative Wears</label>
+              <input type="number" data-cost-per-wear-calculator-target="alternativeWears" data-action="input->cost-per-wear-calculator#calculate" class="w-full" placeholder="25" step="1" min="1">
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per Wear</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-wear-calculator-target="resultCostPerWear">--</span>
+            </div>
+            <div data-cost-per-wear-calculator-target="altResultsPanel" class="hidden space-y-3">
+              <hr class="border-gray-200 dark:border-gray-700">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Alt. Cost Per Wear</span>
+                <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-wear-calculator-target="resultAltCostPerWear">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Better Value</span>
+                <span class="text-xl font-bold text-green-600 dark:text-green-400" data-cost-per-wear-calculator-target="resultBetterValue">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Savings Per Wear</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cost-per-wear-calculator-target="resultSavingsPerWear">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Break-Even Point</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cost-per-wear-calculator-target="resultBreakEvenWears">--</span>
+              </div>
+            </div>
+          </div>
+          <button data-action="click->cost-per-wear-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Cost Per Wear Calculator</h2>
+      <p>
+        Enter the price of a clothing item or accessory and the estimated number of times you expect to wear it. The calculator shows the cost per wear instantly. Optionally, enter an alternative item's price and expected wears to compare which item delivers better value over time. The calculator will show you the better deal, the savings per wear, and the break-even point where the more expensive item becomes cheaper per use.
+      </p>
+      <p>
+        Cost per wear is a powerful concept for mindful shopping. A $200 pair of boots worn 200 times costs just $1.00 per wear, while a $40 pair worn 20 times costs $2.00 per wear. The more expensive option is actually the better value. This approach helps justify quality purchases and avoid cheap items that do not last.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Cost Per Wear Philosophy</h2>
+      <p>
+        Cost per wear thinking encourages buying fewer, higher-quality items rather than many cheap ones. This approach has both financial and environmental benefits. Fast fashion items often last only 10-20 wears before fading, stretching, or falling apart. A well-made garment may cost three times more but last ten times longer, making it a fraction of the cost per wear. Building a wardrobe of versatile, durable pieces saves money over the long run.
+      </p>
+
+      <h3>Estimating Wears Accurately</h3>
+      <p>
+        Be honest about how often you will wear an item. A trendy piece you love now might only see 15-20 wears before going out of style. A classic blazer might get 100 or more wears over several years. Everyday items like jeans, sneakers, and basic t-shirts accumulate wears quickly. Special occasion items like formal dresses or suits are worn much less frequently. Track your actual wearing habits for a month to calibrate your estimates.
+      </p>
+
+      <h3>When to Invest More</h3>
+      <p>
+        Focus spending on items you wear most often: everyday shoes, work clothes, outerwear, and basics. These high-frequency items benefit most from quality because the cost per wear drops dramatically with each use. For items worn rarely, such as formal wear or seasonal specialty items, a lower price point makes sense since the total wears will always be limited.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate cost per wear?</h3>
+      <p>
+        Divide the purchase price by the number of times you will wear the item. A $200 jacket worn 100 times costs $2.00 per wear.
+      </p>
+
+      <h3>What is a good cost per wear?</h3>
+      <p>
+        Under $1 per wear for everyday basics. Under $5-10 for special occasion items. Under $2-3 for workwear. The lower the better.
+      </p>
+
+      <h3>Is expensive clothing always better value per wear?</h3>
+      <p>
+        Not always, but often. Higher quality lasts longer, but the key factor is how often you actually wear the item. Trendy items have high cost per wear regardless of price.
+      </p>
+
+      <h3>How do I estimate the number of wears?</h3>
+      <p>
+        Consider weekly frequency and years of use. Jeans worn twice a week for 3 years is 312 wears. A winter coat worn daily for 4 months over 5 years is about 600 wears.
+      </p>
+
+      <h3>Should I consider resale value?</h3>
+      <p>
+        Yes. Subtract expected resale price from purchase price before dividing. A $300 handbag resold for $150 has an effective cost per wear based on $150 instead of $300.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Cost Per Wear Calculator", url: everyday_cost_per_wear_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Unit Price Calculator", description: "Compare unit prices to find the best deal on any product.", path: everyday_unit_price_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("cost-per-wear-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

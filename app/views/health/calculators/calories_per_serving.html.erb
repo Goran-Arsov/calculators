@@ -1,0 +1,195 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Calories Per Serving Calculator - Free Recipe Nutrition Tool",
+  description: "Calculate calories per serving from total recipe calories and number of servings. Break down protein, carbs, and fat per serving with our free calculator.",
+  canonical: health_calories_per_serving_url,
+  og: {
+    title: "Calories Per Serving Calculator - Free Recipe Nutrition Tool | CalcWise",
+    description: "Calculate calories per serving from total recipe calories. Break down protein, carbs, and fat per serving instantly.",
+    url: health_calories_per_serving_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Calories Per Serving Calculator", url: health_calories_per_serving_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate calories per serving?", answer: "Divide the total calories in the entire recipe by the number of servings. For example, if a casserole contains 2,400 total calories and makes 6 servings, each serving has 2,400 / 6 = 400 calories. This method works for any recipe regardless of the number of ingredients." },
+  { question: "How do I find the total calories in a recipe?", answer: "Add up the calories from every ingredient using nutrition labels or a food database. Measure each ingredient precisely before cooking. For example, if your recipe uses 2 cups of rice (450 cal), 1 lb chicken breast (500 cal), and 2 tbsp olive oil (240 cal), the total is 1,190 calories. Online food databases like the USDA FoodData Central provide accurate calorie counts per weight or volume." },
+  { question: "Do calories change when food is cooked?", answer: "The total calorie content of a recipe does not change significantly during cooking, but the weight does. Water evaporates, making the food lighter but more calorie-dense per gram. This is why it is best to calculate calories from raw ingredients before cooking, then divide by the number of servings you portion out after cooking." },
+  { question: "How do I calculate macros per serving?", answer: "Just like calories, divide the total grams of each macronutrient (protein, carbs, fat) by the number of servings. Protein and carbs provide 4 calories per gram, while fat provides 9 calories per gram. So a serving with 30g protein, 40g carbs, and 15g fat would have 120 + 160 + 135 = 415 calories from macros." },
+  { question: "What is a good number of calories per serving?", answer: "A typical meal serving ranges from 400 to 700 calories for most adults, depending on daily calorie needs and how many meals you eat per day. Snack servings are usually 100 to 250 calories. If you eat three meals and two snacks, aim for meals around 500 calories and snacks around 150 calories to hit a 1,800 calorie daily target." }
+]) %>
+
+<%= calculator_schema(
+  name: "Calories Per Serving Calculator",
+  description: "Calculate calories per serving from total recipe calories and number of servings, including protein, carbs, and fat breakdown.",
+  url: health_calories_per_serving_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Calories Per Serving Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Calories Per Serving Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate calories and macronutrients per serving from your total recipe values. Enter total calories and servings for an instant per-serving breakdown.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="calories-per-serving-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Calories (entire recipe)</label>
+            <input type="number" data-calories-per-serving-calculator-target="totalCalories" data-action="input->calories-per-serving-calculator#calculate" class="w-full" placeholder="2400" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Servings</label>
+            <input type="number" data-calories-per-serving-calculator-target="servings" data-action="input->calories-per-serving-calculator#calculate" class="w-full" placeholder="6" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Protein (g, optional)</label>
+            <input type="number" data-calories-per-serving-calculator-target="totalProtein" data-action="input->calories-per-serving-calculator#calculate" class="w-full" placeholder="120" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Carbs (g, optional)</label>
+            <input type="number" data-calories-per-serving-calculator-target="totalCarbs" data-action="input->calories-per-serving-calculator#calculate" class="w-full" placeholder="180" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Fat (g, optional)</label>
+            <input type="number" data-calories-per-serving-calculator-target="totalFat" data-action="input->calories-per-serving-calculator#calculate" class="w-full" placeholder="60" step="0.1" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Per Serving</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Calories</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-calories-per-serving-calculator-target="caloriesPerServing">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-3">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Protein</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-calories-per-serving-calculator-target="proteinPerServing">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Carbs</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-calories-per-serving-calculator-target="carbsPerServing">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Fat</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-calories-per-serving-calculator-target="fatPerServing">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-3">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Protein calories</span>
+              <span class="text-sm font-bold text-gray-900 dark:text-white" data-calories-per-serving-calculator-target="proteinCalories">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Carb calories</span>
+              <span class="text-sm font-bold text-gray-900 dark:text-white" data-calories-per-serving-calculator-target="carbsCalories">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Fat calories</span>
+              <span class="text-sm font-bold text-gray-900 dark:text-white" data-calories-per-serving-calculator-target="fatCalories">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->calories-per-serving-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Calories Per Serving Calculator</h2>
+      <p>
+        This free calories per serving calculator takes the total calories in your entire recipe and divides them evenly across the number of servings you plan to make. Enter the total calorie count and the number of servings, and the calculator instantly displays the calories per serving. For a more detailed breakdown, add the total grams of protein, carbs, and fat from all ingredients. The calculator then shows each macronutrient per serving along with the calorie contribution from each macro — protein and carbs at 4 calories per gram, fat at 9 calories per gram.
+      </p>
+      <p>
+        Knowing the calories per serving is essential for meal planning, portion control, and tracking your daily intake. Whether you are following a specific diet, managing your weight, or simply want to understand what you are eating, this tool turns whole-recipe nutrition data into actionable per-serving numbers. Results update in real time as you type, so you can experiment with different serving counts to find portions that fit your calorie goals.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Calories Per Serving</h2>
+      <p>
+        Every packaged food includes a nutrition label that lists calories per serving, but homemade meals require manual calculation. The process is straightforward: total up the calories from every ingredient you use, then divide by the number of equal portions you serve. The challenge is accuracy — estimating ingredient amounts introduces errors. For best results, weigh ingredients with a kitchen scale rather than relying on volume measurements like cups and tablespoons, since density varies significantly between foods.
+      </p>
+
+      <h3>Why Macronutrient Breakdown Matters</h3>
+      <p>
+        Two meals can have the same calorie count but very different nutritional profiles. A 400-calorie serving high in protein and fiber will keep you full longer than a 400-calorie serving high in refined carbs and sugar. Protein provides 4 calories per gram and is essential for muscle repair and satiety. Carbohydrates also provide 4 calories per gram and are your body's primary energy source. Fat provides 9 calories per gram and plays a vital role in hormone production and nutrient absorption. By tracking macros per serving, you can ensure each meal supports your health and performance goals.
+      </p>
+
+      <h3>Tips for Accurate Recipe Calorie Counting</h3>
+      <p>
+        Start by listing every ingredient with its exact weight in grams. Look up each ingredient in a reliable nutrition database such as USDA FoodData Central. Account for oils used in cooking, marinades that are partially discarded, and garnishes. When a recipe calls for something like "1 cup of flour," note that a cup of all-purpose flour weighs about 120 grams and contains roughly 440 calories. Precision at the ingredient level translates directly into accuracy at the per-serving level. If you cook for the same number of servings regularly, save your per-serving data so you do not have to recalculate each time.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate calories per serving?</h3>
+      <p>
+        Divide the total calories in the entire recipe by the number of servings. For example, if a casserole contains 2,400 total calories and makes 6 servings, each serving has 2,400 / 6 = 400 calories. This method works for any recipe regardless of the number of ingredients.
+      </p>
+
+      <h3>How do I find the total calories in a recipe?</h3>
+      <p>
+        Add up the calories from every ingredient using nutrition labels or a food database. Measure each ingredient precisely before cooking. Online food databases like the USDA FoodData Central provide accurate calorie counts per weight or volume.
+      </p>
+
+      <h3>Do calories change when food is cooked?</h3>
+      <p>
+        The total calorie content of a recipe does not change significantly during cooking, but the weight does. Water evaporates, making the food lighter but more calorie-dense per gram. This is why it is best to calculate calories from raw ingredients before cooking, then divide by the number of servings you portion out after cooking.
+      </p>
+
+      <h3>How do I calculate macros per serving?</h3>
+      <p>
+        Just like calories, divide the total grams of each macronutrient by the number of servings. Protein and carbs provide 4 calories per gram, while fat provides 9 calories per gram. So a serving with 30g protein, 40g carbs, and 15g fat would have 120 + 160 + 135 = 415 calories from macros.
+      </p>
+
+      <h3>What is a good number of calories per serving?</h3>
+      <p>
+        A typical meal serving ranges from 400 to 700 calories for most adults, depending on daily calorie needs and how many meals you eat per day. Snack servings are usually 100 to 250 calories. If you eat three meals and two snacks, aim for meals around 500 calories and snacks around 150 calories to hit a 1,800 calorie daily target.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Calories Per Serving Calculator", url: health_calories_per_serving_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Macro Calculator", description: "Calculate your ideal daily macronutrient split for protein, carbs, and fat.", path: health_macro_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure to find your daily calorie target.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("calories-per-serving-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

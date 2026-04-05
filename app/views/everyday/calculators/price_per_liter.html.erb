@@ -1,0 +1,179 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Price Per Liter Calculator - Free Online Tool",
+  description: "Calculate price per liter, per mL, per gallon, and per fluid ounce from any volume and price. Supports liters, milliliters, gallons, and fluid ounces.",
+  canonical: everyday_price_per_liter_url,
+  og: {
+    title: "Price Per Liter Calculator - Free Online Tool | CalcWise",
+    description: "Convert any liquid price to per-liter, per-mL, per-gallon, and per-fluid-ounce rates. Compare liquid products easily.",
+    url: everyday_price_per_liter_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Price Per Liter Calculator", url: everyday_price_per_liter_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate price per liter?", answer: "Divide the total price by the volume in liters. For example, a $4.50 bottle containing 1.5 liters costs $4.50 / 1.5 = $3.00 per liter. If the volume is in another unit, convert to liters first: 1 gallon = 3.785 liters, 1 fluid ounce = 0.02957 liters, 1 mL = 0.001 liters." },
+  { question: "How do I convert price per liter to price per gallon?", answer: "Multiply the price per liter by 3.78541, since one US gallon equals 3.78541 liters. For example, if a liquid costs $2.00 per liter, the price per gallon is $2.00 x 3.78541 = $7.57 per gallon. This conversion is useful for comparing US and metric pricing." },
+  { question: "Why is price per liter useful for comparing products?", answer: "Products come in different sized containers, making direct price comparison misleading. A $3 bottle of 500 mL ($6/L) is more expensive per liter than a $5 bottle of 1.5 L ($3.33/L). Price per liter standardizes the comparison so you can identify the best value regardless of container size." },
+  { question: "How many fluid ounces are in a liter?", answer: "One liter equals approximately 33.814 US fluid ounces. Conversely, one US fluid ounce equals approximately 0.02957 liters or 29.5735 milliliters. These conversions are important when comparing products sold in different measurement systems." },
+  { question: "Is the price per liter always lower for larger containers?", answer: "Usually but not always. Larger containers typically offer a lower price per liter due to economies of scale. However, sales, promotions, and brand pricing strategies can make smaller containers cheaper per liter at times. Always calculate and compare rather than assuming bigger is cheaper." }
+]) %>
+
+<%= calculator_schema(
+  name: "Price Per Liter Calculator",
+  description: "Calculate price per liter, per mL, per gallon, and per fluid ounce from total price and volume in any unit.",
+  url: everyday_price_per_liter_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Price Per Liter Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Price Per Liter Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert any liquid product's price into per-liter, per-mL, per-gallon, and per-fluid-ounce rates for easy comparison.</p>
+
+    <div data-controller="price-per-liter-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Price ($)</label>
+            <input type="number" data-price-per-liter-calculator-target="totalPrice" data-action="input->price-per-liter-calculator#calculate" class="w-full" placeholder="4.50" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Volume</label>
+            <input type="number" data-price-per-liter-calculator-target="volume" data-action="input->price-per-liter-calculator#calculate" class="w-full" placeholder="1.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Volume Unit</label>
+            <select data-price-per-liter-calculator-target="unit" data-action="change->price-per-liter-calculator#calculate" class="w-full">
+              <option value="L">Liters (L)</option>
+              <option value="mL">Milliliters (mL)</option>
+              <option value="gal">US Gallons</option>
+              <option value="fl_oz">US Fluid Ounces</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Price Per Liter</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-price-per-liter-calculator-target="resultPricePerLiter">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Price Per mL</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-price-per-liter-calculator-target="resultPricePerMl">--</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Price Per Gallon</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-price-per-liter-calculator-target="resultPricePerGallon">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Price Per fl oz</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-price-per-liter-calculator-target="resultPricePerFlOz">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Volume in Liters</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-price-per-liter-calculator-target="resultVolumeInLiters">--</span>
+            </div>
+          </div>
+          <button data-action="click->price-per-liter-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Price Per Liter Calculator</h2>
+      <p>
+        Enter the total price and volume of any liquid product, then select the unit of measurement (liters, milliliters, US gallons, or US fluid ounces). The calculator instantly converts to price per liter, price per milliliter, price per gallon, and price per fluid ounce. This makes it easy to compare beverages, cleaning products, fuel, cooking oils, or any liquid sold in different sizes and units.
+      </p>
+      <p>
+        The volume conversion is automatic. Enter the volume exactly as shown on the product label and select the matching unit. The calculator handles all conversions using standard US measurement equivalencies: 1 gallon = 3.78541 liters, 1 fluid ounce = 29.5735 milliliters.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Comparing Liquid Products by Price Per Liter</h2>
+      <p>
+        Beverages are the most common products to compare by price per liter. A 12-pack of 12 fl oz cans (144 fl oz total) for $6.99 costs about $1.64 per liter. A 2-liter bottle for $1.99 costs $1.00 per liter. Despite the 12-pack seeming like a deal, the 2-liter bottle is 39% cheaper per liter. This type of comparison works for water, juice, milk, cleaning supplies, and any liquid product.
+      </p>
+
+      <h3>Fuel Price Comparisons</h3>
+      <p>
+        In the United States, fuel is priced per gallon, while most other countries use liters. When traveling or comparing international fuel prices, converting to a common unit is essential. At $3.50 per gallon, gasoline costs $0.92 per liter. Knowing both rates helps you compare fuel costs across countries and understand price differences when reading international news about energy costs.
+      </p>
+
+      <h3>Cooking and Beverage Shopping</h3>
+      <p>
+        Olive oil, vinegar, sauces, and other cooking liquids come in various sizes. A 500 mL bottle of olive oil at $8 ($16 per liter) versus a 3-liter tin at $30 ($10 per liter) shows significant savings for the larger container. For beverages, compare bottled water, juice, and milk by price per liter to find the best value. Remember that buying larger quantities only saves money if you use the product before it expires.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate price per liter?</h3>
+      <p>
+        Divide the total price by the volume in liters. A $4.50 bottle of 1.5 liters costs $3.00 per liter. Convert other units to liters first if needed.
+      </p>
+
+      <h3>How do I convert price per liter to price per gallon?</h3>
+      <p>
+        Multiply the price per liter by 3.78541. A liquid costing $2.00 per liter costs $7.57 per gallon.
+      </p>
+
+      <h3>Why is price per liter useful for comparing products?</h3>
+      <p>
+        Products come in different sizes, making direct price comparison misleading. Price per liter standardizes the comparison so you can identify the best value.
+      </p>
+
+      <h3>How many fluid ounces are in a liter?</h3>
+      <p>
+        One liter equals approximately 33.814 US fluid ounces. One US fluid ounce equals approximately 29.5735 milliliters.
+      </p>
+
+      <h3>Is price per liter always lower for larger containers?</h3>
+      <p>
+        Usually but not always. Sales and promotions can make smaller containers cheaper per liter. Always calculate and compare rather than assuming.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Price Per Liter Calculator", url: everyday_price_per_liter_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Unit Price Calculator", description: "Compare unit prices to find the best deal on any product.", path: everyday_unit_price_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Fuel Cost Calculator", description: "Estimate fuel cost for trips based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("price-per-liter-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

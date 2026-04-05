@@ -1,0 +1,203 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cost Per Mile Calculator - Free Online Tool",
+  description: "Calculate vehicle cost per mile from fuel, insurance, maintenance, and depreciation costs. See per-mile, per-km, and annual cost breakdowns instantly.",
+  canonical: everyday_cost_per_mile_url,
+  og: {
+    title: "Cost Per Mile Calculator - Free Online Tool | CalcWise",
+    description: "Calculate your total vehicle cost per mile including fuel, insurance, maintenance, and depreciation. Compare per-mile and per-km costs.",
+    url: everyday_cost_per_mile_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Cost Per Mile Calculator", url: everyday_cost_per_mile_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate cost per mile for my car?", answer: "Add up all annual vehicle costs: fuel, insurance, maintenance, depreciation, registration, and financing. Divide the total by miles driven in the same period. For example, if annual costs total $8,000 and you drive 12,000 miles, your cost per mile is $8,000 / 12,000 = $0.667 per mile." },
+  { question: "What is the average cost per mile for a car?", answer: "According to AAA, the average cost per mile for a new car is approximately $0.60 to $0.80, including fuel, insurance, maintenance, depreciation, financing, and registration. Smaller sedans cost less per mile ($0.50-0.60), while trucks and SUVs cost more ($0.70-1.00). Used cars generally have lower per-mile costs due to reduced depreciation." },
+  { question: "What costs should I include in cost per mile?", answer: "Include all vehicle-related expenses: fuel costs, insurance premiums, routine maintenance (oil changes, tires, brakes), repairs, depreciation (the decrease in vehicle value), financing or lease payments, registration and taxes, parking, and tolls. For a comprehensive picture, include every dollar you spend related to owning and operating the vehicle." },
+  { question: "How does depreciation affect cost per mile?", answer: "Depreciation is often the largest component of cost per mile, especially for new vehicles. A new car can lose 20-30% of its value in the first year and about 15% per year after that. On a $35,000 car driven 12,000 miles per year, first-year depreciation of $10,000 adds $0.83 per mile. This is why used cars have a lower total cost per mile." },
+  { question: "How do I use cost per mile for the IRS mileage deduction?", answer: "The IRS sets a standard mileage rate for business use of personal vehicles, which was $0.67 per mile for 2024. You can either use this standard rate or calculate your actual per-mile costs. If your actual cost per mile exceeds the IRS rate, itemizing actual expenses may provide a larger deduction. Keep detailed records of all expenses and miles driven." }
+]) %>
+
+<%= calculator_schema(
+  name: "Cost Per Mile Calculator",
+  description: "Calculate total vehicle cost per mile from fuel, insurance, maintenance, depreciation, and other costs.",
+  url: everyday_cost_per_mile_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Cost Per Mile Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cost Per Mile Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the true cost of driving by including fuel, insurance, maintenance, depreciation, and other expenses per mile.</p>
+
+    <div data-controller="cost-per-mile-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Fuel Cost ($)</label>
+            <input type="number" data-cost-per-mile-calculator-target="fuelCost" data-action="input->cost-per-mile-calculator#calculate" class="w-full" placeholder="2400" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Insurance Cost ($)</label>
+            <input type="number" data-cost-per-mile-calculator-target="insuranceCost" data-action="input->cost-per-mile-calculator#calculate" class="w-full" placeholder="1500" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Maintenance Cost ($)</label>
+            <input type="number" data-cost-per-mile-calculator-target="maintenanceCost" data-action="input->cost-per-mile-calculator#calculate" class="w-full" placeholder="1000" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Depreciation ($)</label>
+            <input type="number" data-cost-per-mile-calculator-target="depreciationCost" data-action="input->cost-per-mile-calculator#calculate" class="w-full" placeholder="3000" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Other Annual Costs ($)</label>
+            <input type="number" data-cost-per-mile-calculator-target="otherCosts" data-action="input->cost-per-mile-calculator#calculate" class="w-full" value="0" placeholder="500" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Miles Driven (Annual)</label>
+            <input type="number" data-cost-per-mile-calculator-target="milesDriven" data-action="input->cost-per-mile-calculator#calculate" class="w-full" placeholder="12000" step="1" min="1">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per Mile</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-mile-calculator-target="resultCostPerMile">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per Km</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-mile-calculator-target="resultCostPerKm">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Annual Cost</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-mile-calculator-target="resultTotalCost">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Km Driven</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cost-per-mile-calculator-target="resultKmDriven">--</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Cost Breakdown</p>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Fuel</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-cost-per-mile-calculator-target="resultFuelPct">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Insurance</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-cost-per-mile-calculator-target="resultInsurancePct">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Maintenance</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-cost-per-mile-calculator-target="resultMaintenancePct">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Depreciation</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-cost-per-mile-calculator-target="resultDepreciationPct">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Other</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-cost-per-mile-calculator-target="resultOtherPct">--</span>
+            </div>
+          </div>
+          <button data-action="click->cost-per-mile-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Cost Per Mile Calculator</h2>
+      <p>
+        Enter your annual vehicle costs for fuel, insurance, maintenance, depreciation, and any other expenses (registration, financing, parking, tolls). Then enter the total miles driven during that period. The calculator shows cost per mile, cost per kilometer, total annual cost, and a percentage breakdown of each expense category. This comprehensive view reveals the true cost of vehicle ownership.
+      </p>
+      <p>
+        To estimate annual depreciation, subtract the expected resale value at the end of the year from the current value. For a rough estimate, use 15-20% of the vehicle's current value per year. Maintenance costs include oil changes, tires, brakes, and repairs. Other costs can include registration fees, loan interest, parking passes, and tolls.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Vehicle Cost Per Mile</h2>
+      <p>
+        Most drivers underestimate their true cost per mile because they only consider fuel. However, fuel typically accounts for only 20-30% of total vehicle costs. Depreciation is often the largest expense, especially for newer vehicles. Insurance, maintenance, and financing add significantly to the total. Understanding the complete cost per mile helps you make informed decisions about commuting, road trips, ride-sharing versus driving, and vehicle purchases.
+      </p>
+
+      <h3>New vs. Used Vehicle Costs</h3>
+      <p>
+        New vehicles have higher per-mile costs primarily due to faster depreciation. A new $35,000 car losing $7,000 in value the first year and driven 12,000 miles adds $0.58 per mile just from depreciation. A 5-year-old used car may depreciate only $2,000 per year, adding just $0.17 per mile. However, used cars may have higher maintenance costs. The sweet spot for lowest total cost per mile is often a 3-5 year old car with good reliability ratings.
+      </p>
+
+      <h3>Electric vs. Gasoline Cost Per Mile</h3>
+      <p>
+        Electric vehicles (EVs) typically have lower per-mile operating costs than gasoline cars. Electricity costs roughly $0.03-0.05 per mile versus $0.08-0.15 per mile for gasoline. EVs also have lower maintenance costs with no oil changes and regenerative braking reducing brake wear. However, higher purchase prices and battery replacement costs can offset these savings. Calculate the total cost per mile for both options to make the best decision for your driving habits.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate cost per mile for my car?</h3>
+      <p>
+        Add up all annual vehicle costs and divide by miles driven. If costs total $8,000 and you drive 12,000 miles, the cost per mile is $0.667.
+      </p>
+
+      <h3>What is the average cost per mile for a car?</h3>
+      <p>
+        According to AAA, $0.60-0.80 per mile for a new car. Smaller sedans cost $0.50-0.60, trucks and SUVs $0.70-1.00. Used cars are generally lower.
+      </p>
+
+      <h3>What costs should I include?</h3>
+      <p>
+        Include fuel, insurance, maintenance, repairs, depreciation, financing, registration, taxes, parking, and tolls for a complete picture.
+      </p>
+
+      <h3>How does depreciation affect cost per mile?</h3>
+      <p>
+        Depreciation is often the largest component. A new car can lose 20-30% of value in the first year. This is why used cars have lower cost per mile overall.
+      </p>
+
+      <h3>How do I use cost per mile for IRS mileage deduction?</h3>
+      <p>
+        The IRS sets a standard mileage rate ($0.67 per mile for 2024). If your actual cost per mile exceeds this, itemizing actual expenses may provide a larger deduction.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Cost Per Mile Calculator", url: everyday_cost_per_mile_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Fuel Cost Calculator", description: "Estimate fuel cost for trips based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Gas Mileage Calculator", description: "Calculate fuel efficiency in MPG or L/100km for any vehicle.", path: everyday_gas_mileage_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Cost Per Km Calculator", description: "Calculate cost per kilometer from fuel usage and distance.", path: everyday_cost_per_km_path, icon_path: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("cost-per-mile-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

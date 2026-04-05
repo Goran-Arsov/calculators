@@ -1,0 +1,166 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cost Per Day Calculator - Free Online Tool",
+  description: "Calculate cost per day, per week, per month, and per year from any total cost and time period. Perfect for subscriptions, rentals, and vacation budgeting.",
+  canonical: everyday_cost_per_day_url,
+  og: {
+    title: "Cost Per Day Calculator - Free Online Tool | CalcWise",
+    description: "Break down any cost into daily, weekly, monthly, and yearly amounts. Great for subscriptions, rentals, and budgeting.",
+    url: everyday_cost_per_day_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Cost Per Day Calculator", url: everyday_cost_per_day_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate cost per day?", answer: "Divide the total cost by the number of days. For example, a $90 subscription for 30 days costs $90 / 30 = $3.00 per day. This works for any expense: divide total cost by the number of days in the period to find the daily rate." },
+  { question: "How do I convert a monthly cost to a daily cost?", answer: "Divide the monthly cost by the average number of days in a month (30.44). For example, a $60 monthly subscription is $60 / 30.44 = $1.97 per day. For exact calculations, use the actual number of days in the specific month." },
+  { question: "Why is cost per day useful for budgeting?", answer: "Cost per day makes expenses easier to compare and understand. A $1,200 annual subscription sounds expensive, but $3.29 per day may feel more manageable. It also helps compare different billing periods: is a $10 weekly subscription cheaper than a $35 monthly one? Daily cost reveals the true comparison." },
+  { question: "How do I calculate annual cost from a daily rate?", answer: "Multiply the daily cost by 365.25 (accounting for leap years) to get the annual cost. For example, $5 per day equals $5 x 365.25 = $1,826.25 per year. This is useful for understanding the long-term impact of daily expenses like coffee or commuting." },
+  { question: "Can I use cost per day for vacation budgeting?", answer: "Yes. Divide your total vacation budget by the number of days of your trip to find your daily budget. For example, a $3,000 budget for a 10-day trip gives you $300 per day for accommodation, food, activities, and transportation combined." }
+]) %>
+
+<%= calculator_schema(
+  name: "Cost Per Day Calculator",
+  description: "Calculate cost per day, per week, per month, and per year from total cost and number of days.",
+  url: everyday_cost_per_day_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Cost Per Day Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cost Per Day Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Break down any total cost into daily, weekly, monthly, and yearly amounts for smarter budgeting.</p>
+
+    <div data-controller="cost-per-day-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Cost ($)</label>
+            <input type="number" data-cost-per-day-calculator-target="totalCost" data-action="input->cost-per-day-calculator#calculate" class="w-full" placeholder="90.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Days</label>
+            <input type="number" data-cost-per-day-calculator-target="numberOfDays" data-action="input->cost-per-day-calculator#calculate" class="w-full" placeholder="30" step="1" min="1">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per Day</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-day-calculator-target="resultCostPerDay">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per Week</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-day-calculator-target="resultCostPerWeek">--</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per Month</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-day-calculator-target="resultCostPerMonth">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per Year</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-day-calculator-target="resultCostPerYear">--</span>
+            </div>
+          </div>
+          <button data-action="click->cost-per-day-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Cost Per Day Calculator</h2>
+      <p>
+        Enter the total cost of any expense and the number of days it covers. The calculator instantly breaks down the cost into daily, weekly, monthly, and yearly equivalents. This is perfect for understanding the true daily cost of subscriptions, memberships, rentals, insurance premiums, and any recurring or one-time expense spread over a time period.
+      </p>
+      <p>
+        The monthly calculation uses 30.4375 days per month (365.25 / 12), which accounts for varying month lengths and leap years. The yearly calculation uses 365.25 days to account for leap years as well. These averages give you the most accurate long-term cost projections.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Practical Uses for Cost Per Day</h2>
+      <p>
+        Understanding cost per day helps you make better financial decisions. Compare a $120 annual subscription ($0.33 per day) against a $15 monthly plan ($0.49 per day) to see which is truly cheaper. Evaluate whether a $200 pair of shoes you will wear 300 times ($0.67 per day of use) is better value than a $50 pair lasting 50 wears ($1.00 per day). The daily cost perspective reveals value that total price alone cannot show.
+      </p>
+
+      <h3>Subscription Cost Analysis</h3>
+      <p>
+        Streaming services, gym memberships, software licenses, and other subscriptions are easier to evaluate on a per-day basis. A $15 monthly streaming service costs about $0.49 per day. If you use it daily, that is excellent value. If you watch only twice a month, you are paying $7.50 per viewing session. This perspective helps you decide which subscriptions are worth keeping and which to cancel.
+      </p>
+
+      <h3>Vacation and Travel Budgeting</h3>
+      <p>
+        Breaking a vacation budget into daily amounts makes spending easier to manage. If your 7-day trip budget is $3,500, you have $500 per day for hotel, food, transportation, and activities. Tracking daily spending against this target prevents budget overruns and helps you prioritize experiences that matter most to you. This daily approach works equally well for business travel and long-term trips.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate cost per day?</h3>
+      <p>
+        Divide the total cost by the number of days. For example, a $90 subscription for 30 days costs $90 / 30 = $3.00 per day.
+      </p>
+
+      <h3>How do I convert a monthly cost to a daily cost?</h3>
+      <p>
+        Divide the monthly cost by the average number of days in a month (30.44). A $60 monthly subscription is about $1.97 per day.
+      </p>
+
+      <h3>Why is cost per day useful for budgeting?</h3>
+      <p>
+        Cost per day makes expenses easier to compare. A $1,200 annual subscription is $3.29 per day, which may feel more manageable. It also helps compare different billing periods directly.
+      </p>
+
+      <h3>How do I calculate annual cost from a daily rate?</h3>
+      <p>
+        Multiply the daily cost by 365.25. For example, $5 per day equals $1,826.25 per year. This reveals the long-term impact of daily expenses.
+      </p>
+
+      <h3>Can I use cost per day for vacation budgeting?</h3>
+      <p>
+        Yes. Divide your total vacation budget by the number of days. A $3,000 budget for 10 days gives $300 per day for all expenses combined.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Cost Per Day Calculator", url: everyday_cost_per_day_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Fuel Cost Calculator", description: "Estimate fuel cost for trips based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("cost-per-day-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

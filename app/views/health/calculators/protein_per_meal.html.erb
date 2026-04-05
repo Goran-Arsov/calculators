@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Protein Per Meal Calculator - Free Daily Protein Splitter",
+  description: "Calculate how much protein to eat per meal based on your daily goal and number of meals. Get per-meal targets with min/max recommendations for optimal absorption.",
+  canonical: health_protein_per_meal_url,
+  og: {
+    title: "Protein Per Meal Calculator - Free Daily Protein Splitter | CalcWise",
+    description: "Split your daily protein goal across meals. Get per-meal targets with recommended ranges for optimal muscle protein synthesis.",
+    url: health_protein_per_meal_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Protein Per Meal Calculator", url: health_protein_per_meal_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much protein should I eat per meal?", answer: "Research suggests 20 to 40 grams of protein per meal maximizes muscle protein synthesis for most adults. Eating less than 20g may not fully stimulate muscle repair, while amounts above 40g provide diminishing returns for muscle building, though the extra protein is still used for other bodily functions. Spreading your daily protein evenly across 3 to 5 meals is generally more effective than consuming most of it in one sitting." },
+  { question: "How do I calculate protein per meal from my daily goal?", answer: "Divide your total daily protein goal in grams by the number of meals you eat. For example, if your goal is 150g of protein and you eat 5 meals per day, you need 150 / 5 = 30g of protein per meal. This calculator does the math instantly and also shows whether your per-meal amount falls within the recommended 20-40g range." },
+  { question: "How much protein do I need per day?", answer: "The general recommendation for active adults is 1.6 to 2.2 grams of protein per kilogram of body weight per day. For a 75 kg person, that is 120 to 165 grams per day. Sedentary adults need less, around 0.8g per kg. Athletes, people building muscle, and older adults benefit from the higher end of the range. Consult a nutritionist for personalized recommendations." },
+  { question: "Is it bad to eat too much protein in one meal?", answer: "Your body can digest and use more than 40g of protein in a single meal — the excess is not wasted. However, research shows that spreading protein intake evenly across meals is more effective for muscle protein synthesis than loading it all into one or two meals. Eating 30g at each of four meals stimulates more total muscle building than eating 10g at three meals and 90g at dinner." },
+  { question: "What foods have 30g of protein?", answer: "Approximately 30g of protein can be found in: 4 oz (113g) of chicken breast, 5 oz (142g) of salmon, 1.5 cups of Greek yogurt, 4 large eggs, 1 cup of cottage cheese, 5 oz of tofu plus 1 cup of edamame, or one scoop of whey protein plus a glass of milk. Combining foods makes it easier to hit your per-meal target." }
+]) %>
+
+<%= calculator_schema(
+  name: "Protein Per Meal Calculator",
+  description: "Calculate how much protein to eat per meal by dividing your daily protein goal across your number of meals.",
+  url: health_protein_per_meal_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Protein Per Meal Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Protein Per Meal Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Split your daily protein goal evenly across meals. See your per-meal target with min/max recommendations for optimal muscle protein synthesis.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="protein-per-meal-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Daily Protein Goal (g)</label>
+            <input type="number" data-protein-per-meal-calculator-target="dailyProtein" data-action="input->protein-per-meal-calculator#calculate" class="w-full" placeholder="150" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Meals Per Day</label>
+            <input type="number" data-protein-per-meal-calculator-target="mealsPerDay" data-action="input->protein-per-meal-calculator#calculate" class="w-full" placeholder="4" step="1" min="1" max="10">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Per Meal Target</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Protein per meal</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-protein-per-meal-calculator-target="proteinPerMeal">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Protein per meal (oz)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-protein-per-meal-calculator-target="proteinPerMealOz">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-3">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Recommended min</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-protein-per-meal-calculator-target="recommendedMin">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Recommended max</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-protein-per-meal-calculator-target="recommendedMax">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-3">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Distribution quality</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-protein-per-meal-calculator-target="distribution">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->protein-per-meal-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Protein Per Meal Calculator</h2>
+      <p>
+        This protein per meal calculator helps you distribute your daily protein intake evenly across your meals. Enter your total daily protein goal in grams and the number of meals you eat per day. The calculator instantly shows how much protein you need at each meal, converts the amount to ounces, and provides a recommended minimum and maximum range per meal. It also classifies your distribution as optimal, low, or high based on research-backed thresholds for muscle protein synthesis.
+      </p>
+      <p>
+        Even distribution of protein throughout the day is more effective for muscle repair and growth than consuming most of your protein in a single meal. Research on muscle protein synthesis shows that 20 to 40 grams of protein per meal maximally stimulates the muscle-building process. This calculator helps you determine whether your current meal plan puts you in that optimal range or whether you need to adjust your meal frequency or total daily goal.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Science of Protein Distribution</h2>
+      <p>
+        Muscle protein synthesis (MPS) is the process your body uses to repair and build muscle tissue. Studies show that MPS is maximally stimulated when a meal contains at least 20 grams of high-quality protein, with the response plateauing around 40 grams for most people. Consuming protein beyond 40 grams in a single meal does not go to waste — it is used for other metabolic functions — but it does not provide additional muscle-building benefit beyond what 40 grams delivers. This is why spreading your protein across multiple meals matters.
+      </p>
+
+      <h3>How Many Meals Per Day for Optimal Protein?</h3>
+      <p>
+        For most people targeting 120 to 180 grams of protein daily, eating 4 to 5 protein-rich meals provides the best distribution. Three meals may work if your daily goal is lower (90 to 120 grams), while athletes with very high protein needs (200+ grams) may benefit from 5 to 6 meals. The key is that each meal should contain at least 20 grams but ideally no more than 40 grams. If your per-meal calculation shows less than 20 grams, consider reducing the number of meals. If it shows more than 40 grams, consider adding a meal or snack.
+      </p>
+
+      <h3>High-Protein Meal Ideas</h3>
+      <p>
+        Building meals with 30 grams of protein is easier than many people think. A serving of chicken breast (4 oz) provides about 30 grams. Greek yogurt (1.5 cups) delivers 25 to 30 grams. Three large eggs plus a glass of milk total about 27 grams. For plant-based options, combine tofu, tempeh, legumes, and whole grains to reach your target. A meal of 200g firm tofu with 1 cup of cooked lentils provides roughly 35 grams of protein. Protein shakes can fill gaps when whole food is not convenient.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much protein should I eat per meal?</h3>
+      <p>
+        Research suggests 20 to 40 grams of protein per meal maximizes muscle protein synthesis for most adults. Eating less than 20g may not fully stimulate muscle repair, while amounts above 40g provide diminishing returns for muscle building. Spreading your daily protein evenly across 3 to 5 meals is generally more effective than consuming most of it in one sitting.
+      </p>
+
+      <h3>How do I calculate protein per meal from my daily goal?</h3>
+      <p>
+        Divide your total daily protein goal in grams by the number of meals you eat. For example, if your goal is 150g and you eat 5 meals, you need 150 / 5 = 30g per meal. This calculator does the math instantly and shows whether your per-meal amount falls within the recommended range.
+      </p>
+
+      <h3>How much protein do I need per day?</h3>
+      <p>
+        The general recommendation for active adults is 1.6 to 2.2 grams of protein per kilogram of body weight per day. For a 75 kg person, that is 120 to 165 grams. Sedentary adults need less, around 0.8g per kg. Athletes and older adults benefit from the higher end of the range.
+      </p>
+
+      <h3>Is it bad to eat too much protein in one meal?</h3>
+      <p>
+        Your body can digest and use more than 40g in a single meal. However, spreading protein intake evenly across meals is more effective for total daily muscle protein synthesis than loading it all into one or two meals.
+      </p>
+
+      <h3>What foods have 30g of protein?</h3>
+      <p>
+        Approximately 30g of protein can be found in: 4 oz chicken breast, 5 oz salmon, 1.5 cups Greek yogurt, 4 large eggs, 1 cup cottage cheese, or one scoop of whey protein plus milk. Combining foods makes it easier to hit your target.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Protein Per Meal Calculator", url: health_protein_per_meal_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Macro Calculator", description: "Calculate your ideal daily macronutrient split for protein, carbs, and fat.", path: health_macro_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure to find your daily calorie target.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("protein-per-meal-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

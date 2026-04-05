@@ -1,0 +1,182 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Steps Per Mile Calculator - Free Walking & Running Tool",
+  description: "Calculate steps per mile and steps per km from your total steps and distance. Estimate calories burned and stride length with our free calculator.",
+  canonical: health_steps_per_mile_url,
+  og: {
+    title: "Steps Per Mile Calculator - Free Walking & Running Tool | CalcWise",
+    description: "Calculate steps per mile, steps per km, estimated calories burned, and stride length from your walking or running data.",
+    url: health_steps_per_mile_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Steps Per Mile Calculator", url: health_steps_per_mile_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many steps are in a mile?", answer: "The average person takes about 2,000 to 2,500 steps per mile when walking, depending on height and stride length. Taller individuals take fewer steps per mile because their stride is longer. When running, the number drops to roughly 1,400 to 1,700 steps per mile because running strides are longer than walking strides. This calculator gives you your exact personal steps-per-mile ratio based on your actual data." },
+  { question: "How do I calculate steps per mile?", answer: "Divide your total steps by the distance in miles. For example, if your fitness tracker shows 4,200 steps for a 2-mile walk, your steps per mile is 4,200 / 2 = 2,100 steps per mile. If your distance is in kilometers, the calculator converts it to miles automatically. Knowing your personal steps per mile is more accurate than using a generic estimate." },
+  { question: "How many calories do you burn per step?", answer: "The average person burns approximately 0.04 calories per step when walking at a moderate pace. This varies based on body weight, walking speed, and terrain. A 150-pound person walking 10,000 steps burns roughly 400 calories. Heavier individuals burn more calories per step, and walking uphill or at faster speeds also increases calorie expenditure. This calculator uses the 0.04 cal/step average as an estimate." },
+  { question: "How many steps are in a kilometer?", answer: "The average person takes about 1,250 to 1,550 steps per kilometer when walking. Since 1 mile equals 1.609 km, you can convert by dividing your steps per mile by 1.609. For example, 2,000 steps per mile equals 2,000 / 1.609 = 1,243 steps per km. Running produces about 850 to 1,050 steps per km due to longer strides." },
+  { question: "How do I measure my stride length?", answer: "The easiest method is to walk a known distance and count your steps. Walk 100 meters (or use a measured track), count every step, then divide the distance by the number of steps. For example, 100 meters in 130 steps gives a stride length of 100 / 130 = 0.77 meters (about 2.5 feet). Alternatively, this calculator computes your stride length automatically from the steps and distance you enter." }
+]) %>
+
+<%= calculator_schema(
+  name: "Steps Per Mile Calculator",
+  description: "Calculate steps per mile, steps per km, estimated calories burned, and stride length from your walking or running data.",
+  url: health_steps_per_mile_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Steps Per Mile Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Steps Per Mile Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your personal steps per mile and steps per km from your walking or running data. See estimated calories burned and your stride length.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="steps-per-mile-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Steps</label>
+            <input type="number" data-steps-per-mile-calculator-target="totalSteps" data-action="input->steps-per-mile-calculator#calculate" class="w-full" placeholder="4200" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance</label>
+            <input type="number" data-steps-per-mile-calculator-target="distance" data-action="input->steps-per-mile-calculator#calculate" class="w-full" placeholder="2" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance Unit</label>
+            <select data-steps-per-mile-calculator-target="unit" data-action="change->steps-per-mile-calculator#calculate" class="w-full">
+              <option value="miles">Miles</option>
+              <option value="km">Kilometers</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Steps per mile</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-steps-per-mile-calculator-target="stepsPerMile">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Steps per km</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-steps-per-mile-calculator-target="stepsPerKm">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-3">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Estimated calories</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-steps-per-mile-calculator-target="estimatedCalories">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-3">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Stride length (ft)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-steps-per-mile-calculator-target="strideLengthFt">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Stride length (m)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-steps-per-mile-calculator-target="strideLengthM">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->steps-per-mile-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Steps Per Mile Calculator</h2>
+      <p>
+        This calculator converts your step count and distance into your personal steps-per-mile and steps-per-kilometer ratios. Enter the total steps from your fitness tracker or pedometer and the distance you covered. Choose whether your distance is in miles or kilometers, and the calculator handles all conversions automatically. You will see your steps per mile, steps per km, estimated calories burned based on the average 0.04 calories per step, and your calculated stride length in both feet and meters.
+      </p>
+      <p>
+        Generic estimates like "2,000 steps per mile" are rough averages that do not account for individual differences. Your actual steps per mile depends on your height, leg length, walking speed, and whether you are walking or running. By using your real data from a fitness tracker, this calculator gives you a personalized number that is far more accurate for setting step goals and estimating distances.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Steps Per Mile: What Affects the Number</h2>
+      <p>
+        Several factors determine how many steps you take per mile. <strong>Height</strong> is the biggest factor — taller people have longer legs and take fewer steps to cover the same distance. A person who is 5'0" might take 2,500 steps per mile, while someone 6'2" might take only 1,900. <strong>Walking vs. running</strong> also matters significantly. Running strides are 40-60% longer than walking strides, which means runners take fewer steps per mile (typically 1,400 to 1,700) compared to walkers (2,000 to 2,500). <strong>Speed</strong> plays a role too — faster walking tends to lengthen your stride.
+      </p>
+
+      <h3>Using Steps Per Mile for Goal Setting</h3>
+      <p>
+        Once you know your personal steps-per-mile ratio, you can set more meaningful step goals. The commonly cited 10,000-step goal was originally a marketing campaign for a Japanese pedometer, but it translates to roughly 4 to 5 miles of walking for most people. If your goal is to walk 3 miles per day and your steps per mile is 2,200, your daily target would be 6,600 steps rather than the arbitrary 10,000. Personalizing your goal based on actual data is more motivating and more likely to lead to consistent behavior change.
+      </p>
+
+      <h3>Estimating Calories from Steps</h3>
+      <p>
+        The relationship between steps and calories depends on body weight, walking speed, and terrain. This calculator uses an average of 0.04 calories per step, which is a reasonable estimate for a 150-pound person walking at a moderate pace on flat ground. Heavier individuals burn more per step, and walking uphill or at faster speeds increases the burn. For a more precise estimate, use a calculator that factors in your weight, or check your fitness tracker's calorie estimate, which typically uses heart rate and personal data for better accuracy.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many steps are in a mile?</h3>
+      <p>
+        The average person takes about 2,000 to 2,500 steps per mile when walking. Taller individuals take fewer steps because their stride is longer. When running, the number drops to roughly 1,400 to 1,700 steps per mile. This calculator gives your exact personal ratio based on your data.
+      </p>
+
+      <h3>How do I calculate steps per mile?</h3>
+      <p>
+        Divide your total steps by the distance in miles. For example, if your tracker shows 4,200 steps for a 2-mile walk, your steps per mile is 4,200 / 2 = 2,100. If your distance is in kilometers, the calculator converts it automatically.
+      </p>
+
+      <h3>How many calories do you burn per step?</h3>
+      <p>
+        The average person burns approximately 0.04 calories per step when walking at a moderate pace. A 150-pound person walking 10,000 steps burns roughly 400 calories. Heavier individuals and those walking faster or uphill burn more per step.
+      </p>
+
+      <h3>How many steps are in a kilometer?</h3>
+      <p>
+        The average person takes about 1,250 to 1,550 steps per kilometer when walking. Since 1 mile equals 1.609 km, you can convert by dividing your steps per mile by 1.609. Running produces about 850 to 1,050 steps per km.
+      </p>
+
+      <h3>How do I measure my stride length?</h3>
+      <p>
+        Walk a known distance and count your steps, then divide the distance by the step count. For example, 100 meters in 130 steps gives a stride length of 0.77 meters. This calculator computes your stride length automatically from the data you enter.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Steps Per Mile Calculator", url: health_steps_per_mile_url %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Pace Calculator", description: "Calculate your running pace, finish time, or distance from any two values.", path: health_pace_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("steps-per-mile-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

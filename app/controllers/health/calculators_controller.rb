@@ -31,6 +31,10 @@ module Health
     def weight_loss_calories; end
     def pregnancy_calories; end
     def bulking_calories; end
+    def calories_per_serving; end
+    def protein_per_meal; end
+    def calories_per_100g; end
+    def steps_per_mile; end
 
     private
 

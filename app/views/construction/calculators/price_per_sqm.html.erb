@@ -1,0 +1,180 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Price Per Square Meter Calculator - Free Online Tool",
+  description: "Calculate price per square meter, price per square foot, and price per acre from total cost and area. Supports both metric and imperial inputs.",
+  canonical: construction_price_per_sqm_url,
+  og: {
+    title: "Price Per Square Meter Calculator - Free Online Tool | CalcWise",
+    description: "Calculate price per m², per sqft, and per acre from total cost and area. Supports metric and imperial inputs.",
+    url: construction_price_per_sqm_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Price Per Square Meter Calculator", url: construction_price_per_sqm_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate price per square meter?", answer: "Divide the total cost by the area in square meters. For example, if an apartment costs $300,000 and has an area of 85 m², the price per square meter is $300,000 / 85 = $3,529.41/m². This metric is the international standard for comparing property values and construction costs, used widely in Europe, Asia, Australia, and most countries outside the United States." },
+  { question: "How do I convert price per sqm to price per sqft?", answer: "Divide the price per square meter by 10.7639 to get the price per square foot. Since 1 m² = 10.7639 sqft, a price of $3,000/m² equals $3,000 / 10.7639 = $278.71/sqft. Conversely, multiply price per sqft by 10.7639 to get price per m². This calculator handles both conversions automatically regardless of which unit you input." },
+  { question: "What is a typical price per square meter for construction?", answer: "Construction costs per square meter vary enormously by location, building type, and finish quality. In the United States, residential construction typically ranges from $1,100 to $4,300/m² ($100 to $400/sqft). In Europe, costs range from EUR 1,000 to EUR 3,500/m². In developing countries, costs can be as low as $300 to $800/m². Commercial and industrial construction have their own ranges. Always compare within the same market and building type." },
+  { question: "How do I calculate price per acre from price per square meter?", answer: "One acre equals 4,046.86 square meters. To get price per acre, multiply the price per square meter by 4,046.86. For example, if land costs $50/m², the price per acre is $50 x 4,046.86 = $202,343 per acre. This calculator computes price per acre automatically along with all other conversions." },
+  { question: "Should I use price per sqm or price per sqft?", answer: "Use whichever unit is standard in your local market. Most countries use price per square meter (m²), while the United States, United Kingdom, and Canada commonly use price per square foot (sqft). When comparing properties across different countries or markets, convert everything to the same unit for meaningful comparison. This calculator shows both so you can work in either system." }
+]) %>
+
+<%= calculator_schema(
+  name: "Price Per Square Meter Calculator",
+  description: "Calculate price per square meter, price per square foot, and price per acre from total cost and area in m² or sqft.",
+  url: construction_price_per_sqm_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Price Per Square Meter Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Price Per Square Meter Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate price per m&sup2;, per sqft, and per acre from any total cost and area. Enter your area in square meters or square feet.</p>
+
+    <div data-controller="price-per-sqm-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Cost ($)</label>
+            <input type="number" data-price-per-sqm-calculator-target="totalCost" data-action="input->price-per-sqm-calculator#calculate" class="w-full" placeholder="300000" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Area</label>
+            <input type="number" data-price-per-sqm-calculator-target="area" data-action="input->price-per-sqm-calculator#calculate" class="w-full" placeholder="85" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Area Unit</label>
+            <select data-price-per-sqm-calculator-target="unit" data-action="change->price-per-sqm-calculator#calculate" class="w-full">
+              <option value="sqm">Square Meters (m&sup2;)</option>
+              <option value="sqft">Square Feet (sqft)</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Price Breakdown</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Price per m&sup2;</span>
+              <span class="text-xl font-bold text-orange-600 dark:text-orange-400" data-price-per-sqm-calculator-target="pricePerSqm">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Price per sqft</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-price-per-sqm-calculator-target="pricePerSqft">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Price per acre</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-price-per-sqm-calculator-target="pricePerAcre">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-3">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Area (m&sup2;)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-price-per-sqm-calculator-target="areaSqm">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Area (sqft)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-price-per-sqm-calculator-target="areaSqft">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Area (acres)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-price-per-sqm-calculator-target="areaAcres">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->price-per-sqm-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-xl shadow-sm shadow-orange-500/20 hover:shadow-md hover:shadow-orange-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Price Per Square Meter Calculator</h2>
+      <p>
+        This calculator converts any total cost and area into price per square meter, price per square foot, and price per acre. Enter the total cost of the property or project and the area measurement. Select whether your area is in square meters or square feet, and the calculator handles all conversions automatically. Results update instantly as you type, showing the per-area price in all three units along with the area expressed in square meters, square feet, and acres.
+      </p>
+      <p>
+        Price per square meter is the global standard for comparing property values, land prices, and construction costs. Real estate professionals, property investors, and construction contractors use this metric daily to evaluate deals, compare markets, and estimate project budgets. Whether you are shopping for an apartment in Paris, comparing land prices in Australia, or estimating construction costs in the United States, this calculator gives you the numbers you need in the units you prefer.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Price Per Square Meter vs. Price Per Square Foot</h2>
+      <p>
+        The choice between square meters and square feet depends on where you are. Most of the world uses square meters, including Europe, Asia, South America, Africa, and Oceania. The United States, Canada, and the United Kingdom primarily use square feet for residential real estate. The conversion factor is 1 m&sup2; = 10.7639 sqft. When comparing properties across different markets or countries, always convert to the same unit first. A property at $3,000/m&sup2; might sound expensive, but that is only $278/sqft — a reasonable price in many US markets.
+      </p>
+
+      <h3>Understanding Price Per Acre</h3>
+      <p>
+        Price per acre is particularly useful for land purchases, agricultural properties, and large-scale development projects. One acre equals 4,046.86 square meters or 43,560 square feet. Raw land in the United States averages around $12,000 per acre nationally, but this varies enormously — from under $2,000 per acre in rural areas to over $1,000,000 per acre in major metropolitan centers. Knowing the per-acre price helps you compare land parcels of different sizes and evaluate whether a asking price is in line with local market rates.
+      </p>
+
+      <h3>Using Price Per Square Meter for Construction Budgets</h3>
+      <p>
+        Contractors and builders use price per square meter to estimate and compare construction costs. A residential build might cost $1,500 to $3,000 per square meter depending on finishes and location. Commercial office space typically ranges from $2,000 to $5,000 per square meter. Industrial and warehouse construction is usually cheaper at $800 to $1,500 per square meter. When getting construction quotes, always ask whether the per-square-meter figure includes all costs (foundation, structure, finishing, utilities) or only certain scopes of work, so you can compare quotes accurately.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate price per square meter?</h3>
+      <p>
+        Divide the total cost by the area in square meters. For example, if an apartment costs $300,000 and has an area of 85 m&sup2;, the price per square meter is $300,000 / 85 = $3,529.41/m&sup2;. This metric is the international standard for comparing property values and construction costs.
+      </p>
+
+      <h3>How do I convert price per sqm to price per sqft?</h3>
+      <p>
+        Divide the price per square meter by 10.7639 to get price per square foot. A price of $3,000/m&sup2; equals $3,000 / 10.7639 = $278.71/sqft. Conversely, multiply price per sqft by 10.7639 to get price per m&sup2;. This calculator handles both conversions automatically.
+      </p>
+
+      <h3>What is a typical price per square meter for construction?</h3>
+      <p>
+        Construction costs vary enormously by location and building type. In the United States, residential construction typically ranges from $1,100 to $4,300/m&sup2;. In Europe, costs range from EUR 1,000 to EUR 3,500/m&sup2;. Always compare within the same market and building type.
+      </p>
+
+      <h3>How do I calculate price per acre from price per square meter?</h3>
+      <p>
+        One acre equals 4,046.86 square meters. Multiply the price per square meter by 4,046.86. For example, if land costs $50/m&sup2;, the price per acre is $50 x 4,046.86 = $202,343 per acre. This calculator computes it automatically.
+      </p>
+
+      <h3>Should I use price per sqm or price per sqft?</h3>
+      <p>
+        Use whichever unit is standard in your local market. Most countries use m&sup2;, while the US, UK, and Canada commonly use sqft. When comparing across markets, convert everything to the same unit. This calculator shows both for convenience.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Price Per Square Meter Calculator", url: construction_price_per_sqm_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Square Footage Cost Calculator", description: "Calculate cost per square foot from total project cost and area.", path: construction_sqft_cost_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" },
+      { name: "Flooring Calculator", description: "Calculate flooring materials needed for any room size.", path: construction_flooring_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" },
+      { name: "Concrete Calculator", description: "Calculate cubic yards and bags of concrete needed for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("price-per-sqm-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

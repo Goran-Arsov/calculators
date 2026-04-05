@@ -1,0 +1,166 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cost Per Hour Calculator - Free Online Tool",
+  description: "Calculate cost per hour and cost per minute from any total cost and time period. Ideal for parking, rentals, freelance services, and hourly rate analysis.",
+  canonical: everyday_cost_per_hour_url,
+  og: {
+    title: "Cost Per Hour Calculator - Free Online Tool | CalcWise",
+    description: "Calculate cost per hour and cost per minute instantly. Perfect for parking, rentals, and service rate comparisons.",
+    url: everyday_cost_per_hour_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Cost Per Hour Calculator", url: everyday_cost_per_hour_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate cost per hour?", answer: "Divide the total cost by the number of hours. For example, a $24 parking fee for 8 hours is $24 / 8 = $3.00 per hour. This same formula works for equipment rentals, service charges, subscription costs, and any expense measured over time." },
+  { question: "How do I convert cost per hour to cost per minute?", answer: "Divide the hourly cost by 60. For example, if something costs $12 per hour, the per-minute cost is $12 / 60 = $0.20 per minute. This is useful for comparing parking meters, phone call rates, or any service billed by the minute." },
+  { question: "How do I compare hourly rates for different services?", answer: "Calculate the total cost divided by total hours for each service to get a standardized hourly rate. A $150 service lasting 2 hours ($75/hr) versus a $100 service lasting 1.5 hours ($66.67/hr) reveals the second option is cheaper per hour, even though the first costs more overall." },
+  { question: "What is the average cost per hour for common services?", answer: "Costs vary widely by location and service type. Parking typically ranges from $1-10 per hour in urban areas. Equipment rental averages $20-100 per hour depending on the equipment. Professional services like plumbing or electrical work average $50-150 per hour. Coworking spaces range from $3-10 per hour." },
+  { question: "How can I reduce my hourly costs?", answer: "Look for daily or weekly rates instead of hourly rates, which often provide a lower per-hour cost. Book during off-peak times when rates are lower. Compare multiple providers. For services, bundle tasks to reduce the total hours needed. For parking, consider monthly passes if you park frequently in the same location." }
+]) %>
+
+<%= calculator_schema(
+  name: "Cost Per Hour Calculator",
+  description: "Calculate cost per hour and cost per minute from total cost and hours of use.",
+  url: everyday_cost_per_hour_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Cost Per Hour Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cost Per Hour Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the hourly and per-minute cost of any expense based on total cost and number of hours.</p>
+
+    <div data-controller="cost-per-hour-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Cost ($)</label>
+            <input type="number" data-cost-per-hour-calculator-target="totalCost" data-action="input->cost-per-hour-calculator#calculate" class="w-full" placeholder="24.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Hours</label>
+            <input type="number" data-cost-per-hour-calculator-target="numberOfHours" data-action="input->cost-per-hour-calculator#calculate" class="w-full" placeholder="8" step="0.25" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per Hour</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-hour-calculator-target="resultCostPerHour">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per Minute</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-hour-calculator-target="resultCostPerMinute">--</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per 8-Hour Day</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-hour-calculator-target="resultCostPer8Hours">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per 24 Hours</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-hour-calculator-target="resultCostPerDay">--</span>
+            </div>
+          </div>
+          <button data-action="click->cost-per-hour-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Cost Per Hour Calculator</h2>
+      <p>
+        Enter the total cost and the number of hours to get an instant breakdown of cost per hour, cost per minute, cost for an 8-hour workday, and cost for a full 24-hour day. This calculator is useful for comparing parking rates, equipment rental costs, service provider fees, and any time-based expense. Fractional hours are supported, so you can enter 1.5 for 90 minutes.
+      </p>
+      <p>
+        The per-minute rate is especially useful for services billed by the minute, such as phone calls, parking meters, and some cloud computing services. The 8-hour and 24-hour projections help you estimate costs for typical workday and full-day usage scenarios.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Common Uses for Hourly Cost Analysis</h2>
+      <p>
+        Hourly cost calculation is essential for many everyday decisions. Compare parking options by calculating the per-hour rate for garages, meters, and lots. Evaluate equipment rentals by dividing the total rental fee by the hours of actual use. When hiring professionals, compare their effective hourly rates to ensure you are getting fair value. Freelancers and contractors can use this calculator to verify their per-hour earnings after accounting for project time.
+      </p>
+
+      <h3>Parking Cost Comparisons</h3>
+      <p>
+        Urban parking rates vary dramatically. A flat-rate lot at $30 for 10 hours costs $3.00 per hour, while a meter at $2.50 per hour may be cheaper for short stays but more expensive for long ones. Airport parking at $18 per day works out to just $0.75 per hour. Use the cost per hour calculator to compare options before you park and find the best deal for your specific time frame.
+      </p>
+
+      <h3>Equipment and Vehicle Rentals</h3>
+      <p>
+        Rental companies often offer hourly, daily, and weekly rates. A tool rental at $45 for 4 hours ($11.25/hr) may be more expensive per hour than a $75 daily rate for 8 hours of use ($9.38/hr). Always calculate the effective hourly cost for each pricing option to determine which billing period gives you the best value for your planned usage time.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate cost per hour?</h3>
+      <p>
+        Divide the total cost by the number of hours. A $24 parking fee for 8 hours is $24 / 8 = $3.00 per hour.
+      </p>
+
+      <h3>How do I convert cost per hour to cost per minute?</h3>
+      <p>
+        Divide the hourly cost by 60. If something costs $12 per hour, the per-minute cost is $12 / 60 = $0.20 per minute.
+      </p>
+
+      <h3>How do I compare hourly rates for different services?</h3>
+      <p>
+        Calculate total cost divided by total hours for each service. This standardized hourly rate allows direct comparison regardless of how each service is priced.
+      </p>
+
+      <h3>What is the average cost per hour for common services?</h3>
+      <p>
+        Parking typically ranges from $1-10 per hour. Equipment rental averages $20-100 per hour. Professional services like plumbing average $50-150 per hour. Coworking spaces range from $3-10 per hour.
+      </p>
+
+      <h3>How can I reduce my hourly costs?</h3>
+      <p>
+        Look for daily or weekly rates instead of hourly ones. Book during off-peak times. Compare providers. Bundle tasks to reduce total hours needed for services.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Cost Per Hour Calculator", url: everyday_cost_per_hour_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Fuel Cost Calculator", description: "Estimate fuel cost for trips based on distance, MPG, and gas price.", path: everyday_fuel_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("cost-per-hour-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

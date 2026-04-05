@@ -113,6 +113,26 @@ import CostOfLivingCalculatorController from "controllers/cost_of_living_calcula
 import DataUsageCostCalculatorController from "controllers/data_usage_cost_calculator_controller"
 import HourlyToProjectCalculatorController from "controllers/hourly_to_project_calculator_controller"
 import SqftCostCalculatorController from "controllers/sqft_cost_calculator_controller"
+import CostPerClickCalculatorController from "controllers/cost_per_click_calculator_controller"
+import CostPerLeadCalculatorController from "controllers/cost_per_lead_calculator_controller"
+import CostPerAcquisitionCalculatorController from "controllers/cost_per_acquisition_calculator_controller"
+import RevenuePerEmployeeCalculatorController from "controllers/revenue_per_employee_calculator_controller"
+import EarningsPerShareCalculatorController from "controllers/earnings_per_share_calculator_controller"
+import SavingsPerMonthCalculatorController from "controllers/savings_per_month_calculator_controller"
+import CostPerPersonCalculatorController from "controllers/cost_per_person_calculator_controller"
+import CostPerDayCalculatorController from "controllers/cost_per_day_calculator_controller"
+import CostPerHourCalculatorController from "controllers/cost_per_hour_calculator_controller"
+import CostPerServingCalculatorController from "controllers/cost_per_serving_calculator_controller"
+import CostPerWearCalculatorController from "controllers/cost_per_wear_calculator_controller"
+import CostPerPageCalculatorController from "controllers/cost_per_page_calculator_controller"
+import PricePerLiterCalculatorController from "controllers/price_per_liter_calculator_controller"
+import WordsPerMinuteCalculatorController from "controllers/words_per_minute_calculator_controller"
+import CostPerMileCalculatorController from "controllers/cost_per_mile_calculator_controller"
+import CaloriesPerServingCalculatorController from "controllers/calories_per_serving_calculator_controller"
+import ProteinPerMealCalculatorController from "controllers/protein_per_meal_calculator_controller"
+import CaloriesPer100gCalculatorController from "controllers/calories_per_100g_calculator_controller"
+import StepsPerMileCalculatorController from "controllers/steps_per_mile_calculator_controller"
+import PricePerSqmCalculatorController from "controllers/price_per_sqm_calculator_controller"
 
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
@@ -268,6 +288,26 @@ application.register("cost-of-living-calculator", CostOfLivingCalculatorControll
 application.register("data-usage-cost-calculator", DataUsageCostCalculatorController)
 application.register("hourly-to-project-calculator", HourlyToProjectCalculatorController)
 application.register("sqft-cost-calculator", SqftCostCalculatorController)
+application.register("cost-per-click-calculator", CostPerClickCalculatorController)
+application.register("cost-per-lead-calculator", CostPerLeadCalculatorController)
+application.register("cost-per-acquisition-calculator", CostPerAcquisitionCalculatorController)
+application.register("revenue-per-employee-calculator", RevenuePerEmployeeCalculatorController)
+application.register("earnings-per-share-calculator", EarningsPerShareCalculatorController)
+application.register("savings-per-month-calculator", SavingsPerMonthCalculatorController)
+application.register("cost-per-person-calculator", CostPerPersonCalculatorController)
+application.register("cost-per-day-calculator", CostPerDayCalculatorController)
+application.register("cost-per-hour-calculator", CostPerHourCalculatorController)
+application.register("cost-per-serving-calculator", CostPerServingCalculatorController)
+application.register("cost-per-wear-calculator", CostPerWearCalculatorController)
+application.register("cost-per-page-calculator", CostPerPageCalculatorController)
+application.register("price-per-liter-calculator", PricePerLiterCalculatorController)
+application.register("words-per-minute-calculator", WordsPerMinuteCalculatorController)
+application.register("cost-per-mile-calculator", CostPerMileCalculatorController)
+application.register("calories-per-serving-calculator", CaloriesPerServingCalculatorController)
+application.register("protein-per-meal-calculator", ProteinPerMealCalculatorController)
+application.register("calories-per-100g-calculator", CaloriesPer100gCalculatorController)
+application.register("steps-per-mile-calculator", StepsPerMileCalculatorController)
+application.register("price-per-sqm-calculator", PricePerSqmCalculatorController)
 
 // Construction
 application.register("paint-calculator", PaintCalculatorController)

@@ -63,6 +63,12 @@ Rails.application.routes.draw do
     get "salary-converter", to: "calculators#salary_converter", as: :salary_converter
     get "cost-of-living-calculator", to: "calculators#cost_of_living", as: :cost_of_living
     get "hourly-to-project-calculator", to: "calculators#hourly_to_project", as: :hourly_to_project
+    get "cost-per-click-calculator", to: "calculators#cost_per_click", as: :cost_per_click
+    get "cost-per-lead-calculator", to: "calculators#cost_per_lead", as: :cost_per_lead
+    get "cost-per-acquisition-calculator", to: "calculators#cost_per_acquisition", as: :cost_per_acquisition
+    get "revenue-per-employee-calculator", to: "calculators#revenue_per_employee", as: :revenue_per_employee
+    get "earnings-per-share-calculator", to: "calculators#earnings_per_share", as: :earnings_per_share
+    get "savings-per-month-calculator", to: "calculators#savings_per_month", as: :savings_per_month
   end
 
   # Math calculators
@@ -146,6 +152,10 @@ Rails.application.routes.draw do
     get "weight-loss-calorie-calculator", to: "calculators#weight_loss_calories", as: :weight_loss_calories
     get "pregnancy-calorie-calculator", to: "calculators#pregnancy_calories", as: :pregnancy_calories
     get "bulking-calorie-calculator", to: "calculators#bulking_calories", as: :bulking_calories
+    get "calories-per-serving-calculator", to: "calculators#calories_per_serving", as: :calories_per_serving
+    get "protein-per-meal-calculator", to: "calculators#protein_per_meal", as: :protein_per_meal
+    get "calories-per-100g-calculator", to: "calculators#calories_per_100g", as: :calories_per_100g
+    get "steps-per-mile-calculator", to: "calculators#steps_per_mile", as: :steps_per_mile
   end
 
   # Construction calculators
@@ -163,6 +173,7 @@ Rails.application.routes.draw do
     get "lumber-calculator", to: "calculators#lumber", as: :lumber
     get "hvac-btu-calculator", to: "calculators#hvac_btu", as: :hvac_btu
     get "sqft-cost-calculator", to: "calculators#sqft_cost", as: :sqft_cost
+    get "price-per-sqm-calculator", to: "calculators#price_per_sqm", as: :price_per_sqm
   end
 
   # Everyday calculators
@@ -199,6 +210,15 @@ Rails.application.routes.draw do
     get "price-per-weight-calculator", to: "calculators#price_per_weight", as: :price_per_weight
     get "fuel-cost-trip-calculator", to: "calculators#fuel_cost_trip", as: :fuel_cost_trip
     get "data-usage-cost-calculator", to: "calculators#data_usage_cost", as: :data_usage_cost
+    get "cost-per-person-calculator", to: "calculators#cost_per_person", as: :cost_per_person
+    get "cost-per-day-calculator", to: "calculators#cost_per_day", as: :cost_per_day
+    get "cost-per-hour-calculator", to: "calculators#cost_per_hour", as: :cost_per_hour
+    get "cost-per-serving-calculator", to: "calculators#cost_per_serving", as: :cost_per_serving
+    get "cost-per-wear-calculator", to: "calculators#cost_per_wear", as: :cost_per_wear
+    get "cost-per-page-calculator", to: "calculators#cost_per_page", as: :cost_per_page
+    get "price-per-liter-calculator", to: "calculators#price_per_liter", as: :price_per_liter
+    get "words-per-minute-calculator", to: "calculators#words_per_minute", as: :words_per_minute
+    get "cost-per-mile-calculator", to: "calculators#cost_per_mile", as: :cost_per_mile
   end
 
   # Blog

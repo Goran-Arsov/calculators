@@ -1,0 +1,176 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cost Per Page Calculator - Free Online Tool",
+  description: "Calculate printing cost per page from cartridge price and page yield. Estimate monthly and yearly printing costs with pages per month projections.",
+  canonical: everyday_cost_per_page_url,
+  og: {
+    title: "Cost Per Page Calculator - Free Online Tool | CalcWise",
+    description: "Calculate printing cost per page, cost per 100 pages, and monthly print costs. Compare printer cartridge value easily.",
+    url: everyday_cost_per_page_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Cost Per Page Calculator", url: everyday_cost_per_page_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate cost per page for a printer?", answer: "Divide the cartridge cost by its page yield. For example, a $30 cartridge rated for 500 pages costs $30 / 500 = $0.06 per page. For color printing, add the cost per page of each cartridge (cyan, magenta, yellow, and black) together. Include drum or toner costs if applicable." },
+  { question: "What is a good cost per page for printing?", answer: "For laser printers, a good black-and-white cost per page is $0.01 to $0.03. Color laser printing typically costs $0.08 to $0.15 per page. Inkjet printers range from $0.05 to $0.10 for black and $0.10 to $0.25 for color. Tank-based inkjet printers can achieve under $0.01 per page for black and under $0.05 for color." },
+  { question: "Is a cheap printer always more expensive per page?", answer: "Often, yes. Inexpensive inkjet printers typically have higher per-page costs because their cartridges are smaller and more expensive relative to yield. Higher-end printers, especially laser printers, have larger cartridges with better yields and lower per-page costs. Over time, the total cost of ink or toner can far exceed the printer's purchase price." },
+  { question: "How do I reduce my printing costs?", answer: "Use draft mode for internal documents. Print double-sided to halve paper costs. Use compatible or remanufactured cartridges. Switch to a laser printer for high-volume black-and-white printing. Consider a tank-based inkjet for high-volume color printing. Preview before printing to avoid wasted pages. Use digital alternatives when possible." },
+  { question: "Should I include paper cost in cost per page?", answer: "For a complete cost analysis, yes. Standard copy paper costs about $0.01 to $0.02 per sheet. Add this to the ink or toner cost per page for the total printing cost. For premium paper, photo paper, or specialty media, the paper cost per page can be significantly higher and should definitely be included." }
+]) %>
+
+<%= calculator_schema(
+  name: "Cost Per Page Calculator",
+  description: "Calculate printing cost per page from cartridge cost and page yield, with monthly printing cost estimates.",
+  url: everyday_cost_per_page_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Cost Per Page Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cost Per Page Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find the true cost of printing by calculating cost per page, cost per 100 pages, and monthly printing expenses.</p>
+
+    <div data-controller="cost-per-page-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Cartridge Cost ($)</label>
+            <input type="number" data-cost-per-page-calculator-target="cartridgeCost" data-action="input->cost-per-page-calculator#calculate" class="w-full" placeholder="30.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Page Yield</label>
+            <input type="number" data-cost-per-page-calculator-target="pageYield" data-action="input->cost-per-page-calculator#calculate" class="w-full" placeholder="500" step="1" min="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pages Per Month (optional)</label>
+            <input type="number" data-cost-per-page-calculator-target="pagesPerMonth" data-action="input->cost-per-page-calculator#calculate" class="w-full" value="0" placeholder="200" step="1" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per Page</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-page-calculator-target="resultCostPerPage">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Per 100 Pages</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-page-calculator-target="resultCostPer100">--</span>
+            </div>
+            <div data-cost-per-page-calculator-target="monthlyPanel" class="hidden space-y-3">
+              <hr class="border-gray-200 dark:border-gray-700">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Monthly Cost</span>
+                <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-page-calculator-target="resultMonthlyCost">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Yearly Cost</span>
+                <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cost-per-page-calculator-target="resultYearlyCost">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Cartridges/Year</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cost-per-page-calculator-target="resultCartridgesPerYear">--</span>
+              </div>
+            </div>
+          </div>
+          <button data-action="click->cost-per-page-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Cost Per Page Calculator</h2>
+      <p>
+        Enter the cost of your printer cartridge and its rated page yield (found on the packaging or manufacturer website). The calculator shows the cost per page and cost per 100 pages. Optionally, enter your estimated monthly page count to see monthly and yearly printing costs, plus how many cartridges you will need per year. This helps you budget for printing expenses and compare different cartridge or printer options.
+      </p>
+      <p>
+        For multi-cartridge printers, calculate the cost per page for each cartridge separately and add them together for the total cost per page. For color printing, you need to account for the black cartridge plus the three color cartridges. Many printer manufacturers publish the total cost per page on their specifications pages.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Choosing a Printer Based on Cost Per Page</h2>
+      <p>
+        The purchase price of a printer is just the beginning. The ongoing cost of ink or toner is the real expense over the life of the printer. A $50 inkjet printer with cartridges that cost $0.10 per page will cost far more over time than a $250 laser printer at $0.02 per page. If you print 200 pages per month, the inkjet costs $240 per year in ink, while the laser costs just $48 per year in toner. The laser printer pays for itself in under a year.
+      </p>
+
+      <h3>Laser vs. Inkjet Cost Per Page</h3>
+      <p>
+        Laser printers generally have a lower cost per page than inkjet printers, especially for black-and-white printing. Standard laser cartridges yield 2,000-10,000 pages at $0.01-0.03 per page. Standard inkjet cartridges yield 200-500 pages at $0.05-0.15 per page. However, newer tank-based inkjet printers have dramatically reduced inkjet per-page costs to compete with laser printers, sometimes achieving under $0.01 per black page.
+      </p>
+
+      <h3>Compatible vs. OEM Cartridges</h3>
+      <p>
+        Third-party compatible cartridges can reduce cost per page by 50-80% compared to original manufacturer cartridges. A name-brand cartridge at $40 for 500 pages ($0.08 per page) versus a compatible at $12 for 500 pages ($0.024 per page) represents significant savings. Quality varies among third-party suppliers, so read reviews before purchasing. Some printer warranties may be affected by non-OEM cartridges, though this is increasingly rare.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate cost per page for a printer?</h3>
+      <p>
+        Divide the cartridge cost by its page yield. A $30 cartridge rated for 500 pages costs $0.06 per page. For color, add all cartridge costs per page together.
+      </p>
+
+      <h3>What is a good cost per page for printing?</h3>
+      <p>
+        Laser: $0.01-0.03 for black, $0.08-0.15 for color. Inkjet: $0.05-0.10 for black, $0.10-0.25 for color. Tank-based inkjet: under $0.01 for black.
+      </p>
+
+      <h3>Is a cheap printer more expensive per page?</h3>
+      <p>
+        Often, yes. Inexpensive inkjets have smaller, pricier cartridges. Over time, ink costs can far exceed the printer's purchase price.
+      </p>
+
+      <h3>How do I reduce printing costs?</h3>
+      <p>
+        Use draft mode, print double-sided, use compatible cartridges, switch to laser for high-volume black-and-white, and preview before printing.
+      </p>
+
+      <h3>Should I include paper cost in cost per page?</h3>
+      <p>
+        For a complete analysis, yes. Standard copy paper costs about $0.01-0.02 per sheet. Add this to ink or toner cost for total printing cost per page.
+      </p>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Cost Per Page Calculator", url: everyday_cost_per_page_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Unit Price Calculator", description: "Compare unit prices to find the best deal on any product.", path: everyday_unit_price_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Tip Calculator", description: "Calculate tip amounts and split the bill among friends.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("cost-per-page-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

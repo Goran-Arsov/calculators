@@ -32,6 +32,15 @@ module Everyday
     def price_per_weight; end
     def fuel_cost_trip; end
     def data_usage_cost; end
+    def cost_per_person; end
+    def cost_per_day; end
+    def cost_per_hour; end
+    def cost_per_serving; end
+    def cost_per_wear; end
+    def cost_per_page; end
+    def price_per_liter; end
+    def words_per_minute; end
+    def cost_per_mile; end
 
     private
 

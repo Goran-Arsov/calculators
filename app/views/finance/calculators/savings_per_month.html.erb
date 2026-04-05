@@ -1,0 +1,180 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Savings Per Month Calculator - Free Online Tool",
+  description: "Calculate how much you need to save per month to reach your savings goal. Free monthly savings calculator with optional interest rate for growth projections — no sign-up required.",
+  canonical: finance_savings_per_month_url,
+  og: {
+    title: "Savings Per Month Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how much you need to save per month to reach your savings goal. Free monthly savings calculator with optional interest rate for growth projections.",
+    url: finance_savings_per_month_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Savings Per Month Calculator", url: finance_savings_per_month_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate how much to save per month?", answer: "Without interest, divide your remaining savings goal by the number of months: Monthly Savings = (Savings Goal - Current Savings) / Months. For example, to save $12,000 in 12 months starting from $0, you need $1,000 per month. With an interest rate, the calculation uses the PMT formula which accounts for compound growth on your contributions." },
+  { question: "How does interest affect my monthly savings requirement?", answer: "Interest reduces the amount you need to save each month because your money earns returns while sitting in the account. For example, saving $10,000 over 24 months without interest requires $416.67 per month. With a 5% annual interest rate, you would only need about $397 per month because the interest earned makes up the difference. The longer your timeframe and higher the rate, the greater the impact." },
+  { question: "What is a realistic savings goal per month?", answer: "Financial experts commonly recommend the 50/30/20 rule: 50% of income for needs, 30% for wants, and 20% for savings. However, the right amount depends on your income, expenses, debt obligations, and financial goals. Even saving $50-100 per month is a meaningful start. The most important factor is consistency: regular monthly contributions build wealth over time through compound growth." },
+  { question: "Should I factor in interest when setting a savings goal?", answer: "Yes, especially for longer-term goals. If you are saving in a high-yield savings account or investing, the returns will help you reach your goal faster or with smaller monthly contributions. For short-term goals under 6 months, interest makes minimal difference. For goals over 1-2 years, factoring in a realistic interest rate gives you a more accurate monthly savings target." },
+  { question: "What accounts should I use for monthly savings?", answer: "For short-term goals (under 1 year), a high-yield savings account offers safety and liquidity. For medium-term goals (1-5 years), consider certificates of deposit (CDs) or money market accounts for slightly higher rates. For long-term goals (5+ years), investment accounts like index funds or target-date funds historically offer higher returns, though with more risk. Match the account type to your timeline and risk tolerance." }
+]) %>
+
+<%= calculator_schema(
+  name: "Savings Per Month Calculator",
+  description: "Calculate how much you need to save per month to reach your savings goal, with optional interest rate for growth projections.",
+  url: finance_savings_per_month_url,
+  category: "FinanceApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Savings Per Month Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Savings Per Month Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter your savings goal and timeline to calculate the monthly savings required. Add current savings and an interest rate for more precise projections.</p>
+
+    <%# Calculator UI %>
+    <div data-controller="savings-per-month-calculator" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Savings Goal ($)</label>
+            <input type="number" data-savings-per-month-calculator-target="savingsGoal" data-action="input->savings-per-month-calculator#calculate" class="w-full" placeholder="10000" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Months to Goal</label>
+            <input type="number" data-savings-per-month-calculator-target="months" data-action="input->savings-per-month-calculator#calculate" class="w-full" placeholder="24" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Savings ($) <span class="text-gray-400 font-normal">(optional)</span></label>
+            <input type="number" data-savings-per-month-calculator-target="currentSavings" data-action="input->savings-per-month-calculator#calculate" class="w-full" placeholder="2000" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%) <span class="text-gray-400 font-normal">(optional)</span></label>
+            <input type="number" data-savings-per-month-calculator-target="annualRate" data-action="input->savings-per-month-calculator#calculate" class="w-full" placeholder="5" step="any" min="0">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Savings Needed</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-savings-per-month-calculator-target="resultMonthly">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Remaining to Save</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-savings-per-month-calculator-target="resultRemaining">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Contributions</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-savings-per-month-calculator-target="resultContributions">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Interest Earned</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-savings-per-month-calculator-target="resultInterest">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->savings-per-month-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Savings Per Month Calculator</h2>
+      <p>
+        This calculator tells you exactly how much you need to set aside each month to reach your savings goal on time. Enter your target savings amount and the number of months you have to reach it. If you already have some money saved, enter your current savings and the calculator adjusts the monthly amount accordingly. For the most accurate projection, enter the annual interest rate of your savings account or investment vehicle, and the calculator uses the financial PMT formula to account for compound growth, reducing the monthly amount you need to save.
+      </p>
+      <p>
+        Whether you are saving for an emergency fund, a down payment on a house, a vacation, or any other financial goal, knowing the exact monthly contribution required turns an abstract goal into a concrete, actionable plan. By adjusting the timeframe and interest rate, you can quickly see how extending your timeline or earning a higher return reduces the monthly savings burden.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Monthly Savings Formula</h2>
+      <p>
+        Without interest, the formula is simple: <strong>Monthly Savings = (Savings Goal - Current Savings) / Months</strong>. To save $10,000 in 20 months with $2,000 already saved, you need ($10,000 - $2,000) / 20 = $400 per month. When an interest rate is included, the calculator uses the PMT formula from financial mathematics, which accounts for the compound growth of both your existing savings and your monthly contributions. This means your required monthly contribution is lower because interest does part of the work.
+      </p>
+
+      <h3>The Power of Compound Interest on Savings</h3>
+      <p>
+        Compound interest can significantly reduce the amount you need to save from your own pocket. For example, saving $50,000 over 10 years (120 months) without interest requires $416.67 per month. With a 5% annual return, you only need about $321 per month because approximately $11,500 comes from investment growth. The longer your timeline and the higher the interest rate, the more compound interest contributes. This is why starting to save early, even with smaller amounts, is so powerful.
+      </p>
+
+      <h3>Choosing the Right Interest Rate</h3>
+      <p>
+        The interest rate you use should match your savings vehicle. High-yield savings accounts currently offer 4-5% APY. Certificates of deposit may offer slightly more for locked-in terms. Money market accounts typically offer 3-5%. For longer-term goals invested in diversified index funds, historical stock market returns average about 7-10% annually before inflation. Be conservative in your estimate: it is better to save slightly more than needed than to fall short of your goal.
+      </p>
+
+      <h3>Tips for Consistent Monthly Savings</h3>
+      <p>
+        The hardest part of any savings plan is sticking to it month after month. Set up automatic transfers from your checking account to your savings account on payday so the money moves before you can spend it. Treat your monthly savings as a non-negotiable expense, just like rent or utilities. If your income varies, save a larger percentage during high-income months to offset lower-income months. Track your progress monthly to stay motivated. Even small adjustments to your spending can free up significant savings over time.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate how much to save per month?</h3>
+      <p>
+        Without interest, divide your remaining savings goal by the number of months. For example, to save $12,000 in 12 months starting from $0, you need $1,000 per month. With interest, the calculation uses the PMT formula to account for compound growth.
+      </p>
+
+      <h3>How does interest affect my monthly savings requirement?</h3>
+      <p>
+        Interest reduces the amount you need to save each month because your money earns returns. The longer your timeframe and higher the rate, the greater the impact of compound interest on reducing your required monthly contribution.
+      </p>
+
+      <h3>What is a realistic savings goal per month?</h3>
+      <p>
+        Financial experts commonly recommend saving 20% of income. However, the right amount depends on your income, expenses, and goals. Even $50-100 per month is a meaningful start. Consistency matters more than the amount.
+      </p>
+
+      <h3>Should I factor in interest when setting a savings goal?</h3>
+      <p>
+        Yes, especially for goals over 1-2 years. High-yield savings accounts and investments generate returns that help you reach your goal faster or with smaller monthly contributions. For short-term goals under 6 months, interest has minimal impact.
+      </p>
+
+      <h3>What accounts should I use for monthly savings?</h3>
+      <p>
+        For short-term goals, use a high-yield savings account. For medium-term goals, consider CDs or money market accounts. For long-term goals over 5 years, investment accounts like index funds historically offer higher returns.
+      </p>
+
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Savings Per Month Calculator", url: finance_savings_per_month_url %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Savings Goal Calculator", description: "Set a savings goal and see how to reach it over time.", path: finance_savings_goal_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Compound Interest Calculator", description: "See how your money grows over time with compound interest.", path: finance_compound_interest_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Savings Interest Calculator", description: "Calculate how much interest your savings will earn.", path: finance_savings_interest_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("savings-per-month-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

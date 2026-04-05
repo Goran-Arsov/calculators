@@ -55,6 +55,12 @@ module Finance
     def salary_converter; end
     def cost_of_living; end
     def hourly_to_project; end
+    def cost_per_click; end
+    def cost_per_lead; end
+    def cost_per_acquisition; end
+    def revenue_per_employee; end
+    def earnings_per_share; end
+    def savings_per_month; end
 
     private
 
