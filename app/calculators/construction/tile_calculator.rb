@@ -43,7 +43,7 @@ module Construction
       grout_depth_in = 0.25
       grout_volume_cuin = total_grout_linear_ft * 12.0 * @grout_width_in * grout_depth_in
       grout_lbs = (grout_volume_cuin / 13.5).ceil  # ~13.5 cu in per lb of sanded grout
-      grout_lbs = [grout_lbs, 1].max
+      grout_lbs = [ grout_lbs, 1 ].max
 
       # Adhesive (thin-set mortar bags)
       adhesive_bags = (area_with_waste / ADHESIVE_COVERAGE_SQFT_PER_BAG.to_f).ceil

@@ -57,8 +57,8 @@ module Everyday
       scores = @scores_str.split(",").map(&:strip)
       weights = @weights_str.split(",").map(&:strip)
 
-      @errors << "Scores cannot be empty" if scores.empty? || scores == [""]
-      @errors << "Weights cannot be empty" if weights.empty? || weights == [""]
+      @errors << "Scores cannot be empty" if scores.empty? || scores == [ "" ]
+      @errors << "Weights cannot be empty" if weights.empty? || weights == [ "" ]
       return if @errors.any?
 
       @errors << "Number of scores must match number of weights" if scores.size != weights.size

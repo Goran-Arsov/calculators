@@ -61,7 +61,7 @@ module Everyday
       score += 1 if @password.match?(/[^a-zA-Z0-9]/)
       score += 1 if entropy >= 60
       score += 1 if entropy >= 80
-      score = [score, 7].min
+      score = [ score, 7 ].min
       score
     end
 
@@ -79,15 +79,15 @@ module Everyday
       return "Instant" if seconds < 1
 
       units = [
-        [60,                 "second"],
-        [60,                 "minute"],
-        [24,                 "hour"],
-        [365.25,             "day"],
-        [1000,               "year"],
-        [1000,               "thousand years"],
-        [1000,               "million years"],
-        [1000,               "billion years"],
-        [Float::INFINITY,    "trillion+ years"]
+        [ 60,                 "second" ],
+        [ 60,                 "minute" ],
+        [ 24,                 "hour" ],
+        [ 365.25,             "day" ],
+        [ 1000,               "year" ],
+        [ 1000,               "thousand years" ],
+        [ 1000,               "million years" ],
+        [ 1000,               "billion years" ],
+        [ Float::INFINITY,    "trillion+ years" ]
       ]
 
       remaining = seconds

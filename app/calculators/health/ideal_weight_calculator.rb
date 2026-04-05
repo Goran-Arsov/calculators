@@ -68,7 +68,7 @@ module Health
     # Male: 50 + 2.3 kg per inch over 5 ft
     # Female: 45.5 + 2.3 kg per inch over 5 ft
     def calculate_devine(height_inches)
-      inches_over = [height_inches - BASE_HEIGHT_INCHES, 0].max
+      inches_over = [ height_inches - BASE_HEIGHT_INCHES, 0 ].max
       if @gender == "male"
         lbs(50.0 + 2.3 * inches_over)
       else
@@ -80,7 +80,7 @@ module Health
     # Male: 52 + 1.9 kg per inch over 5 ft
     # Female: 49 + 1.7 kg per inch over 5 ft
     def calculate_robinson(height_inches)
-      inches_over = [height_inches - BASE_HEIGHT_INCHES, 0].max
+      inches_over = [ height_inches - BASE_HEIGHT_INCHES, 0 ].max
       if @gender == "male"
         lbs(52.0 + 1.9 * inches_over)
       else
@@ -92,7 +92,7 @@ module Health
     # Male: 56.2 + 1.41 kg per inch over 5 ft
     # Female: 53.1 + 1.36 kg per inch over 5 ft
     def calculate_miller(height_inches)
-      inches_over = [height_inches - BASE_HEIGHT_INCHES, 0].max
+      inches_over = [ height_inches - BASE_HEIGHT_INCHES, 0 ].max
       if @gender == "male"
         lbs(56.2 + 1.41 * inches_over)
       else
@@ -104,7 +104,7 @@ module Health
     # Male: 48 + 2.7 kg per inch over 5 ft
     # Female: 45.5 + 2.2 kg per inch over 5 ft
     def calculate_hamwi(height_inches)
-      inches_over = [height_inches - BASE_HEIGHT_INCHES, 0].max
+      inches_over = [ height_inches - BASE_HEIGHT_INCHES, 0 ].max
       if @gender == "male"
         lbs(48.0 + 2.7 * inches_over)
       else

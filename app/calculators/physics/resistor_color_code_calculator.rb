@@ -63,9 +63,9 @@ module Physics
 
       digit_value = if @bands == 5 && @band3
                       COLOR_VALUES[@band1] * 100 + COLOR_VALUES[@band2] * 10 + COLOR_VALUES[@band3]
-                    else
+      else
                       COLOR_VALUES[@band1] * 10 + COLOR_VALUES[@band2]
-                    end
+      end
 
       mult = MULTIPLIER_VALUES[@multiplier]
       resistance = digit_value * mult
@@ -90,7 +90,7 @@ module Physics
     private
 
     def validate!
-      unless [4, 5].include?(@bands)
+      unless [ 4, 5 ].include?(@bands)
         @errors << "Number of bands must be 4 or 5"
         return
       end

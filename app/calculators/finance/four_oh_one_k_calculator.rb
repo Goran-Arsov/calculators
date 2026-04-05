@@ -18,8 +18,8 @@ module Finance
 
       # Employer match: match_percent of contribution, up to match_limit of contribution
       employer_annual_match = if @employer_match_limit > 0 && @employer_match_percent > 0
-                                [@annual_contribution * @employer_match_percent,
-                                 @annual_contribution * @employer_match_limit].min
+                                [ @annual_contribution * @employer_match_percent,
+                                 @annual_contribution * @employer_match_limit ].min
       else
                                 0.0
       end

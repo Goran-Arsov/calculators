@@ -17,12 +17,12 @@ module Math
 
       custom_result = if @base_raw == "e"
                         ln_value
-                      elsif @base_raw == "10"
+      elsif @base_raw == "10"
                         log10_value
-                      else
+      else
                         base_num = @base_raw.to_f
                         ::Math.log(@value) / ::Math.log(base_num)
-                      end
+      end
 
       {
         valid: true,

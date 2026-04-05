@@ -22,19 +22,19 @@ module Everyday
       unit_price_b = @price_b / @quantity_b
 
       savings_per_unit = (unit_price_a - unit_price_b).abs
-      savings_pct = if [unit_price_a, unit_price_b].max.positive?
-                      (savings_per_unit / [unit_price_a, unit_price_b].max) * 100
-                    else
+      savings_pct = if [ unit_price_a, unit_price_b ].max.positive?
+                      (savings_per_unit / [ unit_price_a, unit_price_b ].max) * 100
+      else
                       0.0
-                    end
+      end
 
       better_deal = if unit_price_a < unit_price_b
                       "A"
-                    elsif unit_price_b < unit_price_a
+      elsif unit_price_b < unit_price_a
                       "B"
-                    else
+      else
                       "Tie"
-                    end
+      end
 
       {
         unit_price_a: unit_price_a.round(4),

@@ -55,8 +55,8 @@ module Everyday
       watts_list = @watts_str.split(",").map(&:strip)
       hours_list = @hours_str.split(",").map(&:strip)
 
-      @errors << "Watts cannot be empty" if watts_list.empty? || watts_list == [""]
-      @errors << "Hours per day cannot be empty" if hours_list.empty? || hours_list == [""]
+      @errors << "Watts cannot be empty" if watts_list.empty? || watts_list == [ "" ]
+      @errors << "Hours per day cannot be empty" if hours_list.empty? || hours_list == [ "" ]
       return if @errors.any?
 
       @errors << "Number of wattage entries must match hours entries" if watts_list.size != hours_list.size

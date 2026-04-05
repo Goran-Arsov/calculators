@@ -27,7 +27,7 @@ module Construction
       perimeter = 2 * (@length + @width)
       wall_area = perimeter * @height
       opening_area = (@doors * DOOR_AREA_SQFT) + (@windows * WINDOW_AREA_SQFT)
-      coverable_area = [wall_area - opening_area, 0].max
+      coverable_area = [ wall_area - opening_area, 0 ].max
 
       # Roll coverage: account for pattern repeat waste
       roll_width_ft = STANDARD_ROLL_WIDTH_IN / 12.0
@@ -44,14 +44,14 @@ module Construction
         strips_per_roll = (STANDARD_ROLL_LENGTH_FT / @height).floor
       end
 
-      strips_per_roll = [strips_per_roll, 1].max
+      strips_per_roll = [ strips_per_roll, 1 ].max
 
       # Total strips needed
       total_strips = (perimeter / roll_width_ft).ceil
 
       # Subtract strips for doors/windows (rough: each opening saves ~1 strip)
       saved_strips = @doors + @windows
-      net_strips = [total_strips - saved_strips, 1].max
+      net_strips = [ total_strips - saved_strips, 1 ].max
 
       # Total rolls
       rolls_needed = (net_strips / strips_per_roll.to_f).ceil

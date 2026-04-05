@@ -36,7 +36,7 @@ module Finance
       return { valid: false, errors: @errors } if @errors.any?
 
       exemption = @filing_status == "married" ? MARRIED_EXEMPTION : SINGLE_EXEMPTION
-      taxable_estate = [@estate_value - @deductions - exemption, 0].max
+      taxable_estate = [ @estate_value - @deductions - exemption, 0 ].max
 
       estate_tax = calculate_estate_tax(taxable_estate)
       effective_rate = @estate_value > 0 ? (estate_tax / @estate_value * 100) : 0.0
@@ -81,7 +81,7 @@ module Finance
                           bracket[:max] - bracket[:min] + 1
         end
 
-        taxable_in_bracket = [remaining, bracket_width].min
+        taxable_in_bracket = [ remaining, bracket_width ].min
         total_tax += taxable_in_bracket * bracket[:rate]
         remaining -= taxable_in_bracket
       end

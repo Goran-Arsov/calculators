@@ -49,14 +49,14 @@ module Finance
       validate!
       return { valid: false, errors: @errors } if @errors.any?
 
-      taxable_income = [@annual_salary - @pre_tax_deductions, 0].max
+      taxable_income = [ @annual_salary - @pre_tax_deductions, 0 ].max
       periods = PAY_PERIODS[@pay_frequency]
 
       federal_tax = calculate_federal_tax(taxable_income)
       state_tax = taxable_income * STATE_TAX_RATES[@state_tax_level]
-      social_security = [taxable_income, SOCIAL_SECURITY_WAGE_BASE].min * SOCIAL_SECURITY_RATE
+      social_security = [ taxable_income, SOCIAL_SECURITY_WAGE_BASE ].min * SOCIAL_SECURITY_RATE
       medicare = taxable_income * MEDICARE_RATE
-      medicare += [taxable_income - MEDICARE_SURTAX_THRESHOLD, 0].max * MEDICARE_SURTAX_RATE
+      medicare += [ taxable_income - MEDICARE_SURTAX_THRESHOLD, 0 ].max * MEDICARE_SURTAX_RATE
       fica = social_security + medicare
 
       total_deductions = federal_tax + state_tax + fica + @pre_tax_deductions
@@ -105,7 +105,7 @@ module Finance
                           bracket[:max] == Float::INFINITY ? remaining : bracket[:max] - bracket[:min] + 1
         end
 
-        taxable_in_bracket = [remaining, bracket_width].min
+        taxable_in_bracket = [ remaining, bracket_width ].min
         total_tax += taxable_in_bracket * bracket[:rate]
         remaining -= taxable_in_bracket
       end

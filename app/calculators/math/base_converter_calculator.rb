@@ -57,11 +57,11 @@ module Math
 
     def to_decimal(value, base)
       radix = case base
-              when "binary" then 2
-              when "octal" then 8
-              when "decimal" then 10
-              when "hex" then 16
-              end
+      when "binary" then 2
+      when "octal" then 8
+      when "decimal" then 10
+      when "hex" then 16
+      end
 
       negative = value.start_with?("-")
       cleaned = value.sub(/\A-/, "")

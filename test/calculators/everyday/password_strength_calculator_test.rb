@@ -8,7 +8,7 @@ class Everyday::PasswordStrengthCalculatorTest < ActiveSupport::TestCase
     assert_nil result[:errors]
     assert_equal 3, result[:length]
     assert_equal 26, result[:pool_size]
-    assert_includes ["Very Weak"], result[:strength]
+    assert_includes [ "Very Weak" ], result[:strength]
     assert result[:score] <= 1
   end
 

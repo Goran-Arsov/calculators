@@ -43,9 +43,9 @@ module Physics
 
       k = if @material == "custom"
             @custom_k
-          else
+      else
             MATERIALS[@material][:k]
-          end
+      end
 
       # Fourier's Law of heat conduction: Q = k * A * dT / d
       # Q = heat transfer rate (W)

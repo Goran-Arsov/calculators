@@ -18,11 +18,11 @@ module Finance
       return { valid: false, errors: @errors } if @errors.any?
 
       result = case @plan_type
-               when "standard" then calculate_standard
-               when "graduated" then calculate_graduated
-               when "extended" then calculate_extended
-               when "income_driven" then calculate_income_driven
-               end
+      when "standard" then calculate_standard
+      when "graduated" then calculate_graduated
+      when "extended" then calculate_extended
+      when "income_driven" then calculate_income_driven
+      end
 
       result.merge(
         valid: true,
@@ -91,7 +91,7 @@ module Finance
         end
 
         interest = balance * monthly_rate
-        actual_payment = [current_payment, balance + interest].min
+        actual_payment = [ current_payment, balance + interest ].min
         principal = actual_payment - interest
         balance -= principal
         balance = 0.0 if balance < 0.01
@@ -139,7 +139,7 @@ module Finance
       annual_income = @monthly_income * 12
       # Discretionary income = income above 150% of federal poverty level (~$22,590 for 2024)
       poverty_line = 22_590.0
-      discretionary = [annual_income - poverty_line * 1.5, 0].max
+      discretionary = [ annual_income - poverty_line * 1.5, 0 ].max
       monthly_payment = (discretionary * 0.10 / 12.0)
 
       # Simulate payoff (max 20 years for undergrad, we use 20)
@@ -150,7 +150,7 @@ module Finance
 
       while balance > 0.01 && month < max_months
         interest = balance * monthly_rate
-        actual_payment = [monthly_payment, balance + interest].min
+        actual_payment = [ monthly_payment, balance + interest ].min
 
         if actual_payment < interest
           # Negative amortization capped at balance
@@ -165,7 +165,7 @@ module Finance
       end
 
       # Any remaining balance is forgiven after 20 years
-      forgiven = [balance, 0].max
+      forgiven = [ balance, 0 ].max
 
       {
         monthly_payment: monthly_payment.round(2),

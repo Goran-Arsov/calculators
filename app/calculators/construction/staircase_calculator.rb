@@ -21,7 +21,7 @@ module Construction
 
       # Calculate number of risers based on ideal riser height
       num_risers = (@floor_height / IDEAL_RISER_HEIGHT).round
-      num_risers = [num_risers, 1].max
+      num_risers = [ num_risers, 1 ].max
       rise_per_step = @floor_height / num_risers.to_f
 
       # Adjust if rise exceeds code maximum
@@ -38,7 +38,7 @@ module Construction
       if @run_preference && @run_preference > 0
         run_per_step = @run_preference
       else
-        run_per_step = [17.5 - rise_per_step, MIN_TREAD_DEPTH].max
+        run_per_step = [ 17.5 - rise_per_step, MIN_TREAD_DEPTH ].max
       end
 
       # Total run (horizontal distance)

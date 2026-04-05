@@ -40,13 +40,13 @@ class Math::MeanMedianModeCalculatorTest < ActiveSupport::TestCase
   test "single mode" do
     result = Math::MeanMedianModeCalculator.new(values: "1,2,2,3,4").call
     assert result[:valid]
-    assert_equal [2.0], result[:mode]
+    assert_equal [ 2.0 ], result[:mode]
   end
 
   test "multiple modes (bimodal)" do
     result = Math::MeanMedianModeCalculator.new(values: "1,1,2,2,3").call
     assert result[:valid]
-    assert_equal [1.0, 2.0], result[:mode]
+    assert_equal [ 1.0, 2.0 ], result[:mode]
   end
 
   test "no mode when all values unique" do

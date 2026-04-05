@@ -14,14 +14,14 @@ module Math
       return { valid: false, errors: @errors } if @errors.any?
 
       result = case @operation
-               when "add" then matrix_add(@matrix_a, @matrix_b)
-               when "subtract" then matrix_subtract(@matrix_a, @matrix_b)
-               when "multiply" then matrix_multiply(@matrix_a, @matrix_b)
-               when "determinant_a" then { scalar: determinant(@matrix_a) }
-               when "determinant_b" then { scalar: determinant(@matrix_b) }
-               when "transpose_a" then { matrix: transpose(@matrix_a) }
-               when "transpose_b" then { matrix: transpose(@matrix_b) }
-               end
+      when "add" then matrix_add(@matrix_a, @matrix_b)
+      when "subtract" then matrix_subtract(@matrix_a, @matrix_b)
+      when "multiply" then matrix_multiply(@matrix_a, @matrix_b)
+      when "determinant_a" then { scalar: determinant(@matrix_a) }
+      when "determinant_b" then { scalar: determinant(@matrix_b) }
+      when "transpose_a" then { matrix: transpose(@matrix_a) }
+      when "transpose_b" then { matrix: transpose(@matrix_b) }
+      end
 
       if result.key?(:scalar)
         { valid: true, operation: @operation, scalar: result[:scalar].round(4) }

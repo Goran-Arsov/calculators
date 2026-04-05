@@ -33,7 +33,7 @@ module Health
       # Widmark formula: BAC = (alcohol_grams / (body_weight_grams * widmark)) * 100 - (metabolism_rate * hours)
       alcohol_grams = @drinks * ALCOHOL_GRAMS_PER_DRINK
       raw_bac = (alcohol_grams / (weight_grams * widmark)) * 100
-      bac = [raw_bac - (METABOLISM_RATE * @hours), 0.0].max
+      bac = [ raw_bac - (METABOLISM_RATE * @hours), 0.0 ].max
 
       status = categorize(bac)
       hours_until_sober = bac > 0 ? (bac / METABOLISM_RATE) : 0.0

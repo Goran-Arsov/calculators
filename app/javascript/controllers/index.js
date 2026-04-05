@@ -25,6 +25,16 @@ import NetWorthCalculatorController from "controllers/net_worth_calculator_contr
 import HomeAffordabilityCalculatorController from "controllers/home_affordability_calculator_controller"
 import BusinessLoanCalculatorController from "controllers/business_loan_calculator_controller"
 import CurrencyConverterCalculatorController from "controllers/currency_converter_calculator_controller"
+import PaycheckCalculatorController from "controllers/paycheck_calculator_controller"
+import FourOhOneKCalculatorController from "controllers/four_oh_one_k_calculator_controller"
+import AmortizationCalculatorController from "controllers/amortization_calculator_controller"
+import StockProfitCalculatorController from "controllers/stock_profit_calculator_controller"
+import CdCalculatorController from "controllers/cd_calculator_controller"
+import SavingsInterestCalculatorController from "controllers/savings_interest_calculator_controller"
+import HouseFlipCalculatorController from "controllers/house_flip_calculator_controller"
+import StudentLoanCalculatorController from "controllers/student_loan_calculator_controller"
+import EstateTaxCalculatorController from "controllers/estate_tax_calculator_controller"
+import CryptoProfitCalculatorController from "controllers/crypto_profit_calculator_controller"
 
 // Math calculators
 import PercentageCalculatorController from "controllers/percentage_calculator_controller"
@@ -38,6 +48,14 @@ import StandardDeviationCalculatorController from "controllers/standard_deviatio
 import GcdLcmCalculatorController from "controllers/gcd_lcm_calculator_controller"
 import SampleSizeCalculatorController from "controllers/sample_size_calculator_controller"
 import AspectRatioCalculatorController from "controllers/aspect_ratio_calculator_controller"
+import MatrixCalculatorController from "controllers/matrix_calculator_controller"
+import LogarithmCalculatorController from "controllers/logarithm_calculator_controller"
+import ProbabilityCalculatorController from "controllers/probability_calculator_controller"
+import PermutationCombinationCalculatorController from "controllers/permutation_combination_calculator_controller"
+import MeanMedianModeCalculatorController from "controllers/mean_median_mode_calculator_controller"
+import BaseConverterCalculatorController from "controllers/base_converter_calculator_controller"
+import SigFigsCalculatorController from "controllers/sig_figs_calculator_controller"
+import ScientificNotationCalculatorController from "controllers/scientific_notation_calculator_controller"
 
 // Physics calculators
 import VelocityCalculatorController from "controllers/velocity_calculator_controller"
@@ -53,6 +71,11 @@ import WireGaugeCalculatorController from "controllers/wire_gauge_calculator_con
 import DecibelCalculatorController from "controllers/decibel_calculator_controller"
 import WavelengthFrequencyCalculatorController from "controllers/wavelength_frequency_calculator_controller"
 import PlanetWeightCalculatorController from "controllers/planet_weight_calculator_controller"
+import ResistorColorCodeCalculatorController from "controllers/resistor_color_code_calculator_controller"
+import GearRatioCalculatorController from "controllers/gear_ratio_calculator_controller"
+import PressureConverterCalculatorController from "controllers/pressure_converter_calculator_controller"
+import HeatTransferCalculatorController from "controllers/heat_transfer_calculator_controller"
+import SpringConstantCalculatorController from "controllers/spring_constant_calculator_controller"
 
 // Health calculators
 import BmiCalculatorController from "controllers/bmi_calculator_controller"
@@ -68,6 +91,15 @@ import OneRepMaxCalculatorController from "controllers/one_rep_max_calculator_co
 import DogAgeCalculatorController from "controllers/dog_age_calculator_controller"
 import PregnancyWeekCalculatorController from "controllers/pregnancy_week_calculator_controller"
 import DogFoodCalculatorController from "controllers/dog_food_calculator_controller"
+import IdealWeightCalculatorController from "controllers/ideal_weight_calculator_controller"
+import BacCalculatorController from "controllers/bac_calculator_controller"
+import ConceptionCalculatorController from "controllers/conception_calculator_controller"
+import HeartRateZoneCalculatorController from "controllers/heart_rate_zone_calculator_controller"
+import KetoCalculatorController from "controllers/keto_calculator_controller"
+import IntermittentFastingCalculatorController from "controllers/intermittent_fasting_calculator_controller"
+import OvulationCalculatorController from "controllers/ovulation_calculator_controller"
+import BloodPressureCalculatorController from "controllers/blood_pressure_calculator_controller"
+import LeanBodyMassCalculatorController from "controllers/lean_body_mass_calculator_controller"
 
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
@@ -75,6 +107,13 @@ import FlooringCalculatorController from "controllers/flooring_calculator_contro
 import ConcreteCalculatorController from "controllers/concrete_calculator_controller"
 import GravelMulchCalculatorController from "controllers/gravel_mulch_calculator_controller"
 import FenceCalculatorController from "controllers/fence_calculator_controller"
+import RoofingCalculatorController from "controllers/roofing_calculator_controller"
+import StaircaseCalculatorController from "controllers/staircase_calculator_controller"
+import DeckCalculatorController from "controllers/deck_calculator_controller"
+import WallpaperCalculatorController from "controllers/wallpaper_calculator_controller"
+import TileCalculatorController from "controllers/tile_calculator_controller"
+import LumberCalculatorController from "controllers/lumber_calculator_controller"
+import HvacBtuCalculatorController from "controllers/hvac_btu_calculator_controller"
 
 // Everyday calculators
 import TipCalculatorController from "controllers/tip_calculator_controller"
@@ -85,6 +124,15 @@ import GasMileageCalculatorController from "controllers/gas_mileage_calculator_c
 import FuelCostCalculatorController from "controllers/fuel_cost_calculator_controller"
 import GpaCalculatorController from "controllers/gpa_calculator_controller"
 import CookingConverterController from "controllers/cooking_converter_controller"
+import TimeZoneConverterCalculatorController from "controllers/time_zone_converter_calculator_controller"
+import ShoeSizeCalculatorController from "controllers/shoe_size_calculator_controller"
+import GradeCalculatorController from "controllers/grade_calculator_controller"
+import ElectricityBillCalculatorController from "controllers/electricity_bill_calculator_controller"
+import MovingCostCalculatorController from "controllers/moving_cost_calculator_controller"
+import PasswordStrengthCalculatorController from "controllers/password_strength_calculator_controller"
+import ScreenSizeCalculatorController from "controllers/screen_size_calculator_controller"
+import BandwidthCalculatorController from "controllers/bandwidth_calculator_controller"
+import UnitPriceCalculatorController from "controllers/unit_price_calculator_controller"
 
 // UI controllers
 import DarkModeController from "controllers/dark_mode_controller"
@@ -118,6 +166,16 @@ application.register("net-worth-calculator", NetWorthCalculatorController)
 application.register("home-affordability-calculator", HomeAffordabilityCalculatorController)
 application.register("business-loan-calculator", BusinessLoanCalculatorController)
 application.register("currency-converter-calculator", CurrencyConverterCalculatorController)
+application.register("paycheck-calculator", PaycheckCalculatorController)
+application.register("four-oh-one-k-calculator", FourOhOneKCalculatorController)
+application.register("amortization-calculator", AmortizationCalculatorController)
+application.register("stock-profit-calculator", StockProfitCalculatorController)
+application.register("cd-calculator", CdCalculatorController)
+application.register("savings-interest-calculator", SavingsInterestCalculatorController)
+application.register("house-flip-calculator", HouseFlipCalculatorController)
+application.register("student-loan-calculator", StudentLoanCalculatorController)
+application.register("estate-tax-calculator", EstateTaxCalculatorController)
+application.register("crypto-profit-calculator", CryptoProfitCalculatorController)
 
 // Math
 application.register("percentage-calculator", PercentageCalculatorController)
@@ -131,6 +189,14 @@ application.register("standard-deviation-calculator", StandardDeviationCalculato
 application.register("gcd-lcm-calculator", GcdLcmCalculatorController)
 application.register("sample-size-calculator", SampleSizeCalculatorController)
 application.register("aspect-ratio-calculator", AspectRatioCalculatorController)
+application.register("matrix-calculator", MatrixCalculatorController)
+application.register("logarithm-calculator", LogarithmCalculatorController)
+application.register("probability-calculator", ProbabilityCalculatorController)
+application.register("permutation-combination-calculator", PermutationCombinationCalculatorController)
+application.register("mean-median-mode-calculator", MeanMedianModeCalculatorController)
+application.register("base-converter-calculator", BaseConverterCalculatorController)
+application.register("sig-figs-calculator", SigFigsCalculatorController)
+application.register("scientific-notation-calculator", ScientificNotationCalculatorController)
 
 // Physics
 application.register("velocity-calculator", VelocityCalculatorController)
@@ -146,6 +212,11 @@ application.register("wire-gauge-calculator", WireGaugeCalculatorController)
 application.register("decibel-calculator", DecibelCalculatorController)
 application.register("wavelength-frequency-calculator", WavelengthFrequencyCalculatorController)
 application.register("planet-weight-calculator", PlanetWeightCalculatorController)
+application.register("resistor-color-code-calculator", ResistorColorCodeCalculatorController)
+application.register("gear-ratio-calculator", GearRatioCalculatorController)
+application.register("pressure-converter-calculator", PressureConverterCalculatorController)
+application.register("heat-transfer-calculator", HeatTransferCalculatorController)
+application.register("spring-constant-calculator", SpringConstantCalculatorController)
 
 // Health
 application.register("bmi-calculator", BmiCalculatorController)
@@ -161,6 +232,15 @@ application.register("one-rep-max-calculator", OneRepMaxCalculatorController)
 application.register("dog-age-calculator", DogAgeCalculatorController)
 application.register("pregnancy-week-calculator", PregnancyWeekCalculatorController)
 application.register("dog-food-calculator", DogFoodCalculatorController)
+application.register("ideal-weight-calculator", IdealWeightCalculatorController)
+application.register("bac-calculator", BacCalculatorController)
+application.register("conception-calculator", ConceptionCalculatorController)
+application.register("heart-rate-zone-calculator", HeartRateZoneCalculatorController)
+application.register("keto-calculator", KetoCalculatorController)
+application.register("intermittent-fasting-calculator", IntermittentFastingCalculatorController)
+application.register("ovulation-calculator", OvulationCalculatorController)
+application.register("blood-pressure-calculator", BloodPressureCalculatorController)
+application.register("lean-body-mass-calculator", LeanBodyMassCalculatorController)
 
 // Construction
 application.register("paint-calculator", PaintCalculatorController)
@@ -168,6 +248,13 @@ application.register("flooring-calculator", FlooringCalculatorController)
 application.register("concrete-calculator", ConcreteCalculatorController)
 application.register("gravel-mulch-calculator", GravelMulchCalculatorController)
 application.register("fence-calculator", FenceCalculatorController)
+application.register("roofing-calculator", RoofingCalculatorController)
+application.register("staircase-calculator", StaircaseCalculatorController)
+application.register("deck-calculator", DeckCalculatorController)
+application.register("wallpaper-calculator", WallpaperCalculatorController)
+application.register("tile-calculator", TileCalculatorController)
+application.register("lumber-calculator", LumberCalculatorController)
+application.register("hvac-btu-calculator", HvacBtuCalculatorController)
 
 // Everyday
 application.register("tip-calculator", TipCalculatorController)
@@ -178,6 +265,15 @@ application.register("gas-mileage-calculator", GasMileageCalculatorController)
 application.register("fuel-cost-calculator", FuelCostCalculatorController)
 application.register("gpa-calculator", GpaCalculatorController)
 application.register("cooking-converter", CookingConverterController)
+application.register("time-zone-converter-calculator", TimeZoneConverterCalculatorController)
+application.register("shoe-size-calculator", ShoeSizeCalculatorController)
+application.register("grade-calculator", GradeCalculatorController)
+application.register("electricity-bill-calculator", ElectricityBillCalculatorController)
+application.register("moving-cost-calculator", MovingCostCalculatorController)
+application.register("password-strength-calculator", PasswordStrengthCalculatorController)
+application.register("screen-size-calculator", ScreenSizeCalculatorController)
+application.register("bandwidth-calculator", BandwidthCalculatorController)
+application.register("unit-price-calculator", UnitPriceCalculatorController)
 
 // UI
 application.register("dark-mode", DarkModeController)

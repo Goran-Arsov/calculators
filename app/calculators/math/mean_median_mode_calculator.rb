@@ -19,9 +19,9 @@ module Math
 
       median = if count.odd?
                  sorted[count / 2]
-               else
+      else
                  (sorted[count / 2 - 1] + sorted[count / 2]) / 2.0
-               end
+      end
 
       mode_result = compute_mode(sorted)
       range = sorted.last - sorted.first
