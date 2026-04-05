@@ -2,6 +2,12 @@ Rails.application.routes.draw do
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # API
+  namespace :api, defaults: { format: :json } do
+    get "ratings/:slug", to: "ratings#show"
+    post "ratings/:slug", to: "ratings#create"
+  end
+
   # Finance calculators
   namespace :finance do
     get "mortgage-calculator", to: "calculators#mortgage", as: :mortgage

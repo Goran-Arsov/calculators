@@ -5,27 +5,57 @@ export default class extends Controller {
   static values = { slug: String }
 
   connect() {
-    this.loadRatings()
+    this.fetchRatings()
     this.checkUserVote()
   }
 
   thumbsUp() {
     if (this.hasVoted()) return
-    this.saveVote("up")
-    this.incrementRating("up")
-    this.updateUI()
-    this.trackRating("up")
+    this.submitRating("up")
   }
 
   thumbsDown() {
     if (this.hasVoted()) return
-    this.saveVote("down")
-    this.incrementRating("down")
-    this.updateUI()
-    this.trackRating("down")
+    this.submitRating("down")
   }
 
-  // Store individual user's vote
+  async submitRating(direction) {
+    // Optimistic UI update
+    this.saveVote(direction)
+    this.updateUI()
+
+    try {
+      const response = await fetch(`/api/ratings/${encodeURIComponent(this.slugValue)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ direction })
+      })
+      const data = await response.json()
+      this.upCountTarget.textContent = data.up
+      this.downCountTarget.textContent = data.down
+    } catch (e) {
+      // Server unavailable — keep optimistic update
+    }
+
+    if (typeof gtag === "function") {
+      gtag("event", "calculator_rating", {
+        calculator: this.slugValue,
+        rating: direction
+      })
+    }
+  }
+
+  async fetchRatings() {
+    try {
+      const response = await fetch(`/api/ratings/${encodeURIComponent(this.slugValue)}`)
+      const data = await response.json()
+      this.upCountTarget.textContent = data.up
+      this.downCountTarget.textContent = data.down
+    } catch (e) {
+      // Show zeros on failure
+    }
+  }
+
   hasVoted() {
     return localStorage.getItem(`rating_${this.slugValue}`) !== null
   }
@@ -34,30 +64,9 @@ export default class extends Controller {
     localStorage.setItem(`rating_${this.slugValue}`, direction)
   }
 
-  // Store aggregate counts in localStorage (simple client-side aggregation)
-  loadRatings() {
-    const data = this.getRatingData()
-    this.upCountTarget.textContent = data.up
-    this.downCountTarget.textContent = data.down
-  }
-
-  getRatingData() {
-    const stored = localStorage.getItem(`ratings_${this.slugValue}`)
-    return stored ? JSON.parse(stored) : { up: 0, down: 0 }
-  }
-
-  incrementRating(direction) {
-    const data = this.getRatingData()
-    data[direction]++
-    localStorage.setItem(`ratings_${this.slugValue}`, JSON.stringify(data))
-    this.upCountTarget.textContent = data.up
-    this.downCountTarget.textContent = data.down
-  }
-
   checkUserVote() {
     if (this.hasVoted()) {
       const vote = localStorage.getItem(`rating_${this.slugValue}`)
-      // Disable buttons, highlight the voted one
       this.upButtonTarget.disabled = true
       this.downButtonTarget.disabled = true
       if (vote === "up") this.upButtonTarget.classList.add("text-green-500")
@@ -68,14 +77,5 @@ export default class extends Controller {
 
   updateUI() {
     this.checkUserVote()
-  }
-
-  trackRating(direction) {
-    if (typeof gtag === "function") {
-      gtag("event", "calculator_rating", {
-        calculator: this.slugValue,
-        rating: direction
-      })
-    }
   }
 }
