@@ -20,6 +20,11 @@ class SitemapController < ApplicationController
       end
     end
 
+    # Programmatic SEO pages
+    ProgrammaticSeo::Registry.all_pages.each do |page|
+      @urls << { loc: send("#{page[:route_name]}_url"), changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
+    end
+
     # Blog posts
     BlogPost.published.recent.each do |post|
       @urls << { loc: blog_post_url(post.slug), changefreq: "monthly", priority: "0.6", lastmod: post.updated_at.to_date.to_s }

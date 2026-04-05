@@ -11,6 +11,15 @@ class CategoriesController < ApplicationController
       calc.merge(path: resolve_calculator_path(calc))
     end
 
+    @programmatic_calculators = ProgrammaticSeo::Registry.pages_for_category(@slug).map do |page|
+      {
+        name: page[:h1],
+        description: page[:meta_description],
+        path: send("#{page[:route_name]}_path"),
+        icon_path: page[:icon_path]
+      }
+    end
+
     set_meta_tags(
       title: @category[:title],
       description: @category[:description],

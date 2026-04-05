@@ -1,0 +1,117 @@
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: @page[:category].capitalize, url: category_url(@page[:category]) },
+  { name: @page[:h1], url: request.original_url }
+]) %>
+
+<%= faq_schema(@page[:faq].map { |f| { question: f[:question], answer: f[:answer] } }) %>
+
+<%= calculator_schema(
+  name: @page[:h1],
+  description: @page[:meta_description],
+  url: request.original_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: @page[:category].capitalize, url: category_path(@page[:category]) },
+  { name: @page[:h1] }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight"><%= @page[:h1] %></h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed"><%= @page[:intro] %></p>
+
+    <%# Calculator form — embedded if form partial exists, otherwise CTA to base calculator %>
+    <% if @page[:form_partial] %>
+      <%= render partial: @page[:form_partial] %>
+    <% elsif @page[:base_calculator_path] %>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8 text-center">
+        <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md shadow-blue-500/20">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= @page[:icon_path] %>"/></svg>
+        </div>
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Try the Calculator</h2>
+        <p class="text-gray-500 dark:text-gray-400 mb-5 max-w-md mx-auto">Use our full-featured interactive calculator with real-time results.</p>
+        <%= link_to "Open Calculator", send(@page[:base_calculator_path]), class: "inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-semibold rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all duration-200" %>
+      </div>
+    <% end %>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <%# How it works section %>
+      <h2><%= @page[:how_it_works][:heading] %></h2>
+      <% @page[:how_it_works][:paragraphs].each do |paragraph| %>
+        <p><%= paragraph %></p>
+      <% end %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <%# Example calculation %>
+      <h2><%= @page[:example][:heading] %></h2>
+      <p><%= @page[:example][:scenario] %></p>
+      <ol>
+        <% @page[:example][:steps].each do |step| %>
+          <li><%= step %></li>
+        <% end %>
+      </ol>
+
+      <%# Tips section %>
+      <h2>Tips for Accurate Results</h2>
+      <ul>
+        <% @page[:tips].each do |tip| %>
+          <li><%= tip %></li>
+        <% end %>
+      </ul>
+
+      <%# FAQ section %>
+      <h2>Frequently Asked Questions</h2>
+      <% @page[:faq].each do |faq_item| %>
+        <h3><%= faq_item[:question] %></h3>
+        <p><%= faq_item[:answer] %></p>
+      <% end %>
+    </article>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: @page[:h1], url: request.original_url %>
+
+    <%# Related programmatic variations %>
+    <% related_pages = (@page[:related_slugs] || []).filter_map { |s| ProgrammaticSeo::Registry.find(s) } %>
+    <% if related_pages.any? %>
+      <%= render "shared/related_calculators", related: related_pages.map { |rp|
+        {
+          name: rp[:h1],
+          description: rp[:meta_description],
+          path: send("#{rp[:route_name]}_path"),
+          icon_path: rp[:icon_path]
+        }
+      } %>
+    <% end %>
+
+    <%# Link back to base calculator %>
+    <% if @page[:base_calculator_path] %>
+      <div class="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200/60 dark:border-blue-800/60">
+        <p class="text-sm text-gray-700 dark:text-gray-300">
+          Looking for the full-featured version? Try our
+          <%= link_to "#{@page[:category].capitalize} Calculator", send(@page[:base_calculator_path]), class: "text-blue-600 dark:text-blue-400 font-semibold underline" %>.
+        </p>
+      </div>
+    <% end %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer" %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

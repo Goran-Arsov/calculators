@@ -271,6 +271,12 @@ Rails.application.routes.draw do
   get "health/keto-vs-standard-macros", to: "comparisons#keto_vs_macros", as: :compare_keto_vs_macros
   get "finance/simple-vs-compound-interest", to: "comparisons#simple_vs_compound", as: :compare_simple_vs_compound
 
+  # Programmatic SEO pages — auto-generated from ProgrammaticSeo::Registry
+  ProgrammaticSeo::Registry.all_slugs.each do |slug|
+    page = ProgrammaticSeo::Registry.find(slug)
+    get slug, to: "programmatic#show", defaults: { programmatic_slug: slug }, as: page[:route_name]
+  end
+
   # Category landing pages (must be last to avoid catching other routes)
   get ":category", to: "categories#show", as: :category,
       constraints: { category: /finance|math|physics|health|construction|everyday/ }
