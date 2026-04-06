@@ -1,4 +1,19 @@
 module CalculatorHelper
+  IT_TOOL_SLUGS = %w[
+    secure-random-generator uuid-generator hash-generator hmac-generator
+    jwt-decoder unix-timestamp-converter cron-expression-parser cron-job-generator
+    color-converter color-palette-picker url-parser http-header-parser
+    cidr-subnet-calculator yaml-to-json-converter csv-to-json-converter
+    xml-to-json-converter sql-formatter html-entity-encoder-decoder
+    code-minifier-beautifier escape-unescape-tool csv-to-excel-converter
+    excel-to-csv-converter markdown-to-html-converter html-to-markdown-converter
+    txt-to-pdf-converter csv-to-pdf-converter markdown-to-pdf-converter
+    excel-to-pdf-converter docx-to-pdf-converter
+    password-strength-calculator regex-tester string-encoder-decoder
+    json-formatter word-counter character-counter case-converter
+    remove-duplicates lorem-ipsum-generator text-diff-checker markdown-preview
+  ].freeze
+
   FINANCE_CALCULATORS = [
     { name: "Mortgage Calculator", slug: "mortgage-calculator", path: :finance_mortgage_path, description: "Calculate your monthly mortgage payment, total interest, and total cost of your home loan.", icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
     { name: "Compound Interest Calculator", slug: "compound-interest-calculator", path: :finance_compound_interest_path, description: "See how your money grows over time with the power of compound interest.", icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },

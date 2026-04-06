@@ -6,8 +6,16 @@ class CategoriesController < ApplicationController
     @category = ALL_CATEGORIES[@slug]
     raise ActionController::RoutingError, "Not Found" unless @category
 
-    @calculators = @category[:calculators].map do |calc|
+    all_calcs = @category[:calculators].map do |calc|
       calc.merge(path: resolve_calculator_path(calc))
+    end
+
+    if @slug == "everyday"
+      @calculators = all_calcs.reject { |c| IT_TOOL_SLUGS.include?(c[:slug]) }
+      @it_tools = all_calcs.select { |c| IT_TOOL_SLUGS.include?(c[:slug]) }
+    else
+      @calculators = all_calcs
+      @it_tools = []
     end
 
     @programmatic_calculators = ProgrammaticSeo::Registry.pages_for_category(@slug).map do |page|

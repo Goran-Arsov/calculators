@@ -87,6 +87,31 @@ document.addEventListener("turbo:load", () => {
   }
 })
 
+// "Copied!" feedback for all copy buttons
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("button")
+  if (!btn) return
+  const action = btn.getAttribute("data-action") || ""
+  if (!action.includes("#copy")) return
+
+  // Wait a tick for the copy() method to run, then show feedback
+  setTimeout(() => {
+    // Skip if already showing feedback
+    if (btn.dataset.copyFeedback) return
+    btn.dataset.copyFeedback = "true"
+
+    const msg = document.createElement("div")
+    msg.textContent = "Copied!"
+    msg.className = "text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1.5 text-center animate-fade-in-up"
+    btn.insertAdjacentElement("afterend", msg)
+
+    setTimeout(() => {
+      msg.remove()
+      delete btn.dataset.copyFeedback
+    }, 3000)
+  }, 50)
+})
+
 // Clear ad state before Turbo caches the page to prevent duplicates
 document.addEventListener("turbo:before-cache", () => {
   document.querySelectorAll("ins.adsbygoogle").forEach((ad) => {
