@@ -20,11 +20,11 @@
 ]) %>
 
 <%= faq_schema([
-  { question: "What makes this random generator secure?", answer: "This generator uses the Web Crypto API (crypto.getRandomValues) in your browser, which provides cryptographically secure pseudo-random numbers. Unlike Math.random(), which uses a predictable algorithm, the Crypto API draws from the operating system's entropy pool, making the output suitable for passwords, tokens, and security keys." },
-  { question: "What is the best length for a secure password?", answer: "Security experts recommend at least 12-16 characters for passwords. Each additional character exponentially increases the number of possible combinations. A 16-character password using all character types (letters, numbers, symbols) has about 105 bits of entropy, which would take billions of years to crack with current hardware." },
-  { question: "Should I include special characters?", answer: "Yes, including special characters significantly increases the character pool from 62 (letters + digits) to 92+ characters. This dramatically increases entropy per character from about 5.95 bits to 6.52 bits. For a 12-character password, that is the difference between 71.5 and 78.2 bits of entropy." },
-  { question: "Is the generated string stored or transmitted?", answer: "No. All random generation happens entirely in your browser using the Web Crypto API. No data is sent to any server. You can verify this by disconnecting from the internet and using the tool — it works completely offline." },
-  { question: "Can I use this for API keys and tokens?", answer: "Yes. The cryptographic randomness provided by the Web Crypto API is suitable for generating API keys, session tokens, CSRF tokens, and other security-sensitive strings. For API keys, we recommend using at least 20-30 characters with all character types enabled." }
+  { question: "What makes this random generator secure?", answer: "The security comes from the source of randomness. Standard random functions use a mathematical formula that produces a repeatable sequence once you know its starting state. The Web Crypto API, which this tool uses, pulls entropy from your operating system's hardware-level noise collectors. The output cannot be predicted or reproduced, even by someone who has access to the source code of the page." },
+  { question: "What is the best length for a secure password?", answer: "Most security guidelines recommend a minimum of 12 characters, with 16 being a comfortable standard for important accounts. Each additional character multiplies the total combinations by the pool size. A 16-character password with all character types enabled sits above 100 bits of entropy, far beyond what any current hardware can brute-force. If a service limits password length, use the maximum it allows." },
+  { question: "Should I include special characters?", answer: "In most cases, yes. Special characters widen the character pool, adding entropy without requiring extra length. Some older systems reject certain symbols. If that happens, generate a longer string using only letters and numbers to compensate. A 20-character alphanumeric string still carries over 119 bits of entropy, which is more than adequate." },
+  { question: "Is the generated string stored or transmitted?", answer: "No data leaves your browser at any point. The generation logic runs entirely in JavaScript on your device using the browser's built-in cryptographic functions. There are no network requests, no server-side processing, and no logging. You can confirm this by opening your browser's developer tools and watching the Network tab while generating." },
+  { question: "Can I use this for API keys and tokens?", answer: "Absolutely. The cryptographic quality of the randomness matches the standard used by major frameworks when generating session identifiers or CSRF tokens. For API keys, set the length to 24 or 30 characters and enable all character types. Copy the result into your environment variables or secrets manager. The security of the key also depends on how you store and transmit it after generation." }
 ]) %>
 
 <%= calculator_schema(
@@ -146,54 +146,67 @@
     <article class="prose dark:prose-invert max-w-none">
       <h2>How to Use the Secure Random Generator</h2>
       <p>
-        Adjust the length slider to choose between 6 and 30 characters. Select which character types to include: lowercase letters, uppercase letters, numbers, and special characters. Click "Generate Random String" to create a new random string. Each generated string is guaranteed to contain at least one character from every selected type. Click "Copy to Clipboard" to copy the result.
+        Start by moving the length slider to set how many characters you want in your random string. The range goes from 6 characters, which works for short verification codes, up to 30 characters for high-security tokens. Next, check or uncheck the character type boxes to control what appears in your output. Lowercase and uppercase letters along with numbers are enabled by default. Toggle special characters on when you need symbols like <code>!</code>, <code>@</code>, or <code>#</code> in the mix.
       </p>
       <p>
-        This tool uses the Web Crypto API (<code>crypto.getRandomValues</code>), which provides cryptographically secure pseudo-random numbers drawn from your operating system's entropy pool. Unlike <code>Math.random()</code>, the output is unpredictable and suitable for security-sensitive uses like passwords, API keys, and session tokens.
+        Press the "Generate Random String" button to produce a fresh result. Every time you click, the tool creates a completely new string. The generator guarantees that at least one character from each selected type appears in the output, so you never get a result that accidentally skips a category you asked for. Once you have a string you like, hit "Copy to Clipboard" to grab it instantly.
       </p>
 
       <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
 
+      <h2>Why Randomness Quality Matters</h2>
+      <p>
+        Not all random number generators are created equal. Programming languages typically offer a basic random function that is fast but predictable. If an attacker knows the algorithm and can guess the internal state, they can reproduce every value it will ever produce. That is why browsers ship a separate cryptographic random source through the Web Crypto API. It collects noise from hardware events such as mouse movements, disk timing, and interrupt patterns, then feeds that noise into a deterministic algorithm that expands it into usable bytes. The result is output that no outside observer can predict, even if they know exactly which software you are running.
+      </p>
+      <p>
+        This tool relies on <code>crypto.getRandomValues</code> for every character selection and uses a Fisher-Yates shuffle, also backed by the Crypto API, to mix the final sequence. Nothing is generated on a server and nothing leaves your browser. You could disconnect from the internet entirely and the generator would work exactly the same way.
+      </p>
+
       <h2>Understanding Entropy and Character Pools</h2>
       <p>
-        Entropy measures the unpredictability of a random string in bits. It is calculated as the string length multiplied by log2 of the character pool size. A larger pool means more entropy per character. For example, using only lowercase letters gives a pool of 26 (about 4.7 bits per character), while enabling all four types creates a pool of 92+ characters (about 6.5 bits per character).
+        Entropy is the standard way to measure how hard a random string is to guess. The formula is straightforward: multiply the number of characters in your string by the base-2 logarithm of the pool size. The pool is the total set of characters the generator can pick from. When you enable only lowercase letters, the pool is 26 and each character contributes about 4.7 bits. Add uppercase letters and the pool jumps to 52, giving roughly 5.7 bits per character. Turn on digits and you reach 62 characters at about 5.95 bits each. Flip on special characters and the pool grows past 79, pushing each character above 6.3 bits.
       </p>
 
-      <h3>Character Pool Sizes</h3>
+      <h3>How Pool Size Affects Security</h3>
       <p>
-        Lowercase letters contribute 26 characters, uppercase letters add another 26, digits add 10, and special characters add approximately 30. When all types are enabled, the total pool exceeds 90 characters. A 16-character string from this pool has over 100 bits of entropy, which is considered extremely strong. Even the most powerful computing clusters would need billions of years to brute-force such a string.
+        A 12-character string drawn from only digits has about 39.9 bits of entropy. The same 12 characters drawn from all four types climbs above 75 bits. That gap is enormous in practice. Every additional bit of entropy doubles the number of guesses an attacker needs. Going from 40 bits to 75 bits means the string is roughly 34 billion times harder to crack by brute force. The pool size you choose has a direct, measurable impact on how safe your generated string is.
       </p>
 
-      <h3>Choosing the Right Length</h3>
+      <h3>Recommended Lengths for Common Uses</h3>
       <p>
-        For everyday passwords, 12-16 characters with all character types is recommended. For API keys and tokens, use 20-30 characters for maximum security. Shorter strings (6-8 characters) may be useful for temporary PINs or verification codes but should not be used as primary passwords. The entropy display helps you evaluate whether your configuration provides adequate security for your use case.
+        For Wi-Fi passwords shared among a household, 12 to 14 characters with letters and numbers is usually plenty. Account passwords should be at least 16 characters with all types enabled, especially for email, banking, and cloud storage. API keys and webhook secrets benefit from the maximum 30-character length because they are never typed by hand and can afford to be long. One-time verification codes or temporary PINs are the main use case for shorter 6 to 8 character strings, but keep in mind that short strings are only safe when they expire quickly.
+      </p>
+
+      <h2>Practical Use Cases</h2>
+      <p>
+        Beyond passwords, there are many situations where a reliable random string saves time. Database seed values, test fixtures, throwaway usernames for staging environments, unique file name suffixes to avoid collisions, and pre-shared keys for VPN tunnels all call for random data. Developers often need a quick token while building authentication flows or testing webhook integrations. Rather than mashing keys on the keyboard and hoping the result looks random, this tool gives you a properly randomized string you can trust.
       </p>
 
       <h2>Frequently Asked Questions</h2>
 
       <h3>What makes this random generator secure?</h3>
       <p>
-        This generator uses the Web Crypto API (<code>crypto.getRandomValues</code>) in your browser, which provides cryptographically secure pseudo-random numbers. Unlike <code>Math.random()</code>, which uses a predictable algorithm, the Crypto API draws from the operating system's entropy pool, making the output suitable for passwords, tokens, and security keys.
+        The security comes from the source of randomness. Standard random functions in most programming languages use a mathematical formula that produces a repeatable sequence once you know its starting state. The Web Crypto API, which this tool uses, pulls entropy from your operating system's hardware-level noise collectors. That means the output cannot be predicted or reproduced, even by someone who has access to the source code of this page.
       </p>
 
       <h3>What is the best length for a secure password?</h3>
       <p>
-        Security experts recommend at least 12-16 characters for passwords. Each additional character exponentially increases the number of possible combinations. A 16-character password using all character types has about 105 bits of entropy, which would take billions of years to crack with current hardware.
+        Most security guidelines today recommend a minimum of 12 characters, with 16 being a comfortable standard for important accounts. The reason is math: each additional character multiplies the total number of combinations by the size of the character pool. A 16-character password with all character types enabled sits above 100 bits of entropy, which is far beyond what any current or near-future hardware can brute-force in a practical timeframe. If a service limits password length, use the maximum it allows.
       </p>
 
       <h3>Should I include special characters?</h3>
       <p>
-        Yes, including special characters significantly increases the character pool from 62 (letters + digits) to 92+ characters. This dramatically increases entropy per character. For a 12-character string, that is the difference between 71.5 and 78.2 bits of entropy, making the string substantially harder to guess.
+        In most cases, yes. Special characters widen the pool that the generator picks from, which adds entropy without requiring extra length. The tradeoff is that some older systems or input fields reject certain symbols. If you run into that issue, generate a longer string using only letters and numbers to compensate. A 20-character alphanumeric string still carries over 119 bits of entropy, which is more than adequate.
       </p>
 
       <h3>Is the generated string stored or transmitted?</h3>
       <p>
-        No. All random generation happens entirely in your browser using the Web Crypto API. No data is sent to any server. You can verify this by disconnecting from the internet and using the tool. It works completely offline.
+        No data leaves your browser at any point. The generation logic runs entirely in JavaScript on your device, using the browser's built-in cryptographic functions. There are no network requests, no server-side processing, and no logging. You can confirm this by opening your browser's developer tools, switching to the Network tab, and watching that nothing fires when you click Generate.
       </p>
 
       <h3>Can I use this for API keys and tokens?</h3>
       <p>
-        Yes. The cryptographic randomness provided by the Web Crypto API is suitable for generating API keys, session tokens, CSRF tokens, and other security-sensitive strings. For API keys, we recommend using at least 20-30 characters with all character types enabled.
+        Absolutely. The cryptographic quality of the randomness is the same standard used by major frameworks and libraries when they generate session identifiers or CSRF tokens. For API keys, set the length to 24 or 30 characters and enable all character types to maximize entropy. Copy the result directly into your environment variables or secrets manager. Just remember that the security of the key also depends on how you store and transmit it after generation.
       </p>
 
     <%= render "shared/print_button" %>
