@@ -102,5 +102,7 @@ module Everyday
     def ip_lookup; end
     def dns_lookup; end
     def mac_lookup; end
+    def odt_to_docx; end
+    def odt_to_pdf; end
   end
 end

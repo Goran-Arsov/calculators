@@ -290,6 +290,8 @@ Rails.application.routes.draw do
     get "ip-address-lookup", to: "calculators#ip_lookup", as: :ip_lookup
     get "dns-lookup", to: "calculators#dns_lookup", as: :dns_lookup
     get "mac-address-lookup", to: "calculators#mac_lookup", as: :mac_lookup
+    get "odt-to-docx-converter", to: "calculators#odt_to_docx", as: :odt_to_docx
+    get "odt-to-pdf-converter", to: "calculators#odt_to_pdf", as: :odt_to_pdf
   end
 
   # Blog
