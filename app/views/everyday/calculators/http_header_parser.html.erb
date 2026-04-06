@@ -1,0 +1,200 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "HTTP Header Parser - Free Online Security Header Analyzer",
+  description: "Parse raw HTTP headers and analyze security header coverage. Check for Content-Security-Policy, HSTS, X-Frame-Options, and more with grading.",
+  canonical: everyday_http_header_parser_url,
+  og: {
+    title: "HTTP Header Parser - Free Security Header Analyzer | CalcWise",
+    description: "Parse HTTP headers and analyze security header coverage. Get a security grade based on which headers are present or missing.",
+    url: everyday_http_header_parser_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "HTTP Header Parser", url: everyday_http_header_parser_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are HTTP headers?", answer: "HTTP headers are key-value pairs sent between a client (browser) and server with every HTTP request and response. They carry metadata about the message, such as the content type, encoding, caching rules, authentication credentials, and security policies. Headers are invisible to users but essential for how browsers and servers communicate. Each header follows the format 'Header-Name: value' and appears on its own line." },
+  { question: "What are security headers and why do they matter?", answer: "Security headers are HTTP response headers that instruct browsers to enable or disable specific security features. They prevent attacks like cross-site scripting (XSS), clickjacking, MIME sniffing, and protocol downgrade attacks. Key security headers include Content-Security-Policy (prevents XSS), Strict-Transport-Security (forces HTTPS), X-Frame-Options (prevents clickjacking), and X-Content-Type-Options (prevents MIME sniffing). Missing security headers leave websites vulnerable to common attacks." },
+  { question: "What does Content-Security-Policy do?", answer: "Content-Security-Policy (CSP) is the most powerful security header. It tells the browser which sources of content are trusted for scripts, styles, images, fonts, frames, and other resources. By restricting where code can execute from, CSP is the primary defense against cross-site scripting (XSS) attacks. A strict CSP can prevent inline scripts, eval(), and loading resources from untrusted domains." },
+  { question: "What is Strict-Transport-Security (HSTS)?", answer: "Strict-Transport-Security (HSTS) tells browsers to only connect to the site using HTTPS, even if the user types http:// or follows an HTTP link. The max-age directive specifies how long the browser should remember this rule (typically one year or 31536000 seconds). The includeSubDomains directive extends the policy to all subdomains. HSTS prevents SSL stripping attacks where an attacker downgrades an HTTPS connection to HTTP." },
+  { question: "How do I get my site's HTTP headers?", answer: "You can view HTTP headers using browser developer tools (Network tab), the curl command (curl -I https://example.com), or online tools. In Chrome or Firefox, press F12, go to the Network tab, reload the page, and click on the main request to see both request and response headers. Copy the response headers and paste them into this tool for analysis." }
+]) %>
+
+<%= calculator_schema(
+  name: "HTTP Header Parser",
+  description: "Parse raw HTTP headers and analyze security header coverage with scoring and recommendations.",
+  url: everyday_http_header_parser_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "HTTP Header Parser" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">HTTP Header Parser</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste raw HTTP headers to parse them into a structured table and analyze security header coverage with a letter grade.</p>
+
+    <div data-controller="http-header-parser-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="http-header-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Raw HTTP Headers</label>
+          <textarea id="http-header-input" data-http-header-parser-calculator-target="input" data-action="input->http-header-parser-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="8" placeholder="HTTP/1.1 200 OK
+Content-Type: text/html; charset=UTF-8
+Content-Security-Policy: default-src 'self'
+Strict-Transport-Security: max-age=31536000
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Cache-Control: public, max-age=3600"></textarea>
+        </div>
+
+        <p data-http-header-parser-calculator-target="resultError" class="hidden text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg p-3"></p>
+
+        <div data-http-header-parser-calculator-target="resultsContainer" class="hidden space-y-6">
+          <%# Parsed headers table %>
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400">Parsed Headers (<span data-http-header-parser-calculator-target="resultCount">&mdash;</span>)</h3>
+              <button data-action="click->http-header-parser-calculator#copy"
+                class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden">
+              <table class="w-full">
+                <thead>
+                  <tr class="border-b border-gray-200 dark:border-gray-700">
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide w-1/3">Header</th>
+                    <th class="px-3 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Value</th>
+                  </tr>
+                </thead>
+                <tbody data-http-header-parser-calculator-target="resultHeaders">
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <%# Security analysis %>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400">Security Header Analysis</h3>
+              <div class="flex items-center gap-3">
+                <span class="text-sm text-gray-500 dark:text-gray-400">Score: <span class="font-bold text-gray-900 dark:text-white" data-http-header-parser-calculator-target="securityScore">&mdash;</span></span>
+                <span data-http-header-parser-calculator-target="securityGrade" class="text-2xl font-extrabold text-gray-400">&mdash;</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h4 class="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide mb-2">Present</h4>
+                <div class="space-y-1 divide-y divide-gray-100 dark:divide-gray-700" data-http-header-parser-calculator-target="securityPresent">
+                </div>
+              </div>
+              <div>
+                <h4 class="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide mb-2">Missing</h4>
+                <div class="space-y-1 divide-y divide-gray-100 dark:divide-gray-700" data-http-header-parser-calculator-target="securityMissing">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding HTTP Headers</h2>
+      <p>
+        HTTP headers are metadata sent with every request and response between browsers and servers. They control caching, authentication, content negotiation, security policies, and connection management. When you load a web page, dozens of headers are exchanged behind the scenes. Request headers tell the server what the client wants (accepted formats, language preferences, cookies). Response headers tell the browser how to handle the content (content type, caching rules, security restrictions). Understanding headers is fundamental to web development, API design, and security hardening.
+      </p>
+      <p>
+        Headers follow a simple format: a name, a colon, and a value. Names are case-insensitive by convention. Some headers appear in both requests and responses (like <code>Cache-Control</code>), while others are specific to one direction. Common request headers include <code>Accept</code>, <code>Authorization</code>, <code>User-Agent</code>, and <code>Cookie</code>. Common response headers include <code>Content-Type</code>, <code>Set-Cookie</code>, <code>Location</code>, and the security headers analyzed by this tool.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Security Headers Explained</h2>
+      <p>
+        Security headers instruct browsers to enable protective features that defend against common web attacks. Without these headers, browsers default to permissive behavior that attackers can exploit. Implementing the right security headers is one of the most impactful and lowest-effort security improvements you can make to any website.
+      </p>
+
+      <h3>Content-Security-Policy (CSP)</h3>
+      <p>
+        CSP is the most powerful security header. It specifies which sources of content the browser should trust for scripts, styles, images, fonts, frames, and other resource types. A well-configured CSP prevents cross-site scripting (XSS) attacks by blocking inline scripts, <code>eval()</code>, and resources from untrusted domains. Start with a strict policy like <code>default-src 'self'</code> and add exceptions as needed. Report-only mode lets you test a policy without enforcement.
+      </p>
+
+      <h3>Strict-Transport-Security (HSTS)</h3>
+      <p>
+        HSTS forces browsers to use HTTPS for all connections to your domain, even if someone types <code>http://</code> or follows an HTTP link. The <code>max-age</code> directive specifies how long the browser remembers this rule, typically set to one year (31536000 seconds). The <code>includeSubDomains</code> directive extends the policy to all subdomains. HSTS prevents SSL stripping attacks, where a man-in-the-middle attacker downgrades a secure connection to plain HTTP to intercept traffic.
+      </p>
+
+      <h3>Other Essential Security Headers</h3>
+      <p>
+        <code>X-Frame-Options</code> prevents clickjacking by controlling whether your page can be embedded in iframes. <code>X-Content-Type-Options: nosniff</code> stops browsers from guessing content types, preventing attacks that trick browsers into executing uploaded files as scripts. <code>Referrer-Policy</code> controls how much URL information is leaked in the <code>Referer</code> header when users navigate away. <code>Permissions-Policy</code> restricts which browser features (camera, microphone, geolocation) your page can use, reducing the impact of XSS attacks.
+      </p>
+
+      <h3>Caching Headers</h3>
+      <p>
+        Caching headers control how browsers and CDNs store and reuse responses. <code>Cache-Control</code> directives include <code>public</code>, <code>private</code>, <code>no-cache</code>, <code>no-store</code>, and <code>max-age</code>. <code>ETag</code> provides a version identifier for conditional requests. <code>Last-Modified</code> specifies when the resource last changed. Proper caching configuration dramatically improves performance and reduces server load, while incorrect caching can serve stale or sensitive data to the wrong users.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What are HTTP headers?</h3>
+      <p>Key-value metadata sent with HTTP requests and responses. They control caching, authentication, content type, security, and connection behavior.</p>
+
+      <h3>What are security headers?</h3>
+      <p>Response headers that instruct browsers to enable security features. They prevent XSS, clickjacking, MIME sniffing, and protocol downgrade attacks.</p>
+
+      <h3>What does Content-Security-Policy do?</h3>
+      <p>CSP specifies which content sources are trusted for scripts, styles, and other resources. It is the primary defense against cross-site scripting attacks.</p>
+
+      <h3>What is HSTS?</h3>
+      <p>Strict-Transport-Security forces browsers to use HTTPS for all connections. It prevents SSL stripping attacks that downgrade secure connections.</p>
+
+      <h3>How do I check my site's headers?</h3>
+      <p>Use browser DevTools (F12, Network tab), run <code>curl -I https://example.com</code>, or paste headers from any source into this tool for analysis.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "HTTP Header Parser", url: everyday_http_header_parser_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "URL Parser", description: "Break down any URL into its components: scheme, host, port, path, query, and fragment.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" },
+      { name: "JSON Formatter", description: "Format, prettify, minify, and validate JSON with structure analysis.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "String Encoder/Decoder", description: "Encode and decode text with Base64, URL encoding, and HTML entities.", path: everyday_string_encoder_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("http-header-parser") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

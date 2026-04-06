@@ -1,0 +1,215 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "CIDR/Subnet Calculator - Free Online IPv4 Subnet Tool",
+  description: "Calculate network address, broadcast address, subnet mask, usable hosts, and CIDR notation for any IPv4 address and prefix length. Free online subnet calculator.",
+  canonical: everyday_subnet_calculator_url,
+  og: {
+    title: "CIDR/Subnet Calculator - Free Online IPv4 Subnet Tool | CalcWise",
+    description: "Enter an IP address and CIDR prefix to calculate network address, broadcast, subnet mask, host range, and more.",
+    url: everyday_subnet_calculator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "CIDR/Subnet Calculator", url: everyday_subnet_calculator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is subnetting?", answer: "Subnetting divides a large IP network into smaller, more manageable sub-networks (subnets). By borrowing bits from the host portion of an IP address to create additional network identifiers, subnetting allows network administrators to create logical divisions, improve security through isolation, reduce broadcast traffic, and use IP addresses more efficiently. Each subnet operates as an independent network segment." },
+  { question: "What is CIDR notation?", answer: "CIDR (Classless Inter-Domain Routing) notation represents an IP address and its associated network prefix length, written as IP/prefix. For example, 192.168.1.0/24 means the first 24 bits identify the network and the remaining 8 bits identify hosts. CIDR replaced the older classful addressing system (Class A, B, C) and allows for variable-length subnet masks, enabling much more flexible and efficient allocation of IP addresses." },
+  { question: "What is the difference between network and broadcast addresses?", answer: "The network address is the first address in a subnet and identifies the network itself. All host bits are set to 0. The broadcast address is the last address in a subnet and is used to send data to all hosts on that network. All host bits are set to 1. Neither address can be assigned to a host device, which is why the usable host count is always two less than the total address count (except for /31 and /32 subnets)." },
+  { question: "What are private IP address ranges?", answer: "Three IP address ranges are reserved for private (internal) networks and cannot be routed on the public internet: 10.0.0.0/8 (10.0.0.0 to 10.255.255.255, over 16 million addresses), 172.16.0.0/12 (172.16.0.0 to 172.31.255.255, about 1 million addresses), and 192.168.0.0/16 (192.168.0.0 to 192.168.255.255, about 65,000 addresses). Organizations use these ranges internally and connect to the internet through NAT (Network Address Translation)." },
+  { question: "How do I choose the right subnet size?", answer: "Choose a subnet size based on the number of hosts you need plus room for growth. A /24 subnet provides 254 usable hosts, which works well for most office networks. A /28 provides 14 usable hosts, suitable for small server segments. A /30 provides 2 usable hosts, used for point-to-point links between routers. Always round up to the next power of 2 and account for the network and broadcast addresses. For example, if you need 50 hosts, use a /26 (62 usable hosts), not a /27 (30 usable hosts)." }
+]) %>
+
+<%= calculator_schema(
+  name: "CIDR/Subnet Calculator",
+  description: "Calculate network address, broadcast address, subnet mask, wildcard mask, and host range for any IPv4 address and CIDR prefix.",
+  url: everyday_subnet_calculator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "CIDR/Subnet Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">CIDR/Subnet Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter an IPv4 address and CIDR prefix length to calculate network details including subnet mask, host range, broadcast address, and more.</p>
+
+    <div data-controller="subnet-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="subnet-ip-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">IP Address</label>
+            <input type="text" id="subnet-ip-input" data-subnet-calculator-target="inputIp" data-action="input->subnet-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="192.168.1.0">
+          </div>
+          <div>
+            <label for="subnet-prefix-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">CIDR Prefix Length</label>
+            <select id="subnet-prefix-input" data-subnet-calculator-target="inputPrefix" data-action="change->subnet-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <% (0..32).each do |i| %>
+                <option value="<%= i %>" <%= "selected" if i == 24 %>>/<%= i %> (<%= i < 32 ? "#{2**(32-i)} addresses" : "1 address" %>)</option>
+              <% end %>
+            </select>
+          </div>
+        </div>
+
+        <p data-subnet-calculator-target="resultError" class="hidden text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg p-3"></p>
+
+        <div data-subnet-calculator-target="resultsContainer" class="hidden space-y-4">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden">
+            <table class="w-full">
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400 w-2/5">Network Address</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-subnet-calculator-target="resultNetwork"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Broadcast Address</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-subnet-calculator-target="resultBroadcast"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Subnet Mask</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-subnet-calculator-target="resultSubnetMask"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Wildcard Mask</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-subnet-calculator-target="resultWildcard"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">First Usable Host</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-subnet-calculator-target="resultFirstHost"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Last Usable Host</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-subnet-calculator-target="resultLastHost"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Total Addresses</td>
+                  <td class="px-4 py-2.5 text-sm font-mono font-bold text-blue-600 dark:text-blue-400" data-subnet-calculator-target="resultTotalHosts"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Usable Hosts</td>
+                  <td class="px-4 py-2.5 text-sm font-mono font-bold text-blue-600 dark:text-blue-400" data-subnet-calculator-target="resultUsableHosts"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">CIDR Notation</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-subnet-calculator-target="resultCidr"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">IP Class</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-subnet-calculator-target="resultIpClass"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Private/Public</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-subnet-calculator-target="resultPrivate"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Binary Mask</td>
+                  <td class="px-4 py-2.5 text-xs font-mono text-gray-900 dark:text-white break-all" data-subnet-calculator-target="resultBinaryMask"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="flex justify-end">
+            <button data-action="click->subnet-calculator#copy"
+              class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding IP Addressing and Subnetting</h2>
+      <p>
+        Every device on an IP network needs a unique address to communicate. An IPv4 address is a 32-bit number written as four octets separated by dots, such as 192.168.1.100. Each octet ranges from 0 to 255. To organize networks efficiently, IP addresses are divided into a network portion and a host portion using a subnet mask. The subnet mask determines which bits identify the network and which bits identify individual hosts on that network. Subnetting is the process of creating these divisions, and it is a fundamental skill in network engineering.
+      </p>
+      <p>
+        Without subnetting, every organization would need a single, flat network for all its devices. This creates excessive broadcast traffic, security risks from lack of segmentation, and wasted IP addresses. Subnetting solves these problems by dividing one large network into multiple smaller networks, each with its own broadcast domain and address space.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>CIDR Notation vs Classful Addressing</h2>
+      <p>
+        The original IP addressing system used fixed classes. Class A networks used an 8-bit prefix (/8), Class B used 16 bits (/16), and Class C used 24 bits (/24). This created enormous waste: an organization needing 300 addresses had to use a Class B network with 65,534 addresses. CIDR (Classless Inter-Domain Routing) replaced this system in 1993, allowing prefix lengths from /0 to /32. CIDR enables precise allocation: a /23 provides 510 usable hosts, and a /25 provides 126. This flexibility dramatically reduced IP address waste and slowed the exhaustion of the IPv4 address space.
+      </p>
+
+      <h3>How Subnet Masks Work</h3>
+      <p>
+        A subnet mask is a 32-bit value where contiguous 1-bits mark the network portion and contiguous 0-bits mark the host portion. When a device performs a bitwise AND operation between an IP address and its subnet mask, the result is the network address. For example, the IP 192.168.1.100 with mask 255.255.255.0 (/24) yields network 192.168.1.0. The wildcard mask is the inverse of the subnet mask, with 0-bits for the network and 1-bits for the host portion. Wildcard masks are commonly used in access control lists on Cisco routers and firewalls.
+      </p>
+
+      <h3>Private IP Ranges and NAT</h3>
+      <p>
+        RFC 1918 reserves three address ranges for private networks: 10.0.0.0/8 (over 16 million addresses), 172.16.0.0/12 (about 1 million addresses), and 192.168.0.0/16 (about 65,000 addresses). These addresses cannot be routed on the public internet. Organizations use them internally and connect to the internet through NAT (Network Address Translation), which maps private addresses to one or more public addresses. The 192.168.x.x range is the most common for home and small office networks, while 10.x.x.x is preferred for larger enterprise networks due to its larger address space.
+      </p>
+
+      <h3>Choosing the Right Subnet Size</h3>
+      <p>
+        Variable Length Subnet Masking (VLSM) allows different subnets within the same network to use different prefix lengths. This is essential for efficient IP allocation. A server VLAN with 20 servers might use a /27 (30 usable hosts), while a user VLAN with 200 workstations needs a /24 (254 usable hosts), and a point-to-point link between routers needs only a /30 (2 usable hosts) or /31 (2 addresses with no broadcast). Planning subnet sizes carefully minimizes wasted addresses and leaves room for future growth. IPv4 address exhaustion has been a reality since 2011, making efficient subnetting more important than ever.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is subnetting?</h3>
+      <p>Dividing a large IP network into smaller sub-networks for better management, security, and address efficiency. Each subnet has its own address range and broadcast domain.</p>
+
+      <h3>What is CIDR notation?</h3>
+      <p>An IP address followed by a slash and prefix length, like 192.168.1.0/24. The prefix length indicates how many bits identify the network (24 bits = 255.255.255.0 mask).</p>
+
+      <h3>What is the difference between network and broadcast addresses?</h3>
+      <p>The network address (all host bits 0) identifies the subnet. The broadcast address (all host bits 1) reaches all hosts. Neither can be assigned to devices.</p>
+
+      <h3>What are private IP ranges?</h3>
+      <p>10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16 are reserved for private networks. They require NAT to communicate with the public internet.</p>
+
+      <h3>How do I choose the right subnet size?</h3>
+      <p>Count the hosts you need, add room for growth, then pick the smallest subnet that fits. For 50 hosts, use /26 (62 usable). For 10 hosts, use /28 (14 usable).</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "CIDR/Subnet Calculator", url: everyday_subnet_calculator_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Bandwidth Calculator", description: "Calculate download and upload times, convert between bandwidth units.", path: everyday_bandwidth_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Base Converter", description: "Convert numbers between binary, octal, decimal, and hexadecimal bases.", path: math_base_converter_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "URL Parser", description: "Break down any URL into its components: scheme, host, port, path, query, and fragment.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("cidr-subnet-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,170 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "UUID Generator - Free Online UUID v4 Generator",
+  description: "Generate random UUID v4 identifiers instantly. Create single or batch UUIDs in lowercase or uppercase format. Free online UUID generator tool.",
+  canonical: everyday_uuid_generator_url,
+  og: {
+    title: "UUID Generator - Free Online UUID v4 Generator | CalcWise",
+    description: "Generate random UUID v4 identifiers instantly. Create single or batch UUIDs for databases, APIs, and distributed systems.",
+    url: everyday_uuid_generator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "UUID Generator", url: everyday_uuid_generator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a UUID?", answer: "A UUID (Universally Unique Identifier) is a 128-bit identifier standardized by RFC 4122. It is represented as 32 hexadecimal digits displayed in five groups separated by hyphens in the format 8-4-4-4-12, such as 550e8400-e29b-41d4-a716-446655440000. UUIDs are designed to be unique across space and time without requiring a central authority." },
+  { question: "What is the difference between UUID v1 and UUID v4?", answer: "UUID v1 is generated using the current timestamp and the MAC address of the computer, making it partially predictable and potentially revealing network information. UUID v4 is generated entirely from random or pseudo-random numbers, providing no information about when or where it was created. UUID v4 is the most commonly used version in modern applications." },
+  { question: "Can two UUID v4 values collide?", answer: "While theoretically possible, the probability is astronomically low. UUID v4 has 122 random bits, meaning there are approximately 5.3 x 10^36 possible values. You would need to generate about 2.71 quintillion UUIDs to have a 50% probability of a single collision. In practice, UUID v4 collisions are considered impossible for all real-world applications." },
+  { question: "Should I use UUIDs as database primary keys?", answer: "UUIDs work well as primary keys in distributed systems where multiple databases need to generate IDs independently without coordination. However, they are larger than auto-incrementing integers (16 bytes vs 4-8 bytes), can cause index fragmentation in B-tree indexes, and are harder for humans to read. Consider your specific use case before choosing." },
+  { question: "Are UUIDs case-sensitive?", answer: "No, UUIDs are not case-sensitive according to RFC 4122. The hexadecimal digits a-f can be uppercase or lowercase. The UUID 550e8400-e29b-41d4-a716-446655440000 is identical to 550E8400-E29B-41D4-A716-446655440000. However, lowercase is the conventional representation and is recommended by the RFC." }
+]) %>
+
+<%= calculator_schema(
+  name: "UUID Generator",
+  description: "Generate random UUID v4 identifiers for databases, APIs, and distributed systems.",
+  url: everyday_uuid_generator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "UUID Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">UUID Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Generate random UUID v4 identifiers instantly. Create single or multiple UUIDs in lowercase or uppercase for your databases, APIs, and distributed systems.</p>
+
+    <div data-controller="uuid-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="uuid-count" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of UUIDs</label>
+            <input type="number" id="uuid-count" min="1" max="10" value="1"
+              data-uuid-generator-calculator-target="count"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div class="flex items-center gap-3">
+            <input type="checkbox" id="uuid-uppercase"
+              data-uuid-generator-calculator-target="uppercase"
+              class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 h-4 w-4">
+            <label for="uuid-uppercase" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Uppercase</label>
+          </div>
+          <button data-action="click->uuid-generator-calculator#generate"
+            class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+            Generate UUID(s)
+          </button>
+        </div>
+        <div aria-live="polite" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Generated UUID(s)</label>
+              <textarea readonly rows="5"
+                data-uuid-generator-calculator-target="resultOutput"
+                class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Click Generate to create UUIDs..."></textarea>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Version</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-uuid-generator-calculator-target="resultVersion">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Count</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-uuid-generator-calculator-target="resultCount">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->uuid-generator-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>What Is a UUID?</h2>
+      <p>
+        A UUID (Universally Unique Identifier) is a 128-bit label used to identify information in computer systems without requiring a central coordinating authority. Defined by RFC 4122, UUIDs follow a standardized format of 32 hexadecimal digits arranged in five groups separated by hyphens: <code>xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx</code>, where M indicates the version and N indicates the variant. The resulting 36-character string (including hyphens) looks like <code>550e8400-e29b-41d4-a716-446655440000</code>. UUIDs are fundamental to modern software architecture, serving as the glue that holds distributed systems together.
+      </p>
+
+      <h3>UUID Versions Explained</h3>
+      <p>
+        The UUID specification defines five versions, each using a different generation strategy. Version 1 (v1) combines a timestamp with the generating machine's MAC address, producing time-ordered identifiers that can reveal network information. Version 2 (v2) is a DCE Security variant rarely used in practice. Version 3 (v3) generates deterministic UUIDs by hashing a namespace and name with MD5. Version 4 (v4) is the most popular version, constructed entirely from random or pseudo-random numbers, offering 122 bits of randomness. Version 5 (v5) is similar to v3 but uses SHA-1 instead of MD5 for the hash. This tool generates v4 UUIDs, which are the standard choice when you need identifiers that cannot be predicted or traced back to the generating system.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>When to Use UUIDs</h2>
+      <p>
+        UUIDs solve the problem of generating unique identifiers without coordination between systems. They are essential in several common scenarios. As database primary keys in distributed systems, UUIDs allow each node to generate IDs independently without risking collisions, eliminating the bottleneck of a centralized ID generator. In API design, UUIDs serve as idempotency keys that let clients safely retry requests without causing duplicate operations. Microservice architectures rely on UUIDs for correlation IDs that trace requests across service boundaries. Message queues use them to deduplicate events. File systems use them for partition identifiers. Every major cloud platform, from AWS to Azure, uses UUIDs extensively in their APIs.
+      </p>
+
+      <h3>Collision Probability</h3>
+      <p>
+        UUID v4 provides 122 bits of randomness, yielding approximately 5.3 x 10<sup>36</sup> possible values. To put this in perspective, if you generated one billion UUIDs every second, it would take about 100 years to have even a 50% chance of producing a single duplicate. The birthday paradox tells us you would need roughly 2.71 x 10<sup>18</sup> (2.71 quintillion) UUIDs before reaching that threshold. For all practical purposes, UUID v4 collisions do not happen. Even generating a million UUIDs per second for a century gives a collision probability smaller than the chance of being struck by a meteorite.
+      </p>
+
+      <h3>UUID Format Deep Dive</h3>
+      <p>
+        The 8-4-4-4-12 hexadecimal format encodes 128 bits of data. In a v4 UUID, the 13th character is always <code>4</code>, indicating the version. The 17th character is always one of <code>8</code>, <code>9</code>, <code>a</code>, or <code>b</code>, encoding the variant field that identifies this as an RFC 4122 UUID. The remaining 122 bits are cryptographically random. When stored in a database, UUIDs can be kept as 16-byte binary values for space efficiency, or as the 36-character string form for human readability. Some databases like PostgreSQL have native UUID column types that store them efficiently as 128-bit values with built-in indexing support.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a UUID?</h3>
+      <p>A UUID is a 128-bit identifier formatted as 32 hex digits in five groups (8-4-4-4-12). Defined by RFC 4122, UUIDs are designed to be globally unique without a central authority.</p>
+
+      <h3>What is the difference between UUID v1 and UUID v4?</h3>
+      <p>UUID v1 uses timestamps and MAC addresses, making it partially predictable. UUID v4 is entirely random with 122 bits of entropy, providing no traceable information about when or where it was generated.</p>
+
+      <h3>Can two UUID v4 values collide?</h3>
+      <p>Theoretically yes, but the probability is negligibly small. With 5.3 x 10^36 possible values, you would need quintillions of UUIDs before a collision becomes remotely likely.</p>
+
+      <h3>Should I use UUIDs as database primary keys?</h3>
+      <p>UUIDs are ideal for distributed databases where nodes generate IDs independently. They are larger than integers and can fragment indexes, so weigh these tradeoffs for your use case.</p>
+
+      <h3>Are UUIDs case-sensitive?</h3>
+      <p>No. RFC 4122 states that UUIDs are case-insensitive. Lowercase is the conventional format, but uppercase is equally valid and represents the same identifier.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "UUID Generator", url: everyday_uuid_generator_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Secure Random Generator", description: "Generate cryptographically secure random strings with customizable character sets.", path: everyday_secure_random_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "Hash Generator", description: "Generate SHA-256, SHA-512, and MD5 hashes from any text input.", path: everyday_hash_generator_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" },
+      { name: "String Encoder/Decoder", description: "Encode and decode text with Base64, URL encoding, and HTML entities.", path: everyday_string_encoder_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("uuid-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

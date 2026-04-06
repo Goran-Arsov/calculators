@@ -13,7 +13,7 @@ module Everyday
 
     NEWLINE_BEFORE = %w[
       SELECT FROM WHERE INNER\ JOIN LEFT\ JOIN RIGHT\ JOIN FULL\ JOIN
-      CROSS\ JOIN JOIN GROUP\ BY ORDER\ BY HAVING LIMIT UNION
+      CROSS\ JOIN JOIN GROUP\ BY ORDER\ BY HAVING LIMIT UNION AND OR
     ].freeze
 
     INDENT_KEYWORDS = %w[AND OR ON SET VALUES INTO].freeze
@@ -81,8 +81,14 @@ module Everyday
       # Sort by length descending to handle multi-word clauses first
       sorted_clauses = NEWLINE_BEFORE.sort_by { |k| -k.length }
 
+      # Track which positions already have newlines to avoid breaking compound keywords
       sorted_clauses.each do |clause|
-        pattern = /\s+(?=#{Regexp.escape(clause)}\b)/i
+        # For standalone JOIN, avoid matching when preceded by INNER/LEFT/RIGHT/FULL/CROSS
+        if clause == "JOIN"
+          pattern = /(?<!\bINNER)(?<!\bLEFT)(?<!\bRIGHT)(?<!\bFULL)(?<!\bCROSS)\s+(?=JOIN\b)/i
+        else
+          pattern = /\s+(?=#{Regexp.escape(clause)}\b)/i
+        end
         result = result.gsub(pattern, "\n")
       end
 

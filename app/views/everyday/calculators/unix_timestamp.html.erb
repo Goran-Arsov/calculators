@@ -1,0 +1,234 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Unix Timestamp Converter - Free Online Tool",
+  description: "Convert Unix timestamps to human-readable dates and vice versa. Supports ISO 8601, RFC 2822, and multiple datetime formats. Free online epoch converter.",
+  canonical: everyday_unix_timestamp_url,
+  og: {
+    title: "Unix Timestamp Converter - Free Online Tool | CalcWise",
+    description: "Convert between Unix timestamps and human-readable dates instantly. Supports multiple datetime formats with live current timestamp display.",
+    url: everyday_unix_timestamp_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Unix Timestamp Converter", url: everyday_unix_timestamp_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a Unix timestamp?", answer: "A Unix timestamp (also called epoch time or POSIX time) is the number of seconds that have elapsed since January 1, 1970, 00:00:00 UTC. This moment is known as the Unix epoch. For example, the timestamp 1609459200 represents January 1, 2021 at midnight UTC. Unix timestamps are timezone-independent, making them ideal for storing and comparing dates across different systems." },
+  { question: "What is the Y2K38 problem?", answer: "The Year 2038 problem (Y2K38) occurs because many systems store Unix timestamps as 32-bit signed integers, which can hold a maximum value of 2,147,483,647. This corresponds to January 19, 2038 at 03:14:07 UTC. After this moment, 32-bit timestamps will overflow and wrap around to negative numbers, potentially causing software failures. Modern 64-bit systems are not affected by this limitation." },
+  { question: "Can Unix timestamps be negative?", answer: "Yes. Negative Unix timestamps represent dates before the Unix epoch of January 1, 1970. For example, a timestamp of -86400 represents December 31, 1969. This allows Unix timestamps to represent historical dates. Most modern programming languages and databases support negative timestamps without issues." },
+  { question: "What is the difference between seconds and milliseconds timestamps?", answer: "A Unix timestamp in seconds counts the number of seconds since the epoch, while a milliseconds timestamp counts milliseconds (one thousandth of a second). JavaScript's Date.now() returns milliseconds, while most server-side languages use seconds by default. To convert between them, multiply seconds by 1000 or divide milliseconds by 1000. APIs often document which format they use." },
+  { question: "Why are Unix timestamps used instead of date strings?", answer: "Unix timestamps offer several advantages over date strings: they are timezone-independent (avoiding ambiguity), they are compact (a single integer), they are easily sortable and comparable using simple arithmetic, and they work consistently across all programming languages and databases. Date strings require parsing and timezone handling, which introduces complexity and potential bugs." }
+]) %>
+
+<%= calculator_schema(
+  name: "Unix Timestamp Converter",
+  description: "Convert between Unix timestamps and human-readable datetime formats including ISO 8601, RFC 2822, and local time.",
+  url: everyday_unix_timestamp_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Unix Timestamp Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Unix Timestamp Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert Unix timestamps to human-readable dates and datetimes back to timestamps. See the current epoch time live.</p>
+
+    <div data-controller="unix-timestamp-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-8">
+
+        <%# Current Unix Timestamp %>
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Current Unix Timestamp</span>
+            <div data-unix-timestamp-calculator-target="currentTimestamp" class="text-2xl font-bold font-mono text-blue-700 dark:text-blue-400">&mdash;</div>
+          </div>
+          <button data-action="click->unix-timestamp-calculator#copyCurrentTimestamp"
+            class="text-xs px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+        </div>
+
+        <%# Timestamp to Date %>
+        <div>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Timestamp to Date</h2>
+          <div class="flex gap-3 mb-4">
+            <div class="flex-1">
+              <label for="unix-ts-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unix Timestamp</label>
+              <input type="number" id="unix-ts-input" data-unix-timestamp-calculator-target="timestampInput"
+                data-action="input->unix-timestamp-calculator#convertToDatetime"
+                class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="e.g. 1609459200">
+            </div>
+            <div class="flex items-end">
+              <button data-action="click->unix-timestamp-calculator#useCurrentTimestamp"
+                class="px-3 py-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium">Now</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <% [
+              ["ISO 8601", "resultIso8601"],
+              ["RFC 2822", "resultRfc2822"],
+              ["UTC", "resultUtc"],
+              ["Local Format", "resultLocal"],
+              ["Date", "resultDate"],
+              ["Time", "resultTime"],
+              ["Day of Week", "resultDayOfWeek"],
+              ["Milliseconds", "resultMilliseconds"],
+              ["Past/Future", "resultPastFuture"],
+              ["Relative Time", "resultRelative"]
+            ].each do |label, target| %>
+              <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-xs font-semibold text-gray-500 dark:text-gray-400"><%= label %></span>
+                  <button data-action="click->unix-timestamp-calculator#copyResult" data-unix-timestamp-calculator-target-param="<%= target %>"
+                    class="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+                </div>
+                <div data-unix-timestamp-calculator-target="<%= target %>" class="text-sm font-mono text-gray-900 dark:text-white break-all">&mdash;</div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <hr class="border-gray-200 dark:border-gray-700">
+
+        <%# Date to Timestamp %>
+        <div>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Date to Timestamp</h2>
+          <div class="flex gap-3 mb-4">
+            <div class="flex-1">
+              <label for="unix-dt-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Date & Time</label>
+              <input type="datetime-local" id="unix-dt-input" data-unix-timestamp-calculator-target="datetimeInput"
+                data-action="input->unix-timestamp-calculator#convertToTimestamp"
+                class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="flex items-end">
+              <button data-action="click->unix-timestamp-calculator#useCurrentDatetime"
+                class="px-3 py-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium">Now</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Unix Timestamp (seconds)</span>
+                <button data-action="click->unix-timestamp-calculator#copyResult" data-unix-timestamp-calculator-target-param="toTimestampResult"
+                  class="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+              </div>
+              <div data-unix-timestamp-calculator-target="toTimestampResult" class="text-sm font-mono text-gray-900 dark:text-white">&mdash;</div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Milliseconds</span>
+                <button data-action="click->unix-timestamp-calculator#copyResult" data-unix-timestamp-calculator-target-param="toTimestampMillis"
+                  class="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+              </div>
+              <div data-unix-timestamp-calculator-target="toTimestampMillis" class="text-sm font-mono text-gray-900 dark:text-white">&mdash;</div>
+            </div>
+          </div>
+        </div>
+
+        <button data-action="click->unix-timestamp-calculator#copy" class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy All Results</button>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>What Is a Unix Timestamp?</h2>
+      <p>
+        A Unix timestamp, also known as epoch time or POSIX time, counts the number of seconds elapsed since January 1, 1970, 00:00:00 Coordinated Universal Time (UTC). This reference point is called the Unix epoch, and it was chosen when the Unix operating system was being developed at Bell Labs in the early 1970s. Every second that passes increments the counter by one, creating a simple, universal way to represent any moment in time as a single integer.
+      </p>
+      <p>
+        The beauty of Unix timestamps lies in their simplicity. Unlike date strings that require timezone context, parsing rules, and locale awareness, a timestamp is an unambiguous number. The value 1609459200 means exactly one thing everywhere in the world: January 1, 2021 at midnight UTC. This makes timestamps the preferred format for storing, transmitting, and comparing dates in databases, APIs, log files, and distributed systems.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Developers Use Epoch Time</h2>
+      <p>
+        Timestamps solve several problems that plague date strings. They are timezone-independent, meaning a server in New York and a server in Tokyo will produce identical timestamps for the same moment. They are sortable with simple numeric comparison, requiring no date parsing logic. They are compact, fitting in a single 32-bit or 64-bit integer. And they make arithmetic trivial: adding 86,400 to any timestamp advances it by exactly one day.
+      </p>
+      <p>
+        Most programming languages provide built-in support for Unix timestamps. In JavaScript, <code>Date.now()</code> returns the current time in milliseconds since the epoch. Python offers <code>time.time()</code> for seconds. Ruby uses <code>Time.now.to_i</code>. PHP has <code>time()</code>. Every major database engine supports timestamp columns and conversion functions, making epoch time a universal lingua franca for temporal data.
+      </p>
+
+      <h3>The Y2K38 Problem</h3>
+      <p>
+        Systems storing timestamps as 32-bit signed integers face the Year 2038 problem. A signed 32-bit integer maxes out at 2,147,483,647, which corresponds to January 19, 2038 at 03:14:07 UTC. After this second, the counter overflows to a negative number, jumping backward to December 13, 1901. This is the Unix equivalent of the Y2K bug. Modern 64-bit systems avoid this entirely, supporting timestamps up to 292 billion years in the future. However, embedded systems, legacy databases, and older file formats remain vulnerable.
+      </p>
+
+      <h3>Negative Timestamps and Historical Dates</h3>
+      <p>
+        Unix timestamps can be negative, representing dates before the epoch. A timestamp of -1 corresponds to December 31, 1969 at 23:59:59 UTC. This allows timestamps to encode historical dates: the moon landing on July 20, 1969 has a timestamp of approximately -14,182,940. Most modern systems handle negative timestamps correctly, though some older libraries and databases may not support them reliably.
+      </p>
+
+      <h3>Seconds vs. Milliseconds</h3>
+      <p>
+        Different platforms use different precisions. Traditional Unix timestamps count seconds, but JavaScript and Java use milliseconds by default. A seconds timestamp like 1609459200 becomes 1609459200000 in milliseconds. When working with APIs, always check the documentation to determine which format is expected. A common mistake is passing a milliseconds timestamp where seconds are expected, resulting in a date thousands of years in the future.
+      </p>
+
+      <h3>Timestamps in APIs and Data Formats</h3>
+      <p>
+        REST APIs commonly use Unix timestamps for created_at, updated_at, and expires_at fields. JSON Web Tokens (JWTs) store expiration as a Unix timestamp in the "exp" claim. OAuth tokens include an "expires_in" field counted in seconds from issuance. Database migration timestamps, build numbers, and cache keys frequently incorporate epoch time for uniqueness and ordering. Understanding timestamp conversion is essential for anyone working with web APIs, authentication systems, or data pipelines.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a Unix timestamp?</h3>
+      <p>A Unix timestamp counts seconds since January 1, 1970 00:00:00 UTC (the Unix epoch). It provides a timezone-independent, compact, and sortable way to represent any moment in time.</p>
+
+      <h3>What is the Y2K38 problem?</h3>
+      <p>32-bit signed integers overflow on January 19, 2038 at 03:14:07 UTC. Systems using 32-bit timestamps will malfunction after this date. 64-bit systems are not affected.</p>
+
+      <h3>Can Unix timestamps be negative?</h3>
+      <p>Yes. Negative timestamps represent dates before January 1, 1970. For example, -86400 represents December 31, 1969.</p>
+
+      <h3>What is the difference between seconds and milliseconds timestamps?</h3>
+      <p>Seconds timestamps count whole seconds since the epoch. Milliseconds timestamps are 1000 times larger and provide sub-second precision. JavaScript uses milliseconds by default.</p>
+
+      <h3>Why are timestamps used instead of date strings?</h3>
+      <p>Timestamps are timezone-independent, compact, sortable, and unambiguous. Date strings require parsing, timezone handling, and locale awareness, introducing complexity and potential bugs.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Unix Timestamp Converter", url: everyday_unix_timestamp_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Date Difference Calculator", description: "Calculate the exact number of days, weeks, months, and years between two dates.", path: everyday_date_difference_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Time Zone Converter", description: "Convert times between different time zones around the world.", path: everyday_time_zone_converter_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "JSON Formatter", description: "Format, prettify, minify, and validate JSON data with structure analysis.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("unix-timestamp-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

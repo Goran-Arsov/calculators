@@ -1,0 +1,202 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "XML to JSON Converter - Free Online Tool",
+  description: "Convert XML to JSON instantly. Handles attributes, nested elements, repeated elements as arrays, and text content. Free online XML to JSON converter with copy output.",
+  canonical: everyday_xml_to_json_url,
+  og: {
+    title: "XML to JSON Converter - Free Online Tool | CalcWise",
+    description: "Convert XML documents to JSON with proper handling of attributes, nested elements, and repeated elements as arrays.",
+    url: everyday_xml_to_json_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "XML to JSON Converter", url: everyday_xml_to_json_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How are XML attributes handled in JSON?", answer: "XML attributes are converted to JSON properties with an @ prefix. For example, <book id=\"1\"> becomes {\"book\": {\"@id\": \"1\"}}. This convention clearly distinguishes attributes from child elements in the JSON output. The @ prefix is a widely adopted convention used by several XML-to-JSON conversion libraries." },
+  { question: "How are repeated XML elements handled?", answer: "When multiple sibling elements share the same name, they are automatically grouped into a JSON array. For example, <items><item>A</item><item>B</item></items> becomes {\"items\": {\"item\": [\"A\", \"B\"]}}. Single elements remain as plain values, and repeated elements become arrays. This is the most common convention for representing XML sequences in JSON." },
+  { question: "What happens to XML text content in JSON?", answer: "If an element contains only text and no attributes or children, the text becomes a simple JSON string value. If an element has both text content and attributes or children, the text is stored under a special #text key. For example, <name lang=\"en\">John</name> becomes {\"@lang\": \"en\", \"#text\": \"John\"}." },
+  { question: "Why is XML to JSON conversion not perfectly reversible?", answer: "XML has concepts that JSON cannot represent: element ordering is meaningful in XML but JSON object keys have no guaranteed order, XML distinguishes between attributes and elements while JSON has only key-value pairs, XML supports namespaces and processing instructions, and XML mixed content (text interspersed with elements) is difficult to map to JSON. Converting JSON back to XML may produce a different structure than the original." },
+  { question: "What are the common XML to JSON conversion conventions?", answer: "Several conventions exist: BadgerFish preserves all XML information including namespaces and ordering. Parker (or Ray) is minimal, discarding attributes and using the simplest possible JSON. GData (Google Data) uses $t for text content. This tool uses a practical middle ground: @ for attributes, #text for mixed content text, and arrays for repeated elements." }
+]) %>
+
+<%= calculator_schema(
+  name: "XML to JSON Converter",
+  description: "Convert XML documents to JSON with handling for attributes, nested elements, repeated elements, and text content.",
+  url: everyday_xml_to_json_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "XML to JSON Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">XML to JSON Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste XML and convert it to JSON instantly. Attributes are prefixed with @, repeated elements become arrays, and text content uses #text keys.</p>
+
+    <div data-controller="xml-to-json-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label for="xml-to-json-xml" class="text-sm font-semibold text-gray-600 dark:text-gray-400">XML Input</label>
+            </div>
+            <textarea id="xml-to-json-xml" data-xml-to-json-calculator-target="xmlInput" data-action="input->xml-to-json-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows="12" placeholder='<bookstore>
+  <book category="fiction">
+    <title lang="en">The Great Gatsby</title>
+    <author>F. Scott Fitzgerald</author>
+    <year>1925</year>
+    <price>10.99</price>
+  </book>
+  <book category="non-fiction">
+    <title lang="en">Sapiens</title>
+    <author>Yuval Noah Harari</author>
+    <year>2011</year>
+    <price>14.99</price>
+  </book>
+</bookstore>'></textarea>
+          </div>
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label for="xml-to-json-json" class="text-sm font-semibold text-gray-600 dark:text-gray-400">JSON Output</label>
+              <button data-action="click->xml-to-json-calculator#copyOutput" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+            </div>
+            <textarea id="xml-to-json-json" data-xml-to-json-calculator-target="jsonOutput" readonly
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+              rows="12" placeholder="JSON output will appear here..."></textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-center">
+          <button data-action="click->xml-to-json-calculator#convert"
+            class="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm">
+            Convert XML to JSON
+          </button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Status</span>
+            <span class="text-sm font-bold" data-xml-to-json-calculator-target="resultStatus">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Root Element</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-xml-to-json-calculator-target="resultRootElement">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Elements</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-xml-to-json-calculator-target="resultElements">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Attributes</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-xml-to-json-calculator-target="resultAttributes">&mdash;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the XML to JSON Converter</h2>
+      <p>
+        Paste your XML content into the left textarea. The converter processes it automatically as you type (with a brief debounce) and displays the JSON result in the right textarea. You can also click the "Convert XML to JSON" button for immediate conversion. The status bar shows whether the XML is valid, the root element name, and counts of total elements and attributes. Use the copy button to grab the JSON output.
+      </p>
+      <p>
+        This converter follows practical conventions for mapping XML to JSON. Attributes are represented with an <code>@</code> prefix on their names, such as <code>"@id": "123"</code>. When an element contains only text and no children or attributes, it becomes a simple string value. When text coexists with attributes or child elements, it is stored under the <code>#text</code> key. Repeated sibling elements with the same name are automatically grouped into JSON arrays.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>XML to JSON Conversion Challenges</h2>
+      <p>
+        Converting XML to JSON is not a straightforward mapping because the two formats represent data differently at a fundamental level. XML is a document markup language with rich metadata capabilities, while JSON is a data interchange format optimized for simplicity. Understanding the key challenges helps you interpret the converted output correctly and handle edge cases in your workflow.
+      </p>
+
+      <h3>Attributes vs Elements</h3>
+      <p>
+        XML distinguishes between attributes (metadata attached to an element) and child elements (structured content within an element). JSON has no such distinction; everything is a key-value pair. This converter uses the <code>@</code> prefix convention to differentiate attributes from child elements. For instance, <code>&lt;user role="admin"&gt;&lt;name&gt;John&lt;/name&gt;&lt;/user&gt;</code> becomes <code>{"@role": "admin", "name": "John"}</code>. This convention is used by libraries like xml2js, xmltodict (Python), and the BadgerFish convention.
+      </p>
+
+      <h3>Mixed Content and Text Nodes</h3>
+      <p>
+        XML supports mixed content where text and elements are interspersed, such as <code>&lt;p&gt;Hello &lt;b&gt;world&lt;/b&gt; today&lt;/p&gt;</code>. This pattern is common in document-oriented XML (HTML, DocBook, DITA) but extremely difficult to represent in JSON. This converter captures the text content in a <code>#text</code> key but cannot perfectly preserve the interleaving of text and elements. For document-oriented XML, consider using a DOM-aware approach instead of JSON conversion.
+      </p>
+
+      <h3>Common Conversion Conventions</h3>
+      <p>
+        Several standardized conventions exist for XML-to-JSON mapping. The BadgerFish convention preserves nearly all XML information, including namespaces, by using <code>$</code> for text content and <code>@</code> for attributes. The Parker convention is the most minimal, discarding attributes entirely and converting element names to keys with text content as values. The GData convention (used by Google) uses <code>$t</code> for text content. This tool uses a pragmatic approach that balances information preservation with readability.
+      </p>
+
+      <h3>Where XML Is Still Used</h3>
+      <p>
+        Despite JSON's dominance in web APIs, XML remains essential in many domains. SOAP web services, which underpin much of enterprise software, use XML exclusively. RSS and Atom feeds for content syndication are XML-based. SVG (Scalable Vector Graphics) is an XML vocabulary. Microsoft Office documents (DOCX, XLSX, PPTX) are ZIP archives containing XML files. Android application manifests, Maven build configurations, and .NET project files all use XML. Government and healthcare data exchanges (HL7, FHIR) frequently rely on XML. Understanding XML-to-JSON conversion is therefore a practical skill for integrating with these systems.
+      </p>
+
+      <h3>Tips for Handling Nested XML</h3>
+      <p>
+        Deeply nested XML structures produce deeply nested JSON objects, which can be difficult to work with. When converting complex XML documents, consider whether you need the entire document or just specific subtrees. For very large XML files, streaming parsers (SAX-style) are more appropriate than DOM-based conversion. When the JSON output will be consumed by a typed language, plan your data model to handle both single-element cases (objects) and repeated-element cases (arrays) since the converter produces different structures based on element repetition.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How are XML attributes handled in JSON?</h3>
+      <p>Attributes get an @ prefix on their key name, like <code>"@id": "123"</code>. This distinguishes them from child elements in the JSON output.</p>
+
+      <h3>How are repeated XML elements handled?</h3>
+      <p>Sibling elements with the same name are grouped into a JSON array. Single elements stay as plain values. This is the most common convention.</p>
+
+      <h3>What happens to text content?</h3>
+      <p>Text-only elements become simple string values. Elements with both text and attributes/children store text under the <code>#text</code> key.</p>
+
+      <h3>Is the conversion reversible?</h3>
+      <p>Not perfectly. XML preserves element ordering, supports namespaces, and distinguishes attributes from elements. Some of this information is difficult to recover from JSON.</p>
+
+      <h3>What conventions does this tool use?</h3>
+      <p>@ prefix for attributes, #text for mixed content text, and automatic arrays for repeated elements. This is a practical middle ground between full-fidelity and minimal conversion.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "XML to JSON Converter", url: everyday_xml_to_json_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "YAML to JSON Converter", description: "Convert between YAML and JSON formats bidirectionally with real-time preview.", path: everyday_yaml_to_json_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "CSV to JSON Converter", description: "Convert CSV data to JSON with header detection and delimiter options.", path: everyday_csv_to_json_path, icon_path: "M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "JSON Formatter", description: "Format, prettify, minify, and validate JSON with key count and nesting depth analysis.", path: everyday_json_formatter_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("xml-to-json") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

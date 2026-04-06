@@ -36,12 +36,13 @@ module Everyday
 
     def convert_yaml_to_json
       parsed = YAML.safe_load(@text, permitted_classes: [Date, Time, Symbol])
+      json_output = JSON.pretty_generate(parsed)
       {
         valid: true,
-        output: JSON.pretty_generate(parsed),
+        output: json_output,
         direction: :yaml_to_json,
         input_lines: @text.lines.count,
-        output_lines: JSON.pretty_generate(parsed).lines.count
+        output_lines: json_output.lines.count
       }
     rescue Psych::SyntaxError => e
       @errors << "Invalid YAML: #{e.message}"

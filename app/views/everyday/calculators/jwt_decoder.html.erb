@@ -1,0 +1,210 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "JWT Decoder - Free Online Tool",
+  description: "Decode JSON Web Tokens instantly. View header, payload, signature, expiration status, and all claims. Free online JWT decoder with copy buttons.",
+  canonical: everyday_jwt_decoder_url,
+  og: {
+    title: "JWT Decoder - Free Online Tool | CalcWise",
+    description: "Paste a JWT to decode its header, payload, and signature. See expiration status, claims, and metadata instantly.",
+    url: everyday_jwt_decoder_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "JWT Decoder", url: everyday_jwt_decoder_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a JSON Web Token (JWT)?", answer: "A JSON Web Token (JWT) is a compact, URL-safe token format used for securely transmitting information between parties. It consists of three Base64-encoded parts separated by dots: a header (specifying the algorithm and token type), a payload (containing claims like user identity and expiration), and a signature (used to verify the token has not been tampered with)." },
+  { question: "Is it safe to decode JWTs in the browser?", answer: "Yes, decoding a JWT is completely safe because the header and payload are simply Base64-encoded, not encrypted. Anyone with the token can read them. The security of a JWT comes from the signature, which proves the token was issued by a trusted party. This tool decodes the token but does not verify the signature, which requires the secret key or public key." },
+  { question: "What are common JWT claims?", answer: "Standard JWT claims include: sub (subject - who the token is about), iss (issuer - who created the token), exp (expiration time as a Unix timestamp), iat (issued at - when the token was created), aud (audience - who the token is intended for), nbf (not before - token is not valid before this time), and jti (JWT ID - a unique identifier for the token)." },
+  { question: "How do I know if a JWT is expired?", answer: "A JWT is expired when the current time is past the value in the exp (expiration) claim. The exp claim is a Unix timestamp representing the exact second when the token expires. This decoder automatically checks the expiration and tells you whether the token is still valid or has expired, along with the exact expiration date and time." },
+  { question: "What is the difference between JWT decoding and verification?", answer: "Decoding a JWT means reading the header and payload by Base64-decoding them. Verification means checking that the signature is valid using the secret key (for HMAC algorithms) or the public key (for RSA/ECDSA algorithms). Decoding tells you what the token says; verification tells you whether the token is trustworthy. Never trust a JWT's contents without verifying the signature on the server side." }
+]) %>
+
+<%= calculator_schema(
+  name: "JWT Decoder",
+  description: "Decode JSON Web Tokens to view header, payload, signature, expiration status, and all claims.",
+  url: everyday_jwt_decoder_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "JWT Decoder" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">JWT Decoder</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste a JSON Web Token to instantly decode the header, payload, and signature. See expiration status, algorithm, and all claims.</p>
+
+    <div data-controller="jwt-decoder-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="jwt-decoder-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">JWT Token</label>
+          <textarea id="jwt-decoder-input" data-jwt-decoder-calculator-target="input" data-action="input->jwt-decoder-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="4" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"></textarea>
+        </div>
+
+        <div data-jwt-decoder-calculator-target="resultsContainer" class="hidden space-y-6">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Algorithm</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-jwt-decoder-calculator-target="resultAlgorithm">&mdash;</span>
+            </div>
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Type</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-jwt-decoder-calculator-target="resultType">&mdash;</span>
+            </div>
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Expired?</span>
+              <span class="text-sm font-bold" data-jwt-decoder-calculator-target="resultExpired">&mdash;</span>
+            </div>
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Claims</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-jwt-decoder-calculator-target="resultClaimCount">&mdash;</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Expires At</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white" data-jwt-decoder-calculator-target="resultExpiry">&mdash;</span>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Issued At</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white" data-jwt-decoder-calculator-target="resultIssuedAt">&mdash;</span>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Issuer</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white" data-jwt-decoder-calculator-target="resultIssuer">&mdash;</span>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Subject</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white" data-jwt-decoder-calculator-target="resultSubject">&mdash;</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Header</label>
+              <button data-action="click->jwt-decoder-calculator#copyHeader" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+            </div>
+            <pre data-jwt-decoder-calculator-target="resultHeader"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono overflow-x-auto whitespace-pre-wrap"></pre>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Payload</label>
+              <button data-action="click->jwt-decoder-calculator#copyPayload" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+            </div>
+            <pre data-jwt-decoder-calculator-target="resultPayload"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono overflow-x-auto whitespace-pre-wrap"></pre>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Signature (Base64)</label>
+              <button data-action="click->jwt-decoder-calculator#copySignature" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+            </div>
+            <pre data-jwt-decoder-calculator-target="resultSignature"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono overflow-x-auto break-all"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding JSON Web Tokens</h2>
+      <p>
+        A JSON Web Token is a compact, self-contained mechanism for transmitting information between two parties as a JSON object. JWTs are widely used in modern web development for authentication, authorization, and information exchange. The token format was standardized in RFC 7519 and has become the dominant approach for stateless authentication in APIs and single-page applications.
+      </p>
+      <p>
+        Every JWT consists of three parts separated by dots: the header, the payload, and the signature. The header typically contains two fields: the signing algorithm (such as HS256 or RS256) and the token type (usually "JWT"). The payload carries the claims, which are statements about the user and additional metadata. The signature is created by encoding the header and payload, then signing them with a secret key or private key. This three-part structure gives JWTs their characteristic appearance: <code>xxxxx.yyyyy.zzzzz</code>.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Standard JWT Claims Explained</h2>
+      <p>
+        The JWT specification defines several registered claim names that have specific meanings. The <strong>sub</strong> (subject) claim identifies the principal the token represents, typically a user ID. The <strong>iss</strong> (issuer) claim identifies who created and signed the token, often a domain or service name. The <strong>exp</strong> (expiration time) claim sets the timestamp after which the token must be rejected. The <strong>iat</strong> (issued at) claim records when the token was generated.
+      </p>
+      <p>
+        Additional standard claims include <strong>aud</strong> (audience), which restricts which services should accept the token, <strong>nbf</strong> (not before), which prevents the token from being used before a certain time, and <strong>jti</strong> (JWT ID), which provides a unique identifier to prevent token replay attacks. Beyond these registered claims, applications commonly add custom claims like user roles, permissions, email addresses, or organization identifiers.
+      </p>
+
+      <h3>JWTs vs Session Cookies</h3>
+      <p>
+        Traditional session-based authentication stores session data on the server and sends a session ID cookie to the client. JWTs take the opposite approach: the token itself contains all the user information, and the server does not need to maintain session state. This makes JWTs ideal for distributed systems where multiple servers need to validate authentication without sharing session storage. Session cookies are simpler and give the server full control over session invalidation, while JWTs offer better scalability at the cost of more complex token management.
+      </p>
+
+      <h3>When to Use JWTs</h3>
+      <p>
+        JWTs excel in several scenarios. API authentication is the most common use case, where a client includes the JWT in the Authorization header of each request. Single Sign-On (SSO) systems use JWTs to pass authentication state between different applications without requiring users to log in again. Microservice architectures benefit from JWTs because each service can independently validate tokens without calling a central authentication service. JWTs are also useful for short-lived authorization grants, such as password reset links or email verification tokens.
+      </p>
+
+      <h3>Security Considerations</h3>
+      <p>
+        Never store sensitive information in a JWT payload. The payload is Base64-encoded, not encrypted, meaning anyone with the token can read its contents. Always verify signatures on the server side before trusting any claims in the token. Set reasonable expiration times to limit the window of vulnerability if a token is compromised. Use HTTPS exclusively when transmitting tokens to prevent interception. Consider using short-lived access tokens paired with refresh tokens for long-running sessions. Store tokens securely on the client side, preferring HttpOnly cookies over localStorage to prevent cross-site scripting attacks from stealing tokens.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a JSON Web Token (JWT)?</h3>
+      <p>A JWT is a compact, URL-safe token consisting of three Base64-encoded parts (header, payload, signature) separated by dots. It securely transmits claims between parties and is commonly used for API authentication.</p>
+
+      <h3>Is it safe to decode JWTs in the browser?</h3>
+      <p>Yes. The header and payload are only Base64-encoded, not encrypted. Security comes from the signature, which requires the secret key to verify. Decoding reveals the contents but does not compromise security.</p>
+
+      <h3>What are common JWT claims?</h3>
+      <p>Standard claims include sub (subject), iss (issuer), exp (expiration), iat (issued at), aud (audience), nbf (not before), and jti (unique token ID). Custom claims can carry any application-specific data.</p>
+
+      <h3>How do I know if a JWT is expired?</h3>
+      <p>Check the exp claim, which is a Unix timestamp. If the current time exceeds this value, the token is expired. This decoder automatically checks and displays the expiration status.</p>
+
+      <h3>What is the difference between decoding and verification?</h3>
+      <p>Decoding reads the header and payload by Base64-decoding them. Verification checks the signature using the secret or public key. Always verify signatures server-side before trusting token contents.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "JWT Decoder", url: everyday_jwt_decoder_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "JSON Formatter", description: "Format, prettify, minify, and validate JSON instantly.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "String Encoder/Decoder", description: "Encode and decode text with Base64, URL encoding, and HTML entities.", path: everyday_string_encoder_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "Regex Tester", description: "Test regular expressions with live match highlighting and capture group display.", path: everyday_regex_tester_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("jwt-decoder") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -8,7 +8,7 @@ module Everyday
 
     NAMED_ENTITIES = {
       "&" => "&amp;", "<" => "&lt;", ">" => "&gt;",
-      '"' => "&quot;", "'" => "&apos;", " " => "&nbsp;",
+      '"' => "&quot;", "'" => "&apos;", "\u00a0" => "&nbsp;",
       "\u00a9" => "&copy;", "\u00ae" => "&reg;", "\u2122" => "&trade;",
       "\u00b0" => "&deg;", "\u00b1" => "&plusmn;", "\u00d7" => "&times;",
       "\u00f7" => "&divide;", "\u2013" => "&ndash;", "\u2014" => "&mdash;",

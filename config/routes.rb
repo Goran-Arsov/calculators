@@ -241,6 +241,20 @@ Rails.application.routes.draw do
     get "uuid-generator", to: "calculators#uuid_generator", as: :uuid_generator
     get "hash-generator", to: "calculators#hash_generator", as: :hash_generator
     get "hmac-generator", to: "calculators#hmac_generator", as: :hmac_generator
+    get "code-minifier-beautifier", to: "calculators#code_minifier", as: :code_minifier
+    get "escape-unescape-tool", to: "calculators#escape_unescape", as: :escape_unescape
+    get "jwt-decoder", to: "calculators#jwt_decoder", as: :jwt_decoder
+    get "sql-formatter", to: "calculators#sql_formatter", as: :sql_formatter
+    get "cron-expression-parser", to: "calculators#cron_parser", as: :cron_parser
+    get "yaml-to-json-converter", to: "calculators#yaml_to_json", as: :yaml_to_json
+    get "csv-to-json-converter", to: "calculators#csv_to_json", as: :csv_to_json
+    get "xml-to-json-converter", to: "calculators#xml_to_json", as: :xml_to_json
+    get "url-parser", to: "calculators#url_parser", as: :url_parser
+    get "http-header-parser", to: "calculators#http_header_parser", as: :http_header_parser
+    get "cidr-subnet-calculator", to: "calculators#subnet_calculator", as: :subnet_calculator
+    get "unix-timestamp-converter", to: "calculators#unix_timestamp", as: :unix_timestamp
+    get "color-converter", to: "calculators#color_converter", as: :color_converter
+    get "html-entity-encoder-decoder", to: "calculators#html_entity_encoder", as: :html_entity_encoder
   end
 
   # Blog

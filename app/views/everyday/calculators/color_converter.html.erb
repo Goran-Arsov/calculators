@@ -1,0 +1,302 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Color Converter - Free Online HEX RGB HSL Tool",
+  description: "Convert colors between HEX, RGB, and HSL formats. Check WCAG contrast ratios and accessibility ratings. Free online color converter with live preview.",
+  canonical: everyday_color_converter_url,
+  og: {
+    title: "Color Converter - Free Online HEX RGB HSL Tool | CalcWise",
+    description: "Convert colors between HEX, RGB, and HSL with live preview, WCAG contrast checking, and accessibility ratings.",
+    url: everyday_color_converter_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Color Converter", url: everyday_color_converter_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the difference between HEX, RGB, and HSL color formats?", answer: "HEX uses a six-digit hexadecimal notation (#RRGGBB) where each pair represents red, green, and blue intensity from 00 to FF. RGB specifies color as three decimal values (0-255) for red, green, and blue channels. HSL describes color using Hue (0-360 degrees on the color wheel), Saturation (0-100% intensity), and Lightness (0-100% brightness). All three formats can represent the same colors but HSL is often more intuitive for humans." },
+  { question: "What are WCAG contrast requirements?", answer: "The Web Content Accessibility Guidelines (WCAG) define minimum contrast ratios between text and background colors. Level AA requires 4.5:1 for normal text and 3:1 for large text (18pt or 14pt bold). Level AAA requires 7:1 for normal text and 4.5:1 for large text. These ratios ensure text remains readable for people with visual impairments, including those with color blindness or low vision." },
+  { question: "How is color contrast ratio calculated?", answer: "Contrast ratio is calculated using the relative luminance of two colors. First, each sRGB color value is linearized. Then relative luminance is computed as L = 0.2126R + 0.7152G + 0.0722B. The contrast ratio is (L1 + 0.05) / (L2 + 0.05), where L1 is the lighter color. The ratio ranges from 1:1 (no contrast) to 21:1 (black on white)." },
+  { question: "What is the HSL color model?", answer: "HSL represents colors using three components: Hue is the color type measured in degrees on the color wheel (0/360 is red, 120 is green, 240 is blue). Saturation is the color intensity from 0% (gray) to 100% (vivid). Lightness ranges from 0% (black) through 50% (pure color) to 100% (white). HSL is more intuitive than RGB because you can easily create variations by adjusting saturation or lightness while keeping the hue constant." },
+  { question: "What are web-safe colors?", answer: "Web-safe colors are a set of 216 colors that display consistently across all monitors and browsers. They use only the hex values 00, 33, 66, 99, CC, and FF for each RGB channel. Web-safe colors were important in the 1990s when monitors were limited to 256 colors, but modern displays support millions of colors, making this limitation obsolete. Today, designers use the full 16.7 million color gamut without compatibility concerns." }
+]) %>
+
+<%= calculator_schema(
+  name: "Color Converter",
+  description: "Convert colors between HEX, RGB, and HSL formats with WCAG accessibility contrast checking.",
+  url: everyday_color_converter_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Color Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Color Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert colors between HEX, RGB, and HSL formats. Check WCAG accessibility contrast ratios against black and white text.</p>
+
+    <div data-controller="color-converter-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+
+        <%# Color Picker and Preview %>
+        <div class="flex items-center gap-6">
+          <div>
+            <label for="color-picker" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Color Picker</label>
+            <input type="color" id="color-picker" value="#3B82F6"
+              data-color-converter-calculator-target="colorPicker"
+              data-action="input->color-converter-calculator#fromPicker"
+              class="w-16 h-16 rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 cursor-pointer">
+          </div>
+          <div class="flex-1">
+            <span class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Preview</span>
+            <div data-color-converter-calculator-target="preview" class="w-full h-16 rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600" style="background-color: #3B82F6;"></div>
+          </div>
+        </div>
+
+        <%# HEX Input %>
+        <div>
+          <label for="color-hex" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">HEX</label>
+          <input type="text" id="color-hex" data-color-converter-calculator-target="hexInput"
+            data-action="input->color-converter-calculator#fromHex"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="#3B82F6" value="#3B82F6">
+        </div>
+
+        <%# RGB Inputs %>
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">RGB</label>
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label for="color-r" class="block text-xs text-gray-400 dark:text-gray-500 mb-1">R (0-255)</label>
+              <input type="number" id="color-r" min="0" max="255" data-color-converter-calculator-target="rgbR"
+                data-action="input->color-converter-calculator#fromRgb"
+                class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="59">
+            </div>
+            <div>
+              <label for="color-g" class="block text-xs text-gray-400 dark:text-gray-500 mb-1">G (0-255)</label>
+              <input type="number" id="color-g" min="0" max="255" data-color-converter-calculator-target="rgbG"
+                data-action="input->color-converter-calculator#fromRgb"
+                class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="130">
+            </div>
+            <div>
+              <label for="color-b" class="block text-xs text-gray-400 dark:text-gray-500 mb-1">B (0-255)</label>
+              <input type="number" id="color-b" min="0" max="255" data-color-converter-calculator-target="rgbB"
+                data-action="input->color-converter-calculator#fromRgb"
+                class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="246">
+            </div>
+          </div>
+        </div>
+
+        <%# HSL Inputs %>
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">HSL</label>
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label for="color-h" class="block text-xs text-gray-400 dark:text-gray-500 mb-1">H (0-360)</label>
+              <input type="number" id="color-h" min="0" max="360" data-color-converter-calculator-target="hslH"
+                data-action="input->color-converter-calculator#fromHsl"
+                class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="217">
+            </div>
+            <div>
+              <label for="color-s" class="block text-xs text-gray-400 dark:text-gray-500 mb-1">S (0-100%)</label>
+              <input type="number" id="color-s" min="0" max="100" data-color-converter-calculator-target="hslS"
+                data-action="input->color-converter-calculator#fromHsl"
+                class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="91">
+            </div>
+            <div>
+              <label for="color-l" class="block text-xs text-gray-400 dark:text-gray-500 mb-1">L (0-100%)</label>
+              <input type="number" id="color-l" min="0" max="100" data-color-converter-calculator-target="hslL"
+                data-action="input->color-converter-calculator#fromHsl"
+                class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="60">
+            </div>
+          </div>
+        </div>
+
+        <%# Results %>
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <% [
+              ["HEX", "resultHex"],
+              ["RGB", "resultRgb"],
+              ["HSL", "resultHsl"],
+              ["Color Name", "resultColorName"],
+              ["Luminance", "resultLuminance"],
+              ["Best Text Color", "resultBestText"]
+            ].each do |label, target| %>
+              <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-xs font-semibold text-gray-500 dark:text-gray-400"><%= label %></span>
+                  <button data-action="click->color-converter-calculator#copyResult" data-color-converter-calculator-target-param="<%= target %>"
+                    class="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+                </div>
+                <div data-color-converter-calculator-target="<%= target %>" class="text-sm font-mono text-gray-900 dark:text-white break-all">&mdash;</div>
+              </div>
+            <% end %>
+          </div>
+
+          <%# Contrast & Accessibility %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <%# White text contrast %>
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+              <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Contrast vs White Text</h3>
+              <div class="mb-2">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Ratio: </span>
+                <span data-color-converter-calculator-target="resultContrastWhite" class="text-sm font-mono font-semibold text-gray-900 dark:text-white">&mdash;</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-500 dark:text-gray-400">AA Normal</span>
+                  <span data-color-converter-calculator-target="resultWcagWhiteAaNormal" class="inline-block px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500">&mdash;</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-500 dark:text-gray-400">AA Large</span>
+                  <span data-color-converter-calculator-target="resultWcagWhiteAaLarge" class="inline-block px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500">&mdash;</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-500 dark:text-gray-400">AAA Normal</span>
+                  <span data-color-converter-calculator-target="resultWcagWhiteAaaNormal" class="inline-block px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500">&mdash;</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-500 dark:text-gray-400">AAA Large</span>
+                  <span data-color-converter-calculator-target="resultWcagWhiteAaaLarge" class="inline-block px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500">&mdash;</span>
+                </div>
+              </div>
+            </div>
+
+            <%# Black text contrast %>
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+              <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3">Contrast vs Black Text</h3>
+              <div class="mb-2">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Ratio: </span>
+                <span data-color-converter-calculator-target="resultContrastBlack" class="text-sm font-mono font-semibold text-gray-900 dark:text-white">&mdash;</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-500 dark:text-gray-400">AA Normal</span>
+                  <span data-color-converter-calculator-target="resultWcagBlackAaNormal" class="inline-block px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500">&mdash;</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-500 dark:text-gray-400">AA Large</span>
+                  <span data-color-converter-calculator-target="resultWcagBlackAaLarge" class="inline-block px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500">&mdash;</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-500 dark:text-gray-400">AAA Normal</span>
+                  <span data-color-converter-calculator-target="resultWcagBlackAaaNormal" class="inline-block px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500">&mdash;</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-500 dark:text-gray-400">AAA Large</span>
+                  <span data-color-converter-calculator-target="resultWcagBlackAaaLarge" class="inline-block px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500">&mdash;</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button data-action="click->color-converter-calculator#copy" class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy All Results</button>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Color Models</h2>
+      <p>
+        Color on screens works through additive color mixing using red, green, and blue light (RGB). When all three channels are at maximum intensity, the result is white. When all are off, the result is black. This is the opposite of paint mixing, which uses subtractive color (CMYK) where combining pigments absorbs light and trends toward black. Every color you see on a monitor, phone, or TV is created by blending these three light channels at different intensities.
+      </p>
+      <p>
+        HEX notation is the most common color format on the web. It compresses the three RGB channels into a six-character hexadecimal string prefixed with a hash symbol. Each pair of characters represents one channel: #FF0000 is pure red (FF=255 for red, 00=0 for green, 00=0 for blue). The shorthand #F00 expands to #FF0000. HEX was popularized during the early web era when web-safe colors were limited to 216 combinations using only the values 00, 33, 66, 99, CC, and FF.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>HSL: A More Intuitive Model</h2>
+      <p>
+        While RGB and HEX describe colors in terms of hardware channels, HSL describes them the way humans think about color. Hue is the color itself, measured as a position on the color wheel: 0 degrees is red, 120 degrees is green, and 240 degrees is blue. Saturation controls vibrancy from 0% (gray) to 100% (pure color). Lightness ranges from 0% (black) through 50% (the pure hue) to 100% (white).
+      </p>
+      <p>
+        HSL makes it trivial to create color variations. To lighten a color, increase the L value. To create a pastel, reduce the S value. To find complementary colors, add 180 to the H value. Design systems often define their color palettes using HSL because it allows systematic generation of shade scales, tints, and tones from a single base hue. CSS supports HSL natively with the <code>hsl()</code> function.
+      </p>
+
+      <h3>WCAG Contrast and Accessibility</h3>
+      <p>
+        The Web Content Accessibility Guidelines establish minimum contrast ratios to ensure text remains readable for people with visual impairments. Level AA requires a contrast ratio of at least 4.5:1 between normal text and its background, and 3:1 for large text (18pt or 14pt bold). Level AAA raises these to 7:1 and 4.5:1 respectively. Roughly 300 million people worldwide have color vision deficiency, making contrast compliance critical for inclusive design.
+      </p>
+      <p>
+        Contrast ratio is computed from relative luminance, a measure of the perceived brightness of a color. The formula accounts for the fact that human eyes are most sensitive to green light (weighted 0.7152) and least sensitive to blue (weighted 0.0722). A ratio of 21:1 represents maximum contrast (black on white), while 1:1 means no contrast at all. This tool calculates the contrast ratio of your chosen color against both white and black backgrounds, showing exactly which WCAG levels it passes.
+      </p>
+
+      <h3>Choosing Accessible Color Combinations</h3>
+      <p>
+        Start with your brand color and check its contrast ratio against white and black text. If neither passes AA for normal text, adjust the lightness. Darker versions of your color will gain contrast against white; lighter versions gain contrast against black. Many design systems define a "500" shade as the brand color and generate accessible text-on-background combinations from the "50" through "900" scale. Tools like this converter help you verify each combination before shipping.
+      </p>
+
+      <h3>CSS Color Functions</h3>
+      <p>
+        Modern CSS supports multiple color formats beyond HEX. The <code>rgb()</code> function accepts comma-separated or space-separated values. The <code>hsl()</code> function makes color manipulation intuitive. CSS Color Level 4 introduced <code>oklch()</code> and <code>oklab()</code> for perceptually uniform color spaces, where equal numeric steps produce equal perceived differences. As browser support grows, these newer formats will become the standard for design tokens and theming.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the difference between HEX, RGB, and HSL?</h3>
+      <p>HEX uses hexadecimal notation (#RRGGBB), RGB uses decimal values (0-255) per channel, and HSL uses Hue (0-360), Saturation (0-100%), and Lightness (0-100%). All represent the same colors differently.</p>
+
+      <h3>What are WCAG contrast requirements?</h3>
+      <p>AA requires 4.5:1 for normal text and 3:1 for large text. AAA requires 7:1 for normal text and 4.5:1 for large text.</p>
+
+      <h3>How is contrast ratio calculated?</h3>
+      <p>Using relative luminance: (L1 + 0.05) / (L2 + 0.05) where L1 is lighter. Ranges from 1:1 (no contrast) to 21:1 (maximum).</p>
+
+      <h3>What is the HSL color model?</h3>
+      <p>HSL describes color by Hue (color wheel position), Saturation (vibrancy), and Lightness (brightness). More intuitive than RGB for creating color variations.</p>
+
+      <h3>What are web-safe colors?</h3>
+      <p>A 216-color palette from the 1990s using HEX values 00, 33, 66, 99, CC, FF per channel. Obsolete on modern displays that support 16.7 million colors.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Color Converter", url: everyday_color_converter_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Screen Size Calculator", description: "Calculate screen dimensions, PPI, and aspect ratios for any display.", path: everyday_screen_size_path, icon_path: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" },
+      { name: "Aspect Ratio Calculator", description: "Calculate and convert between different aspect ratios for images and video.", path: math_aspect_ratio_path, icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" },
+      { name: "Case Converter", description: "Convert text between UPPERCASE, lowercase, camelCase, snake_case, and more.", path: everyday_case_converter_path, icon_path: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("color-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

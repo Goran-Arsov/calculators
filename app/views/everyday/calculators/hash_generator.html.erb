@@ -1,0 +1,178 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Hash Generator - Free Online SHA-256, SHA-512, MD5 Hash Tool",
+  description: "Generate SHA-256, SHA-384, SHA-512, and MD5 hashes from any text instantly. Free online hash generator with real-time results and copy functionality.",
+  canonical: everyday_hash_generator_url,
+  og: {
+    title: "Hash Generator - Free Online SHA-256, SHA-512, MD5 Tool | CalcWise",
+    description: "Generate cryptographic hashes instantly. Supports SHA-256, SHA-384, SHA-512, and MD5 algorithms with real-time computation.",
+    url: everyday_hash_generator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Hash Generator", url: everyday_hash_generator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a hash function?", answer: "A hash function is a mathematical algorithm that takes input data of any size and produces a fixed-size output called a hash, digest, or checksum. The same input always produces the same output, but even a tiny change in the input produces a completely different hash. Good hash functions are one-way, meaning you cannot reverse-engineer the original input from the hash." },
+  { question: "What is the difference between SHA-256 and SHA-512?", answer: "Both are members of the SHA-2 family designed by the NSA. SHA-256 produces a 256-bit (64 hex character) hash and uses 32-bit operations internally. SHA-512 produces a 512-bit (128 hex character) hash using 64-bit operations. SHA-512 is actually faster on 64-bit processors and provides a larger security margin against brute-force attacks." },
+  { question: "Is MD5 secure?", answer: "MD5 is cryptographically broken and should not be used for security purposes like password hashing or digital signatures. Collision attacks against MD5 are practical and can be performed on a laptop in seconds. However, MD5 remains useful for non-security applications like checksums for data integrity verification where deliberate tampering is not a concern." },
+  { question: "What is the avalanche effect?", answer: "The avalanche effect is a property of good hash functions where changing a single bit of input causes roughly half the output bits to change. This means even the smallest modification to the input, such as changing one character, produces a completely different hash. This property is essential for hash tables, checksums, and cryptographic applications." },
+  { question: "Can you reverse a hash to get the original text?", answer: "No. Cryptographic hash functions are designed to be one-way functions. There is no mathematical method to reconstruct the input from a hash. However, attackers can use rainbow tables or brute-force attempts to guess common inputs. This is why passwords should be hashed with specialized algorithms like bcrypt or Argon2 that add salt and computational cost." }
+]) %>
+
+<%= calculator_schema(
+  name: "Hash Generator",
+  description: "Generate SHA-256, SHA-384, SHA-512, and MD5 hashes from any text input.",
+  url: everyday_hash_generator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Hash Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Hash Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Generate cryptographic hashes from any text using SHA-256, SHA-384, SHA-512, or MD5. Results update in real time as you type.</p>
+
+    <div data-controller="hash-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="hash-input-text" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Input Text</label>
+            <textarea id="hash-input-text"
+              data-hash-generator-calculator-target="input"
+              data-action="input->hash-generator-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows="6" placeholder="Enter text to hash..."></textarea>
+          </div>
+          <div>
+            <label for="hash-algorithm" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Algorithm</label>
+            <select id="hash-algorithm"
+              data-hash-generator-calculator-target="algorithm"
+              data-action="change->hash-generator-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="sha256" selected>SHA-256</option>
+              <option value="sha384">SHA-384</option>
+              <option value="sha512">SHA-512</option>
+              <option value="md5">MD5</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Hash Output</label>
+              <textarea readonly rows="4"
+                data-hash-generator-calculator-target="resultHash"
+                class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 break-all"
+                placeholder="Hash will appear here..."></textarea>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Algorithm</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-hash-generator-calculator-target="resultAlgorithm">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Input Length</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-hash-generator-calculator-target="resultInputLength">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Hash Length</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-hash-generator-calculator-target="resultHashLength">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->hash-generator-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Hash</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Cryptographic Hash Functions</h2>
+      <p>
+        A cryptographic hash function transforms input data of arbitrary length into a fixed-size output string of hexadecimal characters. This output is called a hash, digest, or fingerprint. The defining properties of a cryptographic hash function are determinism (the same input always produces the same output), pre-image resistance (you cannot reverse the hash to find the input), second pre-image resistance (given an input, you cannot find a different input with the same hash), and collision resistance (finding any two different inputs with the same hash is computationally infeasible). These properties make hash functions indispensable in modern computing.
+      </p>
+
+      <h3>The Avalanche Effect</h3>
+      <p>
+        One of the most remarkable properties of a good hash function is the avalanche effect. Changing a single character in the input produces a completely different hash output. For example, the SHA-256 hash of "hello" and "Hello" share virtually no characters in common, despite the inputs differing by only the capitalization of one letter. Roughly half the bits in the output change with each single-bit change in the input. This property ensures that similar inputs cannot be identified by comparing their hashes, which is essential for security applications.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Hash Function Use Cases</h2>
+      <p>
+        Hash functions serve critical roles across many areas of computing. For file integrity verification, downloading a file and comparing its hash against the published checksum confirms the file was not corrupted or tampered with during transfer. In password storage, applications hash passwords before saving them to databases so that even if the database is compromised, the actual passwords remain hidden. Digital signatures hash a document before encrypting the hash with a private key, enabling efficient verification of document authenticity. Version control systems like Git use SHA-1 hashes to identify every commit, tree, and blob object in a repository. Blockchain technology chains blocks together using hashes of previous blocks, creating an immutable ledger.
+      </p>
+
+      <h3>The SHA-2 Family</h3>
+      <p>
+        SHA-2 is a family of hash functions designed by the National Security Agency and published by NIST in 2001. The family includes SHA-224, SHA-256, SHA-384, and SHA-512, named after their output sizes in bits. SHA-256 produces a 64-character hexadecimal string and is the most widely used variant, powering Bitcoin mining and TLS certificate verification. SHA-384 outputs 96 hex characters and is commonly used in government applications. SHA-512 produces 128 hex characters and, counterintuitively, runs faster than SHA-256 on 64-bit processors because it uses 64-bit arithmetic internally. All SHA-2 variants remain cryptographically secure with no practical attacks known against them.
+      </p>
+
+      <h3>Why MD5 Is Insecure for Cryptography</h3>
+      <p>
+        MD5 was designed by Ronald Rivest in 1991 and produces a 128-bit (32-character hex) hash. In 2004, researchers demonstrated practical collision attacks against MD5, and by 2008, the attack was used to create a rogue CA certificate. Today, MD5 collisions can be generated in seconds on consumer hardware. Despite this, MD5 remains widely used for non-cryptographic purposes. It serves as a fast checksum for verifying file downloads, detecting accidental data corruption, and generating hash-based cache keys. When security is not a concern, MD5's speed makes it a practical choice. For any security-sensitive application, use SHA-256 or stronger.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a hash function?</h3>
+      <p>A hash function takes any input and produces a fixed-size output. The same input always gives the same hash, but you cannot reconstruct the input from the hash. Even tiny input changes produce completely different outputs.</p>
+
+      <h3>What is the difference between SHA-256 and SHA-512?</h3>
+      <p>SHA-256 produces a 64-character hex output using 32-bit operations. SHA-512 produces a 128-character hex output using 64-bit operations and is actually faster on modern 64-bit CPUs.</p>
+
+      <h3>Is MD5 secure?</h3>
+      <p>Not for cryptographic purposes. MD5 collision attacks are trivial on modern hardware. However, MD5 remains useful for checksums and non-security data integrity checks.</p>
+
+      <h3>What is the avalanche effect?</h3>
+      <p>The avalanche effect means that changing one bit of input changes roughly half the output bits. This makes hash outputs unpredictable and prevents similar inputs from producing similar hashes.</p>
+
+      <h3>Can you reverse a hash to get the original text?</h3>
+      <p>No. Hash functions are one-way by design. Attackers can try brute-force or rainbow table attacks against weak inputs, but the hash itself cannot be mathematically reversed.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Hash Generator", url: everyday_hash_generator_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "UUID Generator", description: "Generate random UUID v4 identifiers for databases, APIs, and distributed systems.", path: everyday_uuid_generator_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
+      { name: "HMAC Generator", description: "Generate HMAC authentication codes using SHA-256, SHA-384, or SHA-512.", path: everyday_hmac_generator_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" },
+      { name: "Password Strength", description: "Analyze password strength with entropy calculation and improvement suggestions.", path: everyday_password_strength_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("hash-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

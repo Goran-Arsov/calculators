@@ -8,6 +8,8 @@ module Everyday
 
     SUPPORTED_LANGUAGES = %i[json css html javascript].freeze
     SUPPORTED_ACTIONS = %i[minify beautify].freeze
+    INDENT = "  "
+    HTML_VOID_ELEMENTS = %w[area base br col embed hr img input link meta param source track wbr].freeze
 
     def initialize(code:, language:, action:)
       @code = code.to_s
@@ -94,7 +96,7 @@ module Everyday
 
         indent -= 1 if stripped.start_with?("}")
         indent = 0 if indent.negative?
-        output += ("  " * indent) + stripped + "\n"
+        output += (INDENT * indent) + stripped + "\n"
         indent += 1 if stripped.end_with?("{")
       end
 
@@ -123,22 +125,22 @@ module Everyday
 
       output = ""
       indent = 0
-      void_elements = %w[area base br col embed hr img input link meta param source track wbr]
+      void_elements = HTML_VOID_ELEMENTS
 
       tokens.each do |token|
         if token.start_with?("</")
           indent -= 1
           indent = 0 if indent.negative?
-          output += ("  " * indent) + token + "\n"
+          output += (INDENT * indent) + token + "\n"
         elsif token.start_with?("<")
           tag_name = token[/<(\w+)/, 1]&.downcase
           is_void = void_elements.include?(tag_name)
           is_self_closing = token.end_with?("/>")
 
-          output += ("  " * indent) + token + "\n"
+          output += (INDENT * indent) + token + "\n"
           indent += 1 unless is_void || is_self_closing || token.start_with?("<!")
         else
-          output += ("  " * indent) + token + "\n"
+          output += (INDENT * indent) + token + "\n"
         end
       end
 
@@ -178,7 +180,7 @@ module Everyday
 
         indent -= 1 if stripped.start_with?("}")
         indent = 0 if indent.negative?
-        output += ("  " * indent) + stripped + "\n"
+        output += (INDENT * indent) + stripped + "\n"
         indent += 1 if stripped.end_with?("{")
       end
 

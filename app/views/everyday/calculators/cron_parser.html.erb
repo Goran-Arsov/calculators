@@ -1,0 +1,228 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cron Expression Parser - Free Online Tool",
+  description: "Parse cron expressions into human-readable descriptions. See next 5 run times, field breakdowns, and use preset patterns. Free online cron parser.",
+  canonical: everyday_cron_parser_url,
+  og: {
+    title: "Cron Expression Parser - Free Online Tool | CalcWise",
+    description: "Paste a cron expression to see a human-readable description, next run times, and field-by-field breakdown. Preset buttons for common schedules.",
+    url: everyday_cron_parser_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Cron Expression Parser", url: everyday_cron_parser_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a cron expression?", answer: "A cron expression is a string of five fields separated by spaces that defines a schedule for recurring tasks. The five fields are: minute (0-59), hour (0-23), day of month (1-31), month (1-12), and day of week (0-6, where 0 is Sunday). Each field can contain specific values, ranges, steps, or wildcards to describe exactly when a task should run." },
+  { question: "What does the asterisk (*) mean in cron?", answer: "The asterisk is a wildcard that means 'every possible value' for that field. For example, * in the minute field means every minute, * in the hour field means every hour, and * in the day-of-week field means every day of the week. A cron expression of * * * * * means 'every minute of every hour of every day'." },
+  { question: "How do step values work in cron (*/5)?", answer: "Step values use the forward slash (/) to specify intervals. The syntax */N means 'every Nth value starting from the minimum.' For example, */5 in the minute field means every 5 minutes (0, 5, 10, 15, ..., 55). You can also combine steps with ranges: 1-30/5 means every 5th value from 1 to 30 (1, 6, 11, 16, 21, 26)." },
+  { question: "What is the difference between standard and extended cron?", answer: "Standard cron uses 5 fields (minute, hour, day-of-month, month, day-of-week). Extended cron formats, used by some systems like Quartz scheduler, add a seconds field at the beginning and sometimes a year field at the end, making 6 or 7 fields total. This tool supports the standard 5-field format used by Unix cron, crontab, and most scheduling libraries." },
+  { question: "How do I schedule a cron job for the last day of every month?", answer: "Standard cron does not have a direct 'last day of month' syntax. The common workaround is to use a script that checks if tomorrow is the 1st: you schedule the job to run on days 28-31 and add a condition in the script. Some extended cron implementations support 'L' for last day, but this is not part of the standard 5-field format." }
+]) %>
+
+<%= calculator_schema(
+  name: "Cron Expression Parser",
+  description: "Parse cron expressions into human-readable descriptions with next run times and field breakdowns.",
+  url: everyday_cron_parser_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Cron Expression Parser" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cron Expression Parser</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter a cron expression to see a human-readable description, the next 5 run times, and a breakdown of each field. Use preset buttons for common schedules.</p>
+
+    <div data-controller="cron-parser-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="cron-parser-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Cron Expression</label>
+          <input id="cron-parser-input" type="text" data-cron-parser-calculator-target="input" data-action="input->cron-parser-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="*/5 * * * *" />
+        </div>
+
+        <div>
+          <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Presets</span>
+          <div class="flex flex-wrap gap-2">
+            <button data-action="click->cron-parser-calculator#setPreset" data-cron="* * * * *"
+              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
+              Every minute
+            </button>
+            <button data-action="click->cron-parser-calculator#setPreset" data-cron="*/5 * * * *"
+              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
+              Every 5 min
+            </button>
+            <button data-action="click->cron-parser-calculator#setPreset" data-cron="0 * * * *"
+              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
+              Hourly
+            </button>
+            <button data-action="click->cron-parser-calculator#setPreset" data-cron="0 0 * * *"
+              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
+              Daily (midnight)
+            </button>
+            <button data-action="click->cron-parser-calculator#setPreset" data-cron="0 9 * * 1"
+              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
+              Weekly (Mon 9am)
+            </button>
+            <button data-action="click->cron-parser-calculator#setPreset" data-cron="0 0 1 * *"
+              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
+              Monthly (1st)
+            </button>
+            <button data-action="click->cron-parser-calculator#setPreset" data-cron="30 2 * * *"
+              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
+              Daily 2:30 AM
+            </button>
+            <button data-action="click->cron-parser-calculator#setPreset" data-cron="0 9-17 * * 1-5"
+              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
+              Business hours
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+          <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Format</span>
+          <div class="grid grid-cols-5 gap-2 text-center font-mono text-xs text-gray-500 dark:text-gray-400">
+            <span>Minute<br/><span class="text-gray-400 dark:text-gray-500">0-59</span></span>
+            <span>Hour<br/><span class="text-gray-400 dark:text-gray-500">0-23</span></span>
+            <span>Day (month)<br/><span class="text-gray-400 dark:text-gray-500">1-31</span></span>
+            <span>Month<br/><span class="text-gray-400 dark:text-gray-500">1-12</span></span>
+            <span>Day (week)<br/><span class="text-gray-400 dark:text-gray-500">0-6</span></span>
+          </div>
+        </div>
+
+        <div data-cron-parser-calculator-target="resultsContainer" class="hidden space-y-6">
+          <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
+            <span class="block text-xs font-semibold text-blue-500 dark:text-blue-400 uppercase tracking-wide mb-1">Description</span>
+            <span class="text-lg font-bold text-blue-700 dark:text-blue-300" data-cron-parser-calculator-target="resultDescription"></span>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Field Breakdown</span>
+            <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 text-sm">
+              <div>
+                <span class="block text-xs text-gray-400 dark:text-gray-500 mb-0.5">Minute</span>
+                <span class="font-medium text-gray-900 dark:text-white" data-cron-parser-calculator-target="resultMinute">&mdash;</span>
+              </div>
+              <div>
+                <span class="block text-xs text-gray-400 dark:text-gray-500 mb-0.5">Hour</span>
+                <span class="font-medium text-gray-900 dark:text-white" data-cron-parser-calculator-target="resultHour">&mdash;</span>
+              </div>
+              <div>
+                <span class="block text-xs text-gray-400 dark:text-gray-500 mb-0.5">Day (month)</span>
+                <span class="font-medium text-gray-900 dark:text-white" data-cron-parser-calculator-target="resultDom">&mdash;</span>
+              </div>
+              <div>
+                <span class="block text-xs text-gray-400 dark:text-gray-500 mb-0.5">Month</span>
+                <span class="font-medium text-gray-900 dark:text-white" data-cron-parser-calculator-target="resultMonth">&mdash;</span>
+              </div>
+              <div>
+                <span class="block text-xs text-gray-400 dark:text-gray-500 mb-0.5">Day (week)</span>
+                <span class="font-medium text-gray-900 dark:text-white" data-cron-parser-calculator-target="resultDow">&mdash;</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Next 5 Run Times</span>
+            <ul data-cron-parser-calculator-target="resultNextRuns" class="divide-y divide-gray-100 dark:divide-gray-700">
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Cron Syntax</h2>
+      <p>
+        Cron is the time-based job scheduler in Unix-like operating systems. It uses a compact expression format to define schedules for recurring tasks. A standard cron expression consists of five fields separated by spaces, each representing a unit of time. From left to right, the fields are: minute (0-59), hour (0-23), day of the month (1-31), month (1-12), and day of the week (0-6, with 0 representing Sunday). Together, these five fields can describe virtually any recurring schedule, from "every minute" to "at 3:15 PM on the first Monday of March."
+      </p>
+      <p>
+        The power of cron expressions comes from the special characters that modify each field. The asterisk (*) means "every value" in the given range. A comma (,) creates a list of specific values, such as <code>1,3,5</code> for Monday, Wednesday, and Friday. A hyphen (-) defines a range, like <code>9-17</code> for hours 9 through 17. A forward slash (/) sets a step interval, where <code>*/10</code> in the minute field means "every 10 minutes." These operators can be combined: <code>1-5/2</code> means every 2nd value from 1 to 5, producing 1, 3, and 5.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Common Cron Patterns</h2>
+      <p>
+        Several cron expressions appear so frequently that they are worth memorizing. <code>* * * * *</code> runs every minute and is commonly used during development and testing. <code>0 * * * *</code> runs at the top of every hour, useful for hourly reports or cache refreshes. <code>0 0 * * *</code> runs at midnight every day, a typical schedule for daily database backups and log rotation. <code>0 9 * * 1</code> runs at 9:00 AM every Monday, perfect for weekly team reports. <code>0 0 1 * *</code> runs at midnight on the first day of every month, suited for monthly billing or reporting tasks.
+      </p>
+
+      <h3>Real-World Use Cases</h3>
+      <p>
+        Cron schedules drive essential infrastructure tasks across every type of software system. Database backups typically run during off-peak hours using a schedule like <code>30 2 * * *</code> (2:30 AM daily). Log rotation and cleanup scripts prevent disk space exhaustion by running daily or weekly. Email digest systems send summary emails on defined schedules, often weekly on Monday mornings. CI/CD pipelines use cron triggers to run nightly builds and integration test suites. Monitoring systems schedule health checks at regular intervals, such as every 5 minutes, to detect outages quickly.
+      </p>
+
+      <h3>Differences Between Cron Implementations</h3>
+      <p>
+        While the standard 5-field cron expression is universal across Unix systems, several variations exist. The Quartz scheduler, widely used in Java applications, adds a seconds field at the beginning (making 6 or 7 fields total) and supports additional features like the L modifier (last day of month) and the W modifier (nearest weekday). AWS EventBridge and CloudWatch use a similar but distinct syntax with a year field and support for the ? character. Kubernetes CronJobs use the standard 5-field format. When writing cron expressions, always verify which format your specific platform expects.
+      </p>
+
+      <h3>Tips for Testing Cron Expressions</h3>
+      <p>
+        Always verify cron expressions before deploying them to production. Use a parser like this tool to see the human-readable description and next run times. Pay special attention to the interaction between day-of-month and day-of-week fields: in standard cron, if both are restricted (not *), the job runs when either condition is met, not when both are met. This is a common source of confusion that causes jobs to run more often than expected. Start with a high-frequency schedule during testing (like every minute), verify the job works correctly, then switch to the production schedule. Keep a comment next to every cron entry that describes the schedule in plain English.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a cron expression?</h3>
+      <p>A cron expression is a five-field string (minute, hour, day-of-month, month, day-of-week) that defines a recurring schedule. Each field uses values, ranges, steps, or wildcards to specify when a task should run.</p>
+
+      <h3>What does the asterisk (*) mean in cron?</h3>
+      <p>The asterisk means "every possible value" for that field. For example, * in the hour field means every hour, and * * * * * means every minute of every day.</p>
+
+      <h3>How do step values work (*/5)?</h3>
+      <p>The */N syntax means "every Nth value starting from the minimum." In the minute field, */5 produces 0, 5, 10, 15, ..., 55. You can also use ranges with steps: 1-30/5 means every 5th minute from 1 to 30.</p>
+
+      <h3>What is the difference between standard and extended cron?</h3>
+      <p>Standard cron uses 5 fields. Extended formats (like Quartz scheduler) add seconds and year fields, plus special characters like L for "last day." This tool supports the standard 5-field Unix cron format.</p>
+
+      <h3>How do I schedule a job for the last day of every month?</h3>
+      <p>Standard cron has no "last day" syntax. The workaround is to run on days 28-31 with a script that checks if tomorrow is the 1st. Some extended implementations support the L modifier for this purpose.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Cron Expression Parser", url: everyday_cron_parser_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Date Difference", description: "Calculate the exact duration between two dates in years, months, and days.", path: everyday_date_difference_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Business Days Calculator", description: "Count working days between two dates, excluding weekends and holidays.", path: everyday_business_days_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Days Until Calculator", description: "Find out how many days remain until a future date or event.", path: everyday_days_until_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("cron-expression-parser") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -17,8 +17,8 @@ module Everyday
       return { valid: false, errors: @errors } if @errors.any?
 
       network = IPAddr.new("#{@ip_address}/#{@prefix_length}")
-      subnet_mask = IPAddr.new(network.mask_addr)
-      wildcard_mask = wildcard_from_mask(subnet_mask)
+      subnet_mask_str = network.netmask
+      wildcard_mask = wildcard_from_mask(subnet_mask_str)
       broadcast = broadcast_address(network)
       total_hosts = 2**(32 - @prefix_length)
       usable_hosts = @prefix_length >= 31 ? total_hosts : [ total_hosts - 2, 0 ].max
@@ -29,7 +29,7 @@ module Everyday
         prefix_length: @prefix_length,
         network_address: network.to_s,
         broadcast_address: broadcast.to_s,
-        subnet_mask: subnet_mask.to_s,
+        subnet_mask: subnet_mask_str,
         wildcard_mask: wildcard_mask,
         first_usable_host: first_usable(network),
         last_usable_host: last_usable(broadcast),
@@ -78,8 +78,8 @@ module Everyday
       int_to_ip(ip_to_int(broadcast.to_s) - 1)
     end
 
-    def wildcard_from_mask(subnet_mask)
-      octets = subnet_mask.to_s.split(".").map { |o| 255 - o.to_i }
+    def wildcard_from_mask(mask_str)
+      octets = mask_str.split(".").map { |o| 255 - o.to_i }
       octets.join(".")
     end
 

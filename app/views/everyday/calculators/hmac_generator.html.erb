@@ -1,0 +1,189 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "HMAC Generator - Free Online HMAC-SHA256, HMAC-SHA512 Tool",
+  description: "Generate HMAC authentication codes using SHA-256, SHA-384, or SHA-512. Free online HMAC generator with real-time results for webhook verification and API authentication.",
+  canonical: everyday_hmac_generator_url,
+  og: {
+    title: "HMAC Generator - Free Online HMAC-SHA256, HMAC-SHA512 Tool | CalcWise",
+    description: "Generate HMAC authentication codes instantly. Supports SHA-256, SHA-384, and SHA-512 for webhook verification and API security.",
+    url: everyday_hmac_generator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "HMAC Generator", url: everyday_hmac_generator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is HMAC and how is it different from a regular hash?", answer: "HMAC (Hash-based Message Authentication Code) combines a cryptographic hash function with a secret key to produce an authentication code. Unlike a plain hash which anyone can compute from the same input, an HMAC requires knowledge of the secret key. This means only parties who share the secret key can generate or verify the HMAC, providing both data integrity and authentication. A regular hash like SHA-256 only proves the data has not been altered, while an HMAC also proves who created it." },
+  { question: "Why use HMAC instead of simply hashing the key concatenated with the message?", answer: "Concatenating a key with a message and hashing it (e.g., SHA-256(key + message)) is vulnerable to length extension attacks. An attacker who knows the hash of key+message can compute the hash of key+message+extension without knowing the key. HMAC uses a specific double-hashing construction with inner and outer padding that prevents this attack. The HMAC construction is: HMAC(K, m) = H((K xor opad) || H((K xor ipad) || m)), making it provably secure." },
+  { question: "What is webhook signature verification?", answer: "When a service sends a webhook to your application, it includes an HMAC signature in the HTTP headers. The signature is computed using a shared secret key and the request body. Your application recomputes the HMAC using the same key and body, then compares the result. If the signatures match, you can be confident the webhook was sent by the legitimate service and the payload was not tampered with during transit." },
+  { question: "Which HMAC algorithm should I use?", answer: "HMAC-SHA256 is the most widely used and recommended choice. It provides 256 bits of security, is supported everywhere, and is the default for most APIs including Stripe, GitHub, and Shopify webhooks. HMAC-SHA384 and HMAC-SHA512 provide larger security margins but are rarely necessary for typical applications. All three SHA-2 based HMAC variants are considered secure." },
+  { question: "Does the length of the secret key matter for HMAC?", answer: "Yes. The key should be at least as long as the hash output (32 bytes for SHA-256, 64 bytes for SHA-512) for optimal security. Keys shorter than the hash output reduce the effective security level. Keys longer than the block size (64 bytes for SHA-256, 128 bytes for SHA-512) are hashed first to fit the block size. Using a cryptographically random key of appropriate length provides the strongest HMAC security." }
+]) %>
+
+<%= calculator_schema(
+  name: "HMAC Generator",
+  description: "Generate HMAC authentication codes using SHA-256, SHA-384, or SHA-512 for webhook verification and API security.",
+  url: everyday_hmac_generator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "HMAC Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">HMAC Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Generate HMAC (Hash-based Message Authentication Code) values using SHA-256, SHA-384, or SHA-512. Essential for webhook verification, API authentication, and message integrity.</p>
+
+    <div data-controller="hmac-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="hmac-message" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Message</label>
+            <textarea id="hmac-message"
+              data-hmac-generator-calculator-target="message"
+              data-action="input->hmac-generator-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows="4" placeholder="Enter message to authenticate..."></textarea>
+          </div>
+          <div>
+            <label for="hmac-secret-key" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Secret Key</label>
+            <input type="text" id="hmac-secret-key"
+              data-hmac-generator-calculator-target="secretKey"
+              data-action="input->hmac-generator-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter secret key...">
+          </div>
+          <div>
+            <label for="hmac-algorithm" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Algorithm</label>
+            <select id="hmac-algorithm"
+              data-hmac-generator-calculator-target="algorithm"
+              data-action="change->hmac-generator-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="sha256" selected>HMAC-SHA256</option>
+              <option value="sha384">HMAC-SHA384</option>
+              <option value="sha512">HMAC-SHA512</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">HMAC Output</label>
+              <textarea readonly rows="4"
+                data-hmac-generator-calculator-target="resultHmac"
+                class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 break-all"
+                placeholder="HMAC will appear here..."></textarea>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Algorithm</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-hmac-generator-calculator-target="resultAlgorithm">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Message Length</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-hmac-generator-calculator-target="resultMessageLength">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Key Length</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-hmac-generator-calculator-target="resultKeyLength">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">HMAC Length</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-hmac-generator-calculator-target="resultHmacLength">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->hmac-generator-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy HMAC</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>What Is HMAC?</h2>
+      <p>
+        HMAC stands for Hash-based Message Authentication Code. It is a specific construction for creating a message authentication code using a cryptographic hash function combined with a secret key. Defined in RFC 2104, HMAC provides two guarantees that plain hashing cannot: data integrity (the message has not been altered) and authentication (the message was created by someone who knows the secret key). While anyone can compute the SHA-256 hash of a message, only someone with the secret key can generate the correct HMAC. This makes HMAC the standard mechanism for verifying that messages originate from trusted sources.
+      </p>
+
+      <h3>HMAC vs Plain Hashing</h3>
+      <p>
+        A plain hash like SHA-256("hello") can be computed by anyone and only proves that data has not been modified. It provides no proof of who created the hash. HMAC adds a secret key to the equation: HMAC-SHA256("secret_key", "hello") can only be computed or verified by parties who possess the secret key. This difference is critical in security. When Stripe sends a webhook to your server, it includes an HMAC signature. Your server recomputes the HMAC using your shared secret and the payload. If an attacker intercepts and modifies the payload, they cannot forge a valid HMAC without knowing the secret key.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How HMAC Prevents Length Extension Attacks</h2>
+      <p>
+        A naive approach to keyed hashing would be to concatenate the key with the message and hash them together: SHA-256(key + message). This is vulnerable to length extension attacks. Due to the Merkle-Damgard construction used by SHA-256 and other hash functions, an attacker who knows the hash of key+message can compute the hash of key+message+attacker_data without knowing the key. HMAC defeats this attack through a double-hashing construction. The formula is: HMAC(K, m) = H((K XOR opad) || H((K XOR ipad) || m)), where ipad and opad are fixed padding constants. The inner hash processes the key and message, and the outer hash processes the key and the inner hash result. This two-layer structure makes length extension attacks mathematically impossible.
+      </p>
+
+      <h3>Real-World HMAC Use Cases</h3>
+      <p>
+        Webhook verification is the most visible use of HMAC for developers. Services like GitHub, Stripe, Shopify, Twilio, and Slack sign every webhook payload with HMAC-SHA256 using a shared secret. API authentication protocols use HMAC to sign requests, with AWS Signature Version 4 being a prominent example where each API request is signed with HMAC-SHA256 using secret access keys. JSON Web Tokens (JWTs) commonly use HMAC-SHA256 (the HS256 algorithm) to sign token payloads, ensuring tokens cannot be forged. Message integrity in secure communication protocols relies on HMAC to detect any tampering with transmitted data. Session tokens in web applications are often protected with HMAC to prevent cookie tampering.
+      </p>
+
+      <h3>HMAC Construction Details</h3>
+      <p>
+        The HMAC algorithm processes the secret key through two rounds of hashing with different padding. First, if the key is longer than the hash function's block size (64 bytes for SHA-256, 128 bytes for SHA-512), it is hashed to fit. The key is then padded with zeros to match the block size. Two derived keys are created: the inner key (K XOR ipad, where ipad is 0x36 repeated) and the outer key (K XOR opad, where opad is 0x5C repeated). The inner hash computes H(inner_key || message), and the outer hash computes H(outer_key || inner_hash). This construction has been mathematically proven secure: if the underlying hash function is a pseudorandom function, then HMAC is also a pseudorandom function.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is HMAC and how is it different from a regular hash?</h3>
+      <p>HMAC combines a hash function with a secret key to produce an authentication code. Unlike a plain hash that anyone can compute, HMAC requires the secret key, providing both integrity verification and sender authentication.</p>
+
+      <h3>Why use HMAC instead of hashing key + message?</h3>
+      <p>Simply hashing the concatenation of key and message is vulnerable to length extension attacks. HMAC's double-hashing construction with inner and outer padding prevents this class of attacks entirely.</p>
+
+      <h3>What is webhook signature verification?</h3>
+      <p>Services sign webhook payloads with HMAC using a shared secret. Your server recomputes the HMAC and compares it to the signature header to confirm the webhook is authentic and unmodified.</p>
+
+      <h3>Which HMAC algorithm should I use?</h3>
+      <p>HMAC-SHA256 is the standard recommendation. It is supported universally, used by major API providers (Stripe, GitHub, AWS), and provides 256 bits of security.</p>
+
+      <h3>Does the length of the secret key matter?</h3>
+      <p>Yes. Keys should be at least as long as the hash output (32 bytes for SHA-256). Shorter keys reduce security. Keys longer than the block size are hashed first, so excessively long keys offer no benefit.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "HMAC Generator", url: everyday_hmac_generator_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Hash Generator", description: "Generate SHA-256, SHA-512, and MD5 hashes from any text input.", path: everyday_hash_generator_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" },
+      { name: "UUID Generator", description: "Generate random UUID v4 identifiers for databases, APIs, and distributed systems.", path: everyday_uuid_generator_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
+      { name: "Secure Random Generator", description: "Generate cryptographically secure random strings with customizable character sets.", path: everyday_secure_random_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("hmac-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

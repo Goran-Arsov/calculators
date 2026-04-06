@@ -59,6 +59,20 @@ module Everyday
     def uuid_generator; end
     def hash_generator; end
     def hmac_generator; end
+    def code_minifier; end
+    def escape_unescape; end
+    def jwt_decoder; end
+    def sql_formatter; end
+    def cron_parser; end
+    def url_parser; end
+    def http_header_parser; end
+    def subnet_calculator; end
+    def yaml_to_json; end
+    def csv_to_json; end
+    def xml_to_json; end
+    def unix_timestamp; end
+    def color_converter; end
+    def html_entity_encoder; end
 
   end
 end

@@ -1,0 +1,172 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "SQL Formatter - Free Online Tool",
+  description: "Format and beautify SQL queries with keyword uppercasing, clause indentation, and proper line breaks. Free online SQL formatter with copy button.",
+  canonical: everyday_sql_formatter_url,
+  og: {
+    title: "SQL Formatter - Free Online Tool | CalcWise",
+    description: "Paste SQL to format it with uppercase keywords, proper indentation, and line breaks. See keyword count and line metrics.",
+    url: everyday_sql_formatter_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "SQL Formatter", url: everyday_sql_formatter_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What does a SQL formatter do?", answer: "A SQL formatter takes raw or compressed SQL code and restructures it with consistent indentation, line breaks before major clauses (SELECT, FROM, WHERE, JOIN), and uppercased keywords. This makes complex queries much easier to read, understand, debug, and review. The formatting is purely cosmetic and does not change what the query does." },
+  { question: "Should SQL keywords be uppercase or lowercase?", answer: "There is no functional difference between uppercase and lowercase SQL keywords, as SQL is case-insensitive for keywords. However, uppercase keywords are the most widely adopted convention because they visually distinguish SQL syntax from table names, column names, and values. Most style guides, including those from Oracle, Microsoft, and major open-source projects, recommend uppercase keywords." },
+  { question: "How should I indent SQL subqueries and CTEs?", answer: "Each level of nesting in subqueries should add one level of indentation (typically 2 or 4 spaces). For Common Table Expressions (CTEs using WITH), place each CTE definition on its own line with the inner query indented. The main query after the CTE block starts at the base indentation level. This makes the logical flow of data through the query visible at a glance." },
+  { question: "Does formatting affect SQL query performance?", answer: "No. SQL formatting has zero impact on query performance. The database query planner strips all whitespace and formatting before parsing and optimizing the query. Whether your SQL is on one line or beautifully indented across fifty lines, the database executes exactly the same operations. Formatting is purely for human readability and maintainability." },
+  { question: "Why put each clause on a new line?", answer: "Placing each major clause (SELECT, FROM, WHERE, JOIN, GROUP BY, ORDER BY) on a new line makes SQL queries scannable. Reviewers can quickly identify the tables being queried, the filtering conditions, and the sorting applied. It also makes version control diffs cleaner, since a change to one clause appears as a single modified line rather than a change buried in a long string." }
+]) %>
+
+<%= calculator_schema(
+  name: "SQL Formatter",
+  description: "Format and beautify SQL queries with keyword uppercasing, clause indentation, and proper line breaks.",
+  url: everyday_sql_formatter_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "SQL Formatter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">SQL Formatter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste your SQL query to format it with uppercase keywords, proper indentation, and clean line breaks. Makes complex queries readable in seconds.</p>
+
+    <div data-controller="sql-formatter-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="sql-formatter-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Input SQL</label>
+          <textarea id="sql-formatter-input" data-sql-formatter-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="6" placeholder="select u.name, u.email, o.total from users u inner join orders o on u.id = o.user_id where o.total > 100 and u.active = true order by o.total desc limit 10"></textarea>
+        </div>
+
+        <div class="flex justify-center">
+          <button data-action="click->sql-formatter-calculator#format"
+            class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-sm transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Format SQL
+          </button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-3 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Status</span>
+            <span class="text-sm font-bold" data-sql-formatter-calculator-target="resultStatus">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Keywords</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-sql-formatter-calculator-target="resultKeywordCount">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Lines</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-sql-formatter-calculator-target="resultLineCount">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="sql-formatter-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Formatted SQL</label>
+            <button data-action="click->sql-formatter-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+          </div>
+          <textarea id="sql-formatter-output" data-sql-formatter-calculator-target="output" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="10" placeholder="Formatted SQL will appear here..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Why SQL Formatting Matters</h2>
+      <p>
+        SQL queries can range from simple one-liners to complex multi-table joins spanning dozens of lines. When a query is written or pasted as a single continuous string, understanding its logic becomes unnecessarily difficult. Proper formatting transforms an unreadable wall of text into a clearly structured document where each clause has its own line, indentation reveals the logical hierarchy, and keywords stand out from identifiers. This is not a cosmetic preference; it directly impacts how quickly developers can debug queries, review code changes, and onboard new team members.
+      </p>
+      <p>
+        Well-formatted SQL reduces the cognitive load required to understand what a query does. When each SELECT column, each JOIN, and each WHERE condition occupies its own line, a developer can scan the query vertically rather than parsing it left to right. This scanning ability is especially valuable during code reviews, where reviewers need to quickly assess whether a query is correct, efficient, and safe. Poorly formatted SQL in a pull request slows down the entire review process.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Common SQL Style Conventions</h2>
+      <p>
+        The most widely adopted SQL formatting convention uses uppercase for all reserved keywords (SELECT, FROM, WHERE, JOIN, ORDER BY) and lowercase for table names, column names, and aliases. Each major clause starts on a new line at the base indentation level, while sub-clauses like AND, OR, and ON are indented one level deeper. Column lists in SELECT clauses can be placed one per line for complex queries or kept on a single line for simple ones. Table aliases should be short but meaningful, typically one to three characters.
+      </p>
+
+      <h3>The Keyword Capitalization Debate</h3>
+      <p>
+        While SQL is case-insensitive for keywords, the debate between uppercase and lowercase keywords has persisted for decades. Uppercase keywords won out as the dominant convention for a practical reason: they create an immediate visual distinction between the structural elements of the query (SELECT, WHERE, JOIN) and the data elements (table names, column names, values). This distinction makes queries faster to scan and less prone to misreading. Modern IDEs with syntax highlighting reduce the need for case-based distinction, but uppercase remains the standard in documentation, books, and most team style guides.
+      </p>
+
+      <h3>Indentation Strategies for Complex Queries</h3>
+      <p>
+        Simple queries need minimal formatting, but complex queries with subqueries, Common Table Expressions (CTEs), and multiple joins benefit enormously from consistent indentation. For subqueries, indent the inner query one level and place the opening and closing parentheses on their own lines aligned with the outer clause. For CTEs using WITH, place each CTE definition as a separate block and indent its body. For multiple JOINs, keep each JOIN on its own line at the same indentation level as FROM, with the ON condition indented beneath it. This layered approach makes even the most complex analytical queries readable.
+      </p>
+
+      <h3>Formatting and Code Review</h3>
+      <p>
+        Consistent SQL formatting has a direct impact on version control and code review workflows. When SQL is formatted with one clause per line, a change to a WHERE condition shows up as a single modified line in a diff. When the entire query is on one line, even a trivial change appears as a complete rewrite, making it impossible for reviewers to identify what actually changed. Teams that enforce SQL formatting standards through automated tools or linters consistently report faster code reviews and fewer bugs in database queries.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What does a SQL formatter do?</h3>
+      <p>A SQL formatter restructures your query with consistent indentation, line breaks before major clauses, and uppercased keywords. It makes complex queries easier to read without changing what the query does.</p>
+
+      <h3>Should SQL keywords be uppercase or lowercase?</h3>
+      <p>Uppercase is the dominant convention because it visually separates SQL syntax from table and column names. SQL is case-insensitive for keywords, so either works functionally.</p>
+
+      <h3>How should I indent subqueries and CTEs?</h3>
+      <p>Add one indentation level for each nesting depth. For CTEs, indent the inner query body. For subqueries, indent inside the parentheses. Keep the main query at the base level.</p>
+
+      <h3>Does formatting affect query performance?</h3>
+      <p>No. The database strips all whitespace before parsing. Formatting is purely for human readability and has zero impact on execution.</p>
+
+      <h3>Why put each clause on a new line?</h3>
+      <p>It makes queries scannable, simplifies debugging, and produces cleaner version control diffs. A change to one clause appears as a single modified line.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "SQL Formatter", url: everyday_sql_formatter_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "JSON Formatter", description: "Format, prettify, minify, and validate JSON instantly.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Markdown Preview", description: "Write markdown and see a live HTML preview with formatting applied.", path: everyday_markdown_preview_path, icon_path: "M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" },
+      { name: "Text Diff Checker", description: "Compare two texts side by side with line-by-line diff highlighting.", path: everyday_text_diff_path, icon_path: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("sql-formatter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
