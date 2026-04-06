@@ -1,0 +1,296 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cron Job Generator - Build Cron Expressions Visually",
+  description: "Build cron expressions by selecting minute, hour, day, month, and weekday fields visually. See the generated cron line, a plain-English description, and next 5 run times.",
+  canonical: everyday_cron_builder_url,
+  og: {
+    title: "Cron Job Generator - Build Cron Expressions Visually | CalcWise",
+    description: "Generate cron expressions by picking each field visually. No need to memorize cron syntax. Instant preview with next run times.",
+    url: everyday_cron_builder_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Cron Job Generator", url: everyday_cron_builder_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a cron expression?", answer: "A cron expression is a string of five space-separated fields that defines a recurring schedule. The fields are minute (0-59), hour (0-23), day of month (1-31), month (1-12), and day of week (0-6, where 0 is Sunday). Each field can use wildcards (*), specific values, ranges (1-5), lists (1,3,5), or step values (*/5)." },
+  { question: "How do I use this cron generator?", answer: "For each field (minute, hour, day of month, month, day of week), choose a mode: Every (wildcard), Every Nth (step), or Specific values. Then click Build to generate the cron expression. The tool shows the expression, a plain-English description, and the next 5 times the schedule would trigger." },
+  { question: "What does */5 mean in a cron field?", answer: "The syntax */5 means every 5th value. In the minute field, */5 triggers at minutes 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, and 55. In the hour field, */5 triggers at hours 0, 5, 10, 15, and 20. The step applies from the minimum value of the field's range." },
+  { question: "Can I select multiple days of the week or months?", answer: "Yes. Switch the month or day-of-week field to Specific mode and check the boxes for each value you want. The generator combines your selections into a comma-separated list in the cron expression, for example 1,3,5 for Monday, Wednesday, and Friday." },
+  { question: "Where can I use the generated cron expression?", answer: "Cron expressions work in Unix/Linux crontab, macOS launchd (with conversion), Kubernetes CronJobs, GitHub Actions, AWS EventBridge, Google Cloud Scheduler, CI/CD pipelines, and most job scheduling libraries in Ruby (whenever, sidekiq-cron), Python (APScheduler), Node.js (node-cron), and Java (Quartz)." }
+]) %>
+
+<%= calculator_schema(
+  name: "Cron Job Generator",
+  description: "Build cron expressions visually by selecting minute, hour, day, month, and weekday fields.",
+  url: everyday_cron_builder_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Cron Job Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cron Job Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Build cron expressions visually by configuring each field. Click "Build" to generate the cron line, see a plain-English description, and preview the next run times.</p>
+
+    <div data-controller="cron-builder-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <%# Preset buttons %>
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Quick Presets</h3>
+        <div class="flex flex-wrap gap-2">
+          <% [
+            ["Every minute", "* * * * *"],
+            ["Every 5 min", "*/5 * * * *"],
+            ["Every 15 min", "*/15 * * * *"],
+            ["Hourly", "0 * * * *"],
+            ["Daily at midnight", "0 0 * * *"],
+            ["Daily at 9 AM", "0 9 * * *"],
+            ["Weekly (Mon)", "0 0 * * 1"],
+            ["Monthly (1st)", "0 0 1 * *"],
+            ["Weekdays at 8 AM", "0 8 * * 1,2,3,4,5"]
+          ].each do |label, expr| %>
+            <button data-action="click->cron-builder-calculator#preset" data-expression="<%= expr %>"
+                    class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors">
+              <%= label %>
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="space-y-5">
+
+        <%# Minute field %>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Minute <span class="text-gray-400 font-normal">(0-59)</span></label>
+            <select data-cron-builder-calculator-target="minuteMode" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="every">Every minute (*)</option>
+              <option value="step">Every Nth minute</option>
+              <option value="specific">Specific minute</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Every N minutes</label>
+            <input type="number" min="1" max="59" value="5" data-cron-builder-calculator-target="minuteStep" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm" placeholder="5">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Specific minute</label>
+            <input type="text" value="0" data-cron-builder-calculator-target="minuteValue" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="0 or 0,15,30,45">
+          </div>
+        </div>
+
+        <%# Hour field %>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Hour <span class="text-gray-400 font-normal">(0-23)</span></label>
+            <select data-cron-builder-calculator-target="hourMode" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="every">Every hour (*)</option>
+              <option value="step">Every Nth hour</option>
+              <option value="specific">Specific hour</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Every N hours</label>
+            <input type="number" min="1" max="23" value="2" data-cron-builder-calculator-target="hourStep" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm" placeholder="2">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Specific hour</label>
+            <input type="text" value="0" data-cron-builder-calculator-target="hourValue" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="0 or 8,12,18">
+          </div>
+        </div>
+
+        <%# Day of month field %>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Day of Month <span class="text-gray-400 font-normal">(1-31)</span></label>
+            <select data-cron-builder-calculator-target="domMode" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="every">Every day (*)</option>
+              <option value="step">Every Nth day</option>
+              <option value="specific">Specific day(s)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Every N days</label>
+            <input type="number" min="1" max="31" value="2" data-cron-builder-calculator-target="domStep" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm" placeholder="2">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Specific day(s)</label>
+            <input type="text" value="1" data-cron-builder-calculator-target="domValue" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="1 or 1,15">
+          </div>
+        </div>
+
+        <%# Month field %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div class="flex flex-wrap items-center gap-4 mb-3">
+            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Month <span class="text-gray-400 font-normal">(1-12)</span></label>
+            <select data-cron-builder-calculator-target="monthMode" class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="every">Every month (*)</option>
+              <option value="specific">Specific months</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
+            <% %w[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec].each_with_index do |name, i| %>
+              <label class="flex items-center gap-1.5 cursor-pointer text-sm">
+                <input type="checkbox" value="<%= i + 1 %>" data-cron-builder-calculator-target="monthValues"
+                       class="w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                <span class="text-gray-600 dark:text-gray-400"><%= name %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <%# Day of week field %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div class="flex flex-wrap items-center gap-4 mb-3">
+            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Day of Week <span class="text-gray-400 font-normal">(0-6)</span></label>
+            <select data-cron-builder-calculator-target="dowMode" class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="every">Every day (*)</option>
+              <option value="specific">Specific days</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
+            <% %w[Sun Mon Tue Wed Thu Fri Sat].each_with_index do |name, i| %>
+              <label class="flex items-center gap-1.5 cursor-pointer text-sm">
+                <input type="checkbox" value="<%= i %>" data-cron-builder-calculator-target="dowValues"
+                       class="w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                <span class="text-gray-600 dark:text-gray-400"><%= name %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <%# Build button %>
+        <button data-action="click->cron-builder-calculator#build"
+                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+          Build Cron Expression
+        </button>
+      </div>
+
+      <%# Results %>
+      <div aria-live="polite" class="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Result</h2>
+
+        <div class="mb-4">
+          <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Cron Expression</label>
+          <div class="flex gap-2">
+            <input type="text" readonly data-cron-builder-calculator-target="resultExpression"
+                   class="flex-1 font-mono text-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none"
+                   placeholder="* * * * *">
+            <button data-action="click->cron-builder-calculator#copy"
+                    class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Description</label>
+          <p class="text-gray-900 dark:text-white font-medium" data-cron-builder-calculator-target="resultDescription">--</p>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Next 5 Run Times</label>
+          <div data-cron-builder-calculator-target="resultNextRuns">
+            <p class="text-gray-400 text-sm">Click "Build" to see next run times</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Cron Job Generator</h2>
+      <p>
+        Each row in the form represents one of the five fields in a standard cron expression. For every field, choose a mode: "Every" produces a wildcard, "Every Nth" produces a step value like <code>*/5</code>, and "Specific" lets you enter exact values or comma-separated lists. For months and days of the week, checkboxes let you pick individual values by name instead of remembering numbers. Click "Build" and the tool assembles your choices into a valid cron expression, displays what it means in plain English, and calculates the next five times the schedule would fire.
+      </p>
+      <p>
+        The preset buttons at the top load common schedules with a single click. Use them as starting points, then adjust individual fields to match your exact needs. The result updates only when you click Build, so you can make multiple changes before generating the final expression.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the Five Cron Fields</h2>
+      <p>
+        A cron expression reads left to right as minute, hour, day of month, month, day of week. The minute field accepts 0 through 59. The hour field uses a 24-hour clock from 0 to 23, where 0 is midnight and 13 is 1 PM. The day of month field ranges from 1 to 31. The month field counts from 1 for January through 12 for December. The day of week field runs from 0 for Sunday to 6 for Saturday, though some systems also accept 7 as Sunday.
+      </p>
+
+      <h3>Wildcards, Steps, Ranges, and Lists</h3>
+      <p>
+        The asterisk wildcard means every possible value for that field. Step values like <code>*/10</code> in the minute field mean every 10th minute starting from zero: 0, 10, 20, 30, 40, 50. Ranges like <code>9-17</code> in the hour field mean every hour from 9 AM through 5 PM. Lists like <code>1,3,5</code> in the day of week field mean Monday, Wednesday, and Friday. You can combine ranges and steps: <code>1-30/5</code> means every 5th value from 1 through 30.
+      </p>
+
+      <h3>Common Scheduling Patterns</h3>
+      <p>
+        A daily backup at 2:30 AM is <code>30 2 * * *</code>. A weekly report every Monday at 9 AM is <code>0 9 * * 1</code>. A task that runs every weekday at 8 AM is <code>0 8 * * 1-5</code> or equivalently <code>0 8 * * 1,2,3,4,5</code>. Quarterly execution on the first day of January, April, July, and October at midnight is <code>0 0 1 1,4,7,10 *</code>. A health check every 30 seconds is not possible with standard cron since the smallest unit is one minute.
+      </p>
+
+      <h3>Where Cron Expressions Are Used</h3>
+      <p>
+        Beyond the traditional Unix crontab, cron expressions appear in Kubernetes CronJob manifests, GitHub Actions workflow schedules, AWS EventBridge rules, Google Cloud Scheduler, Azure Functions timer triggers, Sidekiq, Hangfire, Quartz, and most web framework task schedulers. The five-field format supported by this tool is the most widely compatible. Some systems extend it with a seconds field at the beginning or a year field at the end, but those are non-standard and should be checked against the target platform's documentation.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a cron expression?</h3>
+      <p>
+        A string of five fields (minute, hour, day of month, month, day of week) that defines a recurring schedule. Each field uses wildcards, specific values, ranges, lists, or step values.
+      </p>
+
+      <h3>How do I use this generator?</h3>
+      <p>
+        Pick a mode for each field, enter values or check boxes, and click Build. The tool shows the cron expression, a plain-English description, and the next 5 scheduled run times.
+      </p>
+
+      <h3>What does */5 mean?</h3>
+      <p>
+        Every 5th value from the minimum of the field's range. In the minute field: 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55. In the hour field: 0, 5, 10, 15, 20.
+      </p>
+
+      <h3>Can I select multiple days or months?</h3>
+      <p>
+        Yes. Switch the field to Specific mode and check the values you want. They combine into a comma-separated list in the cron expression.
+      </p>
+
+      <h3>Where can I use the generated expression?</h3>
+      <p>
+        In Unix crontab, Kubernetes CronJobs, GitHub Actions, AWS EventBridge, Google Cloud Scheduler, CI/CD pipelines, and most scheduling libraries in any language.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "Cron Job Generator", url: everyday_cron_builder_url %>
+    <%= render "shared/calculation_email_capture" %>
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Cron Expression Parser", description: "Parse existing cron expressions into human-readable descriptions.", path: everyday_cron_parser_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Unix Timestamp Converter", description: "Convert between Unix timestamps and human-readable dates.", path: everyday_unix_timestamp_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Date Difference Calculator", description: "Calculate the number of days, weeks, and months between two dates.", path: everyday_date_difference_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("cron-job-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

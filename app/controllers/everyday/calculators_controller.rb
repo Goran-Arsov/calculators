@@ -82,6 +82,7 @@ module Everyday
     def markdown_to_pdf; end
     def excel_to_pdf; end
     def docx_to_pdf; end
+    def cron_builder; end
 
   end
 end
