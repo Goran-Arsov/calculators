@@ -16,9 +16,9 @@ class SeoHelperTest < ActionView::TestCase
   end
 
   test "calculator_schema_with_ratings includes rating when data exists" do
-    CalculatorRating.create!(calculator_slug: "test-calc", direction: "up", ip_hash: "hash1")
-    CalculatorRating.create!(calculator_slug: "test-calc", direction: "up", ip_hash: "hash2")
-    CalculatorRating.create!(calculator_slug: "test-calc", direction: "up", ip_hash: "hash3")
+    CalculatorRating.create!(calculator_slug: "test-calc", direction: "up", score: 5, ip_hash: "hash1")
+    CalculatorRating.create!(calculator_slug: "test-calc", direction: "up", score: 4, ip_hash: "hash2")
+    CalculatorRating.create!(calculator_slug: "test-calc", direction: "up", score: 5, ip_hash: "hash3")
 
     result = calculator_schema_with_ratings(
       name: "Test Calculator",

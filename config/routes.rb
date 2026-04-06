@@ -2,6 +2,12 @@ Rails.application.routes.draw do
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # IT Tools
+  get "information-technology", to: "it_tools#index", as: :it_tools
+
+  # Admin
+  get "admin/ratings", to: "admin/ratings#index", as: :admin_ratings
+
   # API
   namespace :api, defaults: { format: :json } do
     get "ratings/:slug", to: "ratings#show"

@@ -61,24 +61,32 @@ class CalculatorRatingTest < ActiveSupport::TestCase
     assert_nil CalculatorRating.rating_for_schema("empty-calc")
   end
 
-  test "rating_for_schema returns value and count" do
-    CalculatorRating.create!(calculator_slug: "schema-calc", direction: "up", ip_hash: "s1")
-    CalculatorRating.create!(calculator_slug: "schema-calc", direction: "up", ip_hash: "s2")
-    CalculatorRating.create!(calculator_slug: "schema-calc", direction: "up", ip_hash: "s3")
-    CalculatorRating.create!(calculator_slug: "schema-calc", direction: "down", ip_hash: "s4")
+  test "rating_for_schema returns value and count from star scores" do
+    CalculatorRating.create!(calculator_slug: "schema-calc", direction: "up", score: 5, ip_hash: "s1")
+    CalculatorRating.create!(calculator_slug: "schema-calc", direction: "up", score: 4, ip_hash: "s2")
+    CalculatorRating.create!(calculator_slug: "schema-calc", direction: "up", score: 3, ip_hash: "s3")
+    CalculatorRating.create!(calculator_slug: "schema-calc", direction: "down", score: 2, ip_hash: "s4")
 
     result = CalculatorRating.rating_for_schema("schema-calc")
     assert_equal 4, result[:rating_count]
-    # 75% up → 0.75 * 4 + 1 = 4.0
-    assert_in_delta 4.0, result[:rating_value], 0.1
+    assert_in_delta 3.5, result[:rating_value], 0.1
   end
 
-  test "rating_for_schema with all thumbs up gives 5.0" do
-    CalculatorRating.create!(calculator_slug: "perfect-calc", direction: "up", ip_hash: "p1")
-    CalculatorRating.create!(calculator_slug: "perfect-calc", direction: "up", ip_hash: "p2")
+  test "rating_for_schema with all 5 stars gives 5.0" do
+    CalculatorRating.create!(calculator_slug: "perfect-calc", direction: "up", score: 5, ip_hash: "p1")
+    CalculatorRating.create!(calculator_slug: "perfect-calc", direction: "up", score: 5, ip_hash: "p2")
 
     result = CalculatorRating.rating_for_schema("perfect-calc")
     assert_in_delta 5.0, result[:rating_value], 0.1
+  end
+
+  test "rating_for_schema ignores ratings without score" do
+    CalculatorRating.create!(calculator_slug: "mixed-calc", direction: "up", ip_hash: "m1")
+    CalculatorRating.create!(calculator_slug: "mixed-calc", direction: "up", score: 4, ip_hash: "m2")
+
+    result = CalculatorRating.rating_for_schema("mixed-calc")
+    assert_equal 1, result[:rating_count]
+    assert_in_delta 4.0, result[:rating_value], 0.1
   end
 
   test "scopes filter correctly" do

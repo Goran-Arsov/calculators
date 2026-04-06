@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["upCount", "downCount", "upButton", "downButton", "prompt"]
+  static targets = ["star", "average", "count", "prompt"]
   static values = { slug: String }
 
   connect() {
@@ -9,73 +9,100 @@ export default class extends Controller {
     this.checkUserVote()
   }
 
-  thumbsUp() {
+  hover(event) {
     if (this.hasVoted()) return
-    this.submitRating("up")
+    var score = parseInt(event.currentTarget.dataset.score)
+    this.highlightStars(score)
   }
 
-  thumbsDown() {
+  unhover() {
     if (this.hasVoted()) return
-    this.submitRating("down")
+    this.highlightStars(0)
   }
 
-  async submitRating(direction) {
-    // Optimistic UI update
-    this.saveVote(direction)
-    this.updateUI()
+  rate(event) {
+    if (this.hasVoted()) return
+    var score = parseInt(event.currentTarget.dataset.score)
+    this.submitRating(score)
+  }
+
+  async submitRating(score) {
+    this.saveVote(score)
+    this.highlightStars(score)
+    this.lockStars()
 
     try {
-      const response = await fetch(`/api/ratings/${encodeURIComponent(this.slugValue)}`, {
+      var response = await fetch("/api/ratings/" + encodeURIComponent(this.slugValue), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ direction })
+        body: JSON.stringify({ score: score })
       })
-      const data = await response.json()
-      this.upCountTarget.textContent = data.up
-      this.downCountTarget.textContent = data.down
+      var data = await response.json()
+      this.averageTarget.textContent = data.average.toFixed(1)
+      this.countTarget.textContent = data.count + (data.count === 1 ? " rating" : " ratings")
     } catch (e) {
-      // Server unavailable — keep optimistic update
+      // Keep optimistic update
+    }
+
+    if (this.hasPromptTarget) {
+      this.promptTarget.textContent = "Thanks for your feedback!"
     }
 
     if (typeof gtag === "function") {
       gtag("event", "calculator_rating", {
         calculator: this.slugValue,
-        rating: direction
+        rating: score
       })
     }
   }
 
   async fetchRatings() {
     try {
-      const response = await fetch(`/api/ratings/${encodeURIComponent(this.slugValue)}`)
-      const data = await response.json()
-      this.upCountTarget.textContent = data.up
-      this.downCountTarget.textContent = data.down
+      var response = await fetch("/api/ratings/" + encodeURIComponent(this.slugValue))
+      var data = await response.json()
+      this.averageTarget.textContent = data.average.toFixed(1)
+      this.countTarget.textContent = data.count + (data.count === 1 ? " rating" : " ratings")
     } catch (e) {
-      // Show zeros on failure
+      // Show defaults on failure
     }
   }
 
-  hasVoted() {
-    return localStorage.getItem(`rating_${this.slugValue}`) !== null
+  highlightStars(score) {
+    this.starTargets.forEach(function(star) {
+      var starScore = parseInt(star.dataset.score)
+      if (starScore <= score) {
+        star.classList.remove("text-gray-300", "dark:text-gray-600")
+        star.classList.add("text-yellow-400")
+      } else {
+        star.classList.remove("text-yellow-400")
+        star.classList.add("text-gray-300", "dark:text-gray-600")
+      }
+    })
   }
 
-  saveVote(direction) {
-    localStorage.setItem(`rating_${this.slugValue}`, direction)
+  lockStars() {
+    this.starTargets.forEach(function(star) {
+      star.classList.add("cursor-default")
+      star.classList.remove("cursor-pointer", "hover:scale-110")
+    })
+  }
+
+  hasVoted() {
+    return localStorage.getItem("rating_" + this.slugValue) !== null
+  }
+
+  saveVote(score) {
+    localStorage.setItem("rating_" + this.slugValue, score.toString())
   }
 
   checkUserVote() {
     if (this.hasVoted()) {
-      const vote = localStorage.getItem(`rating_${this.slugValue}`)
-      this.upButtonTarget.disabled = true
-      this.downButtonTarget.disabled = true
-      if (vote === "up") this.upButtonTarget.classList.add("text-green-500")
-      if (vote === "down") this.downButtonTarget.classList.add("text-red-500")
-      if (this.hasPromptTarget) this.promptTarget.textContent = "Thanks for your feedback!"
+      var score = parseInt(localStorage.getItem("rating_" + this.slugValue))
+      this.highlightStars(score)
+      this.lockStars()
+      if (this.hasPromptTarget) {
+        this.promptTarget.textContent = "Thanks for your feedback!"
+      }
     }
-  }
-
-  updateUI() {
-    this.checkUserVote()
   }
 }

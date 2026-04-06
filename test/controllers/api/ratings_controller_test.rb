@@ -1,17 +1,17 @@
 require "test_helper"
 
 class Api::RatingsControllerTest < ActionDispatch::IntegrationTest
-  test "GET show returns counts for a calculator" do
-    CalculatorRating.create!(calculator_slug: "mortgage-calculator", direction: "up", ip_hash: "h1")
-    CalculatorRating.create!(calculator_slug: "mortgage-calculator", direction: "up", ip_hash: "h2")
-    CalculatorRating.create!(calculator_slug: "mortgage-calculator", direction: "down", ip_hash: "h3")
+  test "GET show returns star stats for a calculator" do
+    CalculatorRating.create!(calculator_slug: "mortgage-calculator", direction: "up", score: 5, ip_hash: "h1")
+    CalculatorRating.create!(calculator_slug: "mortgage-calculator", direction: "up", score: 4, ip_hash: "h2")
+    CalculatorRating.create!(calculator_slug: "mortgage-calculator", direction: "down", score: 2, ip_hash: "h3")
 
     get "/api/ratings/mortgage-calculator"
     assert_response :success
 
     data = JSON.parse(response.body)
-    assert_equal 2, data["up"]
-    assert_equal 1, data["down"]
+    assert_in_delta 3.7, data["average"], 0.1
+    assert_equal 3, data["count"]
   end
 
   test "GET show returns zeros for unknown calculator" do
@@ -19,43 +19,48 @@ class Api::RatingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     data = JSON.parse(response.body)
-    assert_equal 0, data["up"]
-    assert_equal 0, data["down"]
+    assert_equal 0.0, data["average"]
+    assert_equal 0, data["count"]
   end
 
-  test "POST create saves a rating" do
+  test "POST create saves a star rating" do
     assert_difference "CalculatorRating.count", 1 do
-      post "/api/ratings/bmi-calculator", params: { direction: "up" }, as: :json
+      post "/api/ratings/bmi-calculator", params: { score: 4 }, as: :json
     end
     assert_response :success
 
     data = JSON.parse(response.body)
     assert data["success"]
-    assert_equal 1, data["up"]
-    assert_equal 0, data["down"]
+    assert_equal 4.0, data["average"]
+    assert_equal 1, data["count"]
   end
 
   test "POST create rejects duplicate from same IP" do
-    post "/api/ratings/loan-calculator", params: { direction: "up" }, as: :json
+    post "/api/ratings/loan-calculator", params: { score: 5 }, as: :json
     assert_response :success
 
-    post "/api/ratings/loan-calculator", params: { direction: "down" }, as: :json
+    post "/api/ratings/loan-calculator", params: { score: 3 }, as: :json
     assert_response :unprocessable_entity
 
     data = JSON.parse(response.body)
     refute data["success"]
   end
 
-  test "POST create rejects invalid direction" do
-    post "/api/ratings/calorie-calculator", params: { direction: "sideways" }, as: :json
-    assert_response :unprocessable_entity
+  test "POST create sets direction based on score" do
+    post "/api/ratings/calc-a", params: { score: 4 }, as: :json
+    assert_response :success
+    assert_equal "up", CalculatorRating.last.direction
+
+    post "/api/ratings/calc-b", params: { score: 2 }, as: :json
+    assert_response :success
+    assert_equal "down", CalculatorRating.last.direction
   end
 
   test "POST create allows same IP for different calculators" do
-    post "/api/ratings/calc-a", params: { direction: "up" }, as: :json
+    post "/api/ratings/calc-c", params: { score: 5 }, as: :json
     assert_response :success
 
-    post "/api/ratings/calc-b", params: { direction: "down" }, as: :json
+    post "/api/ratings/calc-d", params: { score: 3 }, as: :json
     assert_response :success
   end
 end
