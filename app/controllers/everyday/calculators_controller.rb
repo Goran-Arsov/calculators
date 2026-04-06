@@ -56,6 +56,9 @@ module Everyday
     def regex_tester; end
     def markdown_preview; end
     def secure_random; end
+    def uuid_generator; end
+    def hash_generator; end
+    def hmac_generator; end
 
   end
 end

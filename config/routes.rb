@@ -238,6 +238,9 @@ Rails.application.routes.draw do
     get "regex-tester", to: "calculators#regex_tester", as: :regex_tester
     get "markdown-preview", to: "calculators#markdown_preview", as: :markdown_preview
     get "secure-random-generator", to: "calculators#secure_random", as: :secure_random
+    get "uuid-generator", to: "calculators#uuid_generator", as: :uuid_generator
+    get "hash-generator", to: "calculators#hash_generator", as: :hash_generator
+    get "hmac-generator", to: "calculators#hmac_generator", as: :hmac_generator
   end
 
   # Blog
