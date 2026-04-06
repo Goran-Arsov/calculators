@@ -61,7 +61,7 @@ module ProgrammaticSeo
                 answer: "Hormonal birth control may cause modest weight changes in some women, typically 2-5 pounds of water retention in the first few months. This can shift BMI by 0.3-0.8 points. These changes usually stabilize within 3-6 months. Long-term studies show no significant difference in weight gain between hormonal contraceptive users and non-users."
               }
             ],
-            related_slugs: ["bmi-for-men-calculator", "healthy-weight-range-calculator", "overweight-check-calculator"],
+            related_slugs: [ "bmi-for-men-calculator", "healthy-weight-range-calculator", "overweight-check-calculator" ],
             base_calculator_slug: "bmi-calculator",
             base_calculator_path: :health_bmi_path
           },
@@ -118,7 +118,7 @@ module ProgrammaticSeo
                 answer: "A beer belly indicates visceral fat accumulation, which is the most dangerous type of fat for metabolic health. BMI alone cannot detect this pattern. A man with a normal BMI of 24 but a waist measurement over 40 inches carries higher cardiovascular risk than someone with a BMI of 27 and a 34-inch waist. Always measure both."
               }
             ],
-            related_slugs: ["bmi-for-women-calculator", "bmi-for-athletes-calculator", "healthy-weight-range-calculator"],
+            related_slugs: [ "bmi-for-women-calculator", "bmi-for-athletes-calculator", "healthy-weight-range-calculator" ],
             base_calculator_slug: "bmi-calculator",
             base_calculator_path: :health_bmi_path
           },
@@ -175,7 +175,7 @@ module ProgrammaticSeo
                 answer: "Absolutely. A 6-foot, 200-pound powerlifter and a 6-foot, 200-pound untrained individual both have a BMI of 27.1. The powerlifter might have 12% body fat and excellent cardiovascular markers, while the untrained person might have 28% body fat and elevated blood pressure. BMI reveals nothing about composition or fitness level."
               }
             ],
-            related_slugs: ["bmi-for-men-calculator", "bmi-for-women-calculator", "healthy-weight-range-calculator"],
+            related_slugs: [ "bmi-for-men-calculator", "bmi-for-women-calculator", "healthy-weight-range-calculator" ],
             base_calculator_slug: "bmi-calculator",
             base_calculator_path: :health_bmi_path
           },
@@ -232,7 +232,7 @@ module ProgrammaticSeo
                 answer: "For nursing home residents, BMI has limited predictive value because frailty, functional status, and nutritional intake matter more. Very low BMI (under 20) strongly predicts poor outcomes in this population. Moderate BMI levels between 25-30 are associated with better survival rates. Functional assessments like grip strength and walking speed provide better health indicators."
               }
             ],
-            related_slugs: ["bmi-for-women-calculator", "bmi-for-men-calculator", "overweight-check-calculator"],
+            related_slugs: [ "bmi-for-women-calculator", "bmi-for-men-calculator", "overweight-check-calculator" ],
             base_calculator_slug: "bmi-calculator",
             base_calculator_path: :health_bmi_path
           },
@@ -289,7 +289,7 @@ module ProgrammaticSeo
                 answer: "For 80-85% of the population, the BMI-based weight range accurately identifies a healthy weight zone. It is less accurate for very muscular individuals, very tall or very short people, and certain ethnic groups with different body composition averages. Despite these limitations, it remains the most practical population-level screening tool available."
               }
             ],
-            related_slugs: ["bmi-for-women-calculator", "bmi-for-men-calculator", "overweight-check-calculator"],
+            related_slugs: [ "bmi-for-women-calculator", "bmi-for-men-calculator", "overweight-check-calculator" ],
             base_calculator_slug: "bmi-calculator",
             base_calculator_path: :health_bmi_path
           },
@@ -346,7 +346,7 @@ module ProgrammaticSeo
                 answer: "Weighing yourself once per week at the same time provides the most useful trend data without causing unnecessary anxiety over daily fluctuations. Weight can vary 2-5 pounds day to day based on hydration, sodium intake, and digestive contents. Focus on the weekly or monthly trend rather than any single measurement."
               }
             ],
-            related_slugs: ["bmi-for-women-calculator", "bmi-for-men-calculator", "bmi-for-seniors-calculator"],
+            related_slugs: [ "bmi-for-women-calculator", "bmi-for-men-calculator", "bmi-for-seniors-calculator" ],
             base_calculator_slug: "bmi-calculator",
             base_calculator_path: :health_bmi_path
           }

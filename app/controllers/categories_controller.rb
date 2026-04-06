@@ -54,6 +54,6 @@ class CategoriesController < ApplicationController
       stale_while_revalidate: 1.hour,
       stale_if_error: 1.day
 
-    fresh_when etag: [CACHE_VERSION, request.path, blog_latest], public: true
+    fresh_when etag: [ CACHE_VERSION, request.path, blog_latest ], public: true
   end
 end

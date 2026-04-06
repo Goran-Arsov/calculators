@@ -67,7 +67,7 @@ class Everyday::DockerfileGeneratorCalculatorTest < ActiveSupport::TestCase
   test "includes custom build steps" do
     result = Everyday::DockerfileGeneratorCalculator.new(
       base_image: "ruby",
-      build_steps: ["bundle exec rake assets:precompile", "bundle exec rake db:migrate"]
+      build_steps: [ "bundle exec rake assets:precompile", "bundle exec rake db:migrate" ]
     ).call
     assert_equal true, result[:valid]
     assert_includes result[:dockerfile], "RUN bundle exec rake assets:precompile"

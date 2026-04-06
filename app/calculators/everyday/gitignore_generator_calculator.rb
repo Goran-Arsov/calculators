@@ -188,7 +188,7 @@ module Everyday
         Session.vim
         .netrwhist
       GITIGNORE
-      "emacs" => <<~GITIGNORE,
+      "emacs" => <<~GITIGNORE
         # Emacs
         *~
         \\#*\\#

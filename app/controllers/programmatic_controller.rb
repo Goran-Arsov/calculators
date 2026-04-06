@@ -27,5 +27,4 @@ class ProgrammaticController < ApplicationController
     @slug = params[:programmatic_slug]
     @category = @page[:category]
   end
-
 end

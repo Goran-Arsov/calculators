@@ -89,7 +89,7 @@ module Everyday
       duplicates.each do |key, lines|
         next unless lines.size > 1
         lines.each do |ln|
-          line_errors << { line: ln, type: "duplicate", message: "Duplicate key '#{key}' (also on line#{lines.size > 2 ? 's' : ''} #{(lines - [ln]).join(', ')})" }
+          line_errors << { line: ln, type: "duplicate", message: "Duplicate key '#{key}' (also on line#{lines.size > 2 ? 's' : ''} #{(lines - [ ln ]).join(', ')})" }
           var = variables.find { |v| v[:key] == key && v[:line] == ln }
           var[:status] = "error" if var
         end

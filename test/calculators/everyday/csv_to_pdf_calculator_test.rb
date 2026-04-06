@@ -8,7 +8,7 @@ class Everyday::CsvToPdfCalculatorTest < ActiveSupport::TestCase
     assert_equal true, result[:valid]
     assert_equal 3, result[:row_count]
     assert_equal 3, result[:col_count]
-    assert_equal [["name", "age", "city"], ["Alice", "30", "NYC"], ["Bob", "25", "LA"]], result[:rows]
+    assert_equal [ [ "name", "age", "city" ], [ "Alice", "30", "NYC" ], [ "Bob", "25", "LA" ] ], result[:rows]
   end
 
   test "parses tab-delimited data" do

@@ -3,13 +3,29 @@ class EmbedsController < ApplicationController
   before_action :allow_iframe
   helper_method :embed_mode?
 
+  VALID_CATEGORIES = %w[finance math physics health construction everyday].freeze
+
   def show
     @category = params[:category]
     @slug = params[:slug]
-    action_name = @slug.tr("-", "_").sub(/_calculator$/, "")
-    render template: "#{@category}/calculators/#{action_name}", layout: "embed"
-  rescue ActionView::MissingTemplate
-    render plain: "Calculator not found", status: :not_found
+
+    unless VALID_CATEGORIES.include?(@category)
+      return render plain: "Calculator not found", status: :not_found
+    end
+
+    action = @slug.tr("-", "_").sub(/_calculator$/, "")
+
+    unless action.match?(/\A\w+\z/)
+      return render plain: "Calculator not found", status: :not_found
+    end
+
+    path = "#{@category}/calculators/#{action}"
+
+    if lookup_context.template_exists?(path)
+      render template: path, layout: "embed"
+    else
+      render plain: "Calculator not found", status: :not_found
+    end
   end
 
   def embed_mode?

@@ -14,6 +14,5 @@ module Construction
     def hvac_btu; end
     def sqft_cost; end
     def price_per_sqm; end
-
   end
 end

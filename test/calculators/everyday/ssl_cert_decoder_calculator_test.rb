@@ -8,9 +8,9 @@ class Everyday::SslCertDecoderCalculatorTest < ActiveSupport::TestCase
     cert.version = 2
     cert.serial = rand(1..2**64)
     cert.subject = OpenSSL::X509::Name.new([
-      ["CN", cn],
-      ["O", org],
-      ["C", "US"]
+      [ "CN", cn ],
+      [ "O", org ],
+      [ "C", "US" ]
     ])
     cert.issuer = cert.subject
     cert.public_key = key.public_key
@@ -107,7 +107,7 @@ class Everyday::SslCertDecoderCalculatorTest < ActiveSupport::TestCase
   end
 
   test "extracts subject alternative names" do
-    pem = generate_test_cert(san_domains: ["example.com", "www.example.com", "api.example.com"])
+    pem = generate_test_cert(san_domains: [ "example.com", "www.example.com", "api.example.com" ])
     result = Everyday::SslCertDecoderCalculator.new(pem_text: pem).call
 
     assert result[:valid]

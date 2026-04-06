@@ -42,7 +42,7 @@ module Everyday
         if row.is_a?(Array)
           row.map(&:to_s)
         else
-          [row.to_s]
+          [ row.to_s ]
         end
       end
     end
@@ -56,7 +56,7 @@ module Everyday
       @rows.times do |r|
         @columns.times do |c|
           cell_value = cell_at(r, c)
-          col_widths[c] = [col_widths[c], cell_value.length].max
+          col_widths[c] = [ col_widths[c], cell_value.length ].max
         end
       end
 

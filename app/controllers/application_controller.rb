@@ -43,6 +43,6 @@ class ApplicationController < ActionController::Base
 
     # Conditional GET: browsers/CDNs with a matching ETag get a 304 (no body),
     # skipping view rendering entirely. The ETag changes on every deploy.
-    fresh_when etag: [CACHE_VERSION, request.path], public: true
+    fresh_when etag: [ CACHE_VERSION, request.path ], public: true
   end
 end

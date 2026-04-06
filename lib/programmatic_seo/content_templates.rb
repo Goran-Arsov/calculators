@@ -98,7 +98,7 @@ module ProgrammaticSeo
              "try running the calculation with both a conservative and an optimistic estimate to see the range of possible outcomes. " \
              "This sensitivity analysis approach helps you make decisions even when some inputs are uncertain."
 
-        [p1, p2, p3]
+        [ p1, p2, p3 ]
       end
 
       def build_example(noun, label, context, category)

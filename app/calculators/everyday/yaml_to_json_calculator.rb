@@ -35,7 +35,7 @@ module Everyday
     end
 
     def convert_yaml_to_json
-      parsed = YAML.safe_load(@text, permitted_classes: [Date, Time, Symbol])
+      parsed = YAML.safe_load(@text, permitted_classes: [ Date, Time, Symbol ])
       json_output = JSON.pretty_generate(parsed)
       {
         valid: true,

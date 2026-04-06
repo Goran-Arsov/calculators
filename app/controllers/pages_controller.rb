@@ -49,6 +49,6 @@ class PagesController < ApplicationController
       stale_while_revalidate: 6.hours,
       stale_if_error: 7.days
 
-    fresh_when etag: [CACHE_VERSION, request.path], public: true
+    fresh_when etag: [ CACHE_VERSION, request.path ], public: true
   end
 end

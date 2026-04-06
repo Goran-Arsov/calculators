@@ -96,7 +96,7 @@ module Everyday
     end
 
     def to_symbolic_string(owner, group, other)
-      [owner, group, other].map { |d| digit_to_rwx(d) }.join
+      [ owner, group, other ].map { |d| digit_to_rwx(d) }.join
     end
 
     def digit_to_rwx(digit)

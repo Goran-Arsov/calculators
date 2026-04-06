@@ -102,6 +102,5 @@ module Everyday
     def ip_lookup; end
     def dns_lookup; end
     def mac_lookup; end
-
   end
 end

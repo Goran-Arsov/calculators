@@ -10,7 +10,7 @@ class AbTestHelperTest < ActionView::TestCase
 
   test "ab_test? returns boolean" do
     result = ab_test?("test_experiment")
-    assert_includes [true, false], result
+    assert_includes [ true, false ], result
   end
 
   test "ab_tracking_tag returns script tag" do

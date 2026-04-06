@@ -86,7 +86,7 @@ module ProgrammaticSeo
                         "engaged is the most fuel-efficient option."
               }
             ],
-            related_slugs: ["fuel-cost-per-mile-calculator", "fuel-cost-per-trip-calculator", "fuel-cost-per-liter-calculator"],
+            related_slugs: [ "fuel-cost-per-mile-calculator", "fuel-cost-per-trip-calculator", "fuel-cost-per-liter-calculator" ],
             base_calculator_slug: "fuel-cost-calculator",
             base_calculator_path: :everyday_fuel_cost_path
           },
@@ -167,7 +167,7 @@ module ProgrammaticSeo
                         "specified. Combine short trips to avoid cold-start inefficiency, and carpool when possible to split costs."
               }
             ],
-            related_slugs: ["fuel-cost-per-km-calculator", "fuel-cost-per-trip-calculator", "fuel-cost-per-gallon-calculator"],
+            related_slugs: [ "fuel-cost-per-km-calculator", "fuel-cost-per-trip-calculator", "fuel-cost-per-gallon-calculator" ],
             base_calculator_slug: "fuel-cost-calculator",
             base_calculator_path: :everyday_fuel_cost_path
           },
@@ -250,7 +250,7 @@ module ProgrammaticSeo
                         "push it up 35 percent or more. Reduce your MPG input proportionally to get a realistic trip cost."
               }
             ],
-            related_slugs: ["fuel-cost-per-km-calculator", "fuel-cost-per-mile-calculator", "fuel-cost-per-month-calculator"],
+            related_slugs: [ "fuel-cost-per-km-calculator", "fuel-cost-per-mile-calculator", "fuel-cost-per-month-calculator" ],
             base_calculator_slug: "fuel-cost-calculator",
             base_calculator_path: :everyday_fuel_cost_path
           },
@@ -333,7 +333,7 @@ module ProgrammaticSeo
                         "engine's superior efficiency."
               }
             ],
-            related_slugs: ["fuel-cost-per-mile-calculator", "fuel-cost-per-liter-calculator", "fuel-cost-per-month-calculator"],
+            related_slugs: [ "fuel-cost-per-mile-calculator", "fuel-cost-per-liter-calculator", "fuel-cost-per-month-calculator" ],
             base_calculator_slug: "fuel-cost-calculator",
             base_calculator_path: :everyday_fuel_cost_path
           },
@@ -414,7 +414,7 @@ module ProgrammaticSeo
                         "come from expensive fuel or poor fuel economy."
               }
             ],
-            related_slugs: ["fuel-cost-per-km-calculator", "fuel-cost-per-gallon-calculator", "fuel-cost-per-month-calculator"],
+            related_slugs: [ "fuel-cost-per-km-calculator", "fuel-cost-per-gallon-calculator", "fuel-cost-per-month-calculator" ],
             base_calculator_slug: "fuel-cost-calculator",
             base_calculator_path: :everyday_fuel_cost_path
           },
@@ -496,7 +496,7 @@ module ProgrammaticSeo
                         "transportation costs."
               }
             ],
-            related_slugs: ["fuel-cost-per-trip-calculator", "fuel-cost-per-km-calculator", "fuel-cost-per-mile-calculator"],
+            related_slugs: [ "fuel-cost-per-trip-calculator", "fuel-cost-per-km-calculator", "fuel-cost-per-mile-calculator" ],
             base_calculator_slug: "fuel-cost-calculator",
             base_calculator_path: :everyday_fuel_cost_path
           }

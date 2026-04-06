@@ -73,13 +73,13 @@ class Everyday::CronParserCalculatorTest < ActiveSupport::TestCase
   test "parses lists correctly" do
     result = Everyday::CronParserCalculator.new(expression: "0 0 * * 1,3,5").call
     assert result[:valid]
-    assert_equal [1, 3, 5], result[:fields]["day_of_week"][:values]
+    assert_equal [ 1, 3, 5 ], result[:fields]["day_of_week"][:values]
   end
 
   test "parses range with step" do
     result = Everyday::CronParserCalculator.new(expression: "0-30/10 * * * *").call
     assert result[:valid]
-    assert_equal [0, 10, 20, 30], result[:fields]["minute"][:values]
+    assert_equal [ 0, 10, 20, 30 ], result[:fields]["minute"][:values]
   end
 
   test "returns individual field values" do

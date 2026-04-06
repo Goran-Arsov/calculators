@@ -18,7 +18,7 @@ class Everyday::DocxToPdfCalculatorTest < ActiveSupport::TestCase
 
   test "handles single paragraph" do
     result = Everyday::DocxToPdfCalculator.new(
-      paragraphs: [{ text: "One single paragraph with five words" }]
+      paragraphs: [ { text: "One single paragraph with five words" } ]
     ).call
     assert_equal true, result[:valid]
     assert_equal 1, result[:paragraph_count]
@@ -27,7 +27,7 @@ class Everyday::DocxToPdfCalculatorTest < ActiveSupport::TestCase
 
   test "handles paragraph with single word" do
     result = Everyday::DocxToPdfCalculator.new(
-      paragraphs: [{ text: "Hello" }]
+      paragraphs: [ { text: "Hello" } ]
     ).call
     assert_equal true, result[:valid]
     assert_equal 1, result[:paragraph_count]
@@ -36,7 +36,7 @@ class Everyday::DocxToPdfCalculatorTest < ActiveSupport::TestCase
 
   test "handles paragraphs with empty text" do
     result = Everyday::DocxToPdfCalculator.new(
-      paragraphs: [{ text: "" }, { text: "Some words" }]
+      paragraphs: [ { text: "" }, { text: "Some words" } ]
     ).call
     assert_equal true, result[:valid]
     assert_equal 2, result[:paragraph_count]
@@ -45,7 +45,7 @@ class Everyday::DocxToPdfCalculatorTest < ActiveSupport::TestCase
 
   test "handles paragraphs with extra whitespace" do
     result = Everyday::DocxToPdfCalculator.new(
-      paragraphs: [{ text: "  multiple   spaces   here  " }]
+      paragraphs: [ { text: "  multiple   spaces   here  " } ]
     ).call
     assert_equal true, result[:valid]
     assert_equal 1, result[:paragraph_count]
@@ -53,7 +53,7 @@ class Everyday::DocxToPdfCalculatorTest < ActiveSupport::TestCase
   end
 
   test "errors accessor returns empty array before call" do
-    calc = Everyday::DocxToPdfCalculator.new(paragraphs: [{ text: "test" }])
+    calc = Everyday::DocxToPdfCalculator.new(paragraphs: [ { text: "test" } ])
     assert_equal [], calc.errors
   end
 

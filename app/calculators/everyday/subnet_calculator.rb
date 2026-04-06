@@ -35,7 +35,7 @@ module Everyday
         last_usable_host: last_usable(broadcast),
         total_hosts: total_hosts,
         usable_hosts: usable_hosts,
-        cidr_notation: "#{network.to_s}/#{@prefix_length}",
+        cidr_notation: "#{network}/#{@prefix_length}",
         ip_class: ip_class(@ip_address),
         is_private: private_ip?(@ip_address),
         binary_mask: to_binary_mask(@prefix_length)

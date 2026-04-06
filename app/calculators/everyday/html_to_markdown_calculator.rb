@@ -115,7 +115,7 @@ module Everyday
       # Insert separator after header row
       if md_rows.size > 1
         col_count = rows.first.css("th, td").size
-        separator = "| #{(["---"] * col_count).join(" | ")} |"
+        separator = "| #{([ "---" ] * col_count).join(" | ")} |"
         md_rows.insert(1, separator)
       end
 

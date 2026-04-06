@@ -64,7 +64,7 @@ class SitemapControllerTest < ActionDispatch::IntegrationTest
 
   test "sitemap homepage lastmod is today" do
     get "/sitemap.xml"
-    assert_includes response.body, "<lastmod>#{Date.current.to_s}</lastmod>"
+    assert_includes response.body, "<lastmod>#{Date.current}</lastmod>"
   end
 
   test "sitemap blog post lastmod uses updated_at" do
@@ -77,6 +77,6 @@ class SitemapControllerTest < ActionDispatch::IntegrationTest
     )
 
     get "/sitemap.xml"
-    assert_includes response.body, "<lastmod>#{post.updated_at.to_date.to_s}</lastmod>"
+    assert_includes response.body, "<lastmod>#{post.updated_at.to_date}</lastmod>"
   end
 end

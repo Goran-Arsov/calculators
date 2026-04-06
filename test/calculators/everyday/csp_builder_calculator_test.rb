@@ -5,7 +5,7 @@ class Everyday::CspBuilderCalculatorTest < ActiveSupport::TestCase
 
   test "builds a simple CSP header with default-src" do
     result = Everyday::CspBuilderCalculator.new(
-      directives: { default_src: ["'self'"] }
+      directives: { default_src: [ "'self'" ] }
     ).call
     assert_equal true, result[:valid]
     assert_nil result[:errors]
@@ -16,10 +16,10 @@ class Everyday::CspBuilderCalculatorTest < ActiveSupport::TestCase
   test "builds header with multiple directives" do
     result = Everyday::CspBuilderCalculator.new(
       directives: {
-        default_src: ["'self'"],
-        script_src: ["'self'", "https://cdn.example.com"],
-        style_src: ["'self'", "'unsafe-inline'"],
-        img_src: ["*"]
+        default_src: [ "'self'" ],
+        script_src: [ "'self'", "https://cdn.example.com" ],
+        style_src: [ "'self'", "'unsafe-inline'" ],
+        img_src: [ "*" ]
       }
     ).call
     assert_equal true, result[:valid]
@@ -43,7 +43,7 @@ class Everyday::CspBuilderCalculatorTest < ActiveSupport::TestCase
   test "handles all supported directives" do
     directives = {}
     Everyday::CspBuilderCalculator::VALID_DIRECTIVES.each do |d|
-      directives[d.tr("-", "_")] = ["'self'"]
+      directives[d.tr("-", "_")] = [ "'self'" ]
     end
     result = Everyday::CspBuilderCalculator.new(directives: directives).call
     assert_equal true, result[:valid]
@@ -54,8 +54,8 @@ class Everyday::CspBuilderCalculatorTest < ActiveSupport::TestCase
   test "ignores invalid directives" do
     result = Everyday::CspBuilderCalculator.new(
       directives: {
-        default_src: ["'self'"],
-        fake_directive: ["'none'"]
+        default_src: [ "'self'" ],
+        fake_directive: [ "'none'" ]
       }
     ).call
     assert_equal true, result[:valid]
@@ -66,7 +66,7 @@ class Everyday::CspBuilderCalculatorTest < ActiveSupport::TestCase
 
   test "strips empty sources from directives" do
     result = Everyday::CspBuilderCalculator.new(
-      directives: { default_src: ["'self'", "", "  "] }
+      directives: { default_src: [ "'self'", "", "  " ] }
     ).call
     assert_equal true, result[:valid]
     assert_nil result[:errors]
@@ -75,18 +75,18 @@ class Everyday::CspBuilderCalculatorTest < ActiveSupport::TestCase
 
   test "returns directive hash in result" do
     result = Everyday::CspBuilderCalculator.new(
-      directives: { script_src: ["'self'", "https:"] }
+      directives: { script_src: [ "'self'", "https:" ] }
     ).call
     assert_equal true, result[:valid]
     assert_nil result[:errors]
-    assert_equal({"script-src" => ["'self'", "https:"]}, result[:directives])
+    assert_equal({ "script-src" => [ "'self'", "https:" ] }, result[:directives])
   end
 
   test "separates directives with semicolons" do
     result = Everyday::CspBuilderCalculator.new(
       directives: {
-        default_src: ["'none'"],
-        script_src: ["'self'"]
+        default_src: [ "'none'" ],
+        script_src: [ "'self'" ]
       }
     ).call
     assert_includes result[:header], "; "
@@ -95,8 +95,8 @@ class Everyday::CspBuilderCalculatorTest < ActiveSupport::TestCase
   test "report_uri directive works" do
     result = Everyday::CspBuilderCalculator.new(
       directives: {
-        default_src: ["'self'"],
-        report_uri: ["/csp-report"]
+        default_src: [ "'self'" ],
+        report_uri: [ "/csp-report" ]
       }
     ).call
     assert_equal true, result[:valid]
@@ -121,7 +121,7 @@ class Everyday::CspBuilderCalculatorTest < ActiveSupport::TestCase
   end
 
   test "errors accessor returns empty array before call" do
-    calc = Everyday::CspBuilderCalculator.new(directives: { default_src: ["'self'"] })
+    calc = Everyday::CspBuilderCalculator.new(directives: { default_src: [ "'self'" ] })
     assert_equal [], calc.errors
   end
 end

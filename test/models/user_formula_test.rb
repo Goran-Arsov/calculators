@@ -5,7 +5,7 @@ class UserFormulaTest < ActiveSupport::TestCase
     UserFormula.new(
       title: "Simple Interest",
       description: "Calculate simple interest on a principal amount",
-      formula_json: { inputs: [{ name: "principal", type: "number" }], formula: "principal * rate * time" }.to_json,
+      formula_json: { inputs: [ { name: "principal", type: "number" } ], formula: "principal * rate * time" }.to_json,
       category: "finance",
       author_name: "Test User",
       status: "pending"

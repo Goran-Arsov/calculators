@@ -72,7 +72,7 @@ module Everyday
         parse_hsl
       else
         @errors << "Unrecognized color format. Use HEX (#RGB or #RRGGBB), RGB (r, g, b), or HSL (h, s%, l%)"
-        [0, 0, 0]
+        [ 0, 0, 0 ]
       end
     end
 
@@ -96,17 +96,17 @@ module Everyday
 
       unless hex.match?(/\A[0-9a-fA-F]{6}\z/)
         @errors << "Invalid HEX color format"
-        return [0, 0, 0]
+        return [ 0, 0, 0 ]
       end
 
-      [hex[0..1].to_i(16), hex[2..3].to_i(16), hex[4..5].to_i(16)]
+      [ hex[0..1].to_i(16), hex[2..3].to_i(16), hex[4..5].to_i(16) ]
     end
 
     def parse_rgb
       values = @color.scan(/\d+/).map(&:to_i)
       unless values.length == 3 && values.all? { |v| v >= 0 && v <= 255 }
         @errors << "RGB values must be three integers between 0 and 255"
-        return [0, 0, 0]
+        return [ 0, 0, 0 ]
       end
 
       values
@@ -116,7 +116,7 @@ module Everyday
       values = @color.scan(/[\d.]+/).map(&:to_f)
       unless values.length == 3
         @errors << "HSL values must include hue (0-360), saturation (0-100), and lightness (0-100)"
-        return [0, 0, 0]
+        return [ 0, 0, 0 ]
       end
 
       h = values[0]
@@ -125,7 +125,7 @@ module Everyday
 
       unless h >= 0 && h <= 360 && s >= 0 && s <= 100 && l >= 0 && l <= 100
         @errors << "HSL values out of range: hue 0-360, saturation 0-100, lightness 0-100"
-        return [0, 0, 0]
+        return [ 0, 0, 0 ]
       end
 
       hsl_to_rgb(h, s, l)
@@ -140,8 +140,8 @@ module Everyday
       g_norm = g / 255.0
       b_norm = b / 255.0
 
-      max = [r_norm, g_norm, b_norm].max
-      min = [r_norm, g_norm, b_norm].min
+      max = [ r_norm, g_norm, b_norm ].max
+      min = [ r_norm, g_norm, b_norm ].min
       delta = max - min
 
       l = (max + min) / 2.0
@@ -169,7 +169,7 @@ module Everyday
         h += 360 if h < 0
       end
 
-      [h.round, (s * 100).round, (l * 100).round]
+      [ h.round, (s * 100).round, (l * 100).round ]
     end
 
     def hsl_to_rgb(h, s, l)
@@ -181,15 +181,15 @@ module Everyday
       m = l_norm - c / 2.0
 
       r1, g1, b1 = case h
-      when 0...60   then [c, x, 0]
-      when 60...120 then [x, c, 0]
-      when 120...180 then [0, c, x]
-      when 180...240 then [0, x, c]
-      when 240...300 then [x, 0, c]
-      else [c, 0, x]
+      when 0...60   then [ c, x, 0 ]
+      when 60...120 then [ x, c, 0 ]
+      when 120...180 then [ 0, c, x ]
+      when 180...240 then [ 0, x, c ]
+      when 240...300 then [ x, 0, c ]
+      else [ c, 0, x ]
       end
 
-      [((r1 + m) * 255).round, ((g1 + m) * 255).round, ((b1 + m) * 255).round]
+      [ ((r1 + m) * 255).round, ((g1 + m) * 255).round, ((b1 + m) * 255).round ]
     end
 
     def relative_luminance(r, g, b)
@@ -209,8 +209,8 @@ module Everyday
     end
 
     def contrast_ratio(lum1, lum2)
-      lighter = [lum1, lum2].max
-      darker = [lum1, lum2].min
+      lighter = [ lum1, lum2 ].max
+      darker = [ lum1, lum2 ].min
       (lighter + 0.05) / (darker + 0.05)
     end
 

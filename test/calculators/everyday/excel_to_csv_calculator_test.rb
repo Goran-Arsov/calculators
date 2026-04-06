@@ -5,7 +5,7 @@ class Everyday::ExcelToCsvCalculatorTest < ActiveSupport::TestCase
 
   test "converts rows to CSV with comma delimiter" do
     result = Everyday::ExcelToCsvCalculator.new(
-      rows: [["name", "age"], ["Alice", "30"], ["Bob", "25"]]
+      rows: [ [ "name", "age" ], [ "Alice", "30" ], [ "Bob", "25" ] ]
     ).call
     assert_equal true, result[:valid]
     assert_nil result[:errors]
@@ -17,7 +17,7 @@ class Everyday::ExcelToCsvCalculatorTest < ActiveSupport::TestCase
 
   test "converts rows with tab delimiter" do
     result = Everyday::ExcelToCsvCalculator.new(
-      rows: [["a", "b"], ["1", "2"]],
+      rows: [ [ "a", "b" ], [ "1", "2" ] ],
       delimiter: "tab"
     ).call
     assert_equal true, result[:valid]
@@ -27,7 +27,7 @@ class Everyday::ExcelToCsvCalculatorTest < ActiveSupport::TestCase
 
   test "converts rows with semicolon delimiter" do
     result = Everyday::ExcelToCsvCalculator.new(
-      rows: [["a", "b"], ["1", "2"]],
+      rows: [ [ "a", "b" ], [ "1", "2" ] ],
       delimiter: ";"
     ).call
     assert_equal true, result[:valid]
@@ -37,7 +37,7 @@ class Everyday::ExcelToCsvCalculatorTest < ActiveSupport::TestCase
 
   test "converts rows with pipe delimiter" do
     result = Everyday::ExcelToCsvCalculator.new(
-      rows: [["a", "b"], ["1", "2"]],
+      rows: [ [ "a", "b" ], [ "1", "2" ] ],
       delimiter: "|"
     ).call
     assert_equal true, result[:valid]
@@ -47,7 +47,7 @@ class Everyday::ExcelToCsvCalculatorTest < ActiveSupport::TestCase
 
   test "quotes fields containing delimiter" do
     result = Everyday::ExcelToCsvCalculator.new(
-      rows: [["hello, world", "test"]]
+      rows: [ [ "hello, world", "test" ] ]
     ).call
     assert_equal true, result[:valid]
     assert_nil result[:errors]
@@ -56,7 +56,7 @@ class Everyday::ExcelToCsvCalculatorTest < ActiveSupport::TestCase
 
   test "quotes fields containing double quotes" do
     result = Everyday::ExcelToCsvCalculator.new(
-      rows: [['say "hi"', "test"]]
+      rows: [ [ 'say "hi"', "test" ] ]
     ).call
     assert_equal true, result[:valid]
     assert_nil result[:errors]
@@ -64,7 +64,7 @@ class Everyday::ExcelToCsvCalculatorTest < ActiveSupport::TestCase
   end
 
   test "single row" do
-    result = Everyday::ExcelToCsvCalculator.new(rows: [["a", "b", "c"]]).call
+    result = Everyday::ExcelToCsvCalculator.new(rows: [ [ "a", "b", "c" ] ]).call
     assert_equal true, result[:valid]
     assert_nil result[:errors]
     assert_equal 1, result[:row_count]
@@ -72,7 +72,7 @@ class Everyday::ExcelToCsvCalculatorTest < ActiveSupport::TestCase
   end
 
   test "returns delimiter in result" do
-    result = Everyday::ExcelToCsvCalculator.new(rows: [["a"]], delimiter: ";").call
+    result = Everyday::ExcelToCsvCalculator.new(rows: [ [ "a" ] ], delimiter: ";").call
     assert_equal ";", result[:delimiter]
   end
 
@@ -93,14 +93,14 @@ class Everyday::ExcelToCsvCalculatorTest < ActiveSupport::TestCase
   end
 
   test "error when rows is not array of arrays" do
-    result = Everyday::ExcelToCsvCalculator.new(rows: ["a", "b"]).call
+    result = Everyday::ExcelToCsvCalculator.new(rows: [ "a", "b" ]).call
     assert_equal false, result[:valid]
     assert result[:errors].any?
     assert_includes result[:errors], "Data must be an array of arrays"
   end
 
   test "errors accessor returns empty array before call" do
-    calc = Everyday::ExcelToCsvCalculator.new(rows: [["a"]])
+    calc = Everyday::ExcelToCsvCalculator.new(rows: [ [ "a" ] ])
     assert_equal [], calc.errors
   end
 end

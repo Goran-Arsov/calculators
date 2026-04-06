@@ -27,7 +27,6 @@ module Everyday
         l_per_100km: l_per_100km.round(2),
         km_per_l: km_per_l.round(2)
       }
-
     end
 
     private

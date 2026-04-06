@@ -18,6 +18,5 @@ module Physics
     def pressure_converter; end
     def heat_transfer; end
     def spring_constant; end
-
   end
 end

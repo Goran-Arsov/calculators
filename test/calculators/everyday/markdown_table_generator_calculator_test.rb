@@ -2,7 +2,7 @@ require "test_helper"
 
 class Everyday::MarkdownTableGeneratorCalculatorTest < ActiveSupport::TestCase
   test "generates markdown table with cell data" do
-    cells = [["Name", "Age"], ["Alice", "30"], ["Bob", "25"]]
+    cells = [ [ "Name", "Age" ], [ "Alice", "30" ], [ "Bob", "25" ] ]
     result = Everyday::MarkdownTableGeneratorCalculator.new(rows: 3, columns: 2, cells: cells).call
     assert result[:valid]
     assert_equal 3, result[:row_count]
@@ -23,7 +23,7 @@ class Everyday::MarkdownTableGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "generates single cell table" do
-    cells = [["Value"]]
+    cells = [ [ "Value" ] ]
     result = Everyday::MarkdownTableGeneratorCalculator.new(rows: 1, columns: 1, cells: cells).call
     assert result[:valid]
     assert_equal 1, result[:row_count]
@@ -33,7 +33,7 @@ class Everyday::MarkdownTableGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "pads columns to consistent width" do
-    cells = [["A", "Long Header"], ["X", "Y"]]
+    cells = [ [ "A", "Long Header" ], [ "X", "Y" ] ]
     result = Everyday::MarkdownTableGeneratorCalculator.new(rows: 2, columns: 2, cells: cells).call
     assert result[:valid]
     # The separator row should match header width
@@ -73,7 +73,7 @@ class Everyday::MarkdownTableGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "handles partial cell data gracefully" do
-    cells = [["Header1", "Header2"]]
+    cells = [ [ "Header1", "Header2" ] ]
     result = Everyday::MarkdownTableGeneratorCalculator.new(rows: 3, columns: 2, cells: cells).call
     assert result[:valid]
     assert_equal 3, result[:row_count]
@@ -82,7 +82,7 @@ class Everyday::MarkdownTableGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "markdown output has proper pipe-delimited format" do
-    cells = [["A", "B"], ["1", "2"]]
+    cells = [ [ "A", "B" ], [ "1", "2" ] ]
     result = Everyday::MarkdownTableGeneratorCalculator.new(rows: 2, columns: 2, cells: cells).call
     assert result[:valid]
     lines = result[:markdown].split("\n")

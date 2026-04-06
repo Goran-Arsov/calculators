@@ -221,10 +221,10 @@ module Everyday
           "#{name.tr('_', ' ').capitalize}s #{values.join(', ')}"
         else
           label = case name
-                  when "day_of_week" then DAY_NAMES[values[0]] || values[0].to_s
-                  when "month" then MONTH_NAMES[values[0]] || values[0].to_s
-                  else values[0].to_s
-                  end
+          when "day_of_week" then DAY_NAMES[values[0]] || values[0].to_s
+          when "month" then MONTH_NAMES[values[0]] || values[0].to_s
+          else values[0].to_s
+          end
           "#{name.tr('_', ' ').capitalize} #{label}"
         end
 

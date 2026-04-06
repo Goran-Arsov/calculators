@@ -116,11 +116,11 @@ module Everyday
       end
 
       result.gsub!(/&#(\d+);/) do
-        [$1.to_i].pack("U")
+        [ $1.to_i ].pack("U")
       end
 
       result.gsub!(/&#x([0-9a-fA-F]+);/) do
-        [$1.to_i(16)].pack("U")
+        [ $1.to_i(16) ].pack("U")
       end
 
       result

@@ -10,7 +10,7 @@ class Everyday::CsvToExcelCalculatorTest < ActiveSupport::TestCase
     assert_equal 2, result[:row_count]
     assert_equal 3, result[:col_count]
     assert_equal 6, result[:cell_count]
-    assert_equal [["a", "b", "c"], ["1", "2", "3"]], result[:rows]
+    assert_equal [ [ "a", "b", "c" ], [ "1", "2", "3" ] ], result[:rows]
   end
 
   test "parses tab-delimited data" do

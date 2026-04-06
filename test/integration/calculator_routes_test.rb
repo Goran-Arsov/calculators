@@ -27,7 +27,7 @@ class CalculatorRoutesTest < ActionDispatch::IntegrationTest
   end
 
   test "static pages return 200" do
-    [about_path, privacy_policy_path, terms_of_service_path, contact_path, disclaimer_path].each do |path|
+    [ about_path, privacy_policy_path, terms_of_service_path, contact_path, disclaimer_path ].each do |path|
       get path
       assert_response :success, "Failed for #{path}"
     end

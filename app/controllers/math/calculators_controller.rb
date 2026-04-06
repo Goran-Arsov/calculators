@@ -22,6 +22,5 @@ module Math
     def percentage_increase; end
     def percentage_decrease; end
     def percentage_off; end
-
   end
 end

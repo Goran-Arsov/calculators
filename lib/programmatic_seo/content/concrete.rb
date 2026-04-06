@@ -61,7 +61,7 @@ module ProgrammaticSeo
                 answer: "Concrete reaches about 70% of its design strength in 7 days and full strength in 28 days under normal conditions. You can walk on a slab after 24-48 hours. Light vehicle traffic can resume after 7 days. Heavy loads should wait the full 28 days. Keep the surface moist for at least 7 days after pouring to ensure proper hydration and maximum strength development."
               }
             ],
-            related_slugs: ["concrete-patio-calculator", "concrete-footing-calculator", "concrete-wall-calculator"],
+            related_slugs: [ "concrete-patio-calculator", "concrete-footing-calculator", "concrete-wall-calculator" ],
             base_calculator_slug: "concrete-calculator",
             base_calculator_path: :construction_concrete_path
           },
@@ -118,7 +118,7 @@ module ProgrammaticSeo
                 answer: "Yes, most building codes require at least two continuous horizontal bars of #4 rebar in residential footings. Rebar provides tensile strength that concrete alone lacks, preventing cracks from differential settlement or soil movement. In areas with expansive clay soils or seismic activity, more extensive reinforcement including vertical dowels may be required by code."
               }
             ],
-            related_slugs: ["concrete-slab-calculator", "concrete-wall-calculator", "concrete-column-calculator"],
+            related_slugs: [ "concrete-slab-calculator", "concrete-wall-calculator", "concrete-column-calculator" ],
             base_calculator_slug: "concrete-calculator",
             base_calculator_path: :construction_concrete_path
           },
@@ -175,7 +175,7 @@ module ProgrammaticSeo
                 answer: "Pouring in sections creates cold joints that are structurally weaker and prone to water infiltration. For foundation walls, always pour the entire wall in one continuous operation. If sections are unavoidable, install keyed joints or waterstops at the planned joint locations to maintain water resistance. Retaining walls can sometimes be poured in sections with proper joint treatment."
               }
             ],
-            related_slugs: ["concrete-footing-calculator", "concrete-column-calculator", "concrete-slab-calculator"],
+            related_slugs: [ "concrete-footing-calculator", "concrete-column-calculator", "concrete-slab-calculator" ],
             base_calculator_slug: "concrete-calculator",
             base_calculator_path: :construction_concrete_path
           },
@@ -232,7 +232,7 @@ module ProgrammaticSeo
                 answer: "Fiber-reinforced concrete adds micro-fibers that improve crack resistance and impact toughness, making it suitable for columns. However, it does not replace structural rebar in load-bearing columns. Fibers help with shrinkage cracks and surface durability but do not provide the tensile strength needed for structural applications. Use fiber concrete as a supplement to, not a substitute for, steel reinforcement."
               }
             ],
-            related_slugs: ["concrete-footing-calculator", "concrete-steps-calculator", "concrete-patio-calculator"],
+            related_slugs: [ "concrete-footing-calculator", "concrete-steps-calculator", "concrete-patio-calculator" ],
             base_calculator_slug: "concrete-calculator",
             base_calculator_path: :construction_concrete_path
           },
@@ -289,7 +289,7 @@ module ProgrammaticSeo
                 answer: "Wait at least 24-48 hours before light foot traffic. Avoid heavy use for 7 days. The surface may appear dry within hours, but the concrete beneath needs time to hydrate and develop strength. In cold weather, extend waiting times by 50%. Keep steps moist for the first 7 days by covering them with plastic sheeting or applying a curing compound."
               }
             ],
-            related_slugs: ["concrete-slab-calculator", "concrete-patio-calculator", "concrete-column-calculator"],
+            related_slugs: [ "concrete-slab-calculator", "concrete-patio-calculator", "concrete-column-calculator" ],
             base_calculator_slug: "concrete-calculator",
             base_calculator_path: :construction_concrete_path
           },
@@ -346,7 +346,7 @@ module ProgrammaticSeo
                 answer: "A small patio under 100 square feet is manageable as a DIY project for someone with basic construction experience. Larger patios require a crew of at least 3-4 people because concrete must be placed, screeded, floated, and finished before it begins to set, typically within 1-2 hours depending on temperature. Ready-mix delivery is recommended over bagged concrete for any patio over 50 square feet."
               }
             ],
-            related_slugs: ["concrete-slab-calculator", "concrete-steps-calculator", "concrete-footing-calculator"],
+            related_slugs: [ "concrete-slab-calculator", "concrete-steps-calculator", "concrete-footing-calculator" ],
             base_calculator_slug: "concrete-calculator",
             base_calculator_path: :construction_concrete_path
           }

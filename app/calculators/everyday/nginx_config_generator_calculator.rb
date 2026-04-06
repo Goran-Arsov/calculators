@@ -4,7 +4,7 @@ module Everyday
   class NginxConfigGeneratorCalculator
     attr_reader :errors
 
-    VALID_PORTS = [80, 443, 8080, 8443, 3000, 5000, 9000].freeze
+    VALID_PORTS = [ 80, 443, 8080, 8443, 3000, 5000, 9000 ].freeze
 
     def initialize(server_name:, listen_port: 80, root_path: "/var/www/html", proxy_pass: "", ssl: false,
                    ssl_certificate: "/etc/ssl/certs/server.crt", ssl_certificate_key: "/etc/ssl/private/server.key",

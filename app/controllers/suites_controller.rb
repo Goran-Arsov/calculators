@@ -19,5 +19,4 @@ class SuitesController < ApplicationController
       description: "Complete business startup calculator suite: break-even analysis, loan, ROI, and salary planning."
     )
   end
-
 end

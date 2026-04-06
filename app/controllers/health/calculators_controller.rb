@@ -33,6 +33,5 @@ module Health
     def protein_per_meal; end
     def calories_per_100g; end
     def steps_per_mile; end
-
   end
 end

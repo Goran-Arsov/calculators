@@ -50,7 +50,7 @@ class BlogController < ApplicationController
       stale_while_revalidate: 15.minutes,
       stale_if_error: 1.hour
 
-    etag_parts = [CACHE_VERSION, request.path]
+    etag_parts = [ CACHE_VERSION, request.path ]
     if @post
       etag_parts << @post.updated_at.to_i
     else

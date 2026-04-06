@@ -75,7 +75,7 @@ module Everyday
       @errors << "Length must be between #{MIN_LENGTH} and #{MAX_LENGTH}" if @length < MIN_LENGTH || @length > MAX_LENGTH
       @errors << "Count must be between #{MIN_COUNT} and #{MAX_COUNT}" if @count < MIN_COUNT || @count > MAX_COUNT
 
-      selected_types = [@include_lowercase, @include_uppercase, @include_digits, @include_symbols].count(true)
+      selected_types = [ @include_lowercase, @include_uppercase, @include_digits, @include_symbols ].count(true)
       @errors << "Length must be at least #{selected_types} to include one of each selected type" if @length < selected_types && @errors.empty?
     end
   end

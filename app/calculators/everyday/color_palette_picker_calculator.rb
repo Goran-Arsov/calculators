@@ -27,7 +27,7 @@ module Everyday
 
     def hex_to_rgb(hex)
       hex = hex.chars.map { |c| "#{c}#{c}" }.join if hex.length == 3
-      [hex[0..1], hex[2..3], hex[4..5]].map { |h| h.to_i(16) }
+      [ hex[0..1], hex[2..3], hex[4..5] ].map { |h| h.to_i(16) }
     end
 
     def validate!

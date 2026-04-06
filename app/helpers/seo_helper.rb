@@ -192,7 +192,7 @@ module SeoHelper
       "@type" => "WebPage",
       "speakable" => {
         "@type" => "SpeakableSpecification",
-        "cssSelector" => css_selectors.presence || ["h1", ".calculator-results", ".faq-answer:first-of-type"]
+        "cssSelector" => css_selectors.presence || [ "h1", ".calculator-results", ".faq-answer:first-of-type" ]
       },
       "url" => url
     }

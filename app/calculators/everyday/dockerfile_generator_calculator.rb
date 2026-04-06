@@ -253,7 +253,7 @@ module Everyday
     def production_copy_lines
       case @base_image
       when "ruby"
-        ["COPY --from=builder #{@app_dir} #{@app_dir}"]
+        [ "COPY --from=builder #{@app_dir} #{@app_dir}" ]
       when "python"
         [
           "COPY --from=builder /usr/local/lib/python*/site-packages /usr/local/lib/python*/site-packages",
@@ -265,11 +265,11 @@ module Everyday
           "COPY --from=builder #{@app_dir} #{@app_dir}"
         ]
       when "go"
-        ["COPY --from=builder #{@app_dir}/app ."]
+        [ "COPY --from=builder #{@app_dir}/app ." ]
       when "java"
-        ["COPY --from=builder #{@app_dir}/target/*.jar app.jar"]
+        [ "COPY --from=builder #{@app_dir}/target/*.jar app.jar" ]
       else
-        ["COPY --from=builder #{@app_dir} #{@app_dir}"]
+        [ "COPY --from=builder #{@app_dir} #{@app_dir}" ]
       end
     end
 

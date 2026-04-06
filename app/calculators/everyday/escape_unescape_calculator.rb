@@ -122,7 +122,7 @@ module Everyday
 
     def unescape_unicode
       @text.gsub(/\\u([0-9A-Fa-f]{4})/) do
-        [::Regexp.last_match(1).to_i(16)].pack("U")
+        [ ::Regexp.last_match(1).to_i(16) ].pack("U")
       end
     end
   end
