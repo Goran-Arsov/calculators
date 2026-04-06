@@ -1,0 +1,268 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "SSL Certificate Decoder - Free Online PEM Certificate Parser",
+  description: "Decode and analyze PEM-encoded SSL/TLS certificates. View subject, issuer, validity dates, SANs, fingerprints, and expiry status. Free online SSL certificate decoder.",
+  canonical: everyday_ssl_cert_decoder_url,
+  og: {
+    title: "SSL Certificate Decoder - Free PEM Certificate Parser | CalcWise",
+    description: "Parse PEM certificates to view subject, issuer, validity, SANs, key info, fingerprints, and expiry status with color-coded indicators.",
+    url: everyday_ssl_cert_decoder_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "SSL Certificate Decoder", url: everyday_ssl_cert_decoder_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a PEM-encoded certificate?", answer: "PEM (Privacy-Enhanced Mail) is the most common format for SSL/TLS certificates. A PEM certificate is Base64-encoded and wrapped between -----BEGIN CERTIFICATE----- and -----END CERTIFICATE----- markers. The encoded data contains the certificate in ASN.1 DER binary format. PEM files typically have .pem, .crt, or .cer extensions. You can view PEM certificates in any text editor." },
+  { question: "What are Subject Alternative Names (SANs)?", answer: "Subject Alternative Names are a certificate extension that lists additional domain names and IP addresses the certificate is valid for. Modern browsers require SANs and ignore the Common Name (CN) for domain validation. A single certificate can cover multiple domains (e.g., example.com, www.example.com, api.example.com) through SANs, which is how wildcard and multi-domain certificates work." },
+  { question: "What does a self-signed certificate mean?", answer: "A self-signed certificate is one where the issuer and subject are the same entity, meaning the certificate was signed by its own private key rather than by a trusted Certificate Authority (CA). Self-signed certificates are not trusted by browsers by default and will trigger security warnings. They are commonly used for development, testing, and internal services where public trust is not required." },
+  { question: "Why do SSL certificates expire?", answer: "Certificates expire to limit the damage from compromised private keys, ensure organizations regularly verify their identity, allow adoption of stronger cryptographic algorithms, and maintain an accurate certificate ecosystem. Maximum certificate lifetimes have been reduced over the years. As of 2024, publicly trusted certificates can have a maximum validity of 398 days (approximately 13 months). Shorter lifetimes reduce the window of vulnerability." },
+  { question: "What is the difference between DV, OV, and EV certificates?", answer: "Domain Validation (DV) certificates only verify domain ownership and are issued within minutes. Organization Validation (OV) certificates additionally verify the organization's legal identity. Extended Validation (EV) certificates require the most thorough vetting, including legal, physical, and operational checks. All three provide the same level of encryption. The difference is in the identity assurance. DV is most common due to free issuers like Let's Encrypt." }
+]) %>
+
+<%= calculator_schema(
+  name: "SSL Certificate Decoder",
+  description: "Decode PEM-encoded SSL/TLS certificates to view subject, issuer, validity dates, SANs, fingerprints, and expiry status.",
+  url: everyday_ssl_cert_decoder_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "SSL Certificate Decoder" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">SSL Certificate Decoder</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste a PEM-encoded certificate to decode its contents. View subject, issuer, validity dates, Subject Alternative Names, key information, fingerprints, and expiry status.</p>
+
+    <div data-controller="ssl-cert-decoder-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="ssl-cert-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">PEM Certificate</label>
+          <textarea id="ssl-cert-input" data-ssl-cert-decoder-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="8" placeholder="-----BEGIN CERTIFICATE-----
+MIIDXTCCAkWgAwIBAgIJALa...
+-----END CERTIFICATE-----"></textarea>
+        </div>
+
+        <button data-action="click->ssl-cert-decoder-calculator#calculate" class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Decode Certificate</button>
+
+        <p data-ssl-cert-decoder-calculator-target="resultError" class="hidden text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl p-3"></p>
+
+        <div data-ssl-cert-decoder-calculator-target="resultsContainer" class="hidden space-y-6">
+          <%# Expiry status banner %>
+          <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <div>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Certificate Status</span>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5"><span data-ssl-cert-decoder-calculator-target="daysUntilExpiry">&mdash;</span> days until expiry</p>
+            </div>
+            <span data-ssl-cert-decoder-calculator-target="expiryStatus" class="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-600">&mdash;</span>
+          </div>
+
+          <%# Subject %>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Subject</h3>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Common Name (CN)</span>
+                <span class="text-sm font-mono font-semibold text-gray-900 dark:text-white" data-ssl-cert-decoder-calculator-target="subjectCN">&mdash;</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Organization (O)</span>
+                <span class="text-sm font-mono text-gray-900 dark:text-white" data-ssl-cert-decoder-calculator-target="subjectOrg">&mdash;</span>
+              </div>
+              <div class="pt-2 border-t border-gray-200 dark:border-gray-700">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Full Subject</span>
+                <p class="text-xs font-mono text-gray-600 dark:text-gray-400 mt-0.5 break-all" data-ssl-cert-decoder-calculator-target="subjectFull">&mdash;</p>
+              </div>
+            </div>
+          </div>
+
+          <%# Issuer %>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400">Issuer</h3>
+              <span data-ssl-cert-decoder-calculator-target="selfSigned" class="text-sm font-semibold text-gray-400">&mdash;</span>
+            </div>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Common Name (CN)</span>
+                <span class="text-sm font-mono font-semibold text-gray-900 dark:text-white" data-ssl-cert-decoder-calculator-target="issuerCN">&mdash;</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Organization (O)</span>
+                <span class="text-sm font-mono text-gray-900 dark:text-white" data-ssl-cert-decoder-calculator-target="issuerOrg">&mdash;</span>
+              </div>
+              <div class="pt-2 border-t border-gray-200 dark:border-gray-700">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Full Issuer</span>
+                <p class="text-xs font-mono text-gray-600 dark:text-gray-400 mt-0.5 break-all" data-ssl-cert-decoder-calculator-target="issuerFull">&mdash;</p>
+              </div>
+            </div>
+          </div>
+
+          <%# Validity %>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Validity Period</h3>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Not Before</span>
+                <span class="text-sm font-mono text-gray-900 dark:text-white" data-ssl-cert-decoder-calculator-target="notBefore">&mdash;</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Not After</span>
+                <span class="text-sm font-mono text-gray-900 dark:text-white" data-ssl-cert-decoder-calculator-target="notAfter">&mdash;</span>
+              </div>
+            </div>
+          </div>
+
+          <%# Certificate details %>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Certificate Details</h3>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Version</span>
+                <span class="text-sm font-mono text-gray-900 dark:text-white" data-ssl-cert-decoder-calculator-target="version">&mdash;</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Serial Number</span>
+                <span class="text-sm font-mono text-gray-900 dark:text-white break-all" data-ssl-cert-decoder-calculator-target="serialNumber">&mdash;</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Signature Algorithm</span>
+                <span class="text-sm font-mono text-gray-900 dark:text-white" data-ssl-cert-decoder-calculator-target="signatureAlgorithm">&mdash;</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Public Key Algorithm</span>
+                <span class="text-sm font-mono text-gray-900 dark:text-white" data-ssl-cert-decoder-calculator-target="publicKeyAlgorithm">&mdash;</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Public Key Size</span>
+                <span class="text-sm font-mono text-gray-900 dark:text-white" data-ssl-cert-decoder-calculator-target="publicKeySize">&mdash;</span>
+              </div>
+            </div>
+          </div>
+
+          <%# Subject Alternative Names %>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Subject Alternative Names (SANs)</h3>
+            <div data-ssl-cert-decoder-calculator-target="sansList" class="flex flex-wrap gap-1">
+              <span class="text-sm text-gray-400">None</span>
+            </div>
+          </div>
+
+          <%# Fingerprints %>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Fingerprints</h3>
+            <div class="space-y-3">
+              <div>
+                <span class="text-xs text-gray-500 dark:text-gray-400">SHA-1</span>
+                <p class="text-xs font-mono text-gray-900 dark:text-white mt-0.5 break-all" data-ssl-cert-decoder-calculator-target="fingerprintSha1">&mdash;</p>
+              </div>
+              <div>
+                <span class="text-xs text-gray-500 dark:text-gray-400">SHA-256</span>
+                <p class="text-xs font-mono text-gray-900 dark:text-white mt-0.5 break-all" data-ssl-cert-decoder-calculator-target="fingerprintSha256">&mdash;</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding SSL/TLS Certificates</h2>
+      <p>
+        SSL/TLS certificates are digital documents that bind a cryptographic key pair to an identity. They serve two essential functions: authenticating the identity of a server (proving that you are connected to the real example.com, not an impersonator) and enabling encrypted communication between the client and server. Every HTTPS connection relies on a certificate. When your browser shows the padlock icon, it means a valid, trusted certificate was presented and the connection is encrypted.
+      </p>
+      <p>
+        Certificates follow the X.509 standard and are typically encoded in PEM format, which is a Base64 representation of the binary ASN.1 DER encoding. A PEM certificate is a text file that starts with <code>-----BEGIN CERTIFICATE-----</code> and ends with <code>-----END CERTIFICATE-----</code>. Between these markers is the Base64-encoded certificate data. This tool decodes that data and displays the certificate fields in a readable format, including the subject, issuer, validity period, key information, and extensions.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Certificate Chain of Trust</h2>
+      <p>
+        Certificates operate within a chain of trust. At the top are root Certificate Authorities (CAs), whose certificates are pre-installed in operating systems and browsers. Root CAs sign intermediate CA certificates, which in turn sign the leaf certificates used by websites. When your browser receives a server certificate, it builds and verifies this chain back to a trusted root. If any link in the chain is missing, expired, or invalid, the browser shows a security warning. Self-signed certificates have no chain because they signed themselves, which is why browsers do not trust them by default.
+      </p>
+
+      <h3>How Certificates Are Issued</h3>
+      <p>
+        To obtain a certificate, a server administrator generates a key pair and a Certificate Signing Request (CSR). The CSR contains the public key and the identity information (domain name, organization). This is submitted to a Certificate Authority, which verifies the identity through domain validation (proving domain ownership via DNS or HTTP challenges), organization validation (verifying the legal entity), or extended validation (thorough vetting of the organization). After verification, the CA signs the certificate with its private key and returns it. Free CAs like Let's Encrypt have made domain-validated certificates accessible to everyone.
+      </p>
+
+      <h3>Key Certificate Fields Explained</h3>
+      <p>
+        The <strong>Subject</strong> identifies the certificate holder, typically including the Common Name (CN) which is the domain name. The <strong>Issuer</strong> identifies the CA that signed the certificate. The <strong>Validity Period</strong> (Not Before / Not After) defines when the certificate is valid. <strong>Subject Alternative Names</strong> (SANs) list all domains the certificate covers, and modern browsers use SANs instead of CN for domain matching. The <strong>Serial Number</strong> uniquely identifies the certificate within the CA's records. The <strong>Signature Algorithm</strong> specifies how the CA signed the certificate (typically SHA-256 with RSA). <strong>Fingerprints</strong> are hash digests of the entire certificate used for identification and pinning.
+      </p>
+
+      <h3>Why Certificates Expire</h3>
+      <p>
+        Certificate expiration serves multiple security purposes. It limits the exposure window if a private key is compromised, since the stolen key becomes useless after the certificate expires. It forces organizations to periodically verify their identity with the CA. It enables the ecosystem to adopt stronger cryptographic algorithms over time by preventing indefinite use of older standards. The industry has steadily shortened maximum certificate lifetimes: from five years, to three, to two, and now 398 days. Automation tools like ACME (used by Let's Encrypt) and certbot make frequent renewals practical.
+      </p>
+
+      <h3>Certificate Types: DV, OV, and EV</h3>
+      <p>
+        <strong>Domain Validation (DV)</strong> certificates verify only that the applicant controls the domain. They are issued in minutes, often for free, and are sufficient for most websites. <strong>Organization Validation (OV)</strong> certificates additionally verify the legal identity of the organization, requiring documentation. <strong>Extended Validation (EV)</strong> certificates involve the most rigorous vetting, including legal existence, physical address, and operational status checks. All three types provide the same encryption strength. The difference lies in identity assurance: DV proves domain ownership, OV proves organizational identity, and EV provides the highest level of trust verification.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a PEM-encoded certificate?</h3>
+      <p>A Base64-encoded X.509 certificate wrapped between BEGIN and END CERTIFICATE markers. The most common certificate format, readable in any text editor.</p>
+
+      <h3>What are Subject Alternative Names?</h3>
+      <p>A certificate extension listing additional domains and IPs the certificate covers. Modern browsers use SANs instead of the Common Name for domain validation.</p>
+
+      <h3>What does self-signed mean?</h3>
+      <p>A certificate where the issuer and subject are the same. Not trusted by browsers by default because there is no third-party CA verification.</p>
+
+      <h3>Why do certificates expire?</h3>
+      <p>To limit compromise exposure, force identity reverification, and enable adoption of stronger cryptography. Maximum validity is currently 398 days.</p>
+
+      <h3>What is the difference between DV, OV, and EV certificates?</h3>
+      <p>DV verifies domain ownership. OV additionally verifies the organization. EV requires the most thorough vetting. All provide the same encryption strength.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "SSL Certificate Decoder", url: everyday_ssl_cert_decoder_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Hash Generator", description: "Generate SHA-256, SHA-384, SHA-512, and MD5 hashes from any text input.", path: everyday_hash_generator_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "HMAC Generator", description: "Generate HMAC signatures using SHA-256, SHA-384, SHA-512, or MD5.", path: everyday_hmac_generator_path, icon_path: "M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" },
+      { name: "HTTP Header Parser", description: "Parse raw HTTP headers and analyze security header coverage with grading.", path: everyday_http_header_parser_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("ssl-cert-decoder") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

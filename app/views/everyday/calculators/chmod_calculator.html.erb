@@ -1,0 +1,268 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "chmod Calculator - Free Online Tool",
+  description: "Convert Unix file permissions between numeric (octal) and symbolic formats. Interactive 3x3 grid of checkboxes, instant conversion, and common permission names like 755 and 644.",
+  canonical: everyday_chmod_calculator_url,
+  og: {
+    title: "chmod Calculator - Free Online Tool | CalcWise",
+    description: "Convert Unix file permissions between numeric and symbolic notation. Interactive checkboxes, real-time conversion, and common permission names.",
+    url: everyday_chmod_calculator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "chmod Calculator", url: everyday_chmod_calculator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What does chmod do in Unix and Linux?", answer: "The chmod command changes the access permissions of files and directories in Unix-like operating systems. Permissions control who can read, write, or execute a file. The command accepts either numeric notation like chmod 755 filename or symbolic notation like chmod u+rwx,g+rx,o+rx filename. Both forms achieve the same result but express the permissions differently." },
+  { question: "What does 755 mean in chmod?", answer: "The permission 755 means the owner can read, write, and execute the file (7 = 4+2+1), while the group and others can only read and execute it (5 = 4+0+1). In symbolic form this is rwxr-xr-x. It is the standard permission for directories and executable files that need to be accessible to all users but only modifiable by the owner." },
+  { question: "What is the difference between 644 and 755?", answer: "Permission 644 (rw-r--r--) allows the owner to read and write while everyone else can only read. Permission 755 (rwxr-xr-x) adds execute permission for the owner, group, and others. Use 644 for regular files like HTML documents, configuration files, and images. Use 755 for directories and executable scripts that users need to run or traverse." },
+  { question: "How do the three digits in chmod work?", answer: "Each digit represents the permissions for a different class: the first digit is the owner (user who owns the file), the second is the group (users in the file's group), and the third is others (everyone else). Each digit is the sum of its permission values: 4 for read, 2 for write, and 1 for execute. For example, 6 means read plus write (4+2), and 7 means all three (4+2+1)." },
+  { question: "What is the most secure file permission?", answer: "The most restrictive useful permission is 600 (rw-------), which allows only the owner to read and write the file with no access for group or others. Use this for sensitive files like private SSH keys, password files, and database credentials. For executable files that only the owner should run, use 700. Never use 777 on a production server as it grants full access to everyone." }
+]) %>
+
+<%= calculator_schema(
+  name: "chmod Calculator",
+  description: "Convert Unix file permissions between numeric (octal) and symbolic formats with an interactive checkbox grid.",
+  url: everyday_chmod_calculator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "chmod Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">chmod Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert Unix file permissions between numeric and symbolic notation. Toggle checkboxes or type a numeric value to see instant results.</p>
+
+    <div data-controller="chmod-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-6">
+
+          <%# Permission grid %>
+          <div>
+            <h2 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-4">Permission Grid</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr>
+                    <th class="text-left py-2 pr-4 text-gray-500 dark:text-gray-400 font-medium"></th>
+                    <th class="py-2 px-3 text-center text-gray-500 dark:text-gray-400 font-medium">Read (4)</th>
+                    <th class="py-2 px-3 text-center text-gray-500 dark:text-gray-400 font-medium">Write (2)</th>
+                    <th class="py-2 px-3 text-center text-gray-500 dark:text-gray-400 font-medium">Execute (1)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-t border-gray-100 dark:border-gray-800">
+                    <td class="py-3 pr-4 font-medium text-gray-700 dark:text-gray-300">Owner</td>
+                    <td class="py-3 px-3 text-center">
+                      <input type="checkbox" checked data-chmod-calculator-target="ownerRead" data-action="change->chmod-calculator#toggleFromCheckbox"
+                             class="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                    </td>
+                    <td class="py-3 px-3 text-center">
+                      <input type="checkbox" checked data-chmod-calculator-target="ownerWrite" data-action="change->chmod-calculator#toggleFromCheckbox"
+                             class="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                    </td>
+                    <td class="py-3 px-3 text-center">
+                      <input type="checkbox" checked data-chmod-calculator-target="ownerExecute" data-action="change->chmod-calculator#toggleFromCheckbox"
+                             class="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                    </td>
+                  </tr>
+                  <tr class="border-t border-gray-100 dark:border-gray-800">
+                    <td class="py-3 pr-4 font-medium text-gray-700 dark:text-gray-300">Group</td>
+                    <td class="py-3 px-3 text-center">
+                      <input type="checkbox" checked data-chmod-calculator-target="groupRead" data-action="change->chmod-calculator#toggleFromCheckbox"
+                             class="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                    </td>
+                    <td class="py-3 px-3 text-center">
+                      <input type="checkbox" data-chmod-calculator-target="groupWrite" data-action="change->chmod-calculator#toggleFromCheckbox"
+                             class="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                    </td>
+                    <td class="py-3 px-3 text-center">
+                      <input type="checkbox" checked data-chmod-calculator-target="groupExecute" data-action="change->chmod-calculator#toggleFromCheckbox"
+                             class="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                    </td>
+                  </tr>
+                  <tr class="border-t border-gray-100 dark:border-gray-800">
+                    <td class="py-3 pr-4 font-medium text-gray-700 dark:text-gray-300">Other</td>
+                    <td class="py-3 px-3 text-center">
+                      <input type="checkbox" checked data-chmod-calculator-target="otherRead" data-action="change->chmod-calculator#toggleFromCheckbox"
+                             class="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                    </td>
+                    <td class="py-3 px-3 text-center">
+                      <input type="checkbox" data-chmod-calculator-target="otherWrite" data-action="change->chmod-calculator#toggleFromCheckbox"
+                             class="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                    </td>
+                    <td class="py-3 px-3 text-center">
+                      <input type="checkbox" checked data-chmod-calculator-target="otherExecute" data-action="change->chmod-calculator#toggleFromCheckbox"
+                             class="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <%# Numeric input %>
+          <div>
+            <label for="chmod-numeric" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Numeric (Octal)</label>
+            <input id="chmod-numeric" type="text" maxlength="3" placeholder="755"
+                   data-chmod-calculator-target="numericInput"
+                   data-action="input->chmod-calculator#updateFromNumeric"
+                   class="w-full font-mono text-2xl text-center tracking-widest">
+          </div>
+
+          <%# Symbolic display %>
+          <div>
+            <span class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Symbolic</span>
+            <div class="w-full font-mono text-2xl text-center tracking-widest bg-gray-50 dark:bg-gray-800 rounded-lg py-3 text-gray-900 dark:text-white" data-chmod-calculator-target="symbolicOutput">rwxr-xr-x</div>
+          </div>
+        </div>
+
+        <div aria-live="polite" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Numeric</span>
+              <span class="text-xl font-bold font-mono text-blue-600 dark:text-blue-400" data-chmod-calculator-target="resultNumeric">755</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Symbolic</span>
+              <span class="text-xl font-bold font-mono text-blue-600 dark:text-blue-400" data-chmod-calculator-target="resultSymbolic">rwxr-xr-x</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Common Name</span>
+              <span class="text-sm font-medium text-blue-600 dark:text-blue-400" data-chmod-calculator-target="resultCommonName">Standard directory / executable</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Owner</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white" data-chmod-calculator-target="ownerSummary">Read, Write, Execute</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Group</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white" data-chmod-calculator-target="groupSummary">Read, Execute</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Other</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white" data-chmod-calculator-target="otherSummary">Read, Execute</span>
+            </div>
+          </div>
+          <div class="flex gap-3 mt-6">
+            <button data-action="click->chmod-calculator#copyNumeric"
+                    class="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+              Copy Numeric
+            </button>
+            <button data-action="click->chmod-calculator#copySymbolic"
+                    class="flex-1 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+              Copy Symbolic
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the chmod Calculator</h2>
+      <p>
+        Toggle the checkboxes in the permission grid to set read, write, and execute permissions for the owner, group, and others. The numeric and symbolic representations update instantly as you click. Alternatively, type a three-digit octal number directly into the numeric input field, and the checkboxes and symbolic display will sync automatically. The results panel on the right shows both formats along with the common name for well-known permission sets like 755 or 644.
+      </p>
+      <p>
+        Each row in the grid represents one of the three permission classes. The owner is the user who created the file. The group includes all users who belong to the file's assigned group. Others covers every user on the system who is not the owner and not in the group. Each class can independently hold read, write, and execute permissions in any combination.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Unix File Permissions</h2>
+      <p>
+        Unix-like operating systems use a three-level permission system to control file access. Every file and directory has an owner, a group, and a set of permissions for others. The <code>chmod</code> command modifies these permissions. In numeric mode, each permission class is represented by a single octal digit from 0 to 7. The digit is calculated by adding the values of the permissions you want to grant: 4 for read, 2 for write, and 1 for execute. A digit of 7 grants all three permissions, while 0 grants none.
+      </p>
+
+      <h3>Numeric vs. Symbolic Notation</h3>
+      <p>
+        Numeric notation uses three digits, one per class, making it compact and easy to type in scripts. Symbolic notation uses nine characters arranged as three groups of <code>rwx</code>, where a dash replaces any unset permission. For example, <code>rw-r--r--</code> means the owner can read and write, while group and others can only read. Both notations represent the same underlying permission bits. Developers tend to prefer numeric notation for its brevity, while system administrators sometimes prefer symbolic notation for its clarity.
+      </p>
+
+      <h3>Common Permission Patterns</h3>
+      <p>
+        Permission <code>644</code> is the standard for regular files. It allows the owner to read and write while everyone else can only read. Permission <code>755</code> is standard for directories and executable files, adding execute access so users can enter directories or run scripts. Permission <code>600</code> restricts access entirely to the owner, making it appropriate for sensitive files like SSH private keys and application secrets. Permission <code>777</code> grants full access to everyone and should be avoided on production systems because it allows any user to modify or delete the file.
+      </p>
+
+      <h2>Security Considerations</h2>
+      <p>
+        Setting permissions too broadly is a common cause of security vulnerabilities on Linux servers. Web server files should generally be owned by the web server user with permissions set to 644 for files and 755 for directories. Configuration files containing database passwords, API keys, or encryption secrets should be set to 600 so only the application user can read them. If a directory needs to be writable by the web server, use 775 and add the web server user to the file's group rather than opening the directory to 777. Regularly audit permissions on sensitive paths using <code>find / -perm -o+w -type f</code> to locate world-writable files.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What does chmod do in Unix and Linux?</h3>
+      <p>
+        The <code>chmod</code> command changes the access permissions of files and directories in Unix-like operating systems. Permissions control who can read, write, or execute a file. The command accepts either numeric notation like <code>chmod 755 filename</code> or symbolic notation like <code>chmod u+rwx,g+rx,o+rx filename</code>. Both forms achieve the same result.
+      </p>
+
+      <h3>What does 755 mean in chmod?</h3>
+      <p>
+        Permission 755 means the owner can read, write, and execute the file (7 = 4+2+1), while the group and others can only read and execute it (5 = 4+0+1). In symbolic form this is <code>rwxr-xr-x</code>. It is the standard permission for directories and executable files.
+      </p>
+
+      <h3>What is the difference between 644 and 755?</h3>
+      <p>
+        Permission 644 (<code>rw-r--r--</code>) allows the owner to read and write while everyone else can only read. Permission 755 (<code>rwxr-xr-x</code>) adds execute permission for all users. Use 644 for regular files and 755 for directories and scripts.
+      </p>
+
+      <h3>How do the three digits in chmod work?</h3>
+      <p>
+        Each digit represents the permissions for a different class: owner, group, and others. Each digit is the sum of its permission values: 4 for read, 2 for write, and 1 for execute. For example, 6 means read plus write (4+2), and 7 means all three (4+2+1).
+      </p>
+
+      <h3>What is the most secure file permission?</h3>
+      <p>
+        The most restrictive useful permission is 600 (<code>rw-------</code>), which allows only the owner to read and write the file. Use this for private SSH keys, password files, and database credentials. Never use 777 on a production server.
+      </p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "chmod Calculator", url: everyday_chmod_calculator_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Subnet Calculator", description: "Calculate network address, broadcast address, subnet mask, and usable host range.", path: everyday_subnet_calculator_path, icon_path: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" },
+      { name: "Regex Tester", description: "Test regular expressions against sample text with real-time matching and highlighting.", path: everyday_regex_tester_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Unix Timestamp Converter", description: "Convert between Unix timestamps and human-readable dates.", path: everyday_unix_timestamp_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("chmod-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

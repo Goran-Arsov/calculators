@@ -1,0 +1,198 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Markdown Table Generator - Free Online Table Builder",
+  description: "Build markdown tables visually with an interactive grid editor. Set rows and columns, type cell data, and generate pipe-delimited markdown with live preview. Supports spreadsheet paste.",
+  canonical: everyday_markdown_table_generator_url,
+  og: {
+    title: "Markdown Table Generator - Free Online Table Builder | CalcWise",
+    description: "Create markdown tables visually. Set dimensions, fill cells, and generate formatted pipe-delimited markdown tables with live preview and copy functionality.",
+    url: everyday_markdown_table_generator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Markdown Table Generator", url: everyday_markdown_table_generator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a markdown table?", answer: "A markdown table is a way to represent tabular data using plain text characters. It uses pipe characters (|) to separate columns and hyphens (-) to create a separator row between the header and data rows. Markdown tables are widely supported in GitHub, GitLab, Reddit, Stack Overflow, Notion, and most documentation platforms. They render as formatted HTML tables when the markdown is processed." },
+  { question: "How do I create a markdown table manually?", answer: "Start with the header row, separating each column with a pipe character (|). On the next line, add a separator row with hyphens between pipes to divide the header from the data. Then add data rows using the same pipe-separated format. For example: '| Name | Age |' on line 1, '| --- | --- |' on line 2, and '| Alice | 30 |' on line 3. Leading and trailing pipes are optional in some parsers but recommended for clarity." },
+  { question: "Can I align columns in a markdown table?", answer: "Yes. The separator row supports alignment indicators using colons. A colon on the left (|:---|) produces left-aligned text, a colon on the right (|---:|) produces right-aligned text, and colons on both sides (|:---:|) produces centered text. No colons (|---|) defaults to left alignment. Not all markdown renderers support alignment, but GitHub, GitLab, and most modern platforms do." },
+  { question: "Can I paste data from a spreadsheet into the table?", answer: "Yes. This tool supports pasting tab-separated data from spreadsheets like Excel and Google Sheets. When you copy cells from a spreadsheet, they are placed on the clipboard as tab-separated text. Click on the cell where you want the pasted data to begin and paste normally. The tool detects the tab characters and distributes the values across the corresponding cells in the grid." },
+  { question: "What are the limitations of markdown tables?", answer: "Markdown tables only support simple tabular data. They do not support merged cells (colspan or rowspan), nested tables, multi-line content within a single cell, or complex formatting like background colors. For these features, you need raw HTML tables. Markdown tables also require a header row; there is no standard way to create a headerless table in markdown. The pipe characters inside cell values must be escaped with a backslash." }
+]) %>
+
+<%= calculator_schema(
+  name: "Markdown Table Generator",
+  description: "Build markdown tables visually with a grid editor, spreadsheet paste support, and live preview with copy functionality.",
+  url: everyday_markdown_table_generator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Markdown Table Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Markdown Table Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Build markdown tables visually using an interactive grid. Set the number of rows and columns, fill in cell data, and generate properly formatted pipe-delimited markdown. Supports pasting from spreadsheets.</p>
+
+    <div data-controller="markdown-table-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div class="flex flex-wrap gap-4 items-end">
+          <div>
+            <label for="md-table-rows" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rows (incl. header)</label>
+            <input type="number" id="md-table-rows" data-markdown-table-generator-calculator-target="rowCount" value="4" min="1" max="20"
+              class="w-24 rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div>
+            <label for="md-table-cols" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Columns</label>
+            <input type="number" id="md-table-cols" data-markdown-table-generator-calculator-target="colCount" value="3" min="1" max="20"
+              class="w-24 rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <button data-action="click->markdown-table-generator-calculator#generateGrid"
+            class="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm">
+            Generate Grid
+          </button>
+          <button data-action="click->markdown-table-generator-calculator#generateMarkdown"
+            class="px-5 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 transition-colors shadow-sm">
+            Generate Markdown
+          </button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-3 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Status</span>
+            <span class="text-sm font-bold" data-markdown-table-generator-calculator-target="resultStatus">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Rows</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-markdown-table-generator-calculator-target="resultRows">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Columns</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-markdown-table-generator-calculator-target="resultCols">&mdash;</span>
+          </div>
+        </div>
+
+        <%# Editable grid %>
+        <div class="overflow-x-auto" data-markdown-table-generator-calculator-target="tableContainer">
+          <p class="text-gray-400 text-center py-8">Click "Generate Grid" to create an editable table</p>
+        </div>
+
+        <%# Markdown output %>
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="md-table-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Markdown Output</label>
+            <button data-action="click->markdown-table-generator-calculator#copyMarkdown" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+          </div>
+          <textarea id="md-table-output" data-markdown-table-generator-calculator-target="markdownOutput" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="8" placeholder="Markdown will appear here after generating..."></textarea>
+        </div>
+
+        <%# Live preview %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Table Preview</h3>
+          <div data-markdown-table-generator-calculator-target="previewContainer" class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <p class="text-gray-400 text-center py-4">Click "Generate Markdown" to see output</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Markdown Table Generator</h2>
+      <p>
+        Set the number of rows and columns using the input fields at the top of the tool, then click "Generate Grid" to create an editable HTML table. The first row is highlighted in blue to indicate it serves as the table header. Type your data into each cell directly. When you are satisfied with the content, click "Generate Markdown" to produce the pipe-delimited markdown table in the output textarea. The live preview below shows exactly how the table will render in markdown-compatible platforms. Use the copy button to grab the markdown for pasting into your document, README, or wiki page.
+      </p>
+      <p>
+        If you have data in a spreadsheet like Excel or Google Sheets, you can paste it directly into the grid. Select the cells in your spreadsheet, copy them, then click on the starting cell in the grid and paste. The tool detects tab-separated clipboard data and fills the corresponding cells automatically. This makes it easy to convert spreadsheet data to markdown format without manual retyping.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Markdown Tables</h2>
+      <p>
+        Markdown tables use a straightforward text-based syntax to define tabular data. Each row is written on a single line, with pipe characters (|) separating the columns. The header row is the first line of the table and defines the column labels. Immediately after the header, a separator row of hyphens divided by pipes distinguishes the headers from the data rows. Data rows follow the same pipe-separated format. While leading and trailing pipes on each line are technically optional in some parsers, including them is considered best practice for readability and compatibility.
+      </p>
+
+      <h3>Column Alignment</h3>
+      <p>
+        The separator row supports alignment indicators using colon characters. Placing a colon at the left end of the hyphens (<code>|:---|</code>) creates left-aligned text, which is also the default. A colon on the right (<code>|---:|</code>) right-aligns the content, useful for numeric columns like prices or quantities. Colons on both sides (<code>|:---:|</code>) center the text. GitHub, GitLab, Notion, and most modern markdown renderers respect these alignment directives. This simple mechanism provides basic formatting control without requiring HTML attributes or CSS classes.
+      </p>
+
+      <h3>Where Markdown Tables Are Used</h3>
+      <p>
+        Markdown tables appear throughout the software development ecosystem. GitHub README files commonly use them for feature comparison matrices, API parameter documentation, and configuration option tables. GitLab wikis and issue descriptions support the same syntax. Documentation generators like Jekyll, Hugo, MkDocs, and Docusaurus all render markdown tables. Project management tools including Notion, Obsidian, and Confluence support markdown tables in their editors. Stack Overflow and Reddit render markdown tables in posts and comments. Even messaging platforms like Slack and Discord support basic markdown table rendering in certain contexts.
+      </p>
+
+      <h3>Limitations and Workarounds</h3>
+      <p>
+        Markdown tables have several constraints that are important to understand. They always require a header row; there is no standard syntax for a headerless table. Merged cells (rowspan and colspan) are not supported. Multi-line content within a single cell is not possible with standard markdown syntax, though some parsers support line breaks using <code>&lt;br&gt;</code> tags. Pipe characters within cell values must be escaped as <code>\|</code>. For complex tables that exceed these limitations, you can embed raw HTML table tags directly in most markdown documents. The HTML table renders as expected while remaining compatible with the surrounding markdown content.
+      </p>
+
+      <h3>Tips for Clean Markdown Tables</h3>
+      <p>
+        For maintainability, align the pipe characters vertically across all rows by padding cells with spaces. While markdown processors ignore whitespace within cells, aligned columns make the raw text much easier to read and edit. Use descriptive header names that clearly indicate the column content. Keep cell values concise to prevent the table from becoming unwieldy. If a table exceeds five or six columns, consider splitting it into multiple tables or using a different format entirely. When generating markdown for documentation, include a brief descriptive paragraph above the table to provide context for readers.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a markdown table?</h3>
+      <p>A markdown table uses pipe characters and hyphens to represent tabular data in plain text. Supported by GitHub, GitLab, Notion, and most documentation platforms, they render as formatted HTML tables.</p>
+
+      <h3>How do I create a markdown table manually?</h3>
+      <p>Write pipe-separated columns on each line. The first line is the header, the second line uses hyphens as a separator, and subsequent lines contain data. For example: <code>| Name | Age |</code> then <code>| --- | --- |</code> then <code>| Alice | 30 |</code>.</p>
+
+      <h3>Can I align columns in a markdown table?</h3>
+      <p>Yes. Use colons in the separator row: <code>:---</code> for left align, <code>---:</code> for right align, and <code>:---:</code> for center. Default is left-aligned.</p>
+
+      <h3>Can I paste data from a spreadsheet?</h3>
+      <p>Yes. Copy cells in Excel or Google Sheets, click the target cell in the grid, and paste. The tool detects tab-separated clipboard data and fills the grid cells automatically.</p>
+
+      <h3>What are the limitations of markdown tables?</h3>
+      <p>Markdown tables do not support merged cells, multi-line cell content, nested tables, or styling. A header row is always required. Pipe characters in values must be escaped with a backslash.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Markdown Table Generator", url: everyday_markdown_table_generator_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Markdown to HTML Converter", description: "Convert markdown text to HTML with live preview and syntax highlighting.", path: everyday_markdown_to_html_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Markdown Preview", description: "Write markdown and see a live rendered preview with word and heading counts.", path: everyday_markdown_preview_path, icon_path: "M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" },
+      { name: "CSV to JSON Converter", description: "Convert CSV data to JSON with header detection and delimiter options.", path: everyday_csv_to_json_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("markdown-table-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

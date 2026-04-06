@@ -1,0 +1,207 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Base64 Image Encoder - Free Online Image to Base64 Converter",
+  description: "Convert images to Base64 data URIs instantly. Upload or drag-and-drop PNG, JPG, GIF, SVG, or WebP images. Decode Base64 back to images. Free online tool.",
+  canonical: everyday_base64_image_encoder_url,
+  og: {
+    title: "Base64 Image Encoder - Free Online Image to Base64 Converter | CalcWise",
+    description: "Convert images to Base64 data URIs with drag-and-drop upload. View file stats, copy the data URI or raw Base64, and decode Base64 strings back to images.",
+    url: everyday_base64_image_encoder_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Base64 Image Encoder", url: everyday_base64_image_encoder_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is Base64 encoding?", answer: "Base64 is a binary-to-text encoding scheme that represents binary data using a set of 64 printable ASCII characters (A-Z, a-z, 0-9, +, and /). It was designed to safely transmit binary data through systems that only support text, such as email (MIME) and URLs. Base64 encoding increases the data size by approximately 33% because every three bytes of binary data are represented as four ASCII characters." },
+  { question: "What is a data URI?", answer: "A data URI (Uniform Resource Identifier) is a scheme that allows you to embed small files directly in HTML, CSS, or JavaScript as inline text instead of linking to an external file. The format is 'data:[MIME type];base64,[encoded data]'. For images, this looks like 'data:image/png;base64,iVBORw0KGgo...'. Data URIs eliminate the need for a separate HTTP request to load the resource, which can improve page load performance for small files." },
+  { question: "When should I use Base64-encoded images?", answer: "Base64 encoding is most beneficial for small images under 10 KB, such as icons, small logos, and decorative elements. Embedding these as data URIs reduces the number of HTTP requests, which can improve page load time. For larger images, Base64 encoding is counterproductive because the encoded string is 33% larger than the original file and cannot be cached independently by the browser. CSS sprites or standard image files are better choices for larger assets." },
+  { question: "What image formats does the encoder support?", answer: "This encoder supports all common web image formats: PNG, JPEG, GIF, WebP, and SVG. The tool detects the format automatically from the file's MIME type when uploading, and from the Base64 signature when decoding. PNG is best for images with transparency, JPEG for photographs, GIF for simple animations, WebP for modern browsers needing smaller file sizes, and SVG for vector graphics that scale without quality loss." },
+  { question: "Is Base64 encoding the same as encryption?", answer: "No, Base64 encoding is not encryption and provides no security whatsoever. It is a reversible encoding scheme that anyone can decode without a key. Base64 simply converts binary data to a text-safe representation. If you need to protect image data, you must use actual encryption algorithms like AES before or after Base64 encoding. Never rely on Base64 to hide sensitive information." }
+]) %>
+
+<%= calculator_schema(
+  name: "Base64 Image Encoder",
+  description: "Convert images to Base64 data URIs and decode Base64 strings back to images with format detection and file statistics.",
+  url: everyday_base64_image_encoder_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Base64 Image Encoder" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Base64 Image Encoder</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert images to Base64 data URIs by uploading or dragging and dropping files. View image stats, copy the encoded output, or decode a Base64 string back into a viewable image.</p>
+
+    <div data-controller="base64-image-encoder-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Encode Image to Base64</h2>
+
+        <%# Drop zone %>
+        <div data-base64-image-encoder-calculator-target="dropZone"
+          class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center transition-colors cursor-pointer hover:border-blue-400 dark:hover:border-blue-500">
+          <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <p class="text-gray-600 dark:text-gray-400 mb-2">Drag and drop an image here, or click to select</p>
+          <input type="file" accept="image/*" data-base64-image-encoder-calculator-target="fileInput"
+            data-action="change->base64-image-encoder-calculator#onFileSelect"
+            class="block mx-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-400">
+        </div>
+
+        <%# Image preview %>
+        <div data-base64-image-encoder-calculator-target="imagePreview"></div>
+
+        <%# Stats %>
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">File Name</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400 truncate block" data-base64-image-encoder-calculator-target="resultFileName">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">File Size</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-base64-image-encoder-calculator-target="resultFileSize">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">MIME Type</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-base64-image-encoder-calculator-target="resultMimeType">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Base64 Length</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-base64-image-encoder-calculator-target="resultBase64Length">&mdash;</span>
+          </div>
+        </div>
+
+        <%# Data URI output %>
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="base64-data-uri-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Data URI Output</label>
+            <div class="flex gap-2">
+              <button data-action="click->base64-image-encoder-calculator#copyDataUri" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy Data URI</button>
+              <button data-action="click->base64-image-encoder-calculator#copyBase64Only" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy Base64 Only</button>
+            </div>
+          </div>
+          <textarea id="base64-data-uri-output" data-base64-image-encoder-calculator-target="dataUriOutput" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-xs font-mono break-all"
+            rows="6" placeholder="Data URI will appear here after uploading an image..."></textarea>
+        </div>
+
+        <hr class="border-gray-200 dark:border-gray-700">
+
+        <%# Reverse: decode Base64 to image %>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Decode Base64 to Image</h2>
+        <div>
+          <label for="base64-reverse-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Paste Data URI or Base64 String</label>
+          <textarea id="base64-reverse-input" data-base64-image-encoder-calculator-target="reverseInput"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="4" placeholder="data:image/png;base64,iVBORw0KGgo... or raw Base64 string"></textarea>
+        </div>
+        <button data-action="click->base64-image-encoder-calculator#decodeDataUri"
+          class="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm">
+          Decode to Image
+        </button>
+        <div data-base64-image-encoder-calculator-target="reversePreview">
+          <p class="text-gray-400 text-center py-4">Paste a data URI above to see the decoded image</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Base64 Image Encoder</h2>
+      <p>
+        Upload an image by clicking the file selector or by dragging and dropping an image file onto the drop zone. The tool accepts PNG, JPEG, GIF, WebP, and SVG formats. Once the file is loaded, the encoder reads the image using the browser's FileReader API and converts it to a Base64-encoded data URI. The full data URI appears in the output textarea, and the stats bar displays the original file name, file size, MIME type, and the length of the Base64 string. Use the "Copy Data URI" button to grab the complete data URI string (including the data:image prefix) for embedding in HTML or CSS. Use the "Copy Base64 Only" button when you need just the raw encoded data without the prefix.
+      </p>
+      <p>
+        The reverse decoder at the bottom of the tool lets you paste a data URI or raw Base64 string and see the resulting image. If you paste a raw Base64 string without the data URI prefix, the tool assumes PNG format. This is useful for debugging embedded images, verifying encoded data, or previewing Base64 strings extracted from stylesheets or API responses.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Base64 Encoding for Images</h2>
+      <p>
+        Base64 encoding converts binary data into a text representation using 64 printable ASCII characters. The encoding process takes three bytes of binary input at a time and maps them to four Base64 characters. Each character represents six bits of data (2^6 = 64 possible values). The character set includes uppercase letters A through Z, lowercase letters a through z, digits 0 through 9, and the symbols + and /. If the input length is not a multiple of three bytes, padding characters (=) are appended to the output. This process increases the data size by approximately 33%, which is the primary trade-off of using Base64 encoding.
+      </p>
+
+      <h3>Data URIs in Web Development</h3>
+      <p>
+        The data URI scheme, defined in RFC 2397, allows resources to be embedded directly in HTML, CSS, or JavaScript documents as inline strings. For images, a data URI looks like <code>data:image/png;base64,iVBOR...</code> and can be used anywhere a URL is accepted, including the <code>src</code> attribute of <code>&lt;img&gt;</code> tags, CSS <code>background-image</code> properties, and the <code>url()</code> function. When the browser encounters a data URI, it decodes the Base64 content in memory without making an HTTP request. This eliminates network latency for small resources and reduces the total number of connections needed to render a page.
+      </p>
+
+      <h3>Performance Considerations</h3>
+      <p>
+        While data URIs reduce HTTP requests, they have important trade-offs. Base64-encoded data is roughly 33% larger than the original binary file. Data URIs embedded in HTML or CSS cannot be cached independently by the browser; they are cached only as part of the containing document. For images larger than a few kilobytes, the increased document size typically outweighs the benefit of saving an HTTP request. The widely cited rule of thumb is to use data URIs for images under 10 KB. Modern HTTP/2 and HTTP/3 have reduced the overhead of multiple requests, making the break-even point even smaller. Critical CSS techniques sometimes embed tiny icons as data URIs to ensure above-the-fold content renders without additional requests.
+      </p>
+
+      <h3>Common Use Cases</h3>
+      <p>
+        Email HTML templates frequently use Base64-encoded images because many email clients block external image loading by default. Embedding images as data URIs ensures they display immediately without user intervention. Single-page applications sometimes embed small icons as data URIs in their JavaScript bundles to avoid managing image assets separately. CSS-only solutions for loading spinners and small UI elements often encode images directly in stylesheets. API responses that need to include image data alongside JSON use Base64 encoding because JSON does not support raw binary data. Development tools and documentation may embed screenshots as Base64 to keep everything in a single file.
+      </p>
+
+      <h3>Security and Privacy</h3>
+      <p>
+        Base64 encoding provides no security or privacy protection. It is a reversible encoding, not encryption. Anyone who receives a Base64-encoded image can decode it instantly. However, data URIs do offer a minor privacy benefit for end users: because the image is embedded in the document rather than loaded from an external server, no additional HTTP request is made, which means no referrer headers, cookies, or tracking pixels are sent to the image server. This makes data URIs useful in privacy-focused applications where external resource loading is restricted by content security policies.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is Base64 encoding?</h3>
+      <p>Base64 converts binary data to text using 64 ASCII characters. It increases size by about 33% but allows binary data to be safely embedded in text-based formats like HTML, CSS, and JSON.</p>
+
+      <h3>What is a data URI?</h3>
+      <p>A data URI embeds a file directly in a document as an inline string using the format <code>data:[MIME];base64,[data]</code>. It eliminates the need for a separate HTTP request to load the resource.</p>
+
+      <h3>When should I use Base64-encoded images?</h3>
+      <p>Use Base64 for small images under 10 KB like icons and logos. For larger images, standard file references are more efficient because Base64 adds 33% size overhead and prevents independent caching.</p>
+
+      <h3>What image formats does the encoder support?</h3>
+      <p>PNG, JPEG, GIF, WebP, and SVG are all supported. The format is auto-detected from the file's MIME type when encoding and from the Base64 signature when decoding.</p>
+
+      <h3>Is Base64 encoding the same as encryption?</h3>
+      <p>No. Base64 is a reversible encoding that anyone can decode. It provides no security. Use actual encryption (like AES) if you need to protect image data.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Base64 Image Encoder", url: everyday_base64_image_encoder_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Hash Generator", description: "Generate SHA-256, SHA-384, SHA-512, and MD5 hashes from any text input.", path: everyday_hash_generator_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" },
+      { name: "String Encoder", description: "Encode and decode text using Base64, URL encoding, and HTML entities.", path: everyday_string_encoder_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "HTML Entity Encoder", description: "Encode and decode HTML entities for safe display in web pages.", path: everyday_html_entity_encoder_path, icon_path: "M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("base64-image-encoder") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

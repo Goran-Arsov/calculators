@@ -1,0 +1,239 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Nginx Config Generator - Build Server Blocks Visually",
+  description: "Generate production-ready Nginx configuration files with SSL, reverse proxy, gzip compression, and static asset caching. Free online Nginx config builder.",
+  canonical: everyday_nginx_config_generator_url,
+  og: {
+    title: "Nginx Config Generator - Build Server Blocks Visually | CalcWise",
+    description: "Generate Nginx server block configs with SSL, reverse proxy, gzip, and caching options. Copy the config and paste it directly into your server.",
+    url: everyday_nginx_config_generator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Nginx Config Generator", url: everyday_nginx_config_generator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is an Nginx server block?", answer: "An Nginx server block (similar to an Apache virtual host) defines the configuration for a specific domain or application. It specifies the listen port, server name, document root, SSL certificates, proxy settings, and other directives that control how Nginx handles requests for that site." },
+  { question: "How do I enable SSL in Nginx?", answer: "To enable SSL you need an SSL certificate and private key file. Add 'listen 443 ssl http2' to the server block along with ssl_certificate and ssl_certificate_key directives pointing to your certificate files. You should also configure ssl_protocols to TLSv1.2 and TLSv1.3 and set secure cipher suites for best security." },
+  { question: "What is a reverse proxy in Nginx?", answer: "A reverse proxy forwards incoming HTTP requests to a backend application server such as Puma, Gunicorn, or Node.js. Nginx handles the client connection, SSL termination, and static file serving while proxying dynamic requests to the application via the proxy_pass directive. This improves performance, security, and enables load balancing." },
+  { question: "Should I enable gzip compression?", answer: "Yes, gzip compression reduces the size of text-based responses (HTML, CSS, JavaScript, JSON, XML) by 60 to 80 percent. This reduces bandwidth usage and significantly improves page load times for users. The CPU overhead is minimal on modern servers. Enable it with gzip on, set gzip_types to cover common text formats, and use gzip_comp_level 6 for a good balance." },
+  { question: "How does static asset caching work in Nginx?", answer: "Static asset caching tells browsers to store files like images, CSS, JavaScript, and fonts locally for a specified duration using the expires directive and Cache-Control header. Setting 'expires 30d' means the browser will use its cached copy for 30 days without re-requesting the file from the server, reducing load times and server bandwidth." }
+]) %>
+
+<%= calculator_schema(
+  name: "Nginx Config Generator",
+  description: "Generate production-ready Nginx configuration files with SSL, reverse proxy, gzip compression, and static asset caching options.",
+  url: everyday_nginx_config_generator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Nginx Config Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Nginx Config Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Build production-ready Nginx server block configurations. Toggle SSL, reverse proxy, gzip compression, and static caching, then copy the generated config to your server.</p>
+
+    <div data-controller="nginx-config-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <div class="space-y-5">
+
+        <%# Server Name %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Server Name</label>
+          <input type="text" data-nginx-config-generator-calculator-target="serverName" value="example.com"
+                 class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="example.com or *.example.com">
+        </div>
+
+        <%# Port and Root %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Listen Port</label>
+            <select data-nginx-config-generator-calculator-target="listenPort" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="80">80 (HTTP)</option>
+              <option value="443">443 (HTTPS)</option>
+              <option value="8080">8080</option>
+              <option value="8443">8443</option>
+              <option value="3000">3000</option>
+              <option value="5000">5000</option>
+            </select>
+          </div>
+          <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Document Root</label>
+            <input type="text" data-nginx-config-generator-calculator-target="rootPath" value="/var/www/html"
+                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="/var/www/html">
+          </div>
+        </div>
+
+        <%# SSL Toggle %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-nginx-config-generator-calculator-target="sslCheckbox" data-action="change->nginx-config-generator-calculator#toggleSsl"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Enable SSL</span>
+          </label>
+          <div data-nginx-config-generator-calculator-target="sslFields" class="hidden mt-3 space-y-3">
+            <div>
+              <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">SSL Certificate Path</label>
+              <input type="text" data-nginx-config-generator-calculator-target="sslCertificate" value="/etc/ssl/certs/server.crt"
+                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="/etc/ssl/certs/server.crt">
+            </div>
+            <div>
+              <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">SSL Certificate Key Path</label>
+              <input type="text" data-nginx-config-generator-calculator-target="sslCertificateKey" value="/etc/ssl/private/server.key"
+                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="/etc/ssl/private/server.key">
+            </div>
+          </div>
+        </div>
+
+        <%# Reverse Proxy Toggle %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-nginx-config-generator-calculator-target="proxyCheckbox" data-action="change->nginx-config-generator-calculator#toggleProxy"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Enable Reverse Proxy</span>
+          </label>
+          <div data-nginx-config-generator-calculator-target="proxyFields" class="hidden mt-3">
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Proxy Pass URL</label>
+            <input type="text" data-nginx-config-generator-calculator-target="proxyPass" value="http://127.0.0.1:3000"
+                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="http://127.0.0.1:3000">
+          </div>
+        </div>
+
+        <%# Additional options %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-3">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-nginx-config-generator-calculator-target="gzipCheckbox"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Enable Gzip Compression</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-nginx-config-generator-calculator-target="cacheStaticCheckbox"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Cache Static Assets</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-nginx-config-generator-calculator-target="redirectHttpCheckbox"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Redirect HTTP to HTTPS</span>
+          </label>
+        </div>
+
+        <%# Generate button %>
+        <button data-action="click->nginx-config-generator-calculator#generate"
+                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+          Generate Config
+        </button>
+      </div>
+
+      <%# Error display %>
+      <div data-nginx-config-generator-calculator-target="error" class="hidden mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm"></div>
+
+      <%# Results %>
+      <div class="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Generated Config</h2>
+          <div class="flex items-center gap-3">
+            <span data-nginx-config-generator-calculator-target="lineCount" class="text-sm text-gray-500 dark:text-gray-400"></span>
+            <button data-action="click->nginx-config-generator-calculator#copy"
+                    class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+              Copy
+            </button>
+          </div>
+        </div>
+        <textarea data-nginx-config-generator-calculator-target="output" readonly rows="20"
+                  class="w-full font-mono text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none resize-y"
+                  placeholder="Click 'Generate Config' to see your Nginx configuration here"></textarea>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>What Is Nginx and Why Generate Configs?</h2>
+      <p>
+        Nginx is one of the most widely deployed web servers and reverse proxies in the world, powering roughly a third of all websites on the internet. Originally created by Igor Sysoev in 2004 to solve the C10K problem of handling ten thousand concurrent connections, Nginx uses an event-driven, asynchronous architecture that makes it exceptionally efficient at serving static content and proxying requests to backend application servers. Unlike traditional thread-per-connection servers, Nginx handles thousands of simultaneous connections within a small, predictable memory footprint.
+      </p>
+      <p>
+        Writing Nginx configuration files by hand is straightforward for simple setups but becomes error-prone as complexity grows. A production server block typically needs SSL certificate paths, security headers, compression settings, caching rules, and reverse proxy directives, all formatted with correct syntax. One misplaced semicolon or misspelled directive name can prevent Nginx from starting. This generator builds syntactically correct configuration blocks from your choices, eliminating typos and ensuring best-practice defaults are included.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>SSL and HTTPS Configuration</h2>
+      <p>
+        Every production site should serve traffic over HTTPS. Enabling SSL in Nginx requires a certificate file and its corresponding private key, which you can obtain from Let's Encrypt for free or purchase from a commercial certificate authority. The generator configures TLSv1.2 and TLSv1.3 as the allowed protocols, excluding older versions that have known vulnerabilities. The cipher suite selection follows Mozilla's recommended intermediate configuration, which balances security with broad browser compatibility. Session caching with <code>ssl_session_cache shared:SSL:10m</code> reduces the CPU cost of TLS handshakes for returning visitors by storing session parameters in shared memory.
+      </p>
+
+      <h3>Redirecting HTTP to HTTPS</h3>
+      <p>
+        When SSL is enabled, you typically want all HTTP traffic on port 80 redirected to HTTPS on port 443. The generator creates a separate server block that listens on port 80 and issues a 301 permanent redirect to the HTTPS version of the same URL. This ensures search engines index only the secure version and users always see the padlock icon in their browser.
+      </p>
+
+      <h2>Reverse Proxy for Application Servers</h2>
+      <p>
+        Most web applications run on dedicated application servers like Puma for Ruby on Rails, Gunicorn for Python Django, or a Node.js process. These servers are optimized for executing application code but are not designed to handle slow clients, SSL termination, or static file serving efficiently. Nginx sits in front of the application server as a reverse proxy, accepting client connections, handling SSL, serving static files directly from disk, and forwarding only dynamic requests to the upstream application. The generated proxy configuration includes essential headers like <code>X-Real-IP</code>, <code>X-Forwarded-For</code>, and <code>X-Forwarded-Proto</code> so that the application server knows the original client IP and protocol.
+      </p>
+
+      <h3>Gzip Compression</h3>
+      <p>
+        Enabling gzip compression in Nginx reduces the transfer size of text-based responses by 60 to 80 percent. The generator configures <code>gzip_types</code> to compress HTML, CSS, JavaScript, JSON, XML, and SVG content while leaving binary formats like images and videos untouched since they are already compressed. A compression level of 6 provides an excellent balance between compression ratio and CPU usage. The <code>gzip_vary</code> directive ensures that caching proxies store separate compressed and uncompressed versions of each response.
+      </p>
+
+      <h3>Static Asset Caching</h3>
+      <p>
+        Static files like images, stylesheets, JavaScript bundles, and web fonts change infrequently and benefit from aggressive browser caching. The generator adds a location block matching common static file extensions and sets an expiry of 30 days with the <code>Cache-Control: public, immutable</code> header. The immutable flag tells browsers that the file will never change at this URL, preventing unnecessary conditional requests even when the user refreshes the page. Access logging is disabled for static assets to reduce I/O overhead and keep log files focused on dynamic requests.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is an Nginx server block?</h3>
+      <p>A server block defines the configuration for a specific domain. It specifies the listen port, server name, document root, SSL settings, proxy rules, and other directives that control how Nginx handles requests.</p>
+
+      <h3>How do I enable SSL?</h3>
+      <p>Check the SSL checkbox, provide paths to your certificate and private key files, and set the port to 443. The generator configures TLSv1.2/1.3 with secure ciphers and session caching.</p>
+
+      <h3>What is a reverse proxy?</h3>
+      <p>A reverse proxy forwards requests to a backend application server. Nginx handles SSL, static files, and slow clients while proxying dynamic requests to Puma, Gunicorn, Node.js, or similar servers.</p>
+
+      <h3>Should I enable gzip?</h3>
+      <p>Yes. Gzip reduces text-based responses by 60 to 80 percent with minimal CPU cost, significantly improving page load times and reducing bandwidth usage.</p>
+
+      <h3>How does static asset caching work?</h3>
+      <p>The expires directive tells browsers to cache static files locally for 30 days. This eliminates repeat downloads and reduces server load for images, CSS, JS, and fonts.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "Nginx Config Generator", url: everyday_nginx_config_generator_url %>
+    <%= render "shared/calculation_email_capture" %>
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Dockerfile Generator", description: "Generate Dockerfiles for Ruby, Python, Node.js, Go, and Java projects.", path: everyday_dockerfile_generator_path, icon_path: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" },
+      { name: ".gitignore Generator", description: "Generate .gitignore files from language, OS, and editor templates.", path: everyday_gitignore_generator_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "HTTP Header Parser", description: "Parse and analyze HTTP response headers.", path: everyday_http_header_parser_path, icon_path: "M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("nginx-config-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

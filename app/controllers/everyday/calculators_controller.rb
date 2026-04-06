@@ -84,6 +84,24 @@ module Everyday
     def docx_to_pdf; end
     def cron_builder; end
     def color_palette_picker; end
+    def password_generator; end
+    def csp_builder; end
+    def chmod_calculator; end
+    def port_reference; end
+    def qr_code_generator; end
+    def base64_image_encoder; end
+    def markdown_table_generator; end
+    def json_to_csv; end
+    def nginx_config_generator; end
+    def dockerfile_generator; end
+    def gitignore_generator; end
+    def env_validator; end
+    def regex_builder; end
+    def cors_checker; end
+    def ssl_cert_decoder; end
+    def ip_lookup; end
+    def dns_lookup; end
+    def mac_lookup; end
 
   end
 end

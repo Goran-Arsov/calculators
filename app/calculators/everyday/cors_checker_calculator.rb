@@ -4,6 +4,8 @@ module Everyday
   class CorsCheckerCalculator
     attr_reader :errors
 
+    MAX_AGE_THRESHOLD = 86_400
+
     CORS_HEADERS = %w[
       access-control-allow-origin
       access-control-allow-methods
@@ -113,7 +115,7 @@ module Everyday
       end
 
       max_age = cors_headers["access-control-max-age"]
-      if max_age.present? && max_age.to_i > 86_400
+      if max_age.present? && max_age.to_i > MAX_AGE_THRESHOLD
         warnings << "Max-age of #{max_age} seconds exceeds 24 hours. Most browsers cap preflight caching at shorter durations."
       end
 

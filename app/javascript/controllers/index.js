@@ -180,6 +180,24 @@ import MarkdownToPdfCalculatorController from "controllers/markdown_to_pdf_calcu
 import ExcelToPdfCalculatorController from "controllers/excel_to_pdf_calculator_controller"
 import DocxToPdfCalculatorController from "controllers/docx_to_pdf_calculator_controller"
 import ColorPalettePickerCalculatorController from "controllers/color_palette_picker_calculator_controller"
+import PasswordGeneratorCalculatorController from "controllers/password_generator_calculator_controller"
+import CspBuilderCalculatorController from "controllers/csp_builder_calculator_controller"
+import ChmodCalculatorController from "controllers/chmod_calculator_controller"
+import PortReferenceCalculatorController from "controllers/port_reference_calculator_controller"
+import QrCodeGeneratorCalculatorController from "controllers/qr_code_generator_calculator_controller"
+import Base64ImageEncoderCalculatorController from "controllers/base64_image_encoder_calculator_controller"
+import MarkdownTableGeneratorCalculatorController from "controllers/markdown_table_generator_calculator_controller"
+import JsonToCsvCalculatorController from "controllers/json_to_csv_calculator_controller"
+import NginxConfigGeneratorCalculatorController from "controllers/nginx_config_generator_calculator_controller"
+import DockerfileGeneratorCalculatorController from "controllers/dockerfile_generator_calculator_controller"
+import GitignoreGeneratorCalculatorController from "controllers/gitignore_generator_calculator_controller"
+import EnvValidatorCalculatorController from "controllers/env_validator_calculator_controller"
+import RegexBuilderCalculatorController from "controllers/regex_builder_calculator_controller"
+import CorsCheckerCalculatorController from "controllers/cors_checker_calculator_controller"
+import SslCertDecoderCalculatorController from "controllers/ssl_cert_decoder_calculator_controller"
+import IpLookupCalculatorController from "controllers/ip_lookup_calculator_controller"
+import DnsLookupCalculatorController from "controllers/dns_lookup_calculator_controller"
+import MacLookupCalculatorController from "controllers/mac_lookup_calculator_controller"
 
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
@@ -440,6 +458,24 @@ application.register("markdown-to-pdf-calculator", MarkdownToPdfCalculatorContro
 application.register("excel-to-pdf-calculator", ExcelToPdfCalculatorController)
 application.register("docx-to-pdf-calculator", DocxToPdfCalculatorController)
 application.register("color-palette-picker-calculator", ColorPalettePickerCalculatorController)
+application.register("password-generator-calculator", PasswordGeneratorCalculatorController)
+application.register("csp-builder-calculator", CspBuilderCalculatorController)
+application.register("chmod-calculator", ChmodCalculatorController)
+application.register("port-reference-calculator", PortReferenceCalculatorController)
+application.register("qr-code-generator-calculator", QrCodeGeneratorCalculatorController)
+application.register("base64-image-encoder-calculator", Base64ImageEncoderCalculatorController)
+application.register("markdown-table-generator-calculator", MarkdownTableGeneratorCalculatorController)
+application.register("json-to-csv-calculator", JsonToCsvCalculatorController)
+application.register("nginx-config-generator-calculator", NginxConfigGeneratorCalculatorController)
+application.register("dockerfile-generator-calculator", DockerfileGeneratorCalculatorController)
+application.register("gitignore-generator-calculator", GitignoreGeneratorCalculatorController)
+application.register("env-validator-calculator", EnvValidatorCalculatorController)
+application.register("regex-builder-calculator", RegexBuilderCalculatorController)
+application.register("cors-checker-calculator", CorsCheckerCalculatorController)
+application.register("ssl-cert-decoder-calculator", SslCertDecoderCalculatorController)
+application.register("ip-lookup-calculator", IpLookupCalculatorController)
+application.register("dns-lookup-calculator", DnsLookupCalculatorController)
+application.register("mac-lookup-calculator", MacLookupCalculatorController)
 
 // Suites
 application.register("suite-stepper", SuiteStepperController)

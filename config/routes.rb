@@ -266,6 +266,24 @@ Rails.application.routes.draw do
     get "docx-to-pdf-converter", to: "calculators#docx_to_pdf", as: :docx_to_pdf
     get "cron-job-generator", to: "calculators#cron_builder", as: :cron_builder
     get "color-palette-picker", to: "calculators#color_palette_picker", as: :color_palette_picker
+    get "password-generator", to: "calculators#password_generator", as: :password_generator
+    get "csp-header-builder", to: "calculators#csp_builder", as: :csp_builder
+    get "chmod-calculator", to: "calculators#chmod_calculator", as: :chmod_calculator
+    get "port-number-reference", to: "calculators#port_reference", as: :port_reference
+    get "qr-code-generator", to: "calculators#qr_code_generator", as: :qr_code_generator
+    get "base64-image-encoder", to: "calculators#base64_image_encoder", as: :base64_image_encoder
+    get "markdown-table-generator", to: "calculators#markdown_table_generator", as: :markdown_table_generator
+    get "json-to-csv-converter", to: "calculators#json_to_csv", as: :json_to_csv
+    get "nginx-config-generator", to: "calculators#nginx_config_generator", as: :nginx_config_generator
+    get "dockerfile-generator", to: "calculators#dockerfile_generator", as: :dockerfile_generator
+    get "gitignore-generator", to: "calculators#gitignore_generator", as: :gitignore_generator
+    get "env-variable-validator", to: "calculators#env_validator", as: :env_validator
+    get "regex-builder", to: "calculators#regex_builder", as: :regex_builder
+    get "cors-header-checker", to: "calculators#cors_checker", as: :cors_checker
+    get "ssl-certificate-decoder", to: "calculators#ssl_cert_decoder", as: :ssl_cert_decoder
+    get "ip-address-lookup", to: "calculators#ip_lookup", as: :ip_lookup
+    get "dns-lookup", to: "calculators#dns_lookup", as: :dns_lookup
+    get "mac-address-lookup", to: "calculators#mac_lookup", as: :mac_lookup
   end
 
   # Blog

@@ -1,0 +1,211 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "CSP Header Builder - Free Online Tool",
+  description: "Build Content-Security-Policy headers visually. Add directives, pick common sources, and copy the finished header or meta tag. Free CSP generator for web developers.",
+  canonical: everyday_csp_builder_url,
+  og: {
+    title: "CSP Header Builder - Free Online Tool | CalcWise",
+    description: "Build Content-Security-Policy headers with a visual editor. Add directives, select sources, and export as HTTP header or meta tag.",
+    url: everyday_csp_builder_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "CSP Header Builder", url: everyday_csp_builder_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a Content-Security-Policy header?", answer: "A Content-Security-Policy (CSP) header is an HTTP response header that tells the browser which sources of content are allowed to load on a page. By specifying approved origins for scripts, styles, images, fonts, and other resources, CSP prevents cross-site scripting (XSS), clickjacking, and other code injection attacks. The browser enforces the policy by blocking any resource that does not match the declared sources." },
+  { question: "What does default-src control?", answer: "The default-src directive acts as a fallback for any fetch directive that is not explicitly set. If you define default-src 'self' and do not set a separate script-src, the browser will only allow scripts from your own origin. Once you add a specific directive like script-src, it overrides default-src for that resource type. Setting default-src 'none' and then adding individual directives is considered the most restrictive and secure approach." },
+  { question: "When should I use unsafe-inline or unsafe-eval?", answer: "Avoid using 'unsafe-inline' and 'unsafe-eval' whenever possible because they weaken CSP by allowing inline scripts and dynamic code evaluation, which are the primary vectors for XSS attacks. If your application relies on inline scripts, migrate to nonce-based or hash-based CSP instead. Use 'unsafe-inline' only as a temporary measure during migration, and set a clear timeline to remove it." },
+  { question: "What is the difference between the HTTP header and the meta tag?", answer: "Both deliver the same policy, but the HTTP header is set by the server and applies before the page renders. The meta tag is embedded in the HTML and parsed by the browser when it reaches that tag. The HTTP header supports all directives including frame-ancestors and report-uri, while the meta tag does not support frame-ancestors, report-uri, or sandbox. For full protection, use the HTTP header." },
+  { question: "How do I test my CSP without breaking my site?", answer: "Use the Content-Security-Policy-Report-Only header instead of Content-Security-Policy. This tells the browser to report violations without actually blocking anything. Set a report-uri endpoint to collect violation reports and review them before switching to enforcement mode. This lets you identify all resources that would be blocked and adjust your policy before it goes live." }
+]) %>
+
+<%= calculator_schema(
+  name: "CSP Header Builder",
+  description: "Build Content-Security-Policy headers visually with per-directive source selection.",
+  url: everyday_csp_builder_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "CSP Header Builder" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">CSP Header Builder</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Build Content-Security-Policy headers visually. Add sources to each directive and copy the finished header for your server configuration.</p>
+
+    <div data-controller="csp-builder-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <%# Directives %>
+      <div class="space-y-6 mb-8">
+        <% [
+          ["defaultSrc", "default-src", "Fallback for all fetch directives not explicitly set"],
+          ["scriptSrc", "script-src", "Controls which scripts can execute"],
+          ["styleSrc", "style-src", "Controls which stylesheets can be applied"],
+          ["imgSrc", "img-src", "Controls which images can be loaded"],
+          ["fontSrc", "font-src", "Controls which fonts can be loaded"],
+          ["connectSrc", "connect-src", "Controls fetch, XHR, WebSocket, and EventSource connections"],
+          ["frameSrc", "frame-src", "Controls which URLs can be loaded in iframes"],
+          ["mediaSrc", "media-src", "Controls which audio and video sources can be loaded"],
+          ["objectSrc", "object-src", "Controls plugins like Flash and Java applets"],
+          ["baseUri", "base-uri", "Restricts URLs that can appear in the base element"],
+          ["formAction", "form-action", "Restricts URLs that forms can submit to"],
+          ["frameAncestors", "frame-ancestors", "Controls which sites can embed this page in frames"],
+          ["reportUri", "report-uri", "URL where the browser sends violation reports"]
+        ].each do |target_key, directive_name, hint| %>
+          <div class="border border-gray-100 dark:border-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-sm font-semibold text-gray-700 dark:text-gray-300"><code><%= directive_name %></code></label>
+              <button data-action="click->csp-builder-calculator#clearDirective" data-directive="<%= target_key %>"
+                      class="text-xs text-gray-400 hover:text-red-500 transition-colors">Clear</button>
+            </div>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mb-2"><%= hint %></p>
+            <input type="text"
+                   data-csp-builder-calculator-target="<%= target_key %>"
+                   data-action="input->csp-builder-calculator#calculate"
+                   placeholder="e.g. 'self' https://cdn.example.com"
+                   class="w-full text-sm font-mono mb-2">
+            <div class="flex flex-wrap gap-1.5">
+              <% ["'self'", "'none'", "'unsafe-inline'", "'unsafe-eval'", "*", "data:", "https:", "blob:"].each do |source| %>
+                <button data-action="click->csp-builder-calculator#addSource"
+                        data-source="<%= source %>" data-directive="<%= target_key %>"
+                        class="px-2 py-1 text-xs font-mono bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                  <%= source %>
+                </button>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Output %>
+      <div aria-live="polite" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Generated Header</h2>
+          <span class="text-sm text-gray-500 dark:text-gray-400">
+            Directives: <span class="font-bold text-blue-600 dark:text-blue-400" data-csp-builder-calculator-target="directiveCount">0</span>
+          </span>
+        </div>
+
+        <textarea data-csp-builder-calculator-target="headerOutput" readonly rows="4"
+                  class="w-full font-mono text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-gray-900 dark:text-white resize-none focus:outline-none mb-4"
+                  placeholder="Add sources to directives above to generate the CSP header"></textarea>
+
+        <div class="flex gap-3">
+          <button data-action="click->csp-builder-calculator#copy"
+                  class="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+            Copy Header
+          </button>
+          <button data-action="click->csp-builder-calculator#copyMeta"
+                  class="flex-1 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+            Copy as Meta Tag
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the CSP Header Builder</h2>
+      <p>
+        Each row in the builder represents one CSP directive. Type source values directly into the input field, or click the quick-add buttons below each field to insert common sources like <code>'self'</code>, <code>'none'</code>, <code>https:</code>, or <code>data:</code>. The generated header appears in the output area at the bottom and updates as you add or remove sources. When your policy is ready, copy it as a raw HTTP header value for your server configuration, or as an HTML meta tag for embedding directly in your page.
+      </p>
+      <p>
+        Start with <code>default-src 'none'</code> to block everything by default, then add specific directives to allow only the resources your site actually needs. This allowlist approach is more secure than starting permissive and trying to block individual threats. Test your policy in report-only mode before enforcing it to avoid accidentally breaking functionality.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding CSP Directives</h2>
+      <p>
+        The Content-Security-Policy specification defines over a dozen directives, each controlling a specific type of resource. The <code>default-src</code> directive serves as the catch-all fallback. If you set <code>default-src 'self'</code> but do not define <code>script-src</code>, scripts will be allowed only from your own origin. Once you explicitly set a directive like <code>script-src</code>, it completely overrides <code>default-src</code> for that resource type. This means you need to include <code>'self'</code> in the specific directive if you still want to load scripts from your own domain.
+      </p>
+
+      <h3>Common Source Values Explained</h3>
+      <p>
+        The <code>'self'</code> keyword matches the current origin, including the same scheme, host, and port. The <code>'none'</code> keyword blocks all sources for that directive. <code>'unsafe-inline'</code> allows inline scripts and styles, which weakens your XSS protection considerably. <code>'unsafe-eval'</code> permits dynamic code execution through <code>eval()</code> and related functions. The <code>https:</code> scheme source allows any resource served over HTTPS. The <code>data:</code> scheme allows data URIs, which are commonly used for inline images and fonts but can also be exploited for script injection when combined with other directives.
+      </p>
+
+      <h3>Building a Secure Baseline Policy</h3>
+      <p>
+        A solid starting point for most sites is: <code>default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'</code>. This blocks everything by default and only allows your own origin for the most common resource types. It also prevents your site from being framed by other domains. From this baseline, add specific domains for CDNs, analytics, or third-party widgets as needed. Each addition should be deliberate and documented.
+      </p>
+
+      <h2>Deploying Your CSP</h2>
+      <p>
+        Most web servers and frameworks support setting custom response headers. In Nginx, add the header in your server block: <code>add_header Content-Security-Policy "your policy here" always;</code>. In Apache, use <code>Header set Content-Security-Policy "your policy here"</code>. In Rails, configure the CSP in an initializer using <code>Rails.application.configure { config.content_security_policy { |p| ... } }</code>. Cloud platforms like Cloudflare, AWS CloudFront, and Vercel also support custom response headers in their configuration files. Always test in report-only mode first by using <code>Content-Security-Policy-Report-Only</code> instead of <code>Content-Security-Policy</code>.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a Content-Security-Policy header?</h3>
+      <p>
+        A Content-Security-Policy header is an HTTP response header that tells the browser which sources of content are allowed to load on a page. By specifying approved origins for scripts, styles, images, fonts, and other resources, CSP prevents cross-site scripting, clickjacking, and other code injection attacks. The browser enforces the policy by blocking any resource that does not match the declared sources.
+      </p>
+
+      <h3>What does default-src control?</h3>
+      <p>
+        The <code>default-src</code> directive acts as a fallback for any fetch directive that is not explicitly set. If you define <code>default-src 'self'</code> and do not set a separate <code>script-src</code>, the browser will only allow scripts from your own origin. Setting <code>default-src 'none'</code> and then adding individual directives is the most restrictive and secure approach.
+      </p>
+
+      <h3>When should I use unsafe-inline or unsafe-eval?</h3>
+      <p>
+        Avoid <code>'unsafe-inline'</code> and <code>'unsafe-eval'</code> whenever possible because they weaken CSP by allowing inline scripts and dynamic code evaluation. If your application relies on inline scripts, migrate to nonce-based or hash-based CSP instead. Use <code>'unsafe-inline'</code> only as a temporary measure during migration.
+      </p>
+
+      <h3>What is the difference between the HTTP header and the meta tag?</h3>
+      <p>
+        Both deliver the same policy, but the HTTP header is set by the server and applies before the page renders. The meta tag is parsed when the browser reaches it in the HTML. The HTTP header supports all directives including <code>frame-ancestors</code> and <code>report-uri</code>, while the meta tag does not. For full protection, prefer the HTTP header.
+      </p>
+
+      <h3>How do I test my CSP without breaking my site?</h3>
+      <p>
+        Use the <code>Content-Security-Policy-Report-Only</code> header instead of <code>Content-Security-Policy</code>. This tells the browser to report violations without actually blocking anything. Set a <code>report-uri</code> endpoint to collect violation reports and review them before switching to enforcement mode.
+      </p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "CSP Header Builder", url: everyday_csp_builder_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "HTTP Header Parser", description: "Parse and analyze HTTP response headers for debugging and security review.", path: everyday_http_header_parser_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "URL Parser", description: "Break down URLs into their components: protocol, host, path, query, and fragment.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" },
+      { name: "HMAC Generator", description: "Generate HMAC signatures using SHA-256, SHA-512, and other hash algorithms.", path: everyday_hmac_generator_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("csp-header-builder") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

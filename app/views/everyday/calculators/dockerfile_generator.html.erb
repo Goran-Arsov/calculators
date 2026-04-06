@@ -1,0 +1,221 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Dockerfile Generator - Build Dockerfiles for Any Language",
+  description: "Generate production-ready Dockerfiles for Ruby, Python, Node.js, Go, and Java. Supports multi-stage builds, environment variables, and custom build steps. Free online tool.",
+  canonical: everyday_dockerfile_generator_url,
+  og: {
+    title: "Dockerfile Generator - Build Dockerfiles for Any Language | CalcWise",
+    description: "Generate Dockerfiles for Ruby/Rails, Python/Django, Node.js, Go, and Java/Spring with multi-stage build support and best practices.",
+    url: everyday_dockerfile_generator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Dockerfile Generator", url: everyday_dockerfile_generator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a Dockerfile?", answer: "A Dockerfile is a text file containing sequential instructions for building a Docker image. Each instruction creates a layer in the image. Common instructions include FROM (base image), RUN (execute commands), COPY (add files), WORKDIR (set directory), EXPOSE (declare port), ENV (set environment variables), and CMD (default command). Docker reads the Dockerfile and builds an image that packages your application with all its dependencies." },
+  { question: "What is a multi-stage Docker build?", answer: "A multi-stage build uses multiple FROM statements in one Dockerfile. The first stage (builder) installs all build tools, compiles code, and installs dependencies. The second stage (production) starts from a minimal base image and copies only the compiled artifacts from the builder stage. This produces much smaller production images because build tools, source code, and development dependencies are left behind in the discarded builder stage." },
+  { question: "Why should I order COPY and RUN carefully in a Dockerfile?", answer: "Docker caches each layer and reuses it if the instruction and its inputs have not changed. By copying dependency files (Gemfile, requirements.txt, package.json) before copying the full source code, you ensure that the expensive dependency installation step is cached as long as dependencies have not changed. Source code changes frequently but dependency files change rarely, so this ordering dramatically speeds up rebuilds." },
+  { question: "What base image should I use?", answer: "For production, use slim or alpine variants to minimize image size and attack surface. Ruby, Python, and Node.js all offer official slim images that exclude build tools and documentation. For Go, the final stage can use a scratch or alpine image since Go compiles to a static binary. For Java, use eclipse-temurin JRE images that include only the runtime without the full JDK." },
+  { question: "How do I pass environment variables in Docker?", answer: "Use the ENV instruction in the Dockerfile for build-time defaults, such as ENV NODE_ENV=production. For runtime configuration, use docker run -e or --env-file to pass values without baking them into the image. Sensitive values like passwords and API keys should never be set with ENV in the Dockerfile. Instead, use Docker secrets, environment variables at runtime, or a .env file passed with --env-file." }
+]) %>
+
+<%= calculator_schema(
+  name: "Dockerfile Generator",
+  description: "Generate production-ready Dockerfiles for Ruby, Python, Node.js, Go, and Java with multi-stage build support.",
+  url: everyday_dockerfile_generator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Dockerfile Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Dockerfile Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Generate production-ready Dockerfiles for your language and framework. Select your stack, configure options, and copy the result.</p>
+
+    <div data-controller="dockerfile-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <div class="space-y-5">
+
+        <%# Language / Base Image %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Language / Framework</label>
+            <select data-dockerfile-generator-calculator-target="baseImage" data-action="change->dockerfile-generator-calculator#changeImage"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="ruby">Ruby / Rails</option>
+              <option value="python">Python / Django</option>
+              <option value="node">Node.js / Express</option>
+              <option value="go">Go</option>
+              <option value="java">Java / Spring</option>
+            </select>
+          </div>
+          <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Version</label>
+            <input type="text" data-dockerfile-generator-calculator-target="version" value="3.3"
+                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="3.3">
+          </div>
+        </div>
+
+        <%# Port and App Directory %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Port</label>
+            <input type="number" data-dockerfile-generator-calculator-target="port" value="3000" min="1" max="65535"
+                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm" placeholder="3000">
+          </div>
+          <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">App Directory</label>
+            <input type="text" data-dockerfile-generator-calculator-target="appDir" value="/app"
+                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="/app">
+          </div>
+        </div>
+
+        <%# Command %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">CMD (Start Command)</label>
+          <input type="text" data-dockerfile-generator-calculator-target="command" value="bundle exec rails server -b 0.0.0.0"
+                 class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="bundle exec rails server -b 0.0.0.0">
+        </div>
+
+        <%# Multi-stage toggle %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-dockerfile-generator-calculator-target="multiStageCheckbox"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Multi-stage Build</span>
+            <span class="text-xs text-gray-400">(smaller production image)</span>
+          </label>
+        </div>
+
+        <%# Environment Variables %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Environment Variables <span class="text-gray-400 font-normal">(one per line, KEY=VALUE)</span></label>
+          <textarea data-dockerfile-generator-calculator-target="envVars" rows="3"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="NODE_ENV=production&#10;RAILS_ENV=production"></textarea>
+        </div>
+
+        <%# Build Steps %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Additional Build Steps <span class="text-gray-400 font-normal">(one per line, each becomes a RUN instruction)</span></label>
+          <textarea data-dockerfile-generator-calculator-target="buildSteps" rows="3"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="bundle exec rake assets:precompile&#10;bundle exec rake db:migrate"></textarea>
+        </div>
+
+        <%# Generate button %>
+        <button data-action="click->dockerfile-generator-calculator#generate"
+                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+          Generate Dockerfile
+        </button>
+      </div>
+
+      <%# Error display %>
+      <div data-dockerfile-generator-calculator-target="error" class="hidden mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm"></div>
+
+      <%# Results %>
+      <div class="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Generated Dockerfile</h2>
+          <div class="flex items-center gap-3">
+            <span data-dockerfile-generator-calculator-target="lineCount" class="text-sm text-gray-500 dark:text-gray-400"></span>
+            <button data-action="click->dockerfile-generator-calculator#copy"
+                    class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+              Copy
+            </button>
+          </div>
+        </div>
+        <textarea data-dockerfile-generator-calculator-target="output" readonly rows="20"
+                  class="w-full font-mono text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none resize-y"
+                  placeholder="Click 'Generate Dockerfile' to see your Dockerfile here"></textarea>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Dockerfile Instructions</h2>
+      <p>
+        A Dockerfile is a blueprint for building a Docker image. Each instruction in the file adds a new layer to the image, and Docker caches these layers to speed up subsequent builds. The most fundamental instruction is <code>FROM</code>, which specifies the base image your application will build upon. Official images from Docker Hub provide pre-configured environments for every major language and framework, including Ruby, Python, Node.js, Go, and Java. Choosing the right base image is the first decision in containerizing any application.
+      </p>
+      <p>
+        The <code>WORKDIR</code> instruction sets the working directory for all subsequent instructions. Using <code>WORKDIR /app</code> means that all <code>COPY</code>, <code>RUN</code>, and <code>CMD</code> instructions execute relative to <code>/app</code> inside the container. The <code>COPY</code> instruction adds files from your local project into the image. The <code>RUN</code> instruction executes commands during the build process, typically used to install dependencies. Finally, <code>CMD</code> specifies the default command that runs when a container starts from the image.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Multi-Stage Builds for Smaller Images</h2>
+      <p>
+        Multi-stage builds are one of Docker's most powerful features for creating production-ready images. The idea is simple: use a full-featured image with build tools to compile your application in the first stage, then copy only the compiled artifacts into a minimal image for the second stage. This approach can reduce image sizes by 50 to 90 percent. A Ruby on Rails application image might shrink from 900 MB to 300 MB, and a Go application can go from 800 MB with the full SDK to under 20 MB using a scratch or Alpine base.
+      </p>
+      <p>
+        The builder stage installs compilers, build headers, and development dependencies that are needed to compile native extensions and assets but are never used at runtime. The production stage starts from a slim variant of the base image that includes only the language runtime. The <code>COPY --from=builder</code> instruction selectively copies artifacts from the builder stage, leaving behind everything else. This not only produces smaller images but also reduces the attack surface by excluding unnecessary tools and packages.
+      </p>
+
+      <h3>Layer Ordering for Fast Rebuilds</h3>
+      <p>
+        Docker caches each layer and reuses it if neither the instruction nor its inputs have changed. The most impactful optimization is copying dependency files before copying the full source code. When you <code>COPY Gemfile Gemfile.lock ./</code> followed by <code>RUN bundle install</code> before <code>COPY . .</code>, Docker caches the bundle install layer as long as the Gemfile has not changed. Since dependency files change far less often than application code, this pattern can save minutes on every build. The same principle applies to <code>requirements.txt</code> for Python, <code>package.json</code> for Node.js, <code>go.mod</code> for Go, and <code>pom.xml</code> for Java.
+      </p>
+
+      <h3>Best Practices</h3>
+      <p>
+        Always include a <code>.dockerignore</code> file to exclude unnecessary files from the build context, including <code>.git</code>, <code>node_modules</code>, <code>tmp</code>, and log files. Run your application as a non-root user by adding <code>RUN adduser --disabled-password appuser</code> and <code>USER appuser</code> for better security. Use <code>COPY</code> instead of <code>ADD</code> unless you specifically need automatic tar extraction or URL fetching. Pin your base image versions to specific tags rather than using <code>latest</code> to ensure reproducible builds.
+      </p>
+
+      <h3>Common Patterns by Language</h3>
+      <p>
+        Ruby and Rails applications typically copy the Gemfile first, run <code>bundle install</code>, then copy the source and precompile assets. Python applications copy <code>requirements.txt</code> and run <code>pip install</code> before copying source code. Node.js applications copy <code>package.json</code> and run <code>npm ci</code> for deterministic installs. Go applications benefit most from multi-stage builds because the Go compiler produces a single static binary that can run on a minimal Alpine or scratch image without any runtime. Java applications compile with Maven or Gradle in the builder stage and copy only the resulting JAR file to a JRE-only production image.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a Dockerfile?</h3>
+      <p>A text file with sequential instructions (FROM, RUN, COPY, CMD) that Docker uses to build an image containing your application and all its dependencies.</p>
+
+      <h3>What is a multi-stage build?</h3>
+      <p>A technique using multiple FROM stages. The builder stage compiles code with full tools. The production stage copies only the result into a minimal image, reducing size by 50 to 90 percent.</p>
+
+      <h3>Why copy dependency files before source code?</h3>
+      <p>Docker caches layers. Since dependency files change rarely, copying them first lets Docker cache the expensive install step and only re-run it when dependencies actually change.</p>
+
+      <h3>What base image should I use?</h3>
+      <p>Use slim or alpine variants for production. They exclude build tools and docs, reducing image size and attack surface. For Go, use scratch or alpine since Go compiles to a static binary.</p>
+
+      <h3>How do I pass secrets to Docker?</h3>
+      <p>Never bake secrets into the image with ENV. Pass them at runtime with docker run -e or --env-file, or use Docker secrets for orchestrated deployments.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "Dockerfile Generator", url: everyday_dockerfile_generator_url %>
+    <%= render "shared/calculation_email_capture" %>
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Nginx Config Generator", description: "Generate Nginx server block configurations with SSL and reverse proxy.", path: everyday_nginx_config_generator_path, icon_path: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" },
+      { name: ".gitignore Generator", description: "Generate .gitignore files from language, OS, and editor templates.", path: everyday_gitignore_generator_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "Env Variable Validator", description: "Validate .env files for errors, duplicates, and sensitive keys.", path: everyday_env_validator_path, icon_path: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("dockerfile-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

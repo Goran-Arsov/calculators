@@ -1,0 +1,230 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "IP Address Lookup - Free Online IPv4 Analyzer & Geolocation",
+  description: "Look up any IPv4 address to find its class, private/public status, binary representation, and geolocation data including country, city, ISP, and timezone.",
+  canonical: everyday_ip_lookup_url,
+  og: {
+    title: "IP Address Lookup - Free IPv4 Analyzer & Geolocation | CalcWise",
+    description: "Analyze any IPv4 address: class, private/public, loopback detection, binary form, and optional geolocation lookup for country, city, and ISP.",
+    url: everyday_ip_lookup_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "IP Address Lookup", url: everyday_ip_lookup_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is an IP address?", answer: "An IP (Internet Protocol) address is a unique numerical label assigned to every device connected to a network that uses the Internet Protocol for communication. IPv4 addresses are 32-bit numbers written as four octets separated by dots (e.g., 192.168.1.1), giving approximately 4.3 billion unique addresses. Each device on a network needs a unique IP address to send and receive data." },
+  { question: "What is the difference between a private and public IP address?", answer: "A public IP address is globally routable on the internet and assigned by your ISP. A private IP address is used only within a local network and cannot be reached directly from the internet. Private ranges defined by RFC 1918 are 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16. Devices on a private network use NAT (Network Address Translation) to communicate with the public internet through a single public IP." },
+  { question: "What are IP address classes?", answer: "The original IPv4 classful addressing system divided addresses into five classes based on the first octet. Class A (1-127) supports 16 million hosts per network, Class B (128-191) supports 65,534 hosts, Class C (192-223) supports 254 hosts, Class D (224-239) is reserved for multicast, and Class E (240-255) is reserved for experimental use. While CIDR has replaced classful routing, the class system is still referenced in networking education." },
+  { question: "How accurate is IP geolocation?", answer: "IP geolocation accuracy varies significantly. Country-level accuracy is typically 95-99% reliable. City-level accuracy drops to 50-80% depending on the region and ISP. Geolocation databases work by mapping IP blocks allocated by Regional Internet Registries (RIRs) to physical locations. Mobile networks, VPNs, proxies, and corporate networks can reduce accuracy because traffic may be routed through distant data centers." },
+  { question: "What is a loopback address?", answer: "The loopback address range (127.0.0.0/8, most commonly 127.0.0.1) is a special IPv4 range used to refer to the local device itself. Traffic sent to a loopback address never leaves the machine and is used for testing network software without involving physical network hardware. The hostname 'localhost' typically resolves to 127.0.0.1." }
+]) %>
+
+<%= calculator_schema(
+  name: "IP Address Lookup",
+  description: "Analyze any IPv4 address to determine its class, private/public status, binary representation, and optionally look up geolocation data.",
+  url: everyday_ip_lookup_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "IP Address Lookup" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">IP Address Lookup</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter an IPv4 address to analyze its class, determine if it is private or public, view its binary representation, and optionally look up geolocation data.</p>
+
+    <div data-controller="ip-lookup-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="ip-lookup-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">IP Address</label>
+          <div class="flex gap-3">
+            <input type="text" id="ip-lookup-input" data-ip-lookup-calculator-target="inputIp"
+              class="flex-1 rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="8.8.8.8">
+            <button data-action="click->ip-lookup-calculator#lookup"
+              class="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium whitespace-nowrap">Lookup</button>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button data-action="click->ip-lookup-calculator#lookupMyIp"
+            class="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl transition-all duration-200 text-sm font-medium">Your IP</button>
+        </div>
+
+        <p data-ip-lookup-calculator-target="resultError" class="hidden text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg p-3"></p>
+
+        <div data-ip-lookup-calculator-target="resultsContainer" class="hidden space-y-4">
+          <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">IP Information</h3>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden">
+            <table class="w-full">
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400 w-2/5">IP Address</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-ip-lookup-calculator-target="resultIp"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">IP Version</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-ip-lookup-calculator-target="resultVersion"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">IP Class</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-ip-lookup-calculator-target="resultClass"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Private / Public</td>
+                  <td class="px-4 py-2.5"><span data-ip-lookup-calculator-target="resultPrivate"></span></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Loopback</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-ip-lookup-calculator-target="resultLoopback"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Binary</td>
+                  <td class="px-4 py-2.5 text-xs font-mono text-gray-900 dark:text-white break-all" data-ip-lookup-calculator-target="resultBinary"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="flex gap-2 justify-end">
+            <button data-action="click->ip-lookup-calculator#lookupGeo"
+              class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-sm transition-all duration-200 text-sm font-medium">Lookup Geolocation</button>
+            <button data-action="click->ip-lookup-calculator#copy"
+              class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+          </div>
+        </div>
+
+        <%# Geolocation results %>
+        <div data-ip-lookup-calculator-target="geoContainer" class="hidden space-y-4">
+          <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Geolocation Data</h3>
+
+          <p data-ip-lookup-calculator-target="geoLoading" class="hidden text-sm text-gray-500 dark:text-gray-400 animate-pulse">Fetching geolocation data...</p>
+          <p data-ip-lookup-calculator-target="geoError" class="hidden text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3"></p>
+
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden">
+            <table class="w-full">
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400 w-2/5">Country</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-ip-lookup-calculator-target="geoCountry"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">City</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-ip-lookup-calculator-target="geoCity"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Region</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-ip-lookup-calculator-target="geoRegion"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">ISP / Organization</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-ip-lookup-calculator-target="geoIsp"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Timezone</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-ip-lookup-calculator-target="geoTimezone"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Latitude</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-ip-lookup-calculator-target="geoLatitude"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Longitude</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-ip-lookup-calculator-target="geoLongitude"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding IP Addresses</h2>
+      <p>
+        An Internet Protocol (IP) address is a unique numerical identifier assigned to every device that participates in a computer network using the Internet Protocol. The most widely deployed version, IPv4, uses 32-bit addresses expressed as four decimal numbers separated by dots, such as 192.168.1.1. Each of these numbers, called octets, can range from 0 to 255, yielding a theoretical maximum of approximately 4.3 billion unique addresses. While IPv6 was introduced to address the exhaustion of IPv4 addresses with its 128-bit addressing space, IPv4 remains the backbone of most networks today.
+      </p>
+      <p>
+        Every device on the internet, whether it is a web server hosting a website, a smartphone sending a message, or a smart thermostat checking the weather, needs an IP address to communicate. Routers use IP addresses to forward packets of data between networks, ensuring that information reaches the correct destination. Without IP addressing, the structured, global routing that makes the internet possible simply would not work.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Private vs. Public IP Addresses and NAT</h2>
+      <p>
+        Not all IP addresses are visible on the public internet. RFC 1918 defines three ranges reserved exclusively for private networks: 10.0.0.0 through 10.255.255.255, 172.16.0.0 through 172.31.255.255, and 192.168.0.0 through 192.168.255.255. These addresses are used within homes, offices, and data centers for internal communication. Devices on a private network reach the internet through Network Address Translation (NAT), a technique where a router replaces the private source address with its own public address before forwarding packets outward. This allows hundreds or thousands of devices to share a single public IP, which has been essential in slowing the exhaustion of the IPv4 address space.
+      </p>
+
+      <h3>IP Address Classes</h3>
+      <p>
+        The original classful addressing system divided the IPv4 space into five classes. Class A (first octet 1-127) was designed for very large networks with up to 16 million hosts. Class B (128-191) served medium networks with up to 65,534 hosts. Class C (192-223) handled small networks with up to 254 hosts. Class D (224-239) is reserved for multicast traffic, and Class E (240-255) is reserved for experimental purposes. While Classless Inter-Domain Routing (CIDR) replaced the rigid class system in the early 1990s, the class designations remain useful as a quick reference for identifying the general size and purpose of an address range.
+      </p>
+
+      <h3>How IP Geolocation Works</h3>
+      <p>
+        IP geolocation maps an IP address to a physical location using databases maintained by companies like MaxMind and IP2Location. These databases correlate IP blocks assigned by Regional Internet Registries (ARIN, RIPE, APNIC, LACNIC, and AFRINIC) with geographic information gathered from ISP data, user submissions, and network infrastructure analysis. Country-level accuracy typically exceeds 95 percent, while city-level accuracy ranges from 50 to 80 percent depending on the region. Accuracy decreases significantly for mobile networks, VPNs, proxies, and corporate networks that route traffic through centralized gateways. Common use cases for IP geolocation include fraud detection, content localization, regulatory compliance, analytics, and targeted advertising. It is important to understand that IP geolocation provides an estimate, not a precise physical location, and should never be treated as a definitive location source.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is an IP address?</h3>
+      <p>A unique numerical identifier assigned to every device on a network using the Internet Protocol. IPv4 uses 32-bit addresses written as four octets (e.g., 192.168.1.1).</p>
+
+      <h3>What is the difference between private and public IPs?</h3>
+      <p>Public IPs are routable on the internet and assigned by ISPs. Private IPs (10.x, 172.16-31.x, 192.168.x) are used internally and reach the internet through NAT.</p>
+
+      <h3>What are IP address classes?</h3>
+      <p>A legacy classification system: Class A (1-127) for large networks, Class B (128-191) for medium, Class C (192-223) for small, Class D for multicast, Class E for experimental.</p>
+
+      <h3>How accurate is IP geolocation?</h3>
+      <p>Country-level accuracy is 95-99%. City-level drops to 50-80%. VPNs, proxies, and mobile networks reduce accuracy further.</p>
+
+      <h3>What is a loopback address?</h3>
+      <p>The 127.0.0.0/8 range (commonly 127.0.0.1 or "localhost") refers to the device itself. Traffic never leaves the machine and is used for local testing.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "IP Address Lookup", url: everyday_ip_lookup_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "CIDR/Subnet Calculator", description: "Calculate network address, broadcast address, subnet mask, and host range for any IPv4 address.", path: everyday_subnet_calculator_path, icon_path: "M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" },
+      { name: "DNS Record Viewer", description: "Look up DNS records for any domain using Google's DNS-over-HTTPS API.", path: everyday_dns_lookup_path, icon_path: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" },
+      { name: "MAC Address Lookup", description: "Look up MAC address vendor information and validate MAC address format.", path: everyday_mac_lookup_path, icon_path: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("ip-address-lookup") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

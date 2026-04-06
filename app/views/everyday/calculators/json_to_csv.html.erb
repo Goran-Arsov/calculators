@@ -1,0 +1,206 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "JSON to CSV Converter - Free Online Tool",
+  description: "Convert JSON arrays of objects to CSV format instantly. Custom delimiters (comma, tab, semicolon, pipe), preview table, download and copy. Free online JSON to CSV converter.",
+  canonical: everyday_json_to_csv_url,
+  og: {
+    title: "JSON to CSV Converter - Free Online Tool | CalcWise",
+    description: "Convert JSON to CSV with custom delimiters, header extraction, preview table, and download. Supports comma, tab, semicolon, and pipe separators.",
+    url: everyday_json_to_csv_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "JSON to CSV Converter", url: everyday_json_to_csv_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does JSON to CSV conversion work?", answer: "The converter parses a JSON array of objects and extracts all unique keys from every object to form the CSV header row. It then iterates over each object, outputting the value for each header key as a CSV field. If an object is missing a key, an empty value is inserted. This approach handles heterogeneous data where objects may have different sets of keys, using the union of all keys as the column set." },
+  { question: "What JSON structure is required for conversion?", answer: "The input must be a JSON array of objects, such as [{\"name\":\"Alice\",\"age\":30},{\"name\":\"Bob\",\"age\":25}]. The array cannot be empty, and every element must be a JSON object (not a string, number, or nested array). Nested objects and arrays within the objects are converted to their string representation in the CSV output. For deeply nested JSON, consider flattening the structure before conversion." },
+  { question: "How are missing values handled?", answer: "When objects in the JSON array have different sets of keys, the converter uses the union of all keys as the header row. For any object that lacks a particular key, the corresponding CSV field is left empty. This produces a complete rectangular table where every row has the same number of columns, even if the source data is sparse. Null values are also represented as empty CSV fields." },
+  { question: "Which delimiter should I choose?", answer: "Comma is the standard CSV delimiter and works with virtually all spreadsheet applications and data tools. Use tab if you are creating a TSV file for import into databases or scientific tools. Semicolons are standard in European locales where the comma serves as the decimal separator. Pipe delimiters are used in some enterprise and financial data systems where commas and semicolons may appear in field values." },
+  { question: "How are special characters in values handled?", answer: "Values that contain the delimiter character, double quotes, or newlines are automatically wrapped in double quotes following the CSV standard (RFC 4180). Double quotes within values are escaped by doubling them. This ensures that the output can be parsed correctly by any standards-compliant CSV reader. Numeric values and booleans from the JSON are converted to their string representation in the CSV." }
+]) %>
+
+<%= calculator_schema(
+  name: "JSON to CSV Converter",
+  description: "Convert JSON arrays of objects to CSV with custom delimiters, header extraction, preview table, and download.",
+  url: everyday_json_to_csv_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "JSON to CSV Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">JSON to CSV Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste a JSON array of objects and convert it to CSV format. Choose your delimiter, preview the result as a table, and copy or download the CSV output.</p>
+
+    <div data-controller="json-to-csv-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="json-to-csv-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">JSON Input</label>
+          <textarea id="json-to-csv-input" data-json-to-csv-calculator-target="jsonInput"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="8" placeholder='[
+  {"name": "Alice", "age": 30, "city": "New York"},
+  {"name": "Bob", "age": 25, "city": "Los Angeles"},
+  {"name": "Charlie", "age": 35, "city": "Chicago"}
+]'></textarea>
+        </div>
+
+        <div class="flex flex-wrap gap-4 items-center">
+          <div class="flex items-center gap-2">
+            <label for="json-to-csv-delimiter" class="text-sm font-medium text-gray-600 dark:text-gray-400">Delimiter:</label>
+            <select id="json-to-csv-delimiter" data-json-to-csv-calculator-target="delimiter"
+              class="rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="comma">Comma (,)</option>
+              <option value="tab">Tab</option>
+              <option value="semicolon">Semicolon (;)</option>
+              <option value="pipe">Pipe (|)</option>
+            </select>
+          </div>
+          <button data-action="click->json-to-csv-calculator#convert"
+            class="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm">
+            Convert to CSV
+          </button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Status</span>
+            <span class="text-sm font-bold" data-json-to-csv-calculator-target="resultStatus">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Data Rows</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-to-csv-calculator-target="resultRows">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Columns</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-to-csv-calculator-target="resultCols">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Headers</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-to-csv-calculator-target="resultHeaders">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="json-to-csv-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">CSV Output</label>
+            <div class="flex gap-2">
+              <button data-action="click->json-to-csv-calculator#copyOutput" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+              <button data-action="click->json-to-csv-calculator#downloadCsv" class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors">Download .csv</button>
+            </div>
+          </div>
+          <textarea id="json-to-csv-output" data-json-to-csv-calculator-target="csvOutput" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="8" placeholder="CSV output will appear here..."></textarea>
+        </div>
+
+        <%# Preview table %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Table Preview</h3>
+          <div data-json-to-csv-calculator-target="previewContainer" class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <p class="text-gray-400 text-center py-4">Convert JSON to see a table preview</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the JSON to CSV Converter</h2>
+      <p>
+        Paste a JSON array of objects into the input textarea. Each object in the array represents a row, and the object keys become the CSV column headers. Select a delimiter format from the dropdown menu: comma is the default and most common, but tab, semicolon, and pipe are available for different use cases. Click "Convert to CSV" to generate the output. The status bar shows the number of data rows, columns, and detected headers. The table preview below the output textarea displays the data in a formatted table for visual verification. Use the copy button to grab the CSV text or the download button to save it as a .csv file.
+      </p>
+      <p>
+        The converter automatically handles heterogeneous JSON objects by computing the union of all keys across every object in the array. If an object is missing a key that appears in other objects, the corresponding CSV cell is left empty. This ensures a complete rectangular table regardless of how uniform the source data is. Values containing the delimiter character, double quotes, or newlines are properly escaped according to the CSV standard (RFC 4180).
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding JSON to CSV Conversion</h2>
+      <p>
+        JSON (JavaScript Object Notation) and CSV (Comma-Separated Values) are two of the most widely used data interchange formats, but they represent data in fundamentally different ways. JSON is hierarchical and supports nested objects, arrays, and typed values (strings, numbers, booleans, null). CSV is flat and tabular, with every value represented as text. Converting from JSON to CSV requires flattening the data structure: each object becomes a row, and each key becomes a column. This works naturally when the JSON is an array of flat objects with consistent keys, which is the most common format for API responses, database exports, and data feeds.
+      </p>
+
+      <h3>Header Extraction from Object Keys</h3>
+      <p>
+        The first step in JSON to CSV conversion is determining the column headers. The converter inspects every object in the array and collects all unique keys, preserving their first-encountered order. This union approach ensures that no data is lost even when objects have different key sets. For example, if the first object has keys "name" and "email" while the second has "name" and "phone", the resulting CSV has three columns: name, email, and phone. Objects missing a key get an empty cell for that column. This is more robust than using only the first object's keys, which is a common shortcut that silently drops data from objects with extra fields.
+      </p>
+
+      <h3>Type Conversion and Special Values</h3>
+      <p>
+        JSON supports typed values (numbers, booleans, null), but CSV treats everything as text. The converter represents each value as its string form: numbers keep their numeric format, booleans become "true" or "false", and null values become empty strings. Nested objects and arrays within a JSON object pose a particular challenge because CSV cells cannot natively contain structured data. This converter renders nested values as their JSON string representation, which is the most lossless approach. If your data contains deep nesting, consider flattening the JSON before conversion using a dedicated tool or a dot-notation key expansion.
+      </p>
+
+      <h3>CSV Escaping Rules</h3>
+      <p>
+        Proper CSV generation requires careful handling of special characters within field values. The escaping rules defined by RFC 4180 state that fields containing the delimiter character, double-quote characters, or line breaks must be enclosed in double quotes. Any double-quote character within a quoted field must be escaped by doubling it (replacing one " with ""). Fields that do not contain special characters may optionally be quoted. This converter applies quoting only when necessary, producing clean output that is compatible with all standards-compliant CSV parsers, including Microsoft Excel, Google Sheets, LibreOffice Calc, and command-line tools like csvkit and pandas.
+      </p>
+
+      <h3>Choosing the Right Delimiter</h3>
+      <p>
+        The delimiter choice depends on the target system and locale. Comma-separated values are the universal default and work everywhere. Tab-separated values (TSV) are preferred when field values frequently contain commas, such as addresses or descriptions, because tabs rarely appear in natural text. Semicolons are the standard in continental European locales where the comma serves as the decimal separator in numbers. Pipe-delimited files are common in financial services, healthcare (HL7 messages), and mainframe systems. When in doubt, use comma as it provides the broadest compatibility.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does JSON to CSV conversion work?</h3>
+      <p>The converter extracts all unique keys from every object in the JSON array to form the CSV header. Each object becomes a data row, with values mapped to their corresponding columns. Missing keys produce empty cells.</p>
+
+      <h3>What JSON structure is required?</h3>
+      <p>The input must be a JSON array of objects, like <code>[{"key":"value"}, ...]</code>. Every element must be an object. The array cannot be empty. Nested values are stringified in the CSV output.</p>
+
+      <h3>How are missing values handled?</h3>
+      <p>The converter uses the union of all keys as headers. Objects missing a key get an empty CSV field for that column, producing a complete rectangular table from sparse data.</p>
+
+      <h3>Which delimiter should I choose?</h3>
+      <p>Comma is universal. Tab avoids ambiguity when values contain commas. Semicolons suit European locales. Pipe delimiters are common in financial and enterprise systems.</p>
+
+      <h3>How are special characters handled?</h3>
+      <p>Values containing the delimiter, double quotes, or newlines are automatically wrapped in double quotes per RFC 4180. Internal double quotes are escaped by doubling them.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "JSON to CSV Converter", url: everyday_json_to_csv_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "CSV to JSON Converter", description: "Convert CSV data to JSON with header detection and custom delimiter options.", path: everyday_csv_to_json_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "JSON Formatter", description: "Format, prettify, minify, and validate JSON with key count and nesting depth analysis.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "YAML to JSON Converter", description: "Convert between YAML and JSON formats bidirectionally with real-time preview.", path: everyday_yaml_to_json_path, icon_path: "M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("json-to-csv") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

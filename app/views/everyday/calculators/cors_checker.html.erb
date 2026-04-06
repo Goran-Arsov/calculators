@@ -1,0 +1,204 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "CORS Header Checker - Free Online CORS Analyzer",
+  description: "Check and analyze CORS response headers. Detect Access-Control-Allow-Origin, credentials, methods, and security warnings. Free online CORS header checker tool.",
+  canonical: everyday_cors_checker_url,
+  og: {
+    title: "CORS Header Checker - Free Online CORS Analyzer | CalcWise",
+    description: "Analyze CORS headers for security issues. Check allowed origins, methods, headers, credentials, and detect common misconfigurations.",
+    url: everyday_cors_checker_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "CORS Header Checker", url: everyday_cors_checker_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is CORS?", answer: "Cross-Origin Resource Sharing (CORS) is a security mechanism that allows a web page from one origin (domain, scheme, port) to request resources from a different origin. Without CORS, browsers enforce the same-origin policy, which blocks cross-origin requests by default. CORS headers in the server response tell the browser which cross-origin requests are permitted." },
+  { question: "What is a preflight request?", answer: "A preflight request is an HTTP OPTIONS request that the browser sends automatically before certain cross-origin requests. It occurs when the request uses methods other than GET, HEAD, or POST, or includes custom headers, or uses a Content-Type other than application/x-www-form-urlencoded, multipart/form-data, or text/plain. The server responds with CORS headers indicating whether the actual request is allowed." },
+  { question: "Why is wildcard origin with credentials dangerous?", answer: "When Access-Control-Allow-Origin is set to * (wildcard) and Access-Control-Allow-Credentials is true, browsers will reject the request entirely. This combination is not allowed because credentials (cookies, HTTP authentication) are sensitive, and allowing any origin to send credentialed requests would be a major security vulnerability. Instead, the server must echo the specific requesting origin." },
+  { question: "What is the Vary: Origin header and why does it matter?", answer: "When a server returns a specific origin in Access-Control-Allow-Origin (not a wildcard), it should also include Vary: Origin in the response. This tells caches that the response varies based on the Origin request header. Without it, a cache might serve a response intended for origin A to origin B, which would be blocked by the browser, causing intermittent CORS failures." },
+  { question: "How do I fix CORS errors?", answer: "CORS errors are fixed on the server, not the client. Add the appropriate Access-Control-Allow-Origin header (specific origin or *), Access-Control-Allow-Methods for non-simple methods, and Access-Control-Allow-Headers for custom headers. For credentialed requests, set Access-Control-Allow-Credentials to true and use a specific origin (not *). Ensure preflight responses include these headers and return a 2xx status code." }
+]) %>
+
+<%= calculator_schema(
+  name: "CORS Header Checker",
+  description: "Analyze CORS response headers for security issues, check allowed origins, methods, headers, and detect common misconfigurations.",
+  url: everyday_cors_checker_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "CORS Header Checker" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">CORS Header Checker</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste HTTP response headers to analyze CORS configuration. Check allowed origins, methods, headers, credentials, and detect security warnings.</p>
+
+    <div data-controller="cors-checker-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="cors-checker-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Response Headers</label>
+          <textarea id="cors-checker-input" data-cors-checker-calculator-target="input" data-action="input->cors-checker-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="8" placeholder="HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://example.com
+Access-Control-Allow-Methods: GET, POST, PUT
+Access-Control-Allow-Headers: Content-Type, Authorization
+Access-Control-Allow-Credentials: true
+Access-Control-Max-Age: 86400
+Vary: Origin"></textarea>
+        </div>
+
+        <%# Test scenario inputs %>
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Test Scenario (optional)</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label for="cors-test-origin" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Origin URL</label>
+              <input id="cors-test-origin" type="text" data-cors-checker-calculator-target="testOrigin" data-action="input->cors-checker-calculator#calculate"
+                class="w-full text-sm font-mono" placeholder="https://myapp.com" autocomplete="off">
+            </div>
+            <div>
+              <label for="cors-test-method" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Method</label>
+              <input id="cors-test-method" type="text" data-cors-checker-calculator-target="testMethod" data-action="input->cors-checker-calculator#calculate"
+                class="w-full text-sm font-mono" placeholder="PUT" autocomplete="off">
+            </div>
+            <div>
+              <label for="cors-test-headers" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Custom Headers</label>
+              <input id="cors-test-headers" type="text" data-cors-checker-calculator-target="testHeaders" data-action="input->cors-checker-calculator#calculate"
+                class="w-full text-sm font-mono" placeholder="Authorization, X-Custom" autocomplete="off">
+            </div>
+          </div>
+        </div>
+
+        <p data-cors-checker-calculator-target="resultError" class="hidden text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg p-3"></p>
+
+        <div data-cors-checker-calculator-target="resultsContainer" class="hidden space-y-6">
+          <%# CORS status %>
+          <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-cors-checker-calculator-target="corsStatus">CORS Status</span>
+            <span data-cors-checker-calculator-target="corsStatusBadge" class="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-600">&mdash;</span>
+          </div>
+
+          <%# CORS headers list %>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">CORS Headers</h3>
+            <div data-cors-checker-calculator-target="headersList" class="divide-y divide-gray-100 dark:divide-gray-700"></div>
+          </div>
+
+          <%# Warnings %>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Security Warnings</h3>
+            <div data-cors-checker-calculator-target="warningsList"></div>
+          </div>
+
+          <%# Test result %>
+          <div data-cors-checker-calculator-target="testResultContainer" class="hidden bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400">Test Result</h3>
+              <span data-cors-checker-calculator-target="testResultOverall" class="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-600">&mdash;</span>
+            </div>
+            <div data-cors-checker-calculator-target="testResultChecks" class="divide-y divide-gray-100 dark:divide-gray-700"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding CORS and the Same-Origin Policy</h2>
+      <p>
+        Cross-Origin Resource Sharing (CORS) is a security mechanism built into web browsers that controls how web pages from one origin can request resources from a different origin. An origin is defined by the combination of scheme (http/https), domain, and port. The same-origin policy, enforced by all modern browsers, blocks cross-origin requests by default. This prevents malicious websites from reading sensitive data from other sites where the user might be authenticated. CORS provides a structured way for servers to declare which cross-origin requests they explicitly permit.
+      </p>
+      <p>
+        Without CORS, a JavaScript application running on <code>https://myapp.com</code> cannot make API calls to <code>https://api.example.com</code>. The browser blocks the response before JavaScript can access it. CORS headers in the server response tell the browser that the cross-origin request is authorized. This tool analyzes those headers to verify that CORS is configured correctly and securely.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How CORS Headers Work</h2>
+      <p>
+        When a browser makes a cross-origin request, it includes an <code>Origin</code> header indicating where the request originates. The server decides whether to allow the request and responds with appropriate CORS headers. The most important header is <code>Access-Control-Allow-Origin</code>, which specifies which origins may access the response. It can be a specific origin like <code>https://myapp.com</code> or the wildcard <code>*</code> to allow any origin.
+      </p>
+
+      <h3>Simple Requests vs. Preflight Requests</h3>
+      <p>
+        Browsers distinguish between simple and preflighted requests. Simple requests use GET, HEAD, or POST with standard content types and no custom headers. These are sent directly with an Origin header, and the browser checks the CORS headers in the response. Preflighted requests involve any method beyond GET/HEAD/POST, custom headers, or non-standard content types. For these, the browser first sends an OPTIONS request (the preflight) to check permissions. Only if the preflight succeeds does the browser send the actual request. The <code>Access-Control-Max-Age</code> header caches preflight results to avoid repeating them.
+      </p>
+
+      <h3>Credentials and Security Implications</h3>
+      <p>
+        By default, cross-origin requests do not include credentials (cookies, HTTP authentication, client certificates). To enable credentials, both the client must set <code>credentials: 'include'</code> and the server must respond with <code>Access-Control-Allow-Credentials: true</code>. Critically, when credentials are enabled, the wildcard <code>*</code> cannot be used for <code>Access-Control-Allow-Origin</code>. The server must echo the specific requesting origin. This restriction exists because allowing any origin to send credentialed requests would let any website act as the authenticated user.
+      </p>
+
+      <h3>Common CORS Errors and How to Fix Them</h3>
+      <p>
+        The most frequent CORS error is a missing <code>Access-Control-Allow-Origin</code> header. The fix is configuring the server to include this header in responses. Another common issue is wildcard origin with credentials, which browsers always reject. The solution is to dynamically set the origin header based on the incoming request. Missing <code>Vary: Origin</code> when using specific origins causes intermittent failures due to caching. Preflight failures often result from not handling OPTIONS requests on the server, especially when using custom headers or methods like PUT or DELETE. Each of these issues must be resolved server-side, as CORS cannot be bypassed from client-side code.
+      </p>
+
+      <h3>Security Best Practices</h3>
+      <p>
+        Never use wildcard origin (<code>*</code>) if your API handles sensitive data or uses cookies. Validate the Origin header against an allowlist of trusted domains. Always include <code>Vary: Origin</code> when dynamically setting the allowed origin. Set <code>Access-Control-Max-Age</code> to cache preflight results and reduce OPTIONS request overhead. Only expose headers that the client actually needs via <code>Access-Control-Expose-Headers</code>. Restrict allowed methods and headers to the minimum set required by your application. Regularly audit your CORS configuration as your API evolves.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is CORS?</h3>
+      <p>A browser security mechanism that controls cross-origin HTTP requests. Servers use CORS headers to declare which origins, methods, and headers are permitted.</p>
+
+      <h3>What is a preflight request?</h3>
+      <p>An automatic OPTIONS request the browser sends before non-simple cross-origin requests to check if the actual request is allowed.</p>
+
+      <h3>Why is wildcard origin with credentials dangerous?</h3>
+      <p>Browsers reject this combination entirely. Credentials require a specific origin to prevent any website from acting as an authenticated user.</p>
+
+      <h3>What does Vary: Origin do?</h3>
+      <p>Tells caches that the response varies by Origin header. Without it, cached responses for one origin might be served to another, causing CORS failures.</p>
+
+      <h3>How do I fix CORS errors?</h3>
+      <p>CORS is fixed server-side. Add Access-Control-Allow-Origin, handle OPTIONS preflight requests, and ensure credentials configuration is consistent.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "CORS Header Checker", url: everyday_cors_checker_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "HTTP Header Parser", description: "Parse raw HTTP headers and analyze security header coverage with grading.", path: everyday_http_header_parser_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "CSP Builder", description: "Build Content-Security-Policy headers with an interactive directive builder.", path: everyday_csp_builder_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" },
+      { name: "URL Parser", description: "Break down any URL into its components: scheme, host, port, path, query, and fragment.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("cors-checker") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

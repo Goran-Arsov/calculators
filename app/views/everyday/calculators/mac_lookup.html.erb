@@ -1,0 +1,181 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "MAC Address Lookup - Free OUI Manufacturer Identifier",
+  description: "Look up any MAC address to identify the manufacturer via OUI prefix, determine unicast/multicast type, and check if it is globally unique or locally administered.",
+  canonical: everyday_mac_lookup_url,
+  og: {
+    title: "MAC Address Lookup - Free OUI Manufacturer Identifier | CalcWise",
+    description: "Identify the manufacturer of any network device by its MAC address. Determine unicast/multicast and globally unique/locally administered status.",
+    url: everyday_mac_lookup_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "MAC Address Lookup", url: everyday_mac_lookup_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a MAC address?", answer: "A MAC (Media Access Control) address is a unique 48-bit identifier assigned to a network interface controller (NIC) for use at the data link layer (Layer 2) of the OSI model. It is typically written as six pairs of hexadecimal digits separated by colons or hyphens, such as AA:BB:CC:DD:EE:FF. Every Ethernet, Wi-Fi, and Bluetooth adapter has a MAC address, which is used for communication within a local network segment. Unlike IP addresses that can change, MAC addresses are typically burned into the hardware by the manufacturer." },
+  { question: "What is an OUI prefix?", answer: "The OUI (Organizationally Unique Identifier) is the first three bytes (24 bits) of a MAC address. The IEEE (Institute of Electrical and Electronics Engineers) assigns OUI prefixes to manufacturers and organizations. By looking up the OUI prefix, you can determine which company manufactured the network interface. For example, the OUI prefix 00:50:56 belongs to VMware, and AC:DE:48 belongs to Apple. The IEEE maintains the authoritative OUI registry." },
+  { question: "What is the difference between unicast and multicast MAC addresses?", answer: "The least significant bit (bit 0) of the first byte of a MAC address determines whether it is unicast or multicast. If this bit is 0, the address is unicast, meaning it identifies a single specific network interface. If the bit is 1, the address is multicast, meaning frames sent to this address are received by multiple interfaces configured to listen for that multicast group. The broadcast address FF:FF:FF:FF:FF:FF is a special case of multicast that reaches all devices on the local network." },
+  { question: "What does globally unique vs locally administered mean?", answer: "The second least significant bit (bit 1) of the first byte indicates whether a MAC address is globally unique (UAA - Universally Administered Address) or locally administered (LAA). If this bit is 0, the address was assigned by the manufacturer and should be globally unique. If the bit is 1, the address was set by software or an administrator and may not be unique beyond the local network. Virtual machines, Docker containers, and MAC randomization features use locally administered addresses." },
+  { question: "What is MAC address randomization?", answer: "MAC address randomization is a privacy feature implemented by iOS (since iOS 8), Android (since Android 10), and Windows (since Windows 10). When scanning for Wi-Fi networks, devices generate random locally administered MAC addresses instead of using their real hardware address. This prevents tracking by retailers, advertisers, and network operators who could otherwise identify and follow devices by their fixed MAC addresses. Some operating systems also randomize the MAC address on a per-network basis when connecting." }
+]) %>
+
+<%= calculator_schema(
+  name: "MAC Address Lookup",
+  description: "Look up any MAC address to identify the manufacturer from the OUI prefix and determine unicast/multicast and globally unique/locally administered status.",
+  url: everyday_mac_lookup_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "MAC Address Lookup" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">MAC Address Lookup</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter a MAC address to identify the manufacturer from the OUI prefix, determine if it is unicast or multicast, and check whether it is globally unique or locally administered.</p>
+
+    <div data-controller="mac-lookup-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="mac-lookup-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">MAC Address</label>
+          <div class="flex gap-3">
+            <input type="text" id="mac-lookup-input" data-mac-lookup-calculator-target="inputMac"
+              class="flex-1 rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="AA:BB:CC:DD:EE:FF">
+            <button data-action="click->mac-lookup-calculator#lookup"
+              class="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium whitespace-nowrap">Lookup</button>
+          </div>
+          <p class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">Accepts formats: AA:BB:CC:DD:EE:FF, AA-BB-CC-DD-EE-FF, or AABBCCDDEEFF</p>
+        </div>
+
+        <p data-mac-lookup-calculator-target="resultError" class="hidden text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg p-3"></p>
+
+        <div data-mac-lookup-calculator-target="resultsContainer" class="hidden space-y-4">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden">
+            <table class="w-full">
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400 w-2/5">Normalized MAC</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-mac-lookup-calculator-target="resultMac"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">OUI Prefix</td>
+                  <td class="px-4 py-2.5 text-sm font-mono text-gray-900 dark:text-white" data-mac-lookup-calculator-target="resultOui"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Manufacturer</td>
+                  <td class="px-4 py-2.5" data-mac-lookup-calculator-target="resultManufacturer"></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Unicast / Multicast</td>
+                  <td class="px-4 py-2.5"><span data-mac-lookup-calculator-target="resultUnicastMulticast"></span></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400">Administration</td>
+                  <td class="px-4 py-2.5"><span data-mac-lookup-calculator-target="resultGlobalLocal"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="flex justify-end">
+            <button data-action="click->mac-lookup-calculator#copy"
+              class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding MAC Addresses</h2>
+      <p>
+        A MAC (Media Access Control) address is a hardware identifier assigned to every network interface controller (NIC) -- the component that connects a device to a network. Operating at Layer 2 (the Data Link layer) of the OSI networking model, MAC addresses are fundamental to how devices communicate on local network segments. Every Ethernet port, Wi-Fi adapter, and Bluetooth radio has its own unique MAC address, which is typically programmed into the hardware by the manufacturer during production. The MAC address is a 48-bit value, conventionally written as six pairs of hexadecimal digits separated by colons (AA:BB:CC:DD:EE:FF) or hyphens (AA-BB-CC-DD-EE-FF).
+      </p>
+      <p>
+        Unlike IP addresses, which operate at Layer 3 and can change when a device moves between networks, MAC addresses are designed to be permanent, hardware-level identifiers. When a device sends data on a local network, the Ethernet frame includes both the source and destination MAC addresses. Switches use MAC address tables to forward frames only to the port where the destination device is connected, rather than flooding every port. This is the basis of efficient Layer 2 switching and is why MAC addresses are essential to modern networking.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>OUI: Identifying the Manufacturer</h2>
+      <p>
+        The first three bytes (24 bits) of a MAC address form the Organizationally Unique Identifier (OUI), which is assigned and managed by the IEEE (Institute of Electrical and Electronics Engineers). Any organization that manufactures network hardware must purchase an OUI block from the IEEE, which then gives them exclusive use of that prefix. This means you can identify the manufacturer of a network adapter simply by looking up its OUI prefix. For example, 00:50:56 identifies VMware virtual network adapters, DC:A6:32 identifies Raspberry Pi devices, and AC:DE:48 identifies Apple products. The remaining three bytes (the NIC-specific portion) are assigned by the manufacturer, ensuring that every device receives a globally unique address within their OUI block.
+      </p>
+
+      <h3>Unicast, Multicast, and the Special Bits</h3>
+      <p>
+        Two specific bits in the first byte of a MAC address carry important meaning. Bit 0 (the least significant bit) determines whether the address is unicast (bit = 0, targeting a single interface) or multicast (bit = 1, targeting a group of interfaces). The broadcast address FF:FF:FF:FF:FF:FF is a special multicast address that reaches every device on the local network. Bit 1 determines whether the address is globally unique (bit = 0, a Universally Administered Address assigned by the manufacturer) or locally administered (bit = 1, set by software or an administrator). Virtual machines, Docker containers, and Xen hypervisors typically use locally administered addresses since they generate MAC addresses programmatically rather than relying on physical hardware assignments.
+      </p>
+
+      <h3>MAC Address Randomization and Privacy</h3>
+      <p>
+        Because MAC addresses are unique and persistent, they can be used to track devices across locations. Retailers, airports, and advertisers have used MAC address tracking to monitor foot traffic and identify returning visitors. In response, major operating systems introduced MAC address randomization. Apple's iOS began randomizing MAC addresses during Wi-Fi scans in iOS 8 (2014) and expanded this to per-network randomization in iOS 14. Android 10 and Windows 10 followed with similar features. When randomization is active, the device generates a locally administered MAC address (with bit 1 set to 1) instead of revealing its true hardware address. This is why locally administered addresses have become increasingly common in real-world network traffic, and why you may see "Unknown" manufacturers for randomized addresses in this tool.
+      </p>
+
+      <h3>Where MAC Addresses Appear</h3>
+      <p>
+        Network administrators encounter MAC addresses in several contexts. ARP (Address Resolution Protocol) tables map IP addresses to MAC addresses on local networks. DHCP servers log the MAC addresses of devices that request IP leases. Wireless access points maintain association tables of connected client MAC addresses. Network switches build CAM (Content Addressable Memory) tables that associate MAC addresses with physical ports. Firewalls and access control lists can filter traffic based on MAC addresses, although this is easily bypassed by changing a device's MAC address in software, a process known as MAC spoofing.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a MAC address?</h3>
+      <p>A 48-bit hardware identifier assigned to every network interface controller. Written as six hex pairs (e.g., AA:BB:CC:DD:EE:FF), it operates at Layer 2 for local network communication.</p>
+
+      <h3>What is an OUI prefix?</h3>
+      <p>The first 3 bytes of a MAC address, assigned by the IEEE to manufacturers. Looking up the OUI tells you which company made the network adapter.</p>
+
+      <h3>What is unicast vs multicast?</h3>
+      <p>Bit 0 of the first byte: 0 = unicast (single device), 1 = multicast (group of devices). The broadcast address FF:FF:FF:FF:FF:FF is a special multicast.</p>
+
+      <h3>What is globally unique vs locally administered?</h3>
+      <p>Bit 1 of the first byte: 0 = assigned by manufacturer (globally unique), 1 = set by software (locally administered). VMs and randomized addresses use locally administered.</p>
+
+      <h3>What is MAC address randomization?</h3>
+      <p>A privacy feature in iOS, Android, and Windows that generates random locally administered MACs during Wi-Fi scans, preventing device tracking.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "MAC Address Lookup", url: everyday_mac_lookup_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "IP Address Lookup", description: "Look up geolocation, ISP, and network details for any IP address.", path: everyday_ip_lookup_path, icon_path: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" },
+      { name: "CIDR/Subnet Calculator", description: "Calculate network address, broadcast address, subnet mask, and host range for any IPv4 address.", path: everyday_subnet_calculator_path, icon_path: "M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" },
+      { name: "Port Number Reference", description: "Look up common TCP/UDP port numbers and their associated services.", path: everyday_port_reference_path, icon_path: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("mac-address-lookup") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

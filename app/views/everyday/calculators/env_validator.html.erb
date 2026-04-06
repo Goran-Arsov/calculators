@@ -1,0 +1,200 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Environment Variable Validator - Check .env Files for Errors",
+  description: "Validate .env files for empty values, duplicate keys, missing equals signs, unquoted spaces, and exposed secrets. Free online .env file checker with line-by-line analysis.",
+  canonical: everyday_env_validator_url,
+  og: {
+    title: "Environment Variable Validator - Check .env Files for Errors | CalcWise",
+    description: "Paste your .env file content and instantly detect errors, warnings, duplicate keys, and potentially exposed secrets with line numbers.",
+    url: everyday_env_validator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Env Variable Validator", url: everyday_env_validator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a .env file?", answer: "A .env file stores environment variables as key-value pairs in the format KEY=VALUE, one per line. Applications load these variables at startup to configure database connections, API keys, feature flags, and other environment-specific settings. The .env file keeps configuration separate from code, following the twelve-factor app methodology, and should never be committed to version control." },
+  { question: "What errors does this validator check for?", answer: "The validator checks for five categories of issues: empty values where a key has no value assigned, lines missing the equals sign that are not valid variable declarations, duplicate keys where the same variable name appears multiple times (only the last value takes effect in most loaders), values containing unquoted spaces that may be truncated by some parsers, and potentially sensitive keys containing words like PASSWORD, SECRET, KEY, or TOKEN." },
+  { question: "Why should I quote values with spaces?", answer: "Some .env file parsers split values on whitespace if they are not wrapped in quotes. A value like APP_NAME=My Application might be read as just 'My' by certain loaders. Wrapping the value in double quotes (APP_NAME=\"My Application\") ensures the entire string including spaces is preserved as the variable value across all parsers and shell environments." },
+  { question: "What should I do about duplicate keys?", answer: "Duplicate keys mean the same variable is defined more than once. Most .env loaders use the last occurrence, but some use the first. This creates confusion and potential bugs when different values are expected. Remove duplicates so each key appears exactly once. If you need environment-specific overrides, use separate files like .env.development and .env.production instead of duplicating keys." },
+  { question: "Why are sensitive keys flagged?", answer: "Keys containing words like PASSWORD, SECRET, KEY, TOKEN, or CREDENTIAL likely hold sensitive values that could cause security breaches if exposed. The validator flags them as a reminder to ensure these values are not committed to version control, not logged in plaintext, and are rotated if they have been accidentally exposed. Use a .gitignore rule for .env files and consider using a secrets manager for production deployments." }
+]) %>
+
+<%= calculator_schema(
+  name: "Environment Variable Validator",
+  description: "Validate .env files for errors including empty values, duplicate keys, missing equals signs, and exposed secrets.",
+  url: everyday_env_validator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Env Variable Validator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Environment Variable Validator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste your .env file content or upload a file to check for errors, duplicate keys, empty values, and sensitive data exposure.</p>
+
+    <div data-controller="env-validator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <div class="space-y-5">
+
+        <%# Input textarea %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">.env Content</label>
+          <textarea data-env-validator-calculator-target="input" rows="10"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="DATABASE_URL=postgres://localhost/mydb
+RAILS_ENV=production
+SECRET_KEY_BASE=abc123...
+# API_KEY=old_key
+PORT=3000"></textarea>
+        </div>
+
+        <%# File upload %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Or Upload a .env File</label>
+          <input type="file" accept=".env,.env.*,text/plain" data-env-validator-calculator-target="fileInput"
+                 data-action="change->env-validator-calculator#loadFile"
+                 class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-400">
+        </div>
+
+        <%# Validate button %>
+        <button data-action="click->env-validator-calculator#validate"
+                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+          Validate
+        </button>
+      </div>
+
+      <%# Error display %>
+      <div data-env-validator-calculator-target="error" class="hidden mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm"></div>
+
+      <%# Results %>
+      <div data-env-validator-calculator-target="results" class="hidden mt-6">
+
+        <%# Summary stats %>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400" data-env-validator-calculator-target="totalVars">0</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Variables</p>
+          </div>
+          <div class="bg-red-50 dark:bg-red-900/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-red-600 dark:text-red-400" data-env-validator-calculator-target="errorCount">0</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Errors</p>
+          </div>
+          <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400" data-env-validator-calculator-target="warningCount">0</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Warnings</p>
+          </div>
+          <div class="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-4 text-center">
+            <p class="text-2xl font-bold text-orange-600 dark:text-orange-400" data-env-validator-calculator-target="sensitiveCount">0</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Sensitive</p>
+          </div>
+        </div>
+
+        <%# Issues list %>
+        <div class="mb-6">
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Issues</h3>
+          <div data-env-validator-calculator-target="issuesList" class="space-y-1">
+            <p class="text-gray-400 text-sm">Click "Validate" to check your .env file</p>
+          </div>
+        </div>
+
+        <%# Variables table %>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Parsed Variables</h3>
+          <div data-env-validator-calculator-target="variablesTable" class="overflow-x-auto">
+            <p class="text-gray-400 text-sm">Click "Validate" to see parsed variables</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding .env Files</h2>
+      <p>
+        Environment variables are a fundamental mechanism for configuring applications without hardcoding values in source code. The <code>.env</code> file convention, popularized by the twelve-factor app methodology, stores these variables as simple key-value pairs in a file at the project root. Libraries like <code>dotenv</code> (available for Ruby, Python, Node.js, PHP, and most other languages) load the file at application startup and inject the variables into the process environment where they can be read with <code>ENV["KEY"]</code>, <code>os.environ["KEY"]</code>, or <code>process.env.KEY</code> depending on the language.
+      </p>
+      <p>
+        A well-structured <code>.env</code> file separates configuration from code, making it easy to change settings between development, staging, and production without modifying any source files. Database connection strings, API endpoint URLs, feature flags, third-party service credentials, and application-specific settings all belong in environment variables. The <code>.env</code> file provides a convenient way to manage these variables locally while production deployments use environment variables set by the hosting platform, container orchestrator, or secrets manager.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Common .env File Errors</h2>
+      <p>
+        The most frequent error in <code>.env</code> files is empty values. A line like <code>DATABASE_URL=</code> with no value after the equals sign sets the variable to an empty string, which typically causes a connection failure or configuration error at runtime. This often happens when a developer copies <code>.env.example</code> and forgets to fill in a value, or when a value is accidentally deleted during editing. This validator flags every key with an empty value so you can catch these issues before starting your application.
+      </p>
+
+      <h3>Duplicate Keys</h3>
+      <p>
+        When the same key appears multiple times in a <code>.env</code> file, the behavior depends on the loader. Ruby's <code>dotenv</code> gem uses the first occurrence by default, Node.js <code>dotenv</code> also uses the first, but shell sourcing with <code>source .env</code> uses the last occurrence. This inconsistency means duplicate keys can cause different behavior in different environments. The solution is to ensure each key appears exactly once. If you need environment-specific overrides, use separate files like <code>.env.development</code> and <code>.env.test</code> that your loader merges in the correct priority order.
+      </p>
+
+      <h3>Unquoted Values with Spaces</h3>
+      <p>
+        A value like <code>APP_NAME=My Application</code> works correctly with most modern dotenv libraries, but some older parsers and shell-based loaders truncate the value at the first space, reading only <code>My</code>. Wrapping the value in double quotes (<code>APP_NAME="My Application"</code>) ensures the full string is preserved across all parsers. Single quotes also work but prevent variable interpolation in loaders that support it. The validator flags unquoted values containing spaces as a warning since they may work in your specific setup but could break if you switch loaders or deploy to a different platform.
+      </p>
+
+      <h3>Sensitive Data Exposure</h3>
+      <p>
+        Keys containing words like PASSWORD, SECRET, KEY, TOKEN, API_KEY, PRIVATE, or CREDENTIAL almost certainly hold sensitive values. The validator flags these keys as a reminder that their values require special handling. Sensitive variables should never be committed to version control, logged in plaintext, or exposed in error messages. In production, use a secrets manager like AWS Secrets Manager, HashiCorp Vault, or your platform's built-in secrets feature rather than a <code>.env</code> file. If a sensitive value is accidentally committed, consider it compromised and rotate it immediately.
+      </p>
+
+      <h3>Syntax Validation</h3>
+      <p>
+        Lines that do not contain an equals sign and are not comments (starting with <code>#</code>) are invalid in a <code>.env</code> file. The validator detects these malformed lines and reports them with their line numbers so you can quickly fix typos like missing equals signs or accidentally concatenated lines. Comments are supported with a leading <code>#</code> character, and the validator also detects commented-out variables as a convenience so you can review whether they should be re-enabled or removed.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a .env file?</h3>
+      <p>A file storing environment variables as KEY=VALUE pairs, one per line. Applications load it at startup to configure database connections, API keys, and settings without hardcoding values in source code.</p>
+
+      <h3>What errors does this tool check?</h3>
+      <p>Empty values, missing equals signs, duplicate keys, unquoted spaces in values, and sensitive keys containing PASSWORD, SECRET, KEY, TOKEN, or similar patterns.</p>
+
+      <h3>Why should values with spaces be quoted?</h3>
+      <p>Some parsers split on whitespace. Quoting ensures the full value is preserved. Use double quotes for compatibility across all dotenv libraries and shell environments.</p>
+
+      <h3>What do I do about duplicate keys?</h3>
+      <p>Remove duplicates so each key appears once. Different loaders handle duplicates differently, creating inconsistent behavior between environments.</p>
+
+      <h3>Why are sensitive keys flagged?</h3>
+      <p>Keys with PASSWORD, SECRET, KEY, or TOKEN likely hold credentials that should never be committed to Git. The flag reminds you to protect these values and rotate them if exposed.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "Environment Variable Validator", url: everyday_env_validator_url %>
+    <%= render "shared/calculation_email_capture" %>
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "JSON Formatter", description: "Format, validate, and minify JSON data.", path: everyday_json_formatter_path, icon_path: "M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7c-2 0-3 1-3 3z" },
+      { name: "YAML to JSON", description: "Convert between YAML and JSON formats.", path: everyday_yaml_to_json_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Escape & Unescape Tool", description: "Escape and unescape text for JSON, URL, HTML, and more.", path: everyday_escape_unescape_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("env-variable-validator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

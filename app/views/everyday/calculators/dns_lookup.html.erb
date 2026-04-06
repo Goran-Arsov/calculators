@@ -1,0 +1,186 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "DNS Record Viewer - Free Online DNS Lookup Tool",
+  description: "Look up DNS records for any domain. Query A, AAAA, MX, TXT, CNAME, NS, and SOA records using Google's DNS-over-HTTPS API. Free online DNS lookup tool.",
+  canonical: everyday_dns_lookup_url,
+  og: {
+    title: "DNS Record Viewer - Free Online DNS Lookup Tool | CalcWise",
+    description: "Query DNS records for any domain: A, AAAA, MX, TXT, CNAME, NS, SOA. See TTL, record data, and type in a structured table.",
+    url: everyday_dns_lookup_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "DNS Record Viewer", url: everyday_dns_lookup_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is DNS?", answer: "The Domain Name System (DNS) is a hierarchical, distributed naming system that translates human-readable domain names like example.com into IP addresses like 93.184.216.34 that computers use to identify each other on the network. DNS acts as the phone book of the internet. When you type a URL into your browser, a DNS resolver queries a chain of authoritative name servers to find the IP address associated with that domain." },
+  { question: "What are the different DNS record types?", answer: "The most common DNS record types are: A records map a domain to an IPv4 address, AAAA records map to an IPv6 address, MX records specify mail servers for the domain, TXT records hold arbitrary text data often used for email authentication (SPF, DKIM, DMARC) and domain verification, CNAME records create aliases pointing one domain name to another, NS records identify the authoritative name servers for a domain, and SOA records contain administrative information about the DNS zone including the primary nameserver and zone serial number." },
+  { question: "What is TTL in DNS?", answer: "TTL (Time To Live) is a value in seconds that tells DNS resolvers how long to cache a DNS record before requesting a fresh copy from the authoritative server. A low TTL (e.g., 300 seconds / 5 minutes) means records update quickly but generate more DNS traffic. A high TTL (e.g., 86400 seconds / 24 hours) reduces DNS queries but means changes take longer to propagate. When migrating servers, administrators often lower TTL in advance so the transition happens faster." },
+  { question: "What is DNS-over-HTTPS?", answer: "DNS-over-HTTPS (DoH) sends DNS queries through encrypted HTTPS connections instead of plain-text UDP. This prevents ISPs, network operators, and attackers from seeing or tampering with your DNS queries. Google Public DNS (dns.google), Cloudflare (1.1.1.1), and other providers offer DoH endpoints. Major browsers now support DoH natively. This tool uses Google's DoH API to perform lookups." },
+  { question: "What does NXDOMAIN mean?", answer: "NXDOMAIN (Non-Existent Domain) is a DNS response code indicating that the queried domain name does not exist in the DNS system. This typically means the domain has not been registered, has expired, or is misspelled. It is different from NOERROR with empty answers, which means the domain exists but has no records of the requested type." }
+]) %>
+
+<%= calculator_schema(
+  name: "DNS Record Viewer",
+  description: "Look up DNS records for any domain using Google's DNS-over-HTTPS API. Query A, AAAA, MX, TXT, CNAME, NS, and SOA records.",
+  url: everyday_dns_lookup_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "DNS Record Viewer" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">DNS Record Viewer</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter a domain name and select a record type to query DNS records using Google's public DNS-over-HTTPS API. View results including TTL, record data, and type.</p>
+
+    <div data-controller="dns-lookup-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="md:col-span-2">
+            <label for="dns-domain-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Domain Name</label>
+            <input type="text" id="dns-domain-input" data-dns-lookup-calculator-target="inputDomain"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="example.com">
+          </div>
+          <div>
+            <label for="dns-type-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Record Type</label>
+            <select id="dns-type-input" data-dns-lookup-calculator-target="inputRecordType"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="A" selected>A (IPv4)</option>
+              <option value="AAAA">AAAA (IPv6)</option>
+              <option value="MX">MX (Mail)</option>
+              <option value="TXT">TXT (Text)</option>
+              <option value="CNAME">CNAME (Alias)</option>
+              <option value="NS">NS (Nameserver)</option>
+              <option value="SOA">SOA (Authority)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <button data-action="click->dns-lookup-calculator#lookup"
+            class="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Lookup</button>
+        </div>
+
+        <p data-dns-lookup-calculator-target="loading" class="hidden text-sm text-gray-500 dark:text-gray-400 animate-pulse">Querying DNS records...</p>
+        <p data-dns-lookup-calculator-target="resultError" class="hidden text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg p-3"></p>
+
+        <div data-dns-lookup-calculator-target="resultsContainer" class="hidden space-y-4">
+          <div class="flex items-center gap-3">
+            <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Results for</h3>
+            <span data-dns-lookup-calculator-target="resultDomain" class="text-sm font-mono font-bold text-gray-900 dark:text-white"></span>
+            <span data-dns-lookup-calculator-target="resultType" class="px-2 py-0.5 text-xs font-semibold rounded bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"></span>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-gray-200 dark:border-gray-700">
+                  <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+                  <th class="px-4 py-2.5 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                  <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">TTL</th>
+                  <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Data</th>
+                </tr>
+              </thead>
+              <tbody data-dns-lookup-calculator-target="resultsBody" class="divide-y divide-gray-100 dark:divide-gray-700">
+              </tbody>
+            </table>
+          </div>
+
+          <div class="flex justify-end">
+            <button data-action="click->dns-lookup-calculator#copy"
+              class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding the Domain Name System</h2>
+      <p>
+        The Domain Name System (DNS) is one of the foundational technologies of the internet. It serves as a distributed, hierarchical directory that translates human-friendly domain names into the numerical IP addresses that computers use to route traffic. When you type a URL into your browser, the DNS resolution process begins: your computer contacts a recursive resolver (usually provided by your ISP or a public service like Google's 8.8.8.8), which queries a chain of authoritative servers starting from the root servers, through the top-level domain (TLD) servers (.com, .org, .net), and finally the domain's own authoritative nameservers. This entire process typically completes in milliseconds, making it invisible to the user.
+      </p>
+      <p>
+        The DNS hierarchy begins at the root zone, managed by 13 root server clusters distributed globally. Below the root sit TLD servers that handle domains like .com, .org, .uk, and hundreds of others. Each domain owner configures their own DNS records on authoritative nameservers, which serve as the final source of truth for that domain's mappings. Redundancy is built into every layer: multiple root servers, multiple TLD servers, and typically at least two authoritative nameservers per domain ensure that DNS remains available even if individual servers fail.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>DNS Record Types Explained</h2>
+      <p>
+        Each DNS record type serves a specific purpose in the domain name ecosystem. An <strong>A record</strong> maps a domain name directly to an IPv4 address, which is the most fundamental type of DNS record. The <strong>AAAA record</strong> serves the same purpose for IPv6 addresses. <strong>MX records</strong> (Mail Exchange) specify which mail servers accept email for the domain, with priority values indicating preference order. <strong>TXT records</strong> hold arbitrary text data and have become essential for email authentication mechanisms like SPF (Sender Policy Framework), DKIM (DomainKeys Identified Mail), and DMARC, as well as domain verification for services like Google Workspace and Microsoft 365.
+      </p>
+
+      <h3>Aliases, Nameservers, and Zone Authority</h3>
+      <p>
+        <strong>CNAME records</strong> (Canonical Name) create aliases by pointing one domain name to another. For example, www.example.com might have a CNAME record pointing to example.com. A CNAME cannot coexist with other record types for the same name. <strong>NS records</strong> identify the authoritative nameservers for a domain or zone, telling resolvers where to find the definitive answers for queries about that domain. The <strong>SOA record</strong> (Start of Authority) contains administrative metadata about the zone, including the primary nameserver, the responsible party's email address, the zone serial number (used to detect changes), and timing parameters for zone transfers and cache expiration.
+      </p>
+
+      <h3>TTL, Caching, and DNS-over-HTTPS</h3>
+      <p>
+        Every DNS record includes a TTL (Time To Live) value measured in seconds. This value instructs resolvers and caches how long to store the record before requesting a fresh copy from the authoritative server. Short TTLs (60-300 seconds) allow rapid changes during migrations but increase DNS query volume. Long TTLs (3600-86400 seconds) reduce load on authoritative servers but delay the propagation of updates. DNS-over-HTTPS (DoH) is a modern protocol that encrypts DNS queries within HTTPS connections, preventing eavesdropping and tampering by network intermediaries. This tool uses Google's public DoH endpoint at dns.google to perform lookups, providing both privacy and reliability.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is DNS?</h3>
+      <p>A hierarchical naming system that translates domain names (like example.com) into IP addresses. It works through a chain of root, TLD, and authoritative nameservers.</p>
+
+      <h3>What are the different DNS record types?</h3>
+      <p>A (IPv4), AAAA (IPv6), MX (mail servers), TXT (text/verification), CNAME (aliases), NS (nameservers), SOA (zone authority). Each serves a distinct purpose in DNS.</p>
+
+      <h3>What is TTL in DNS?</h3>
+      <p>Time To Live -- how long (in seconds) resolvers cache a record before re-querying. Low TTLs allow fast changes; high TTLs reduce DNS traffic.</p>
+
+      <h3>What is DNS-over-HTTPS?</h3>
+      <p>An encrypted DNS protocol that sends queries over HTTPS, preventing ISPs and attackers from seeing or tampering with DNS lookups. Supported by Google, Cloudflare, and major browsers.</p>
+
+      <h3>What does NXDOMAIN mean?</h3>
+      <p>A DNS response indicating the domain does not exist. Usually means the domain is unregistered, expired, or misspelled.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "DNS Record Viewer", url: everyday_dns_lookup_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "IP Address Lookup", description: "Analyze any IPv4 address: class, private/public status, binary form, and optional geolocation.", path: everyday_ip_lookup_path, icon_path: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" },
+      { name: "URL Parser", description: "Break down any URL into its components: scheme, host, port, path, query, and fragment.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" },
+      { name: "Port Number Reference", description: "Look up well-known port numbers and their associated services and protocols.", path: everyday_port_reference_path, icon_path: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("dns-lookup") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

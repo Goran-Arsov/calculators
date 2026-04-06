@@ -1,0 +1,219 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Regex Builder - Free Online Regular Expression Builder",
+  description: "Build and test regular expressions with live match highlighting, common pattern templates, capture group display, and a match list with positions. Free online regex builder tool.",
+  canonical: everyday_regex_builder_url,
+  og: {
+    title: "Regex Builder - Free Online Regular Expression Builder | CalcWise",
+    description: "Build regex patterns with live highlighting, common pattern templates, capture groups, and match positions. Supports case-insensitive and multiline flags.",
+    url: everyday_regex_builder_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Regex Builder", url: everyday_regex_builder_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a regex builder?", answer: "A regex builder is a tool that helps you construct and test regular expression patterns interactively. You enter a pattern and test text, and the tool highlights all matches in real time, shows captured groups, and displays match positions. It reduces trial-and-error by giving you immediate visual feedback as you build your pattern." },
+  { question: "What are character classes in regex?", answer: "Character classes match any single character from a defined set. Square brackets define custom classes like [aeiou] for vowels or [0-9] for digits. Shorthand classes include \\d (digits), \\w (word characters: letters, digits, underscore), \\s (whitespace), and their negations \\D, \\W, \\S. Ranges like [a-z] match any lowercase letter, and [A-Za-z0-9] matches any alphanumeric character." },
+  { question: "What is the difference between greedy and lazy quantifiers?", answer: "Greedy quantifiers (*, +, ?) match as much text as possible, while lazy quantifiers (*?, +?, ??) match as little as possible. For example, given the text '<b>bold</b>', the greedy pattern <.*> matches the entire string, but the lazy pattern <.*?> matches only '<b>'. Use lazy quantifiers when you want the shortest possible match." },
+  { question: "How do lookahead and lookbehind assertions work?", answer: "Lookahead (?=...) and lookbehind (?<=...) are zero-width assertions that match a position without consuming characters. Positive lookahead (?=pattern) asserts that what follows matches the pattern. Negative lookahead (?!pattern) asserts it does not. Lookbehind works the same way but checks what precedes the current position. For example, \\d+(?= dollars) matches digits only when followed by ' dollars'." },
+  { question: "When should I use a parser instead of regex?", answer: "Regex is not suitable for parsing nested or recursive structures like HTML, XML, JSON, or programming languages. Use a proper parser for these. Regex also struggles with context-sensitive grammars and deeply nested parentheses. A good rule of thumb: if your regex has more than two levels of grouping or requires balancing opening and closing delimiters, a parser is the better choice." }
+]) %>
+
+<%= calculator_schema(
+  name: "Regex Builder",
+  description: "Build and test regular expressions with live match highlighting, common pattern templates, and capture group display.",
+  url: everyday_regex_builder_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Regex Builder" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Regex Builder</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Build regular expressions with live match highlighting, common pattern templates, capture groups, and detailed match positions.</p>
+
+    <div data-controller="regex-builder-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <%# Common pattern buttons %>
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Common Patterns</label>
+          <div class="flex flex-wrap gap-2">
+            <button data-action="click->regex-builder-calculator#insertPattern" data-pattern="email"
+              class="px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">Email</button>
+            <button data-action="click->regex-builder-calculator#insertPattern" data-pattern="url"
+              class="px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">URL</button>
+            <button data-action="click->regex-builder-calculator#insertPattern" data-pattern="phone"
+              class="px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">Phone</button>
+            <button data-action="click->regex-builder-calculator#insertPattern" data-pattern="ip_address"
+              class="px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">IP Address</button>
+            <button data-action="click->regex-builder-calculator#insertPattern" data-pattern="date"
+              class="px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">Date</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="regex-builder-pattern" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Regex Pattern</label>
+            <input id="regex-builder-pattern" type="text" data-regex-builder-calculator-target="pattern" data-action="input->regex-builder-calculator#calculate"
+              class="w-full font-mono" placeholder="\d+" autocomplete="off">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Flags</label>
+            <div class="flex items-center gap-4 h-[42px]">
+              <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <input type="checkbox" data-regex-builder-calculator-target="flagCaseInsensitive" data-action="change->regex-builder-calculator#calculate"
+                  class="rounded border-gray-300 dark:border-gray-600 text-blue-600">
+                <span>Case insensitive (i)</span>
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <input type="checkbox" data-regex-builder-calculator-target="flagMultiline" data-action="change->regex-builder-calculator#calculate"
+                  class="rounded border-gray-300 dark:border-gray-600 text-blue-600">
+                <span>Multiline (m)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label for="regex-builder-test-text" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Test Text</label>
+          <textarea id="regex-builder-test-text" data-regex-builder-calculator-target="testText" data-action="input->regex-builder-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="5" placeholder="Enter text to test your regex pattern against..."></textarea>
+        </div>
+
+        <p data-regex-builder-calculator-target="resultError" class="hidden text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl p-3"></p>
+
+        <div data-regex-builder-calculator-target="resultsContainer" class="hidden space-y-4">
+          <%# Highlighted output %>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Highlighted Matches</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400"><span data-regex-builder-calculator-target="resultMatchCount">&mdash;</span> matches</span>
+            </div>
+            <div data-regex-builder-calculator-target="output"
+              class="bg-white dark:bg-gray-700 rounded-lg p-3 font-mono text-sm whitespace-pre-wrap break-all min-h-[4rem] text-gray-900 dark:text-white">
+              <span class="text-gray-400">Matches will be highlighted here</span>
+            </div>
+          </div>
+
+          <%# Match list %>
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Match Details</h3>
+            <div data-regex-builder-calculator-target="resultMatchList"></div>
+          </div>
+        </div>
+
+        <button data-action="click->regex-builder-calculator#copy" class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Regex Pattern</button>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Regex Builder</h2>
+      <p>
+        Enter your regular expression in the pattern field or click one of the common pattern buttons to start with a pre-built pattern for emails, URLs, phone numbers, IP addresses, or dates. Type or paste your test text in the text area below. As you type, matching portions of the text are highlighted in yellow in real time. The match count updates instantly, and a detailed list shows each match with its position and any captured groups.
+      </p>
+      <p>
+        Use the flag checkboxes to enable case-insensitive matching or multiline mode. Case-insensitive mode ignores letter case, so the pattern "hello" will match "Hello", "HELLO", and any other case combination. Multiline mode makes the anchors ^ and $ match the start and end of individual lines rather than the entire string. The global flag is always enabled so all matches are found. Click "Copy Regex Pattern" to copy the current pattern to your clipboard.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Regular Expression Fundamentals</h2>
+      <p>
+        Regular expressions are sequences of characters that define search patterns. They are used across virtually every programming language for text searching, validation, extraction, and replacement. While the syntax can appear cryptic at first, regular expressions are built from a small set of building blocks that combine to create powerful patterns. Learning these fundamentals unlocks one of the most versatile tools in a developer's toolkit.
+      </p>
+
+      <h3>Character Classes and Shorthand</h3>
+      <p>
+        Character classes define sets of characters to match. Square brackets create custom classes: <code>[aeiou]</code> matches any vowel, <code>[0-9]</code> matches any digit, and <code>[A-Za-z]</code> matches any letter. Negated classes like <code>[^0-9]</code> match anything except the specified characters. Shorthand classes provide convenient alternatives: <code>\d</code> matches digits (same as <code>[0-9]</code>), <code>\w</code> matches word characters (letters, digits, underscore), <code>\s</code> matches whitespace (spaces, tabs, newlines), and their uppercase counterparts <code>\D</code>, <code>\W</code>, <code>\S</code> match the opposite. The dot <code>.</code> matches any character except newline.
+      </p>
+
+      <h3>Quantifiers: Greedy vs. Lazy</h3>
+      <p>
+        Quantifiers control how many times a pattern element repeats. The three basic quantifiers are <code>*</code> (zero or more), <code>+</code> (one or more), and <code>?</code> (zero or one). Curly braces offer precise control: <code>{3}</code> matches exactly three times, <code>{2,5}</code> matches two to five times, and <code>{3,}</code> matches three or more times. By default, quantifiers are greedy, meaning they match as much text as possible. Adding a <code>?</code> after any quantifier makes it lazy, matching as little as possible. The distinction matters when your text contains multiple possible endpoints, like matching HTML tags where <code>&lt;.*&gt;</code> greedily captures everything between the first and last angle brackets, but <code>&lt;.*?&gt;</code> lazily captures each individual tag.
+      </p>
+
+      <h3>Anchors and Boundaries</h3>
+      <p>
+        Anchors match positions rather than characters. The caret <code>^</code> matches the start of a line and the dollar sign <code>$</code> matches the end. Word boundary <code>\b</code> matches the position between a word character and a non-word character, which is useful for matching whole words: <code>\bcat\b</code> matches "cat" but not "concatenate". In multiline mode, <code>^</code> and <code>$</code> match the start and end of each line rather than the entire string.
+      </p>
+
+      <h3>Groups, Captures, and Backreferences</h3>
+      <p>
+        Parentheses create groups that serve two purposes: they group elements for quantifiers, and they capture matched text for later use. The pattern <code>(\w+)@(\w+)\.(\w+)</code> creates three capture groups from an email address. Named groups like <code>(?&lt;user&gt;\w+)</code> improve readability. Non-capturing groups <code>(?:pattern)</code> group without capturing, saving memory when you only need grouping for alternation or quantifiers. Backreferences like <code>\1</code> refer to previously captured text, letting you match repeated patterns like <code>(\w+)\s+\1</code> which finds doubled words.
+      </p>
+
+      <h3>Lookahead and Lookbehind</h3>
+      <p>
+        Lookahead and lookbehind are zero-width assertions that check for patterns without consuming characters. Positive lookahead <code>(?=pattern)</code> succeeds if the pattern matches ahead. Negative lookahead <code>(?!pattern)</code> succeeds if the pattern does not match ahead. Lookbehind works similarly but checks behind: <code>(?&lt;=\$)\d+</code> matches digits preceded by a dollar sign without including the dollar sign in the match. These assertions are powerful for extracting text that appears in a specific context without including the context in the result.
+      </p>
+
+      <h3>Common Pitfalls and When to Use a Parser</h3>
+      <p>
+        The most common regex mistakes include forgetting to escape special characters (use <code>\.</code> for a literal period), catastrophic backtracking from nested quantifiers like <code>(a+)+</code>, and trying to parse nested structures. Regular expressions are fundamentally unable to handle recursive nesting, which means they cannot reliably parse HTML, XML, JSON, or any language with balanced delimiters. For these tasks, use a proper parser. A good rule: if your regex requires more than a few minutes to understand, a parser or a series of simpler string operations may be more maintainable.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a regex builder?</h3>
+      <p>A tool for constructing and testing regex patterns interactively with live match highlighting, capture group display, and common pattern templates.</p>
+
+      <h3>What are character classes in regex?</h3>
+      <p>Sets of characters to match. Shorthand classes include \d (digits), \w (word characters), \s (whitespace). Custom classes use brackets like [a-z].</p>
+
+      <h3>What is the difference between greedy and lazy quantifiers?</h3>
+      <p>Greedy quantifiers (*, +) match as much as possible. Lazy versions (*?, +?) match as little as possible. Add ? after any quantifier to make it lazy.</p>
+
+      <h3>How do lookahead and lookbehind work?</h3>
+      <p>Zero-width assertions that check for patterns without consuming characters. (?=pattern) looks ahead, (?<=pattern) looks behind. Useful for context-dependent matching.</p>
+
+      <h3>When should I use a parser instead of regex?</h3>
+      <p>Use a parser for nested or recursive structures like HTML, XML, JSON, or programming languages. Regex cannot handle balanced delimiters reliably.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Regex Builder", url: everyday_regex_builder_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Regex Tester", description: "Test regular expressions with live match highlighting and capture group display.", path: everyday_regex_tester_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "String Encoder/Decoder", description: "Encode and decode text with Base64, URL encoding, and HTML entities.", path: everyday_string_encoder_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "Escape/Unescape Tool", description: "Escape and unescape special characters for JSON, HTML, URLs, and more.", path: everyday_escape_unescape_path, icon_path: "M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("regex-builder") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

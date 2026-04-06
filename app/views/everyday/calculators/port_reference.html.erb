@@ -1,0 +1,207 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Port Number Reference - Free Online Tool",
+  description: "Look up common network port numbers by port number or service name. Browse 100+ ports across web, database, email, DevOps, and security categories. Instant search and filtering.",
+  canonical: everyday_port_reference_url,
+  og: {
+    title: "Port Number Reference - Free Online Tool | CalcWise",
+    description: "Search and browse 100+ common network ports by number, service name, or category. Covers web, database, email, DevOps, security, and more.",
+    url: everyday_port_reference_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Port Number Reference", url: everyday_port_reference_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a network port number?", answer: "A port number is a 16-bit unsigned integer (0 to 65535) that identifies a specific process or service on a networked device. When data arrives at a server, the operating system uses the destination port number to route the traffic to the correct application. Port 80 directs traffic to the web server, port 22 to the SSH daemon, and port 5432 to PostgreSQL. Without port numbers, a single IP address could only run one network service at a time." },
+  { question: "What is the difference between TCP and UDP?", answer: "TCP (Transmission Control Protocol) is connection-oriented. It establishes a session between sender and receiver, guarantees delivery, and ensures packets arrive in order. UDP (User Datagram Protocol) is connectionless. It sends packets without establishing a session and does not guarantee delivery or ordering. TCP is used for web traffic (HTTP/HTTPS), email (SMTP), and file transfers (FTP) where reliability is critical. UDP is used for DNS lookups, streaming, and real-time applications where speed matters more than guaranteed delivery." },
+  { question: "What are well-known ports?", answer: "Well-known ports are the range from 0 to 1023. They are assigned by IANA (Internet Assigned Numbers Authority) to widely-used protocols like HTTP (80), HTTPS (443), SSH (22), and SMTP (25). On Unix-like systems, binding to a well-known port typically requires root privileges. Registered ports (1024-49151) are assigned to specific services by IANA upon request. Dynamic or ephemeral ports (49152-65535) are used temporarily by client applications for outgoing connections." },
+  { question: "Why is port 443 important?", answer: "Port 443 is the default port for HTTPS, which is HTTP encrypted with TLS. Nearly all modern web traffic uses port 443 because browsers, search engines, and security standards require TLS encryption. Websites that serve content only on port 80 (unencrypted HTTP) are flagged as insecure by browsers. Port 443 is essential for protecting user data, login credentials, and payment information during transit." },
+  { question: "How do I check which ports are open on my server?", answer: "On Linux, use the command ss -tlnp or netstat -tlnp to list all TCP ports that are listening along with the process that owns each one. On macOS, use lsof -iTCP -sTCP:LISTEN. On Windows, use netstat -an | findstr LISTENING. For external scanning, tools like nmap can probe a remote server to discover which ports are accepting connections. Always close ports that are not needed to reduce your attack surface." }
+]) %>
+
+<%= calculator_schema(
+  name: "Port Number Reference",
+  description: "Search and browse common network port numbers by port number, service name, or category.",
+  url: everyday_port_reference_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Port Number Reference" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Port Number Reference</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Search and browse common network ports by number, service name, or category. Over 100 ports covering web, database, email, DevOps, and security services.</p>
+
+    <div data-controller="port-reference-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <%# Search input %>
+      <div class="mb-6">
+        <label for="port-search" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Search by Port Number or Service Name</label>
+        <input id="port-search" type="text"
+               data-port-reference-calculator-target="searchInput"
+               data-action="input->port-reference-calculator#search"
+               placeholder="e.g. 443, SSH, PostgreSQL, database..."
+               class="w-full text-lg" autocomplete="off">
+      </div>
+
+      <%# Category filter buttons %>
+      <div class="flex flex-wrap gap-2 mb-6">
+        <% [
+          ["all", "All"],
+          ["web", "Web"],
+          ["database", "Database"],
+          ["email", "Email"],
+          ["file_transfer", "File Transfer"],
+          ["remote_access", "Remote Access"],
+          ["network", "Network"],
+          ["security", "Security"],
+          ["messaging", "Messaging"],
+          ["monitoring", "Monitoring"],
+          ["devops", "DevOps"],
+          ["streaming", "Streaming"]
+        ].each_with_index do |(key, label), i| %>
+          <button data-port-reference-calculator-target="categoryFilter"
+                  data-action="click->port-reference-calculator#filterCategory"
+                  data-category="<%= key %>"
+                  class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors <%= i == 0 ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300' %>">
+            <%= label %>
+          </button>
+        <% end %>
+      </div>
+
+      <%# Results count %>
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-sm text-gray-500 dark:text-gray-400">
+          Showing <span class="font-bold text-blue-600 dark:text-blue-400" data-port-reference-calculator-target="resultCount">0</span> ports
+        </span>
+        <button data-action="click->port-reference-calculator#copy"
+                class="px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
+          Copy Results
+        </button>
+      </div>
+
+      <%# Results table %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b-2 border-gray-200 dark:border-gray-700">
+              <th class="text-left px-4 py-3 text-gray-500 dark:text-gray-400 font-semibold">Port</th>
+              <th class="text-left px-4 py-3 text-gray-500 dark:text-gray-400 font-semibold">Service</th>
+              <th class="text-left px-4 py-3 text-gray-500 dark:text-gray-400 font-semibold">Protocol</th>
+              <th class="text-left px-4 py-3 text-gray-500 dark:text-gray-400 font-semibold">Category</th>
+              <th class="text-left px-4 py-3 text-gray-500 dark:text-gray-400 font-semibold">Description</th>
+            </tr>
+          </thead>
+          <tbody data-port-reference-calculator-target="resultsBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Port Number Reference</h2>
+      <p>
+        Type a port number or service name into the search field to filter the results instantly. Entering a number like 443 will show the exact port entry for HTTPS. Entering a service name like "Redis" or "PostgreSQL" will match against service names and descriptions. You can also search by category keywords such as "database" or "email" to see all ports in that category. Use the category filter buttons above the table to narrow results to a specific group like Web, Database, or DevOps. Click "Copy Results" to copy the currently visible port entries to your clipboard.
+      </p>
+      <p>
+        The reference includes over 100 of the most commonly used ports across networking, web development, databases, email, security, and DevOps. Each entry shows the port number, the service name, whether it uses TCP or UDP (or both), the category it belongs to, and a brief description of what the service does.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Network Ports</h2>
+      <p>
+        A network port is a logical endpoint for communication. Every TCP or UDP connection is identified by a combination of the source IP address, source port, destination IP address, and destination port. This four-part tuple allows a single server to run dozens of services simultaneously. When a web browser connects to a server, it sends data to the server's IP address on port 443 for HTTPS. The server's operating system routes the incoming packet to the web server process that is listening on that port.
+      </p>
+
+      <h3>Port Ranges and Their Significance</h3>
+      <p>
+        The total port range spans from 0 to 65535. This range is divided into three categories by IANA (Internet Assigned Numbers Authority). Well-known ports (0 to 1023) are reserved for established protocols like HTTP, SSH, and DNS. Binding to these ports on Unix-like systems typically requires root privileges. Registered ports (1024 to 49151) are assigned to specific applications upon request, covering services like MySQL (3306) and PostgreSQL (5432). Dynamic or ephemeral ports (49152 to 65535) are used by client applications for temporary outgoing connections and are assigned by the operating system.
+      </p>
+
+      <h3>TCP vs. UDP: Choosing the Right Protocol</h3>
+      <p>
+        TCP provides reliable, ordered delivery of data. It establishes a connection through a three-way handshake, retransmits lost packets, and ensures data arrives in sequence. This makes TCP the right choice for web traffic, email, file transfers, and database connections where every byte matters. UDP sends data without establishing a connection and does not guarantee delivery or ordering. This lower overhead makes UDP faster and more suitable for DNS lookups, video streaming, online gaming, and VoIP where occasional packet loss is acceptable and latency is critical.
+      </p>
+
+      <h2>Security Best Practices for Port Management</h2>
+      <p>
+        Every open port on a server is a potential attack surface. Close all ports that are not actively needed by configuring your firewall to deny incoming connections by default and only allowing specific ports. Use tools like <code>ss -tlnp</code> on Linux or <code>netstat -an</code> on Windows to audit which ports are listening. Move administrative services to non-standard ports when practical, though this is security through obscurity and should not replace proper authentication and encryption. Always use TLS-encrypted versions of protocols when available: HTTPS (443) instead of HTTP (80), IMAPS (993) instead of IMAP (143), and SMTPS (465) instead of SMTP (25).
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a network port number?</h3>
+      <p>
+        A port number is a 16-bit unsigned integer (0 to 65535) that identifies a specific process or service on a networked device. When data arrives at a server, the operating system uses the destination port number to route the traffic to the correct application. Without port numbers, a single IP address could only run one network service at a time.
+      </p>
+
+      <h3>What is the difference between TCP and UDP?</h3>
+      <p>
+        TCP is connection-oriented, guarantees delivery, and ensures packets arrive in order. UDP is connectionless, does not guarantee delivery or ordering, but has lower overhead. TCP is used for web traffic, email, and file transfers. UDP is used for DNS, streaming, and real-time applications.
+      </p>
+
+      <h3>What are well-known ports?</h3>
+      <p>
+        Well-known ports range from 0 to 1023 and are assigned by IANA to widely-used protocols like HTTP (80), HTTPS (443), SSH (22), and SMTP (25). On Unix-like systems, binding to these ports typically requires root privileges. Registered ports (1024-49151) are assigned to specific services, and dynamic ports (49152-65535) are used temporarily by client applications.
+      </p>
+
+      <h3>Why is port 443 important?</h3>
+      <p>
+        Port 443 is the default port for HTTPS, which is HTTP encrypted with TLS. Nearly all modern web traffic uses port 443 because browsers and security standards require TLS encryption. Websites serving content only on port 80 (unencrypted HTTP) are flagged as insecure by browsers.
+      </p>
+
+      <h3>How do I check which ports are open on my server?</h3>
+      <p>
+        On Linux, use <code>ss -tlnp</code> or <code>netstat -tlnp</code> to list all listening TCP ports. On macOS, use <code>lsof -iTCP -sTCP:LISTEN</code>. On Windows, use <code>netstat -an | findstr LISTENING</code>. For external scanning, tools like <code>nmap</code> can discover which ports are accepting connections.
+      </p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Port Number Reference", url: everyday_port_reference_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Subnet Calculator", description: "Calculate network address, broadcast address, subnet mask, and usable host range.", path: everyday_subnet_calculator_path, icon_path: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" },
+      { name: "HTTP Header Parser", description: "Parse and analyze HTTP response headers for debugging and security review.", path: everyday_http_header_parser_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "URL Parser", description: "Break down URLs into their components: protocol, host, path, query, and fragment.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("port-number-reference") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
