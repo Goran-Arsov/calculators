@@ -1,11 +1,11 @@
 <%# SEO meta tags %>
 <% set_meta_tags(
   title: "Color Palette Picker - Free Online Tool",
-  description: "Pick any color from a visual palette. Click anywhere on the color spectrum to see the HEX, RGB, and HSL codes instantly. Copy values with one click.",
+  description: "Pick any color from a visual palette. Click the gradient to choose saturation and brightness, use the hue bar to change the base color. Get HEX, RGB, and HSL codes with one-click copy.",
   canonical: everyday_color_palette_picker_url,
   og: {
     title: "Color Palette Picker - Free Online Tool | CalcWise",
-    description: "Click on a color palette to pick any shade. Get HEX, RGB, and HSL codes instantly with one-click copy.",
+    description: "Visual color picker with gradient palette. Click to pick any shade and get HEX, RGB, and HSL codes instantly.",
     url: everyday_color_palette_picker_url,
     type: "website",
     site_name: "CalcWise"
@@ -20,16 +20,16 @@
 ]) %>
 
 <%= faq_schema([
-  { question: "How does the color palette picker work?", answer: "The tool renders a full-spectrum color palette on an HTML canvas element. When you click anywhere on the palette, it reads the exact pixel color at that position and converts it to HEX, RGB, and HSL formats. A colored swatch and all three code formats appear in a side panel for easy copying." },
-  { question: "What color formats are supported?", answer: "The picker displays three formats: HEX (e.g., #3B82F6), RGB (e.g., rgb(59, 130, 246)), and HSL (e.g., hsl(217, 91%, 60%)). Each can be copied to the clipboard with a single click. HEX is the most common format for web development, RGB is used in CSS and design tools, and HSL is the most intuitive for adjusting hue, saturation, and lightness." },
-  { question: "Can I pick an exact shade?", answer: "The palette covers the full hue spectrum horizontally and varies brightness and saturation vertically. You can click precisely to pick very specific shades. For exact values, use the companion Color Converter tool to type in specific HEX or RGB values." },
-  { question: "Is this tool useful for web design?", answer: "Yes. The picker gives you CSS-ready color codes that you can paste directly into stylesheets. The HEX format works in any CSS context, the RGB format works in CSS rgb() functions, and the HSL format is ideal for CSS custom properties and theming because adjusting hue, saturation, and lightness is intuitive." },
-  { question: "Does the picker work on mobile devices?", answer: "Yes. The canvas responds to touch events the same way it responds to mouse clicks. Tap anywhere on the palette to pick a color. The side panel with the color swatch and codes appears below the palette on smaller screens." }
+  { question: "How does the color palette picker work?", answer: "The picker has two parts. The large gradient box lets you choose saturation (left to right) and brightness (top to bottom) for the current hue. The rainbow bar below lets you change the base hue. Click either area and the HEX, RGB, and HSL codes update instantly in the side panel." },
+  { question: "What color formats are displayed?", answer: "Three formats: HEX (e.g., #3B82F6), RGB (e.g., rgb(59, 130, 246)), and HSL (e.g., hsl(217, 80%, 55%)). Each has a Copy button. HEX is the most common for CSS, RGB is used in design tools, and HSL is the most intuitive for adjusting colors manually." },
+  { question: "Can I pick precise colors?", answer: "Click anywhere on the gradient for saturation and brightness control. Use the hue bar to shift between red, orange, yellow, green, cyan, blue, and violet. For exact values, use the companion Color Converter tool where you can type specific HEX, RGB, or HSL values." },
+  { question: "Is this useful for web design?", answer: "Yes. The codes are CSS-ready. Paste HEX into any stylesheet, use RGB in CSS rgb() functions, or use HSL for custom properties and theming. HSL is especially useful because you can generate shade scales by adjusting only the lightness value." },
+  { question: "Does it work on mobile?", answer: "Yes. Tap anywhere on the gradient or hue bar to pick a color. On smaller screens the results panel appears below the picker." }
 ]) %>
 
 <%= calculator_schema(
   name: "Color Palette Picker",
-  description: "Pick colors from a visual palette and get HEX, RGB, and HSL codes with one-click copy.",
+  description: "Pick colors from a visual gradient palette and get HEX, RGB, and HSL codes.",
   url: everyday_color_palette_picker_url,
   category: "UtilityApplication"
 ) %>
@@ -46,67 +46,67 @@
     <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
 
     <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Color Palette Picker</h1>
-    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Click anywhere on the palette to pick a color. The side panel shows a swatch with HEX, RGB, and HSL codes ready to copy.</p>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Click the gradient to pick saturation and brightness. Use the rainbow bar to change the hue. Codes update instantly.</p>
 
     <div data-controller="color-palette-picker-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
-      <div class="flex flex-col md:flex-row gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
 
-        <%# Palette canvas %>
-        <div class="flex-1 relative">
-          <canvas data-color-palette-picker-calculator-target="canvas"
-                  data-action="click->color-palette-picker-calculator#pick"
-                  width="600" height="300"
-                  class="w-full rounded-xl cursor-crosshair border border-gray-200 dark:border-gray-700"
-                  style="image-rendering: auto;"></canvas>
-          <%# Crosshair indicator %>
-          <div data-color-palette-picker-calculator-target="crosshair"
-               class="hidden absolute w-6 h-6 -ml-3 -mt-3 pointer-events-none rounded-full border-2 border-white shadow-lg"
-               style="box-shadow: 0 0 0 1px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.3);"></div>
+        <%# Picker area %>
+        <div class="space-y-4">
+          <%# Saturation / Brightness box %>
+          <div data-color-palette-picker-calculator-target="satBox"
+               data-action="click->color-palette-picker-calculator#clickSat"
+               class="relative rounded-xl cursor-crosshair"
+               style="height: 240px; background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(210, 100%, 50%));">
+            <div data-color-palette-picker-calculator-target="satMarker"
+                 class="absolute w-5 h-5 -ml-2.5 -mt-2.5 rounded-full border-2 border-white pointer-events-none"
+                 style="left: 80%; top: 45%; box-shadow: 0 0 0 1px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.4);"></div>
+          </div>
+
+          <%# Hue bar %>
+          <div data-color-palette-picker-calculator-target="hueBar"
+               data-action="click->color-palette-picker-calculator#clickHue"
+               class="relative rounded-lg cursor-pointer"
+               style="height: 28px; background: linear-gradient(to right, hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%), hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%));">
+            <div data-color-palette-picker-calculator-target="hueMarker"
+                 class="absolute top-0 bottom-0 w-3 -ml-1.5 rounded border-2 border-white pointer-events-none"
+                 style="left: 58%; box-shadow: 0 0 0 1px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.4);"></div>
+          </div>
+
+          <p class="text-sm text-gray-500 dark:text-gray-400">Click the gradient to pick saturation and brightness. Use the bar to change the hue.</p>
         </div>
 
-        <%# Side panel %>
-        <div data-color-palette-picker-calculator-target="sidebar"
-             class="hidden w-full md:w-56 shrink-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-5 transition-all duration-200">
-
-          <%# Color swatch %>
+        <%# Results panel %>
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
           <div data-color-palette-picker-calculator-target="swatch"
-               class="w-full h-28 rounded-xl border border-gray-200 dark:border-gray-700 mb-5 shadow-inner"
-               style="background-color: #ffffff;"></div>
+               class="w-full h-32 rounded-xl border border-gray-200 dark:border-gray-700 mb-5 shadow-inner"
+               style="background-color: #3B82F6;"></div>
 
-          <%# HEX %>
-          <div class="mb-3">
+          <div class="mb-4">
             <div class="flex justify-between items-center mb-1">
               <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">HEX</span>
               <button data-action="click->color-palette-picker-calculator#copyHex"
-                      class="text-xs px-2 py-0.5 bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors font-medium border border-gray-200 dark:border-gray-600">
-                Copy
-              </button>
+                      class="text-xs px-2.5 py-1 bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors font-medium border border-gray-200 dark:border-gray-600">Copy</button>
             </div>
-            <p class="font-mono text-lg font-bold text-gray-900 dark:text-white" data-color-palette-picker-calculator-target="hexValue">--</p>
+            <p class="font-mono text-2xl font-bold text-gray-900 dark:text-white" data-color-palette-picker-calculator-target="hexValue">--</p>
           </div>
 
-          <%# RGB %>
-          <div class="mb-3">
+          <div class="mb-4">
             <div class="flex justify-between items-center mb-1">
               <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">RGB</span>
               <button data-action="click->color-palette-picker-calculator#copyRgb"
-                      class="text-xs px-2 py-0.5 bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors font-medium border border-gray-200 dark:border-gray-600">
-                Copy
-              </button>
+                      class="text-xs px-2.5 py-1 bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors font-medium border border-gray-200 dark:border-gray-600">Copy</button>
             </div>
-            <p class="font-mono text-sm font-semibold text-gray-900 dark:text-white" data-color-palette-picker-calculator-target="rgbValue">--</p>
+            <p class="font-mono text-base font-semibold text-gray-900 dark:text-white" data-color-palette-picker-calculator-target="rgbValue">--</p>
           </div>
 
-          <%# HSL %>
           <div>
             <div class="flex justify-between items-center mb-1">
               <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">HSL</span>
               <button data-action="click->color-palette-picker-calculator#copyHsl"
-                      class="text-xs px-2 py-0.5 bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors font-medium border border-gray-200 dark:border-gray-600">
-                Copy
-              </button>
+                      class="text-xs px-2.5 py-1 bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors font-medium border border-gray-200 dark:border-gray-600">Copy</button>
             </div>
-            <p class="font-mono text-sm font-semibold text-gray-900 dark:text-white" data-color-palette-picker-calculator-target="hslValue">--</p>
+            <p class="font-mono text-base font-semibold text-gray-900 dark:text-white" data-color-palette-picker-calculator-target="hslValue">--</p>
           </div>
         </div>
       </div>
@@ -117,60 +117,50 @@
     <article class="prose dark:prose-invert max-w-none">
       <h2>How to Use the Color Palette Picker</h2>
       <p>
-        Click or tap anywhere on the color palette above. The horizontal axis represents the full hue spectrum from red through orange, yellow, green, cyan, blue, violet, and back to red. The vertical axis varies brightness and saturation, with vivid colors near the top and softer, lighter tones toward the bottom. When you click, a crosshair marks your position and a side panel appears showing a large swatch of the exact color along with its HEX, RGB, and HSL codes. Click the "Copy" button next to any format to send it to your clipboard.
+        The picker has two interactive areas. The large gradient box controls saturation and brightness for the current hue. Moving left makes the color less saturated (closer to gray or white), moving right increases saturation toward the pure hue. Moving up makes the color brighter, moving down makes it darker toward black. The rainbow bar below controls the base hue: red at the left edge, cycling through orange, yellow, green, cyan, blue, and violet back to red at the right edge.
       </p>
       <p>
-        The palette is rendered on an HTML canvas, which means every pixel is a distinct color. You can pick extremely precise shades by clicking carefully. If you need to type in an exact value instead, use the companion Color Converter tool, which lets you enter HEX, RGB, or HSL values directly and converts between all three formats.
+        Click anywhere in either area and the side panel updates instantly with a large color swatch and three code formats. Each code has a Copy button that sends the value to your clipboard for pasting into CSS, design tools, or documentation. The initial color is a medium blue, and you can reach any visible color by combining the hue bar with the saturation and brightness gradient.
       </p>
 
       <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
 
-      <h2>Understanding Color Formats</h2>
+      <h2>Understanding the Three Color Formats</h2>
       <p>
-        The three formats displayed by this tool each serve a different purpose. HEX notation like <code>#3B82F6</code> is the most compact and widely used in CSS and HTML. It encodes the red, green, and blue components as two hexadecimal digits each. RGB notation like <code>rgb(59, 130, 246)</code> uses decimal values from 0 to 255 for each color channel, which is easier to read and modify programmatically. HSL notation like <code>hsl(217, 91%, 60%)</code> describes colors in terms of hue (the position on the color wheel), saturation (how vivid the color is), and lightness (how bright or dark it is), making it the most intuitive format for manual color adjustments.
+        HEX notation like <code>#3B82F6</code> is the most compact format. It encodes red, green, and blue as two hexadecimal digits each, giving 16.7 million possible colors. HEX is the standard in CSS, HTML attributes, SVG fills, and most design tools. RGB notation like <code>rgb(59, 130, 246)</code> uses decimal values from 0 to 255 for each channel. It is easier to read and modify programmatically than HEX. HSL notation like <code>hsl(217, 80%, 55%)</code> describes color as hue (position on the color wheel from 0 to 360 degrees), saturation (how vivid the color is from 0% gray to 100% pure), and lightness (how bright from 0% black to 100% white). HSL is the most intuitive for manual adjustments because each parameter maps to a distinct visual property.
       </p>
 
-      <h3>Choosing Colors for Web Design</h3>
+      <h3>Choosing Colors for Design Systems</h3>
       <p>
-        Good color choices are rarely random. Most professional designs use a primary color, a secondary color, a neutral palette (grays), and an accent color for interactive elements. The primary color should reinforce the brand identity and work well against both white and dark backgrounds. Use the palette to explore hues visually, then refine with the Color Converter for precise adjustments. When building a design system, define your colors as CSS custom properties using HSL, because you can create lighter and darker variants by adjusting only the lightness value.
+        Professional color systems typically define a primary color, a secondary color, a neutral gray scale, and an accent for interactive elements. Start by picking your primary hue on the bar, then use the gradient to find a shade that works on both light and dark backgrounds. From that base, you can generate lighter and darker variants by adjusting only the lightness in HSL. Many design systems define colors as HSL custom properties specifically because lightness scales are linear and predictable, making it easy to create consistent shade ramps from 50 to 950.
       </p>
 
-      <h3>Accessibility Considerations</h3>
+      <h3>Accessibility and Contrast</h3>
       <p>
-        Colors that look distinct on your monitor may not be distinguishable to users with color vision deficiency. Roughly eight percent of men and half a percent of women have some form of color blindness. Beyond color choice, ensure that text always meets WCAG contrast requirements: 4.5:1 for normal text and 3:1 for large text against its background. The companion Color Converter tool calculates contrast ratios automatically so you can verify accessibility before committing to a palette.
+        Picking a color that looks good is only half the job. The color must also provide sufficient contrast when used as a background behind text or as text on a background. WCAG requires a contrast ratio of at least 4.5:1 for normal text and 3:1 for large text. After picking a color here, use the companion Color Converter tool to check its contrast ratio against white and black text and verify WCAG compliance before committing to your design.
       </p>
 
-      <h3>From Palette to Production</h3>
+      <h3>From Picker to Production</h3>
       <p>
-        Once you pick a color, paste the HEX or HSL code directly into your CSS, Tailwind config, Figma color tokens, or design system documentation. HEX codes also work in SVG fill and stroke attributes, email HTML templates, and image editing tools. HSL is the best choice for Tailwind custom colors because you can define the hue and saturation once and generate an entire shade scale by varying lightness from 50 (lightest) to 950 (darkest).
+        Once you copy a color code, paste it directly into your CSS stylesheet, Tailwind configuration, Figma color tokens, or email template. HEX codes work everywhere, including SVG attributes and image editors. HSL is the best choice for CSS custom properties because you can define hue and saturation once and create an entire shade scale by varying only lightness. This approach powers frameworks like Tailwind CSS, where each color has shades from 50 through 950 generated from a single base hue.
       </p>
 
       <h2>Frequently Asked Questions</h2>
 
       <h3>How does the picker work?</h3>
-      <p>
-        The palette is drawn on an HTML canvas covering the full color spectrum. When you click, the tool reads the exact pixel color at that position and converts it to HEX, RGB, and HSL formats.
-      </p>
+      <p>The gradient box controls saturation (left-right) and brightness (top-bottom). The rainbow bar controls hue. Click either area to pick a color and see its codes.</p>
 
-      <h3>What color formats are shown?</h3>
-      <p>
-        HEX (e.g., #3B82F6), RGB (e.g., rgb(59, 130, 246)), and HSL (e.g., hsl(217, 91%, 60%)). Each has a copy button. All three are CSS-ready.
-      </p>
+      <h3>What formats are shown?</h3>
+      <p>HEX, RGB, and HSL. Each has a Copy button. All are CSS-ready.</p>
 
       <h3>Can I pick exact shades?</h3>
-      <p>
-        The palette covers the full spectrum with gradients for brightness and saturation. For exact values, use the Color Converter to type in specific codes.
-      </p>
+      <p>Click precisely on the gradient for fine control. For exact numeric values, use the Color Converter tool to type in specific codes.</p>
 
       <h3>Is this useful for web design?</h3>
-      <p>
-        Yes. The codes copy directly into CSS, Tailwind configs, Figma, and design system tokens. HSL is especially useful for generating shade scales.
-      </p>
+      <p>Yes. Copy codes directly into CSS, Tailwind configs, or design tools. HSL is especially useful for generating shade scales.</p>
 
       <h3>Does it work on mobile?</h3>
-      <p>
-        Yes. Tap anywhere on the palette to pick a color. The side panel with codes appears below the canvas on smaller screens.
-      </p>
+      <p>Yes. Tap anywhere on the gradient or hue bar to pick a color.</p>
 
     <%= render "shared/print_button" %>
     <%= render "shared/social_share", title: "Color Palette Picker", url: everyday_color_palette_picker_url %>

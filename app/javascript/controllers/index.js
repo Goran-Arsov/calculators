@@ -151,6 +151,35 @@ import TextDiffCalculatorController from "controllers/text_diff_calculator_contr
 import StringEncoderCalculatorController from "controllers/string_encoder_calculator_controller"
 import RegexTesterCalculatorController from "controllers/regex_tester_calculator_controller"
 import MarkdownPreviewCalculatorController from "controllers/markdown_preview_calculator_controller"
+import SecureRandomCalculatorController from "controllers/secure_random_calculator_controller"
+import UuidGeneratorCalculatorController from "controllers/uuid_generator_calculator_controller"
+import HashGeneratorCalculatorController from "controllers/hash_generator_calculator_controller"
+import HmacGeneratorCalculatorController from "controllers/hmac_generator_calculator_controller"
+import JwtDecoderCalculatorController from "controllers/jwt_decoder_calculator_controller"
+import SqlFormatterCalculatorController from "controllers/sql_formatter_calculator_controller"
+import CronParserCalculatorController from "controllers/cron_parser_calculator_controller"
+import CronBuilderCalculatorController from "controllers/cron_builder_calculator_controller"
+import ColorConverterCalculatorController from "controllers/color_converter_calculator_controller"
+import UrlParserCalculatorController from "controllers/url_parser_calculator_controller"
+import HttpHeaderParserCalculatorController from "controllers/http_header_parser_calculator_controller"
+import SubnetCalculatorController from "controllers/subnet_calculator_controller"
+import UnixTimestampCalculatorController from "controllers/unix_timestamp_calculator_controller"
+import YamlToJsonCalculatorController from "controllers/yaml_to_json_calculator_controller"
+import CsvToJsonCalculatorController from "controllers/csv_to_json_calculator_controller"
+import XmlToJsonCalculatorController from "controllers/xml_to_json_calculator_controller"
+import HtmlEntityEncoderCalculatorController from "controllers/html_entity_encoder_calculator_controller"
+import CodeMinifierCalculatorController from "controllers/code_minifier_calculator_controller"
+import EscapeUnescapeCalculatorController from "controllers/escape_unescape_calculator_controller"
+import CsvToExcelCalculatorController from "controllers/csv_to_excel_calculator_controller"
+import ExcelToCsvCalculatorController from "controllers/excel_to_csv_calculator_controller"
+import MarkdownToHtmlCalculatorController from "controllers/markdown_to_html_calculator_controller"
+import HtmlToMarkdownCalculatorController from "controllers/html_to_markdown_calculator_controller"
+import TxtToPdfCalculatorController from "controllers/txt_to_pdf_calculator_controller"
+import CsvToPdfCalculatorController from "controllers/csv_to_pdf_calculator_controller"
+import MarkdownToPdfCalculatorController from "controllers/markdown_to_pdf_calculator_controller"
+import ExcelToPdfCalculatorController from "controllers/excel_to_pdf_calculator_controller"
+import DocxToPdfCalculatorController from "controllers/docx_to_pdf_calculator_controller"
+import ColorPalettePickerCalculatorController from "controllers/color_palette_picker_calculator_controller"
 
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
@@ -382,6 +411,35 @@ application.register("password-strength-calculator", PasswordStrengthCalculatorC
 application.register("screen-size-calculator", ScreenSizeCalculatorController)
 application.register("bandwidth-calculator", BandwidthCalculatorController)
 application.register("unit-price-calculator", UnitPriceCalculatorController)
+application.register("secure-random-calculator", SecureRandomCalculatorController)
+application.register("uuid-generator-calculator", UuidGeneratorCalculatorController)
+application.register("hash-generator-calculator", HashGeneratorCalculatorController)
+application.register("hmac-generator-calculator", HmacGeneratorCalculatorController)
+application.register("jwt-decoder-calculator", JwtDecoderCalculatorController)
+application.register("sql-formatter-calculator", SqlFormatterCalculatorController)
+application.register("cron-parser-calculator", CronParserCalculatorController)
+application.register("cron-builder-calculator", CronBuilderCalculatorController)
+application.register("color-converter-calculator", ColorConverterCalculatorController)
+application.register("url-parser-calculator", UrlParserCalculatorController)
+application.register("http-header-parser-calculator", HttpHeaderParserCalculatorController)
+application.register("subnet-calculator", SubnetCalculatorController)
+application.register("unix-timestamp-calculator", UnixTimestampCalculatorController)
+application.register("yaml-to-json-calculator", YamlToJsonCalculatorController)
+application.register("csv-to-json-calculator", CsvToJsonCalculatorController)
+application.register("xml-to-json-calculator", XmlToJsonCalculatorController)
+application.register("html-entity-encoder-calculator", HtmlEntityEncoderCalculatorController)
+application.register("code-minifier-calculator", CodeMinifierCalculatorController)
+application.register("escape-unescape-calculator", EscapeUnescapeCalculatorController)
+application.register("csv-to-excel-calculator", CsvToExcelCalculatorController)
+application.register("excel-to-csv-calculator", ExcelToCsvCalculatorController)
+application.register("markdown-to-html-calculator", MarkdownToHtmlCalculatorController)
+application.register("html-to-markdown-calculator", HtmlToMarkdownCalculatorController)
+application.register("txt-to-pdf-calculator", TxtToPdfCalculatorController)
+application.register("csv-to-pdf-calculator", CsvToPdfCalculatorController)
+application.register("markdown-to-pdf-calculator", MarkdownToPdfCalculatorController)
+application.register("excel-to-pdf-calculator", ExcelToPdfCalculatorController)
+application.register("docx-to-pdf-calculator", DocxToPdfCalculatorController)
+application.register("color-palette-picker-calculator", ColorPalettePickerCalculatorController)
 
 // Suites
 application.register("suite-stepper", SuiteStepperController)
