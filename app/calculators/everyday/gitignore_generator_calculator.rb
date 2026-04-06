@@ -1,0 +1,249 @@
+# frozen_string_literal: true
+
+module Everyday
+  class GitignoreGeneratorCalculator
+    attr_reader :errors
+
+    TEMPLATES = {
+      "ruby" => <<~GITIGNORE,
+        # Ruby / Rails
+        /.bundle
+        /vendor/bundle
+        /log/*
+        /tmp/*
+        /db/*.sqlite3
+        /db/*.sqlite3-journal
+        /public/assets
+        /public/packs
+        /storage/*
+        *.gem
+        .env
+        .env.local
+        .byebug_history
+        /config/master.key
+        /config/credentials/*.key
+      GITIGNORE
+      "python" => <<~GITIGNORE,
+        # Python
+        __pycache__/
+        *.py[cod]
+        *$py.class
+        *.so
+        venv/
+        .venv/
+        .env
+        dist/
+        build/
+        *.egg-info/
+        .eggs/
+        .mypy_cache/
+        .pytest_cache/
+        .coverage
+        htmlcov/
+      GITIGNORE
+      "node" => <<~GITIGNORE,
+        # Node.js
+        node_modules/
+        dist/
+        build/
+        .env
+        .env.local
+        .env.*.local
+        *.log
+        npm-debug.log*
+        yarn-debug.log*
+        yarn-error.log*
+        .cache/
+        coverage/
+      GITIGNORE
+      "go" => <<~GITIGNORE,
+        # Go
+        /bin/
+        /vendor/
+        *.exe
+        *.exe~
+        *.dll
+        *.so
+        *.dylib
+        *.test
+        *.out
+        go.work
+      GITIGNORE
+      "java" => <<~GITIGNORE,
+        # Java
+        *.class
+        *.jar
+        *.war
+        *.ear
+        target/
+        .gradle/
+        build/
+        out/
+        .settings/
+        .classpath
+        .project
+        hs_err_pid*
+      GITIGNORE
+      "c_cpp" => <<~GITIGNORE,
+        # C / C++
+        *.o
+        *.obj
+        *.so
+        *.dylib
+        *.dll
+        *.exe
+        *.out
+        *.a
+        *.lib
+        *.d
+        build/
+        cmake-build-*/
+        CMakeFiles/
+        CMakeCache.txt
+      GITIGNORE
+      "rust" => <<~GITIGNORE,
+        # Rust
+        /target/
+        Cargo.lock
+        *.rs.bk
+        *.pdb
+      GITIGNORE
+      "php" => <<~GITIGNORE,
+        # PHP
+        /vendor/
+        composer.phar
+        .env
+        *.log
+        .phpunit.result.cache
+        .php-cs-fixer.cache
+        storage/framework/cache/*
+        storage/framework/sessions/*
+        storage/framework/views/*
+      GITIGNORE
+      "swift" => <<~GITIGNORE,
+        # Swift / Xcode
+        .build/
+        Packages/
+        xcuserdata/
+        *.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+        *.playground/timeline.xctimeline
+        DerivedData/
+        .swiftpm/
+        *.dSYM.zip
+        *.dSYM
+      GITIGNORE
+      "macos" => <<~GITIGNORE,
+        # macOS
+        .DS_Store
+        .AppleDouble
+        .LSOverride
+        ._*
+        .Spotlight-V100
+        .Trashes
+        Icon?
+      GITIGNORE
+      "windows" => <<~GITIGNORE,
+        # Windows
+        Thumbs.db
+        Thumbs.db:encryptable
+        ehthumbs.db
+        ehthumbs_vista.db
+        Desktop.ini
+        $RECYCLE.BIN/
+        *.lnk
+      GITIGNORE
+      "linux" => <<~GITIGNORE,
+        # Linux
+        *~
+        .fuse_hidden*
+        .directory
+        .Trash-*
+        .nfs*
+      GITIGNORE
+      "jetbrains" => <<~GITIGNORE,
+        # JetBrains IDEs
+        .idea/
+        *.iml
+        *.iws
+        *.ipr
+        out/
+        .idea_modules/
+      GITIGNORE
+      "vscode" => <<~GITIGNORE,
+        # VS Code
+        .vscode/*
+        !.vscode/settings.json
+        !.vscode/tasks.json
+        !.vscode/launch.json
+        !.vscode/extensions.json
+        *.code-workspace
+      GITIGNORE
+      "vim" => <<~GITIGNORE,
+        # Vim
+        *.swp
+        *.swo
+        *.swn
+        *~
+        tags
+        Session.vim
+        .netrwhist
+      GITIGNORE
+      "emacs" => <<~GITIGNORE,
+        # Emacs
+        *~
+        \\#*\\#
+        .#*
+        *.elc
+        auto-save-list
+        tramp
+        .projectile
+        .dir-locals.el
+      GITIGNORE
+    }.freeze
+
+    TEMPLATE_NAMES = TEMPLATES.keys.freeze
+
+    def initialize(templates: [])
+      @templates = normalize_templates(templates)
+      @errors = []
+    end
+
+    def call
+      validate!
+      return { valid: false, errors: @errors } if @errors.any?
+
+      content = build_content
+
+      {
+        valid: true,
+        content: content,
+        line_count: content.lines.count,
+        template_count: @templates.size,
+        templates_used: @templates
+      }
+    end
+
+    private
+
+    def normalize_templates(templates)
+      case templates
+      when Array
+        templates.map(&:to_s).map(&:strip).reject(&:empty?).select { |t| TEMPLATES.key?(t) }
+      when String
+        templates.split(",").map(&:strip).reject(&:empty?).select { |t| TEMPLATES.key?(t) }
+      else
+        []
+      end
+    end
+
+    def validate!
+      @errors << "At least one template must be selected" if @templates.empty?
+    end
+
+    def build_content
+      sections = @templates.map { |template| TEMPLATES[template].strip }
+      header = "# Generated by CalcWise .gitignore Generator\n# Templates: #{@templates.join(', ')}\n"
+      header + "\n" + sections.join("\n\n") + "\n"
+    end
+  end
+end
