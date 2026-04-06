@@ -1,0 +1,229 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Secure Random Generator - Free Online Tool",
+  description: "Generate cryptographically secure random strings with custom length (6-30 characters). Choose from letters, numbers, and special characters. All generation happens locally in your browser.",
+  canonical: everyday_secure_random_url,
+  og: {
+    title: "Secure Random Generator - Free Online Tool | CalcWise",
+    description: "Generate secure random strings with customizable length and character options. Uses browser crypto API for true randomness.",
+    url: everyday_secure_random_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Secure Random Generator", url: everyday_secure_random_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What makes this random generator secure?", answer: "This generator uses the Web Crypto API (crypto.getRandomValues) in your browser, which provides cryptographically secure pseudo-random numbers. Unlike Math.random(), which uses a predictable algorithm, the Crypto API draws from the operating system's entropy pool, making the output suitable for passwords, tokens, and security keys." },
+  { question: "What is the best length for a secure password?", answer: "Security experts recommend at least 12-16 characters for passwords. Each additional character exponentially increases the number of possible combinations. A 16-character password using all character types (letters, numbers, symbols) has about 105 bits of entropy, which would take billions of years to crack with current hardware." },
+  { question: "Should I include special characters?", answer: "Yes, including special characters significantly increases the character pool from 62 (letters + digits) to 92+ characters. This dramatically increases entropy per character from about 5.95 bits to 6.52 bits. For a 12-character password, that is the difference between 71.5 and 78.2 bits of entropy." },
+  { question: "Is the generated string stored or transmitted?", answer: "No. All random generation happens entirely in your browser using the Web Crypto API. No data is sent to any server. You can verify this by disconnecting from the internet and using the tool — it works completely offline." },
+  { question: "Can I use this for API keys and tokens?", answer: "Yes. The cryptographic randomness provided by the Web Crypto API is suitable for generating API keys, session tokens, CSRF tokens, and other security-sensitive strings. For API keys, we recommend using at least 20-30 characters with all character types enabled." }
+]) %>
+
+<%= calculator_schema(
+  name: "Secure Random Generator",
+  description: "Generate cryptographically secure random strings with customizable length and character options.",
+  url: everyday_secure_random_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Secure Random Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Secure Random Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Generate cryptographically secure random strings with custom length and character options. All generation happens locally in your browser.</p>
+
+    <div data-controller="secure-random-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-5">
+          <%# Length slider %>
+          <div>
+            <label for="secure-random-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">
+              Length: <span data-secure-random-calculator-target="lengthDisplay" class="text-blue-600 dark:text-blue-400">16</span> characters
+            </label>
+            <input id="secure-random-length" type="range" min="6" max="30" value="16"
+                   data-secure-random-calculator-target="length"
+                   data-action="input->secure-random-calculator#generate"
+                   class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600">
+            <div class="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
+              <span>6</span>
+              <span>30</span>
+            </div>
+          </div>
+
+          <%# Character type checkboxes %>
+          <fieldset>
+            <legend class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Character Types</legend>
+            <div class="space-y-3">
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <input type="checkbox" checked
+                       data-secure-random-calculator-target="includeLowercase"
+                       data-action="change->secure-random-calculator#generate"
+                       class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                <span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Lowercase letters <span class="text-gray-400 dark:text-gray-500">(a-z)</span></span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <input type="checkbox" checked
+                       data-secure-random-calculator-target="includeUppercase"
+                       data-action="change->secure-random-calculator#generate"
+                       class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                <span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Uppercase letters <span class="text-gray-400 dark:text-gray-500">(A-Z)</span></span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <input type="checkbox" checked
+                       data-secure-random-calculator-target="includeDigits"
+                       data-action="change->secure-random-calculator#generate"
+                       class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                <span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Numbers <span class="text-gray-400 dark:text-gray-500">(0-9)</span></span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <input type="checkbox"
+                       data-secure-random-calculator-target="includeSpecial"
+                       data-action="change->secure-random-calculator#generate"
+                       class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                <span class="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Special characters <span class="text-gray-400 dark:text-gray-500">(!@#$%...)</span></span>
+              </label>
+            </div>
+          </fieldset>
+
+          <%# Generate button %>
+          <button data-action="click->secure-random-calculator#generate"
+                  class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+            Generate Random String
+          </button>
+        </div>
+
+        <div aria-live="polite" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Result</h2>
+
+          <%# Output field %>
+          <div class="mb-5">
+            <textarea data-secure-random-calculator-target="resultOutput" readonly rows="3"
+                      class="w-full font-mono text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-gray-900 dark:text-white resize-none focus:outline-none"
+                      placeholder="Click 'Generate' to create a random string"></textarea>
+          </div>
+
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Length</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-secure-random-calculator-target="resultLength">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Pool Size</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-secure-random-calculator-target="resultPoolSize">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Entropy</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-secure-random-calculator-target="resultEntropy">-- bits</span>
+            </div>
+          </div>
+
+          <button data-action="click->secure-random-calculator#copy"
+                  class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+            Copy to Clipboard
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Secure Random Generator</h2>
+      <p>
+        Adjust the length slider to choose between 6 and 30 characters. Select which character types to include: lowercase letters, uppercase letters, numbers, and special characters. Click "Generate Random String" to create a new random string. Each generated string is guaranteed to contain at least one character from every selected type. Click "Copy to Clipboard" to copy the result.
+      </p>
+      <p>
+        This tool uses the Web Crypto API (<code>crypto.getRandomValues</code>), which provides cryptographically secure pseudo-random numbers drawn from your operating system's entropy pool. Unlike <code>Math.random()</code>, the output is unpredictable and suitable for security-sensitive uses like passwords, API keys, and session tokens.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Entropy and Character Pools</h2>
+      <p>
+        Entropy measures the unpredictability of a random string in bits. It is calculated as the string length multiplied by log2 of the character pool size. A larger pool means more entropy per character. For example, using only lowercase letters gives a pool of 26 (about 4.7 bits per character), while enabling all four types creates a pool of 92+ characters (about 6.5 bits per character).
+      </p>
+
+      <h3>Character Pool Sizes</h3>
+      <p>
+        Lowercase letters contribute 26 characters, uppercase letters add another 26, digits add 10, and special characters add approximately 30. When all types are enabled, the total pool exceeds 90 characters. A 16-character string from this pool has over 100 bits of entropy, which is considered extremely strong. Even the most powerful computing clusters would need billions of years to brute-force such a string.
+      </p>
+
+      <h3>Choosing the Right Length</h3>
+      <p>
+        For everyday passwords, 12-16 characters with all character types is recommended. For API keys and tokens, use 20-30 characters for maximum security. Shorter strings (6-8 characters) may be useful for temporary PINs or verification codes but should not be used as primary passwords. The entropy display helps you evaluate whether your configuration provides adequate security for your use case.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What makes this random generator secure?</h3>
+      <p>
+        This generator uses the Web Crypto API (<code>crypto.getRandomValues</code>) in your browser, which provides cryptographically secure pseudo-random numbers. Unlike <code>Math.random()</code>, which uses a predictable algorithm, the Crypto API draws from the operating system's entropy pool, making the output suitable for passwords, tokens, and security keys.
+      </p>
+
+      <h3>What is the best length for a secure password?</h3>
+      <p>
+        Security experts recommend at least 12-16 characters for passwords. Each additional character exponentially increases the number of possible combinations. A 16-character password using all character types has about 105 bits of entropy, which would take billions of years to crack with current hardware.
+      </p>
+
+      <h3>Should I include special characters?</h3>
+      <p>
+        Yes, including special characters significantly increases the character pool from 62 (letters + digits) to 92+ characters. This dramatically increases entropy per character. For a 12-character string, that is the difference between 71.5 and 78.2 bits of entropy, making the string substantially harder to guess.
+      </p>
+
+      <h3>Is the generated string stored or transmitted?</h3>
+      <p>
+        No. All random generation happens entirely in your browser using the Web Crypto API. No data is sent to any server. You can verify this by disconnecting from the internet and using the tool. It works completely offline.
+      </p>
+
+      <h3>Can I use this for API keys and tokens?</h3>
+      <p>
+        Yes. The cryptographic randomness provided by the Web Crypto API is suitable for generating API keys, session tokens, CSRF tokens, and other security-sensitive strings. For API keys, we recommend using at least 20-30 characters with all character types enabled.
+      </p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Secure Random Generator", url: everyday_secure_random_url %>
+
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Password Strength Calculator", description: "Check password strength, entropy, and estimated crack time.", path: everyday_password_strength_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "String Encoder/Decoder", description: "Encode and decode strings in Base64, URL, HTML, and more.", path: everyday_string_encoder_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Character Counter", description: "Count characters, words, sentences, and paragraphs in text.", path: everyday_character_counter_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("secure-random-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

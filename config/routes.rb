@@ -237,6 +237,7 @@ Rails.application.routes.draw do
     get "string-encoder-decoder", to: "calculators#string_encoder", as: :string_encoder
     get "regex-tester", to: "calculators#regex_tester", as: :regex_tester
     get "markdown-preview", to: "calculators#markdown_preview", as: :markdown_preview
+    get "secure-random-generator", to: "calculators#secure_random", as: :secure_random
   end
 
   # Blog

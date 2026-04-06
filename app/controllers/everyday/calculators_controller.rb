@@ -55,6 +55,7 @@ module Everyday
     def string_encoder; end
     def regex_tester; end
     def markdown_preview; end
+    def secure_random; end
 
   end
 end

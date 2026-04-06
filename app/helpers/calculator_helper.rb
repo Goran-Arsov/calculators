@@ -136,7 +136,8 @@ module CalculatorHelper
     { name: "Password Strength Calculator", slug: "password-strength-calculator", path: :everyday_password_strength_path, description: "Check password strength, entropy, and estimated crack time.", icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
     { name: "Screen Size Calculator", slug: "screen-size-calculator", path: :everyday_screen_size_path, description: "Calculate screen width, height, and PPI from diagonal size and aspect ratio.", icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
     { name: "Bandwidth Calculator", slug: "bandwidth-calculator", path: :everyday_bandwidth_path, description: "Calculate file download time or required speed from file size and bandwidth.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
-    { name: "Unit Price Calculator", slug: "unit-price-calculator", path: :everyday_unit_price_path, description: "Compare unit prices of two products to find the better deal.", icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" }
+    { name: "Unit Price Calculator", slug: "unit-price-calculator", path: :everyday_unit_price_path, description: "Compare unit prices of two products to find the better deal.", icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" },
+    { name: "Secure Random Generator", slug: "secure-random-generator", path: :everyday_secure_random_path, description: "Generate cryptographically secure random strings with custom length and character options.", icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" }
   ].freeze
 
   ALL_CATEGORIES = {
