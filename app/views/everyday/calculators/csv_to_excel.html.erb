@@ -1,0 +1,184 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "CSV to Excel Converter - Free Online Tool",
+  description: "Convert CSV files to Excel (.xlsx) format instantly in your browser. Paste data or upload a file, preview the spreadsheet, and download a real .xlsx file. No upload to any server.",
+  canonical: everyday_csv_to_excel_url,
+  og: {
+    title: "CSV to Excel Converter - Free Online Tool | CalcWise",
+    description: "Convert CSV to downloadable Excel .xlsx files entirely in your browser. No data leaves your device.",
+    url: everyday_csv_to_excel_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "CSV to Excel Converter", url: everyday_csv_to_excel_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does CSV to Excel conversion work in the browser?", answer: "The tool parses your CSV text into rows and columns, then constructs a valid .xlsx file using the Office Open XML standard. It builds the required XML files (workbook, worksheet, content types, relationships) and packages them into a ZIP container, which is the .xlsx format. Everything happens locally in JavaScript with no server involved." },
+  { question: "Will my data be uploaded to a server?", answer: "No. The entire conversion happens in your browser using JavaScript. Your CSV data never leaves your device. You can verify this by disconnecting from the internet before converting — the tool works completely offline." },
+  { question: "What delimiters does this tool support?", answer: "The tool supports four common delimiters: comma (the CSV default), tab (for TSV files), semicolon (common in European locales where commas are decimal separators), and pipe. Select the matching delimiter before parsing to ensure columns are split correctly." },
+  { question: "Can the generated .xlsx file be opened in Google Sheets?", answer: "Yes. The tool generates a standard Office Open XML spreadsheet file that opens in Microsoft Excel, Google Sheets, LibreOffice Calc, Apple Numbers, and any other application that supports the .xlsx format." },
+  { question: "Is there a size limit for conversion?", answer: "The tool handles files with thousands of rows comfortably. The practical limit depends on your browser's available memory. For very large datasets exceeding 100,000 rows, a desktop application or command-line tool may be more appropriate." }
+]) %>
+
+<%= calculator_schema(
+  name: "CSV to Excel Converter",
+  description: "Convert CSV data to downloadable Excel .xlsx files entirely in the browser.",
+  url: everyday_csv_to_excel_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "CSV to Excel Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">CSV to Excel Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste CSV data or upload a .csv file, preview the spreadsheet, and download a real .xlsx Excel file. Everything runs locally in your browser.</p>
+
+    <div data-controller="csv-to-excel-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-5">
+        <%# File upload and delimiter %>
+        <div class="flex flex-wrap gap-4 items-end">
+          <div class="flex-1 min-w-[200px]">
+            <label for="csv-excel-file" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Upload CSV File</label>
+            <input id="csv-excel-file" type="file" accept=".csv,.tsv,.txt"
+                   data-csv-to-excel-calculator-target="fileInput"
+                   data-action="change->csv-to-excel-calculator#loadFile"
+                   class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-400">
+          </div>
+          <div>
+            <label for="csv-excel-delim" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Delimiter</label>
+            <select id="csv-excel-delim" data-csv-to-excel-calculator-target="delimiter" data-action="change->csv-to-excel-calculator#parse"
+                    class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-sm">
+              <option value=",">Comma (,)</option>
+              <option value="&#9;">Tab</option>
+              <option value=";">Semicolon (;)</option>
+              <option value="|">Pipe (|)</option>
+            </select>
+          </div>
+        </div>
+
+        <%# CSV text input %>
+        <div>
+          <label for="csv-excel-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Or Paste CSV Data</label>
+          <textarea id="csv-excel-input" rows="8"
+                    data-csv-to-excel-calculator-target="csvInput"
+                    data-action="input->csv-to-excel-calculator#parse"
+                    class="w-full font-mono text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded-xl"
+                    placeholder="name,email,age&#10;Alice,alice@example.com,30&#10;Bob,bob@example.com,25"></textarea>
+        </div>
+
+        <%# Preview %>
+        <div data-csv-to-excel-calculator-target="preview" class="hidden">
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Preview</h3>
+          <div class="overflow-x-auto max-h-80 border border-gray-200 dark:border-gray-700 rounded-xl" data-csv-to-excel-calculator-target="previewTable"></div>
+        </div>
+
+        <%# Stats and download %>
+        <div class="flex flex-wrap items-center gap-6">
+          <div class="flex gap-6 text-sm">
+            <div><span class="text-gray-500 dark:text-gray-400">Rows:</span> <span class="font-semibold text-gray-900 dark:text-white" data-csv-to-excel-calculator-target="resultRows">--</span></div>
+            <div><span class="text-gray-500 dark:text-gray-400">Columns:</span> <span class="font-semibold text-gray-900 dark:text-white" data-csv-to-excel-calculator-target="resultCols">--</span></div>
+            <div><span class="text-gray-500 dark:text-gray-400">Cells:</span> <span class="font-semibold text-gray-900 dark:text-white" data-csv-to-excel-calculator-target="resultCells">--</span></div>
+          </div>
+          <button data-csv-to-excel-calculator-target="downloadBtn" data-action="click->csv-to-excel-calculator#download" disabled
+                  class="px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-400 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">
+            Download .xlsx
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Convert CSV to Excel</h2>
+      <p>
+        Paste your CSV data directly into the text area or click the upload button to load a .csv file from your computer. The tool reads the data using the delimiter you select and shows a spreadsheet-style preview. Once you confirm the columns look right, click "Download .xlsx" to get a real Excel file saved to your device.
+      </p>
+      <p>
+        The converter handles quoted fields, embedded commas, and multi-line values within quotes according to the RFC 4180 specification. If your CSV uses a delimiter other than commas, switch the dropdown to tab, semicolon, or pipe before parsing. The preview table shows up to 20 rows so you can verify the data before downloading.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How the Excel File Is Generated</h2>
+      <p>
+        The .xlsx format is actually a ZIP archive containing a set of XML files that describe the workbook structure, worksheet data, styles, and metadata. This tool constructs those XML files in your browser, packages them into a standards-compliant ZIP container, and hands you the resulting binary as a download. The output opens in Microsoft Excel, Google Sheets, LibreOffice Calc, and Apple Numbers without any compatibility warnings.
+      </p>
+      <p>
+        Numbers in your CSV are detected automatically and stored as numeric values in Excel, which means they will be right-aligned and available for formulas. Text values are stored as inline strings. This distinction matters because Excel treats the number 42 differently from the text "42" when you try to use SUM, AVERAGE, or other functions on a column.
+      </p>
+
+      <h3>Why Not Just Open CSV in Excel Directly?</h3>
+      <p>
+        Excel can open CSV files, but the experience is often frustrating. Excel guesses the delimiter and frequently gets it wrong, especially with semicolon-delimited files from European systems. It also applies automatic type conversion that mangles data: gene names like SEPT2 and MARCH1 become dates, long numeric IDs lose trailing digits due to floating-point precision, and leading zeros in zip codes and phone numbers vanish. Converting through a tool like this lets you control exactly how each value is stored before Excel ever touches it.
+      </p>
+
+      <h3>Choosing the Right Delimiter</h3>
+      <p>
+        Commas are the standard CSV delimiter in English-speaking regions, but semicolons dominate in countries where the comma serves as a decimal separator. Tab-separated values are common in data exported from databases, scientific instruments, and spreadsheet applications. Pipe-delimited files appear in legacy mainframe systems and some EDI data formats. Selecting the correct delimiter before parsing ensures that your columns split at the right boundaries and your data arrives in Excel intact.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does CSV to Excel conversion work in the browser?</h3>
+      <p>
+        The tool parses your CSV into a row-and-column structure, then builds the XML files required by the Office Open XML standard. It packages those files into a ZIP container, which is what a .xlsx file actually is. The entire process runs in JavaScript with no server calls.
+      </p>
+
+      <h3>Will my data be uploaded to a server?</h3>
+      <p>
+        No. Everything happens locally in your browser. Your CSV data never leaves your device. You can disconnect from the internet and the tool still works.
+      </p>
+
+      <h3>What delimiters does this tool support?</h3>
+      <p>
+        Comma, tab, semicolon, and pipe. Select the correct one before parsing so that columns are split at the right positions.
+      </p>
+
+      <h3>Can the generated file be opened in Google Sheets?</h3>
+      <p>
+        Yes. The output is a standard .xlsx file that works in Excel, Google Sheets, LibreOffice Calc, and Apple Numbers.
+      </p>
+
+      <h3>Is there a size limit?</h3>
+      <p>
+        The tool handles thousands of rows comfortably. The practical limit depends on browser memory. For datasets exceeding 100,000 rows, consider a desktop tool or command-line utility.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "CSV to Excel Converter", url: everyday_csv_to_excel_url %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Excel to CSV Converter", description: "Upload an Excel file and convert it to CSV format.", path: everyday_excel_to_csv_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
+      { name: "CSV to JSON Converter", description: "Convert CSV data to structured JSON format.", path: everyday_csv_to_json_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
+      { name: "JSON Formatter", description: "Format, validate, and beautify JSON data.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("csv-to-excel-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

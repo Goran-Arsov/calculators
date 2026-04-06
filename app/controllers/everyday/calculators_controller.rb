@@ -73,6 +73,8 @@ module Everyday
     def unix_timestamp; end
     def color_converter; end
     def html_entity_encoder; end
+    def csv_to_excel; end
+    def excel_to_csv; end
 
   end
 end

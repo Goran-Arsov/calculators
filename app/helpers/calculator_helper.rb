@@ -154,7 +154,9 @@ module CalculatorHelper
     { name: "SQL Formatter", slug: "sql-formatter", path: :everyday_sql_formatter_path, description: "Format and indent SQL queries with keyword uppercasing and clause alignment.", icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
     { name: "HTML Entity Encoder/Decoder", slug: "html-entity-encoder-decoder", path: :everyday_html_entity_encoder_path, description: "Encode text to HTML entities or decode entities back to plain text.", icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
     { name: "Code Minifier/Beautifier", slug: "code-minifier-beautifier", path: :everyday_code_minifier_path, description: "Minify or beautify JSON, CSS, HTML, and JavaScript code with size comparison.", icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
-    { name: "Escape/Unescape Tool", slug: "escape-unescape-tool", path: :everyday_escape_unescape_path, description: "Escape and unescape text for JSON, URL, HTML, backslash, and Unicode formats.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" }
+    { name: "Escape/Unescape Tool", slug: "escape-unescape-tool", path: :everyday_escape_unescape_path, description: "Escape and unescape text for JSON, URL, HTML, backslash, and Unicode formats.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+    { name: "CSV to Excel Converter", slug: "csv-to-excel-converter", path: :everyday_csv_to_excel_path, description: "Convert CSV data to downloadable Excel .xlsx files entirely in the browser.", icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
+    { name: "Excel to CSV Converter", slug: "excel-to-csv-converter", path: :everyday_excel_to_csv_path, description: "Upload an Excel .xlsx file and convert it to CSV format with delimiter options.", icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" }
   ].freeze
 
   ALL_CATEGORIES = {

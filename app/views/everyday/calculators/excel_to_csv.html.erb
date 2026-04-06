@@ -1,0 +1,194 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Excel to CSV Converter - Free Online Tool",
+  description: "Convert Excel .xlsx files to CSV format instantly in your browser. Upload a spreadsheet, preview the data, and download or copy the CSV output. No data leaves your device.",
+  canonical: everyday_excel_to_csv_url,
+  og: {
+    title: "Excel to CSV Converter - Free Online Tool | CalcWise",
+    description: "Convert Excel .xlsx files to CSV directly in your browser. Upload, preview, and download. No server upload required.",
+    url: everyday_excel_to_csv_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Excel to CSV Converter", url: everyday_excel_to_csv_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does the Excel to CSV conversion work?", answer: "The tool reads your .xlsx file entirely in the browser. It parses the ZIP container, decompresses the XML worksheet data using the DecompressionStream API, extracts cell values from the Office Open XML structure, and assembles them into CSV format. No data is uploaded to any server." },
+  { question: "Which Excel formats are supported?", answer: "The tool supports .xlsx files, which is the modern Office Open XML format used by Excel 2007 and later. Older .xls files (Excel 97-2003 binary format) are not supported because they use a proprietary binary format that cannot be parsed with standard browser APIs." },
+  { question: "What happens to formulas in the Excel file?", answer: "The converter extracts the calculated values of formula cells, not the formulas themselves. If a cell contains =SUM(A1:A10) and its computed value is 250, the CSV output will contain 250. This is the expected behavior for data export since CSV does not support formulas." },
+  { question: "Can I choose a different delimiter for the CSV output?", answer: "Yes. The tool offers four delimiter options: comma, tab, semicolon, and pipe. Select your preferred delimiter before or after uploading the file. The CSV output and download will use whichever delimiter you choose." },
+  { question: "Is there a file size limit?", answer: "The tool processes files entirely in browser memory, so the limit depends on your device. Files up to 10-20 MB with tens of thousands of rows convert without issues on modern computers. For very large spreadsheets, a desktop tool or scripting approach may be more suitable." }
+]) %>
+
+<%= calculator_schema(
+  name: "Excel to CSV Converter",
+  description: "Convert Excel .xlsx files to CSV format directly in the browser with no server upload.",
+  url: everyday_excel_to_csv_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Excel to CSV Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Excel to CSV Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Upload an Excel .xlsx file to convert it to CSV format. Preview the data, choose your delimiter, then download or copy the result. Everything runs locally in your browser.</p>
+
+    <div data-controller="excel-to-csv-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-5">
+        <%# File upload and delimiter %>
+        <div class="flex flex-wrap gap-4 items-end">
+          <div class="flex-1 min-w-[200px]">
+            <label for="excel-csv-file" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Upload Excel File (.xlsx)</label>
+            <input id="excel-csv-file" type="file" accept=".xlsx"
+                   data-excel-to-csv-calculator-target="fileInput"
+                   data-action="change->excel-to-csv-calculator#loadFile"
+                   class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-400">
+          </div>
+          <div>
+            <label for="excel-csv-delim" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">CSV Delimiter</label>
+            <select id="excel-csv-delim" data-excel-to-csv-calculator-target="delimiter" data-action="change->excel-to-csv-calculator#generateCsv"
+                    class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-sm">
+              <option value=",">Comma (,)</option>
+              <option value="&#9;">Tab</option>
+              <option value=";">Semicolon (;)</option>
+              <option value="|">Pipe (|)</option>
+            </select>
+          </div>
+        </div>
+
+        <%# Preview table %>
+        <div data-excel-to-csv-calculator-target="preview" class="hidden">
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Spreadsheet Preview</h3>
+          <div class="overflow-x-auto max-h-80 border border-gray-200 dark:border-gray-700 rounded-xl" data-excel-to-csv-calculator-target="previewTable"></div>
+        </div>
+
+        <%# CSV output %>
+        <div>
+          <label for="excel-csv-output" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">CSV Output</label>
+          <textarea id="excel-csv-output" rows="8" readonly
+                    data-excel-to-csv-calculator-target="csvOutput"
+                    class="w-full font-mono text-sm bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded-xl"
+                    placeholder="Upload an Excel file to see CSV output here"></textarea>
+        </div>
+
+        <%# Stats and actions %>
+        <div class="flex flex-wrap items-center gap-6">
+          <div class="flex gap-6 text-sm">
+            <div><span class="text-gray-500 dark:text-gray-400">Sheet:</span> <span class="font-semibold text-gray-900 dark:text-white" data-excel-to-csv-calculator-target="resultSheetName">--</span></div>
+            <div><span class="text-gray-500 dark:text-gray-400">Rows:</span> <span class="font-semibold text-gray-900 dark:text-white" data-excel-to-csv-calculator-target="resultRows">--</span></div>
+            <div><span class="text-gray-500 dark:text-gray-400">Columns:</span> <span class="font-semibold text-gray-900 dark:text-white" data-excel-to-csv-calculator-target="resultCols">--</span></div>
+          </div>
+          <div class="flex gap-3">
+            <button data-excel-to-csv-calculator-target="downloadBtn" data-action="click->excel-to-csv-calculator#download" disabled
+                    class="px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-400 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">
+              Download .csv
+            </button>
+            <button data-excel-to-csv-calculator-target="copyBtn" data-action="click->excel-to-csv-calculator#copy" disabled
+                    class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-400 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+              Copy CSV
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Convert Excel to CSV</h2>
+      <p>
+        Click the file input and select an .xlsx spreadsheet from your computer. The tool reads the file entirely within your browser, parses the internal ZIP and XML structure, and extracts the cell values from the first worksheet. A spreadsheet-style preview appears so you can verify the data looks correct. The CSV output populates automatically in the text area below, ready to copy or download.
+      </p>
+      <p>
+        If you need a delimiter other than commas, switch the dropdown to tab, semicolon, or pipe. The CSV output regenerates immediately with the new delimiter. Fields that contain the delimiter character, double quotes, or line breaks are automatically wrapped in quotes following the RFC 4180 convention, which ensures the output can be parsed correctly by any CSV-aware application.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>What Happens Inside the .xlsx File</h2>
+      <p>
+        An .xlsx file is not a single document. It is a ZIP archive containing a collection of XML files that describe the workbook, its worksheets, shared string tables, styles, and relationships between components. When you upload a file, the tool decompresses this archive using the browser's built-in DecompressionStream API, locates the worksheet XML, and reads each cell's value along with its data type.
+      </p>
+      <p>
+        String values in Excel are often stored in a shared string table rather than directly in the worksheet. This is an optimization that avoids repeating the same text across many cells. The converter resolves these references automatically, replacing index numbers with the actual text content. Numeric values, booleans, and inline strings are extracted directly from the worksheet XML.
+      </p>
+
+      <h3>How Formulas Are Handled</h3>
+      <p>
+        Excel stores both the formula expression and its last calculated result in the worksheet XML. This converter extracts the cached result, not the formula itself. A cell containing <code>=VLOOKUP(A2, data!A:B, 2, FALSE)</code> will appear in the CSV as whatever value Excel computed when the file was last saved. This is the standard behavior for data export and matches what you would see if you copied and pasted values in Excel.
+      </p>
+
+      <h3>Why Convert Excel to CSV?</h3>
+      <p>
+        CSV is the universal interchange format for tabular data. Almost every programming language, database tool, and data pipeline can read CSV without specialized libraries. When you need to import spreadsheet data into a SQL database, a data warehouse, a CRM system, or a custom application, CSV is usually the path of least resistance. It strips away formatting, formulas, and Excel-specific features, leaving just the raw data in a format that any tool can consume.
+      </p>
+
+      <h3>Limitations of This Approach</h3>
+      <p>
+        The converter reads the first worksheet in the workbook. Multi-sheet workbooks will only yield data from Sheet 1. Date values stored as Excel serial numbers will appear as numbers rather than formatted dates, because the formatting information lives in the styles XML, which is separate from the cell value. If your spreadsheet relies heavily on merged cells, conditional formatting, or pivot tables, those structural features do not translate to CSV since the format only supports flat rows and columns.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does the conversion work?</h3>
+      <p>
+        The tool reads the .xlsx file as a ZIP archive in your browser, decompresses the XML files inside, parses the worksheet structure, extracts cell values, and assembles them into CSV format. No data is sent to any server.
+      </p>
+
+      <h3>Which Excel formats are supported?</h3>
+      <p>
+        Only .xlsx files (Office Open XML, Excel 2007 and later). The older .xls binary format uses a proprietary structure that cannot be parsed with browser APIs.
+      </p>
+
+      <h3>What happens to formulas?</h3>
+      <p>
+        The converter outputs the last computed values, not the formulas themselves. This is standard data export behavior, since CSV has no concept of formulas.
+      </p>
+
+      <h3>Can I choose a different CSV delimiter?</h3>
+      <p>
+        Yes. Select comma, tab, semicolon, or pipe from the dropdown. The CSV output updates immediately when you switch.
+      </p>
+
+      <h3>Is there a file size limit?</h3>
+      <p>
+        Processing happens in browser memory. Files up to 10-20 MB with tens of thousands of rows work well on modern devices. Very large spreadsheets may benefit from a desktop tool.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "Excel to CSV Converter", url: everyday_excel_to_csv_url %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "CSV to Excel Converter", description: "Convert CSV data to downloadable Excel .xlsx files.", path: everyday_csv_to_excel_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
+      { name: "CSV to JSON Converter", description: "Convert CSV data to structured JSON format.", path: everyday_csv_to_json_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
+      { name: "JSON Formatter", description: "Format, validate, and beautify JSON data.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("excel-to-csv-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -255,6 +255,8 @@ Rails.application.routes.draw do
     get "unix-timestamp-converter", to: "calculators#unix_timestamp", as: :unix_timestamp
     get "color-converter", to: "calculators#color_converter", as: :color_converter
     get "html-entity-encoder-decoder", to: "calculators#html_entity_encoder", as: :html_entity_encoder
+    get "csv-to-excel-converter", to: "calculators#csv_to_excel", as: :csv_to_excel
+    get "excel-to-csv-converter", to: "calculators#excel_to_csv", as: :excel_to_csv
   end
 
   # Blog
