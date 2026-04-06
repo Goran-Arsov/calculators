@@ -156,7 +156,9 @@ module CalculatorHelper
     { name: "Code Minifier/Beautifier", slug: "code-minifier-beautifier", path: :everyday_code_minifier_path, description: "Minify or beautify JSON, CSS, HTML, and JavaScript code with size comparison.", icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
     { name: "Escape/Unescape Tool", slug: "escape-unescape-tool", path: :everyday_escape_unescape_path, description: "Escape and unescape text for JSON, URL, HTML, backslash, and Unicode formats.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
     { name: "CSV to Excel Converter", slug: "csv-to-excel-converter", path: :everyday_csv_to_excel_path, description: "Convert CSV data to downloadable Excel .xlsx files entirely in the browser.", icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
-    { name: "Excel to CSV Converter", slug: "excel-to-csv-converter", path: :everyday_excel_to_csv_path, description: "Upload an Excel .xlsx file and convert it to CSV format with delimiter options.", icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" }
+    { name: "Excel to CSV Converter", slug: "excel-to-csv-converter", path: :everyday_excel_to_csv_path, description: "Upload an Excel .xlsx file and convert it to CSV format with delimiter options.", icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
+    { name: "Markdown to HTML Converter", slug: "markdown-to-html-converter", path: :everyday_markdown_to_html_path, description: "Convert Markdown to clean HTML with live preview. Supports headings, lists, code blocks, tables, and more.", icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+    { name: "HTML to Markdown Converter", slug: "html-to-markdown-converter", path: :everyday_html_to_markdown_path, description: "Convert HTML markup to Markdown syntax. Handles headings, formatting, links, tables, and code blocks.", icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
   ].freeze
 
   ALL_CATEGORIES = {

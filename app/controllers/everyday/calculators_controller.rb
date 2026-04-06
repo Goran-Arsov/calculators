@@ -75,6 +75,8 @@ module Everyday
     def html_entity_encoder; end
     def csv_to_excel; end
     def excel_to_csv; end
+    def markdown_to_html; end
+    def html_to_markdown; end
 
   end
 end

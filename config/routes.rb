@@ -257,6 +257,8 @@ Rails.application.routes.draw do
     get "html-entity-encoder-decoder", to: "calculators#html_entity_encoder", as: :html_entity_encoder
     get "csv-to-excel-converter", to: "calculators#csv_to_excel", as: :csv_to_excel
     get "excel-to-csv-converter", to: "calculators#excel_to_csv", as: :excel_to_csv
+    get "markdown-to-html-converter", to: "calculators#markdown_to_html", as: :markdown_to_html
+    get "html-to-markdown-converter", to: "calculators#html_to_markdown", as: :html_to_markdown
   end
 
   # Blog
