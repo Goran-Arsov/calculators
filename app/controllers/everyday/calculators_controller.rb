@@ -83,6 +83,7 @@ module Everyday
     def excel_to_pdf; end
     def docx_to_pdf; end
     def cron_builder; end
+    def color_palette_picker; end
 
   end
 end

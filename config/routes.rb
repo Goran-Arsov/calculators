@@ -265,6 +265,7 @@ Rails.application.routes.draw do
     get "excel-to-pdf-converter", to: "calculators#excel_to_pdf", as: :excel_to_pdf
     get "docx-to-pdf-converter", to: "calculators#docx_to_pdf", as: :docx_to_pdf
     get "cron-job-generator", to: "calculators#cron_builder", as: :cron_builder
+    get "color-palette-picker", to: "calculators#color_palette_picker", as: :color_palette_picker
   end
 
   # Blog
