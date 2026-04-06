@@ -1,0 +1,193 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "CSV to PDF Converter - Free Online Tool",
+  description: "Convert CSV files to professionally formatted PDF tables instantly in your browser. Upload or paste CSV data, preview the table, and download a clean PDF with headers and alternating row colors. No upload to any server.",
+  canonical: everyday_csv_to_pdf_url,
+  og: {
+    title: "CSV to PDF Converter - Free Online Tool | CalcWise",
+    description: "Convert CSV data to downloadable PDF tables with formatted headers and alternating row colors, entirely in your browser.",
+    url: everyday_csv_to_pdf_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "CSV to PDF Converter", url: everyday_csv_to_pdf_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does CSV to PDF conversion work in the browser?", answer: "The tool parses your CSV text into rows and columns using the delimiter you select, then constructs a valid PDF 1.4 document with a formatted table. It draws column headers with bold text and a colored background, adds alternating row shading for readability, and handles pagination automatically. Everything runs in JavaScript with no server involved." },
+  { question: "Will my CSV data be uploaded to a server?", answer: "No. The entire conversion happens locally in your browser using JavaScript. Your CSV data never leaves your device. You can verify this by disconnecting from the internet before converting. The tool works completely offline." },
+  { question: "What delimiters does this tool support?", answer: "The tool supports four common delimiters: comma (the CSV default), tab (for TSV files), semicolon (common in European locales where commas serve as decimal separators), and pipe (used in legacy systems and EDI data). Select the matching delimiter before parsing to ensure columns split correctly." },
+  { question: "Can I mark the first row as a header?", answer: "Yes. Check the 'First row is header' checkbox before parsing. Header rows are rendered with bold text and a distinct background color in the PDF, making the table easier to read. If unchecked, all rows are treated as data rows with generic column labels." },
+  { question: "Is there a size limit for CSV to PDF conversion?", answer: "The tool handles files with thousands of rows comfortably. The PDF automatically paginates when the table exceeds a single page. The practical limit depends on your browser's available memory. For very large datasets exceeding 100,000 rows, a desktop application may be more appropriate." }
+]) %>
+
+<%= calculator_schema(
+  name: "CSV to PDF Converter",
+  description: "Convert CSV data to downloadable PDF tables with formatted headers and alternating row colors, entirely in the browser.",
+  url: everyday_csv_to_pdf_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "CSV to PDF Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">CSV to PDF Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste CSV data or upload a .csv file, preview the table, and download a formatted PDF with headers and clean table layout. Everything runs locally in your browser.</p>
+
+    <div data-controller="csv-to-pdf-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-5">
+        <%# File upload and delimiter %>
+        <div class="flex flex-wrap gap-4 items-end">
+          <div class="flex-1 min-w-[200px]">
+            <label for="csv-pdf-file" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Upload CSV File</label>
+            <input id="csv-pdf-file" type="file" accept=".csv,.tsv,.txt"
+                   data-csv-to-pdf-calculator-target="fileInput"
+                   data-action="change->csv-to-pdf-calculator#loadFile"
+                   class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-400">
+          </div>
+          <div>
+            <label for="csv-pdf-delim" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Delimiter</label>
+            <select id="csv-pdf-delim" data-csv-to-pdf-calculator-target="delimiter" data-action="change->csv-to-pdf-calculator#parse"
+                    class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-sm">
+              <option value=",">Comma (,)</option>
+              <option value="&#9;">Tab</option>
+              <option value=";">Semicolon (;)</option>
+              <option value="|">Pipe (|)</option>
+            </select>
+          </div>
+        </div>
+
+        <%# CSV text input %>
+        <div>
+          <label for="csv-pdf-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Or Paste CSV Data</label>
+          <textarea id="csv-pdf-input" rows="8"
+                    data-csv-to-pdf-calculator-target="csvInput"
+                    data-action="input->csv-to-pdf-calculator#parse"
+                    class="w-full font-mono text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded-xl"
+                    placeholder="name,email,age&#10;Alice,alice@example.com,30&#10;Bob,bob@example.com,25"></textarea>
+        </div>
+
+        <%# Header checkbox %>
+        <div class="flex items-center gap-2">
+          <input id="csv-pdf-header" type="checkbox" checked
+                 data-csv-to-pdf-calculator-target="headerCheckbox"
+                 data-action="change->csv-to-pdf-calculator#parse"
+                 class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+          <label for="csv-pdf-header" class="text-sm text-gray-600 dark:text-gray-400">First row is header</label>
+        </div>
+
+        <%# Preview %>
+        <div data-csv-to-pdf-calculator-target="preview" class="hidden">
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Preview</h3>
+          <div class="overflow-x-auto max-h-80 border border-gray-200 dark:border-gray-700 rounded-xl" data-csv-to-pdf-calculator-target="previewTable"></div>
+        </div>
+
+        <%# Stats and download %>
+        <div class="flex flex-wrap items-center gap-6">
+          <div class="flex gap-6 text-sm">
+            <div><span class="text-gray-500 dark:text-gray-400">Rows:</span> <span class="font-semibold text-gray-900 dark:text-white" data-csv-to-pdf-calculator-target="resultRows">--</span></div>
+            <div><span class="text-gray-500 dark:text-gray-400">Columns:</span> <span class="font-semibold text-gray-900 dark:text-white" data-csv-to-pdf-calculator-target="resultCols">--</span></div>
+          </div>
+          <button data-csv-to-pdf-calculator-target="downloadBtn" data-action="click->csv-to-pdf-calculator#download" disabled
+                  class="px-5 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 disabled:from-gray-400 disabled:to-gray-400 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-sm font-medium">
+            Download PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Convert CSV to PDF</h2>
+      <p>
+        Paste your CSV data into the text area or click the upload button to load a .csv file from your computer. Select the delimiter that matches your data format, and check or uncheck the header row option depending on whether your first row contains column names. The tool parses the data immediately and shows a table preview so you can verify that columns are aligned correctly. Once everything looks right, click "Download PDF" to get a formatted PDF table saved to your device.
+      </p>
+      <p>
+        The converter handles quoted fields, embedded commas, and multi-line values within quotes following the RFC 4180 specification. If your CSV uses a delimiter other than commas, switch the dropdown to tab, semicolon, or pipe before the tool parses. The preview shows up to 20 rows with alternating row shading so you can confirm the structure before committing to a download.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>CSV to PDF for Reporting and Sharing</h2>
+      <p>
+        Spreadsheet data often needs to leave the spreadsheet. Board members expect a polished PDF attachment, not a raw CSV file they have to open in Excel. Clients receiving an invoice want a printable document, not a comma-separated string. Regulatory filings frequently require PDF submissions even when the source data lives in a database or CSV export. Converting CSV to PDF transforms raw data into a presentation-ready document without requiring you to open a spreadsheet application, manually adjust column widths, or fight with print settings.
+      </p>
+      <p>
+        This tool creates tables with formatted header rows, consistent column widths calculated from the data, and alternating row colors that make dense tables scannable. The PDF automatically paginates when the table exceeds a single page, repeating column headers on each new page so the reader never loses context. These details matter when the document will be printed, projected in a meeting, or attached to a formal communication.
+      </p>
+
+      <h3>Creating Printable Data Tables</h3>
+      <p>
+        Printing CSV data directly produces output that is difficult to read: columns run together, text wraps unpredictably, and there is no visual separation between rows. The PDF output from this tool solves each of these problems. Columns are sized proportionally to their content, cell borders provide clear boundaries, and alternating row backgrounds reduce the chance of reading across to the wrong line in a wide table. The result is a document that looks like it came from a professional reporting tool rather than a raw data export.
+      </p>
+
+      <h3>When Spreadsheet Sharing Is Not Appropriate</h3>
+      <p>
+        There are many situations where sending a spreadsheet is the wrong choice. Editable files can be altered before being forwarded, which creates version control and trust issues. Spreadsheets may contain hidden sheets, formulas, or metadata that you do not intend to share. Some recipients lack spreadsheet software entirely, particularly on mobile devices where CSV rendering is inconsistent. PDF eliminates all of these concerns: the document is read-only, contains exactly the data you chose to include, and renders identically on every device. For board reports, client deliverables, audit documentation, and any situation where data integrity matters, PDF is the appropriate delivery format.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does CSV to PDF conversion work in the browser?</h3>
+      <p>
+        The tool parses your CSV into rows and columns, then builds a PDF document with a formatted table. It draws headers, alternating row colors, and handles pagination automatically. The entire process runs in JavaScript with no server calls.
+      </p>
+
+      <h3>Will my CSV data be uploaded to a server?</h3>
+      <p>
+        No. Everything happens locally in your browser. Your CSV data never leaves your device. You can disconnect from the internet and the tool still works.
+      </p>
+
+      <h3>What delimiters does this tool support?</h3>
+      <p>
+        Comma, tab, semicolon, and pipe. Select the correct one before parsing so that columns split at the right positions.
+      </p>
+
+      <h3>Can I mark the first row as a header?</h3>
+      <p>
+        Yes. Check the "First row is header" checkbox. Header rows render with bold text and a distinct background color in the PDF for easier reading.
+      </p>
+
+      <h3>Is there a size limit?</h3>
+      <p>
+        The tool handles thousands of rows comfortably with automatic pagination. The practical limit depends on browser memory. For datasets exceeding 100,000 rows, consider a desktop tool.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "CSV to PDF Converter", url: everyday_csv_to_pdf_url %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "TXT to PDF Converter", description: "Convert plain text files to properly formatted PDF documents.", path: everyday_txt_to_pdf_path, icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Excel to PDF Converter", description: "Convert Excel spreadsheets to formatted PDF tables.", path: everyday_excel_to_pdf_path, icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "CSV to Excel Converter", description: "Convert CSV data to downloadable Excel .xlsx files.", path: everyday_csv_to_excel_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
+      { name: "CSV to JSON Converter", description: "Convert CSV data to structured JSON format.", path: everyday_csv_to_json_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("csv-to-pdf-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

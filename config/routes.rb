@@ -259,6 +259,11 @@ Rails.application.routes.draw do
     get "excel-to-csv-converter", to: "calculators#excel_to_csv", as: :excel_to_csv
     get "markdown-to-html-converter", to: "calculators#markdown_to_html", as: :markdown_to_html
     get "html-to-markdown-converter", to: "calculators#html_to_markdown", as: :html_to_markdown
+    get "txt-to-pdf-converter", to: "calculators#txt_to_pdf", as: :txt_to_pdf
+    get "csv-to-pdf-converter", to: "calculators#csv_to_pdf", as: :csv_to_pdf
+    get "markdown-to-pdf-converter", to: "calculators#markdown_to_pdf", as: :markdown_to_pdf
+    get "excel-to-pdf-converter", to: "calculators#excel_to_pdf", as: :excel_to_pdf
+    get "docx-to-pdf-converter", to: "calculators#docx_to_pdf", as: :docx_to_pdf
   end
 
   # Blog

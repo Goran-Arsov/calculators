@@ -77,6 +77,11 @@ module Everyday
     def excel_to_csv; end
     def markdown_to_html; end
     def html_to_markdown; end
+    def txt_to_pdf; end
+    def csv_to_pdf; end
+    def markdown_to_pdf; end
+    def excel_to_pdf; end
+    def docx_to_pdf; end
 
   end
 end

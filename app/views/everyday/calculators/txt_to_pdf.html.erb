@@ -1,0 +1,188 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "TXT to PDF Converter - Free Online Tool",
+  description: "Convert plain text files to professionally formatted PDF documents instantly in your browser. Customize font size, choose page layout, and download a clean PDF. No upload to any server.",
+  canonical: everyday_txt_to_pdf_url,
+  og: {
+    title: "TXT to PDF Converter - Free Online Tool | CalcWise",
+    description: "Convert plain text to downloadable PDF documents entirely in your browser. No data leaves your device.",
+    url: everyday_txt_to_pdf_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "TXT to PDF Converter", url: everyday_txt_to_pdf_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does TXT to PDF conversion work in the browser?", answer: "The tool reads your plain text input, breaks it into paragraphs and lines, then constructs a valid PDF 1.4 document using JavaScript. It handles pagination, margins, and font rendering entirely on the client side. The resulting file opens in any PDF reader including Adobe Acrobat, Preview, Chrome, and Firefox." },
+  { question: "Will my text data be uploaded to a server?", answer: "No. The entire conversion happens locally in your browser using JavaScript. Your text never leaves your device. You can verify this by disconnecting from the internet before converting. The tool works completely offline." },
+  { question: "Can I change the font size and page layout?", answer: "Yes. Use the font size slider to choose any size between 8pt and 16pt, with 11pt as the default. You can also toggle between A4 (210 x 297 mm, the international standard) and US Letter (8.5 x 11 inches) page sizes to match your printing requirements." },
+  { question: "Does the converter preserve line breaks and paragraph spacing?", answer: "Yes. Single line breaks in your text are maintained as separate lines in the PDF. Double line breaks (blank lines) create paragraph spacing. The tool faithfully reproduces the structure of your original text while adding proper margins and pagination." },
+  { question: "Is there a size limit for the text I can convert?", answer: "The tool handles documents with tens of thousands of lines comfortably. The practical limit depends on your browser's available memory. For extremely large files exceeding several megabytes, processing may take a few seconds. There is no hard character limit imposed by the tool." }
+]) %>
+
+<%= calculator_schema(
+  name: "TXT to PDF Converter",
+  description: "Convert plain text to downloadable PDF documents with customizable font size and page layout, entirely in the browser.",
+  url: everyday_txt_to_pdf_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "TXT to PDF Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">TXT to PDF Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste text or upload a .txt file, adjust font size and page layout, then download a clean PDF document. Everything runs locally in your browser.</p>
+
+    <div data-controller="txt-to-pdf-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-5">
+        <%# File upload %>
+        <div class="flex flex-wrap gap-4 items-end">
+          <div class="flex-1 min-w-[200px]">
+            <label for="txt-pdf-file" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Upload Text File</label>
+            <input id="txt-pdf-file" type="file" accept=".txt"
+                   data-txt-to-pdf-calculator-target="fileInput"
+                   data-action="change->txt-to-pdf-calculator#loadFile"
+                   class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-400">
+          </div>
+        </div>
+
+        <%# Text input %>
+        <div>
+          <label for="txt-pdf-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Or Paste Text</label>
+          <textarea id="txt-pdf-input" rows="10"
+                    data-txt-to-pdf-calculator-target="textInput"
+                    data-action="input->txt-to-pdf-calculator#updateStats"
+                    class="w-full font-mono text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded-xl"
+                    placeholder="Paste your text here or upload a .txt file above..."></textarea>
+        </div>
+
+        <%# Options: font size and page size %>
+        <div class="flex flex-wrap gap-6 items-end">
+          <div class="flex-1 min-w-[200px]">
+            <label for="txt-pdf-fontsize" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Font Size: <span data-txt-to-pdf-calculator-target="fontSizeValue">11pt</span></label>
+            <input id="txt-pdf-fontsize" type="range" min="8" max="16" value="11" step="1"
+                   data-txt-to-pdf-calculator-target="fontSize"
+                   data-action="input->txt-to-pdf-calculator#updateFontSize"
+                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+          </div>
+          <div>
+            <label for="txt-pdf-pagesize" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Page Size</label>
+            <select id="txt-pdf-pagesize" data-txt-to-pdf-calculator-target="pageSize"
+                    class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-sm">
+              <option value="a4">A4 (210 x 297 mm)</option>
+              <option value="letter">US Letter (8.5 x 11 in)</option>
+            </select>
+          </div>
+        </div>
+
+        <%# Stats and download %>
+        <div class="flex flex-wrap items-center gap-6">
+          <div class="flex gap-6 text-sm">
+            <div><span class="text-gray-500 dark:text-gray-400">Lines:</span> <span class="font-semibold text-gray-900 dark:text-white" data-txt-to-pdf-calculator-target="resultLines">--</span></div>
+            <div><span class="text-gray-500 dark:text-gray-400">Words:</span> <span class="font-semibold text-gray-900 dark:text-white" data-txt-to-pdf-calculator-target="resultWords">--</span></div>
+            <div><span class="text-gray-500 dark:text-gray-400">Characters:</span> <span class="font-semibold text-gray-900 dark:text-white" data-txt-to-pdf-calculator-target="resultChars">--</span></div>
+          </div>
+          <button data-txt-to-pdf-calculator-target="downloadBtn" data-action="click->txt-to-pdf-calculator#download" disabled
+                  class="px-5 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 disabled:from-gray-400 disabled:to-gray-400 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-sm font-medium">
+            Download PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Why Convert Plain Text to PDF?</h2>
+      <p>
+        Plain text files are the most universal digital document format. Every operating system can open a .txt file without installing additional software, and text files have remained readable for decades without format obsolescence. However, plain text lacks the visual structure that makes documents presentable: there are no margins, no consistent pagination, and no guarantee that the text will render the same way on every device or printer. Converting text to PDF bridges this gap by wrapping your content in a format that preserves layout across every screen and printer in existence.
+      </p>
+      <p>
+        PDF documents carry their own font metrics, page dimensions, and margin definitions. When you send a PDF, the recipient sees exactly what you intended regardless of their operating system, installed fonts, or display resolution. This makes PDF the preferred format for archiving text documents, submitting reports, sharing meeting notes, and printing manuscripts. The conversion process does not alter your words; it simply places them inside a container that guarantees consistent rendering.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>When You Need a PDF of Text Content</h2>
+      <p>
+        Several common scenarios call for converting plain text to PDF. Archiving is one of the most important: organizations that store records for compliance or legal purposes often require PDF/A format because it is an ISO standard for long-term preservation. Printing is another: sending a .txt file to a printer produces output with tiny margins, no page numbers, and inconsistent line breaks, while a PDF prints with proper margins and clean page boundaries every time.
+      </p>
+      <p>
+        Sharing formatted documents is a third reason. When you paste a plain text log, configuration file, or transcript into this tool, the resulting PDF has uniform margins, a readable font size, and automatic page breaks that prevent text from being cut off mid-line. This matters when sharing server logs with a client, exporting chat transcripts for a legal review, or turning personal notes into a document that looks polished enough to distribute.
+      </p>
+
+      <h3>Advantages of the PDF Format</h3>
+      <p>
+        PDF files render identically on Windows, macOS, Linux, iOS, and Android. They cannot be accidentally edited by the recipient, which protects the integrity of your content. PDF supports accessibility features such as tagged text for screen readers, and the files compress efficiently for email attachments. Unlike word processor formats that depend on installed fonts and application versions, a PDF embeds everything needed for faithful reproduction. These properties make PDF the standard output format for contracts, invoices, academic papers, government filings, and technical documentation worldwide.
+      </p>
+
+      <h3>How This Tool Preserves Your Text</h3>
+      <p>
+        The converter reads your input line by line and places each line into the PDF at the correct vertical position using the font size you selected. Paragraphs separated by blank lines receive additional vertical spacing. When the text reaches the bottom margin of a page, a new page is created automatically, and the content continues at the top. The tool uses Helvetica, a standard PDF base font available in every PDF reader, so no font embedding is required and the resulting file size stays small. You can adjust the font size from 8pt for dense technical content up to 16pt for large-print readability, and switch between A4 and US Letter page dimensions to match your region or printing requirements.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does TXT to PDF conversion work in the browser?</h3>
+      <p>
+        The tool reads your plain text, breaks it into paragraphs and lines, then constructs a valid PDF 1.4 document using JavaScript. It handles pagination, margins, and font rendering entirely on the client side. The resulting file opens in any PDF reader.
+      </p>
+
+      <h3>Will my text data be uploaded to a server?</h3>
+      <p>
+        No. Everything happens locally in your browser. Your text never leaves your device. You can disconnect from the internet and the tool still works.
+      </p>
+
+      <h3>Can I change the font size and page layout?</h3>
+      <p>
+        Yes. Use the font size slider to pick any size between 8pt and 16pt. You can also toggle between A4 and US Letter page sizes to match your printing needs.
+      </p>
+
+      <h3>Does the converter preserve line breaks and paragraph spacing?</h3>
+      <p>
+        Yes. Single line breaks produce separate lines in the PDF. Double line breaks create paragraph spacing. The structure of your original text is faithfully reproduced with proper margins and pagination.
+      </p>
+
+      <h3>Is there a size limit?</h3>
+      <p>
+        The tool handles documents with tens of thousands of lines comfortably. The practical limit depends on browser memory. For extremely large files, processing may take a few seconds but there is no hard character limit.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "TXT to PDF Converter", url: everyday_txt_to_pdf_url %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "CSV to PDF Converter", description: "Convert CSV data to a formatted PDF table with headers and proper pagination.", path: everyday_csv_to_pdf_path, icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Markdown to PDF Converter", description: "Convert Markdown documents to beautifully formatted PDF files.", path: everyday_markdown_to_pdf_path, icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Excel to PDF Converter", description: "Convert Excel spreadsheets to formatted PDF tables.", path: everyday_excel_to_pdf_path, icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "DOCX to PDF Converter", description: "Convert Word documents to PDF preserving formatting.", path: everyday_docx_to_pdf_path, icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("txt-to-pdf-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,177 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Excel to PDF Converter - Free Online Tool",
+  description: "Convert Excel .xlsx files to PDF format instantly in your browser. Upload a spreadsheet, preview the data table, and download a formatted PDF. No data leaves your device.",
+  canonical: everyday_excel_to_pdf_url,
+  og: {
+    title: "Excel to PDF Converter - Free Online Tool | CalcWise",
+    description: "Convert Excel .xlsx spreadsheets to downloadable PDF files entirely in your browser. No data leaves your device.",
+    url: everyday_excel_to_pdf_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Excel to PDF Converter", url: everyday_excel_to_pdf_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does this Excel to PDF converter work?", answer: "The tool reads your .xlsx file entirely in the browser using JavaScript. It parses the ZIP container, decompresses the XML worksheet data, extracts cell values, and renders the spreadsheet as a formatted table inside a PDF document. No data is uploaded to any server." },
+  { question: "Will my spreadsheet data be uploaded to a server?", answer: "No. The entire conversion happens locally in your browser. Your Excel data never leaves your device. You can disconnect from the internet and the tool will still work." },
+  { question: "Does the PDF preserve Excel formatting like colors and fonts?", answer: "The tool renders the data as a clean, readable table with header row highlighting, alternating row shading, and proper column alignment. Cell-level formatting such as custom fonts, colors, conditional formatting, and merged cells from the original Excel file are not carried over." },
+  { question: "Can I mark the first row as a header?", answer: "Yes. Check the 'First row is header' checkbox before downloading. The header row will appear with a blue background and white bold text in the PDF, making the table easier to read." },
+  { question: "Is there a file size or row limit?", answer: "The tool processes files entirely in browser memory. Spreadsheets with thousands of rows and dozens of columns convert without issues on modern devices. For very large files exceeding 50,000 rows, the PDF may become quite long and a desktop tool might be more practical." }
+]) %>
+
+<%= calculator_schema(
+  name: "Excel to PDF Converter",
+  description: "Convert Excel .xlsx files to formatted PDF documents directly in the browser.",
+  url: everyday_excel_to_pdf_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Excel to PDF Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Excel to PDF Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Upload an Excel .xlsx file to convert it to a formatted PDF table. Preview the data, toggle the header row option, and download the result. Everything runs locally in your browser.</p>
+
+    <div data-controller="excel-to-pdf-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-5">
+        <%# File upload and header toggle %>
+        <div class="flex flex-wrap gap-4 items-end">
+          <div class="flex-1 min-w-[200px]">
+            <label for="excel-pdf-file" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Upload Excel File (.xlsx)</label>
+            <input id="excel-pdf-file" type="file" accept=".xlsx"
+                   data-excel-to-pdf-calculator-target="fileInput"
+                   data-action="change->excel-to-pdf-calculator#loadFile"
+                   class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-400">
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="excel-pdf-header" type="checkbox" checked
+                   data-excel-to-pdf-calculator-target="headerCheckbox"
+                   data-action="change->excel-to-pdf-calculator#refreshPreview"
+                   class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <label for="excel-pdf-header" class="text-sm font-semibold text-gray-600 dark:text-gray-400">First row is header</label>
+          </div>
+        </div>
+
+        <%# Preview table %>
+        <div data-excel-to-pdf-calculator-target="preview" class="hidden">
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Spreadsheet Preview</h3>
+          <div class="overflow-x-auto max-h-80 border border-gray-200 dark:border-gray-700 rounded-xl" data-excel-to-pdf-calculator-target="previewTable"></div>
+        </div>
+
+        <%# Stats and download %>
+        <div class="flex flex-wrap items-center gap-6">
+          <div class="flex gap-6 text-sm">
+            <div><span class="text-gray-500 dark:text-gray-400">Sheet:</span> <span class="font-semibold text-gray-900 dark:text-white" data-excel-to-pdf-calculator-target="resultSheetName">--</span></div>
+            <div><span class="text-gray-500 dark:text-gray-400">Rows:</span> <span class="font-semibold text-gray-900 dark:text-white" data-excel-to-pdf-calculator-target="resultRows">--</span></div>
+            <div><span class="text-gray-500 dark:text-gray-400">Columns:</span> <span class="font-semibold text-gray-900 dark:text-white" data-excel-to-pdf-calculator-target="resultCols">--</span></div>
+          </div>
+          <button data-excel-to-pdf-calculator-target="downloadBtn" data-action="click->excel-to-pdf-calculator#download" disabled
+                  class="px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-400 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">
+            Download PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Convert Excel to PDF</h2>
+      <p>
+        Click the file input and select an .xlsx spreadsheet from your computer. The tool reads the file entirely within your browser, parses the internal ZIP and XML structure, and extracts the cell values from the first worksheet. A spreadsheet-style preview appears so you can verify the data looks correct before converting. If your first row contains column headers, keep the "First row is header" checkbox enabled so the PDF renders that row with a distinct blue background and bold white text.
+      </p>
+      <p>
+        Once you are satisfied with the preview, click "Download PDF" to generate and save the file. The PDF renders your spreadsheet data as a properly formatted table with alternating row shading, cell borders, and automatic column sizing. The result is a clean, print-ready document that anyone can open without needing Excel or any other spreadsheet application.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Convert Excel to PDF</h2>
+      <p>
+        Sharing spreadsheet data often creates friction. Not everyone has Microsoft Excel installed, and even those who do may have a different version that renders the file differently. Google Sheets can open .xlsx files but sometimes misinterprets formatting or formulas. By converting to PDF, you create a universally readable document that looks identical on every device and operating system. The recipient does not need any specialized software because PDF readers are built into every modern web browser, phone, and tablet.
+      </p>
+      <p>
+        PDF conversion is particularly valuable when you need to distribute financial reports, project status updates, inventory lists, or any tabular data to stakeholders who should see the information but should not modify it. A PDF preserves the exact layout you intended while preventing accidental edits. It is also the preferred format for email attachments in professional settings because the recipient knows the document will display correctly regardless of their platform.
+      </p>
+
+      <h3>How the PDF Is Generated</h3>
+      <p>
+        The tool constructs a valid PDF 1.4 document entirely in JavaScript. It creates the page structure, embeds the standard Helvetica and Helvetica-Bold fonts, and renders your data row by row into a formatted table. Header rows get a blue background with white text. Data rows alternate between white and light gray for readability. Cell borders and column separators keep the data visually organized. The resulting file opens correctly in Adobe Acrobat, browser PDF viewers, Preview on macOS, and every other standards-compliant PDF reader.
+      </p>
+
+      <h3>What About Formulas and Formatting?</h3>
+      <p>
+        The converter extracts the last calculated values from formula cells, not the formulas themselves. A cell containing <code>=SUM(A1:A10)</code> will appear in the PDF as the numeric result that Excel computed when the file was last saved. Cell-level formatting such as custom colors, fonts, conditional formatting rules, and merged cells are not transferred to the PDF. The tool focuses on data fidelity: every value from your spreadsheet appears in the PDF table exactly as stored in the worksheet XML.
+      </p>
+
+      <h3>Limitations</h3>
+      <p>
+        The converter reads the first worksheet in the workbook. Multi-sheet workbooks will only produce a PDF from Sheet 1. Date values stored as Excel serial numbers appear as raw numbers because date formatting information lives in the styles XML, which is separate from cell values. Charts, images, and pivot tables embedded in the spreadsheet are not included in the PDF output. For documents requiring those elements, a desktop application with full Excel rendering would be more appropriate.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does this Excel to PDF converter work?</h3>
+      <p>
+        The tool reads the .xlsx file as a ZIP archive in your browser, decompresses the XML files inside, parses the worksheet structure, extracts cell values, and renders them as a formatted table in a PDF document. No data is sent to any server.
+      </p>
+
+      <h3>Will my spreadsheet data be uploaded to a server?</h3>
+      <p>
+        No. Everything happens locally in your browser. Your data never leaves your device. You can disconnect from the internet and the tool still works.
+      </p>
+
+      <h3>Does the PDF preserve Excel formatting?</h3>
+      <p>
+        The tool renders a clean table with header highlighting and alternating row shading. Custom cell formatting like fonts, colors, and conditional formatting from the original file is not carried over.
+      </p>
+
+      <h3>Can I mark the first row as a header?</h3>
+      <p>
+        Yes. Check the "First row is header" box before downloading. The header row will appear with a blue background and bold white text in the PDF.
+      </p>
+
+      <h3>Is there a file size or row limit?</h3>
+      <p>
+        Processing happens in browser memory. Spreadsheets with thousands of rows convert without issues on modern devices. For very large files exceeding 50,000 rows, a desktop tool may be more practical.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "Excel to PDF Converter", url: everyday_excel_to_pdf_url %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "CSV to PDF Converter", description: "Convert CSV data to formatted PDF documents.", path: everyday_csv_to_pdf_path, icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "TXT to PDF Converter", description: "Convert plain text files to PDF format.", path: everyday_txt_to_pdf_path, icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "DOCX to PDF Converter", description: "Convert Word documents to PDF format.", path: everyday_docx_to_pdf_path, icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Excel to CSV Converter", description: "Convert Excel files to CSV format.", path: everyday_excel_to_csv_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("excel-to-pdf-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
