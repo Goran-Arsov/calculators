@@ -1,0 +1,183 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "HTTP Status Code Reference - Complete Guide",
+  description: "Complete HTTP status code reference with descriptions. Search and filter all 1xx, 2xx, 3xx, 4xx, and 5xx status codes.",
+  canonical: everyday_http_status_reference_url,
+  og: {
+    title: "HTTP Status Code Reference - Complete Guide | CalcWise",
+    description: "Complete HTTP status code reference with descriptions. Search and filter all 1xx, 2xx, 3xx, 4xx, and 5xx status codes.",
+    url: everyday_http_status_reference_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "HTTP Status Code Reference", url: everyday_http_status_reference_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are HTTP status codes?", answer: "HTTP status codes are three-digit numbers returned by a web server in response to a client request. They indicate whether the request was successful, redirected, resulted in a client error, or caused a server error. Status codes are grouped into five classes: 1xx (Informational), 2xx (Success), 3xx (Redirection), 4xx (Client Error), and 5xx (Server Error). Every HTTP response includes a status code in its first line, and understanding these codes is essential for web development, API design, and debugging." },
+  { question: "What do 4xx status codes mean?", answer: "4xx status codes indicate client errors, meaning the request contains bad syntax or cannot be fulfilled by the server due to something the client did wrong. Common examples include 400 Bad Request (malformed syntax), 401 Unauthorized (authentication required), 403 Forbidden (access denied even with authentication), 404 Not Found (resource does not exist), and 429 Too Many Requests (rate limiting). These codes tell the client that the problem is on their side and they need to modify the request." },
+  { question: "What is the difference between 301 and 302 redirects?", answer: "A 301 Moved Permanently redirect tells clients and search engines that the resource has permanently moved to a new URL. Browsers and search engines will update their cached URL to the new location. A 302 Found redirect indicates a temporary move, meaning the original URL should still be used for future requests. For SEO, 301 redirects pass link equity to the new URL, while 302 redirects do not. Use 301 when the URL change is permanent, such as after a site restructure, and 302 for temporary situations like A/B testing or maintenance pages." },
+  { question: "What is HTTP status code 418?", answer: "HTTP status code 418 'I'm a Teapot' was defined in RFC 2324 as an April Fools joke in 1998. The RFC specifies the Hyper Text Coffee Pot Control Protocol (HTCPCP) and states that a teapot should return 418 when asked to brew coffee. Despite being a joke, the code has been implemented by many web servers and frameworks as an Easter egg. It has also been used as a form of protest, most notably by Google who returned 418 for certain blocked requests. The code was nearly removed from Node.js in 2017, sparking a community debate about humor in technical standards." },
+  { question: "When should I use a 204 No Content response?", answer: "A 204 No Content response indicates that the server successfully processed the request but there is no content to return in the response body. It is commonly used for DELETE requests where the resource has been removed and no confirmation body is needed, PUT or PATCH requests where the update was successful and the client already has the current representation, and API endpoints that perform actions like logging or tracking where no response data is required. The browser will not navigate away from the current page when receiving a 204." }
+]) %>
+
+<%= calculator_schema(
+  name: "HTTP Status Code Reference",
+  description: "Complete HTTP status code reference with descriptions. Search and filter all 1xx, 2xx, 3xx, 4xx, and 5xx status codes.",
+  url: everyday_http_status_reference_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "HTTP Status Code Reference" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">HTTP Status Code Reference</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Search and browse all HTTP status codes with descriptions. Filter by code number, name, or description across all five categories.</p>
+
+    <div data-controller="http-status-reference-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <%# Search input %>
+      <div class="mb-6">
+        <label for="http-status-search" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Search Status Codes</label>
+        <div class="flex gap-2">
+          <input id="http-status-search" type="text"
+                 data-http-status-reference-calculator-target="search"
+                 data-action="input->http-status-reference-calculator#filter"
+                 placeholder="e.g. 404, Not Found, redirect..."
+                 class="flex-1 w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" autocomplete="off">
+          <button data-action="click->http-status-reference-calculator#clear"
+                  class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium">Clear</button>
+        </div>
+      </div>
+
+      <%# Result count %>
+      <div class="flex items-center justify-between mb-6">
+        <span class="text-sm text-gray-500 dark:text-gray-400">
+          Showing <span class="font-bold text-blue-600 dark:text-blue-400" data-http-status-reference-calculator-target="resultCount">0</span> status codes
+        </span>
+      </div>
+
+      <%# Status code cards grouped by category %>
+      <% data = Everyday::HttpStatusReferenceCalculator.new.call %>
+      <% category_colors = { "1" => "blue", "2" => "green", "3" => "amber", "4" => "red", "5" => "purple" } %>
+      <div class="space-y-8">
+        <% data[:categories].each do |prefix, category_name| %>
+          <% color = category_colors[prefix[0]] %>
+          <div>
+            <h3 class="text-lg font-bold text-<%= color %>-600 dark:text-<%= color %>-400 mb-3"><%= prefix %> &mdash; <%= category_name %></h3>
+            <div class="grid grid-cols-1 gap-3">
+              <% data[:codes].select { |code, _| code.to_s.start_with?(prefix[0]) }.each do |code, info| %>
+                <div data-http-status-reference-calculator-target="statusCard"
+                     data-code="<%= code %>" data-name="<%= info[:name] %>" data-description="<%= info[:description] %>"
+                     class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border-l-4 border-<%= color %>-500">
+                  <div class="flex items-start gap-3">
+                    <span class="font-mono font-bold text-<%= color %>-600 dark:text-<%= color %>-400 text-lg"><%= code %></span>
+                    <div>
+                      <span class="font-semibold text-gray-900 dark:text-white"><%= info[:name] %></span>
+                      <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5"><%= info[:description] %></p>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "http-status-reference" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding HTTP Status Codes</h2>
+      <p>
+        HTTP status codes are three-digit numbers that a server returns in response to every HTTP request. They are part of the HTTP specification and provide a standardized way for servers to communicate the result of a request to the client. When you visit a web page, your browser sends an HTTP request to the server, and the server responds with a status code along with the requested content or an error message. Understanding these codes is fundamental to web development, API design, server administration, and debugging network issues.
+      </p>
+      <p>
+        Status codes are grouped into five classes based on their first digit. Each class represents a different type of response. The 1xx codes are informational, indicating that the request was received and processing is continuing. The 2xx codes signal success, meaning the request was received, understood, and accepted. The 3xx codes indicate redirection, telling the client to take additional action to complete the request. The 4xx codes represent client errors, where the request contains incorrect syntax or cannot be fulfilled. The 5xx codes indicate server errors, where the server failed to fulfill a valid request.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Five Status Code Categories</h2>
+
+      <h3>1xx Informational Responses</h3>
+      <p>
+        Informational responses indicate that the server has received the request and is continuing to process it. The most notable is 100 Continue, which tells the client to proceed with sending the request body after sending only the headers. This is useful for large uploads where the client wants to check whether the server will accept the request before transmitting a potentially large payload. The 103 Early Hints is a newer addition that allows the server to send preliminary headers before the final response, enabling the browser to preload stylesheets and scripts while the server prepares the main response.
+      </p>
+
+      <h3>2xx Success Codes</h3>
+      <p>
+        Success codes confirm that the request was processed correctly. The 200 OK is the most common, returned for standard successful GET requests. The 201 Created is used when a new resource has been created, typically in response to a POST request. The 204 No Content indicates success without a response body, commonly used for DELETE operations and API actions that do not need to return data. The 206 Partial Content supports range requests, allowing clients to download large files in chunks or resume interrupted downloads.
+      </p>
+
+      <h3>3xx Redirection and 4xx/5xx Error Codes</h3>
+      <p>
+        Redirection codes instruct the client to look elsewhere for the requested resource. The distinction between 301 Moved Permanently and 302 Found is critical for SEO, as search engines treat them differently when passing link authority. Client error codes in the 4xx range cover everything from malformed requests (400) to authentication failures (401, 403), missing resources (404), and rate limiting (429). Server error codes in the 5xx range indicate problems on the server side, from general failures (500) to bad gateway responses (502) and service unavailability (503). Monitoring these codes helps operations teams identify and resolve issues quickly.
+      </p>
+
+      <h3>Common Status Codes in API Development</h3>
+      <p>
+        RESTful APIs rely heavily on status codes to communicate results. A well-designed API uses 200 for successful reads, 201 for successful creates, 204 for successful deletes, 400 for validation errors, 401 for missing authentication, 403 for insufficient permissions, 404 for resources that do not exist, 409 for conflicts like duplicate entries, 422 for semantically invalid requests, and 429 for rate-limited requests. Consistent use of status codes makes APIs predictable and easier for consumers to integrate with.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What are HTTP status codes?</h3>
+      <p>Three-digit numbers returned by web servers indicating the result of a request. They are grouped into five classes: 1xx Informational, 2xx Success, 3xx Redirection, 4xx Client Error, and 5xx Server Error.</p>
+
+      <h3>What do 4xx status codes mean?</h3>
+      <p>4xx codes indicate client errors. The request was malformed, unauthorized, or pointed to a missing resource. Common examples include 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, and 429 Too Many Requests.</p>
+
+      <h3>What is the difference between 301 and 302 redirects?</h3>
+      <p>301 is a permanent redirect that tells browsers and search engines to update their URLs. 302 is a temporary redirect where the original URL should still be used for future requests. 301 passes SEO link equity; 302 does not.</p>
+
+      <h3>What is HTTP status code 418?</h3>
+      <p>An April Fools joke from RFC 2324 that defines the Hyper Text Coffee Pot Control Protocol. A teapot returns 418 when asked to brew coffee. Despite being humorous, it has been widely implemented as an Easter egg.</p>
+
+      <h3>When should I use a 204 No Content response?</h3>
+      <p>Use 204 for successful requests that do not need a response body, such as DELETE operations, successful updates where the client already has the data, and fire-and-forget API actions.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "HTTP Status Code Reference", url: everyday_http_status_reference_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "HTTP Header Parser", description: "Parse and analyze HTTP response headers for debugging and security review.", path: everyday_http_header_parser_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "URL Parser", description: "Break down any URL into its components: scheme, host, port, path, query, and fragment.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" },
+      { name: "CSP Header Builder", description: "Build Content-Security-Policy headers with a visual interface.", path: everyday_csp_builder_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("http-status-reference") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

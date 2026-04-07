@@ -1,0 +1,236 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: ".htaccess Generator - Free Online Tool",
+  description: "Generate .htaccess rules for Apache servers. HTTPS redirects, compression, caching, security headers, and more.",
+  canonical: everyday_htaccess_generator_url,
+  og: {
+    title: ".htaccess Generator - Free Online Tool | CalcWise",
+    description: "Generate .htaccess rules for Apache servers. HTTPS redirects, compression, caching, security headers, and more.",
+    url: everyday_htaccess_generator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: ".htaccess Generator", url: everyday_htaccess_generator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a .htaccess file?", answer: "A .htaccess (hypertext access) file is a configuration file used by Apache web servers to apply settings on a per-directory basis. It allows you to override server configuration without editing the main Apache config files, which typically require root access. Common uses include URL redirects, access control, custom error pages, MIME type definitions, and enabling compression. The file is read by Apache on every request to a directory containing it, and the rules apply to that directory and all subdirectories." },
+  { question: "Where do I put the .htaccess file?", answer: "Place the .htaccess file in the root directory of your website, typically the public_html or www folder. The rules apply to that directory and all subdirectories. You can also place .htaccess files in subdirectories for rules specific to those paths. The file name must be exactly .htaccess with the leading dot, which makes it a hidden file on Unix-like systems. Make sure the file has 644 permissions (readable by the server) and uses Unix-style line endings." },
+  { question: "Does .htaccess affect server performance?", answer: "Yes, there is a performance cost. Apache reads and parses .htaccess files on every request for every directory in the path to the requested file. On high-traffic sites, this can add up. For maximum performance, Apache recommends putting directives in the main server configuration or virtual host files instead. However, on shared hosting where you do not have access to the main config, .htaccess is the only option. For most sites with moderate traffic, the performance impact is negligible." },
+  { question: "Can .htaccess force HTTPS?", answer: "Yes. Using mod_rewrite, you can redirect all HTTP traffic to HTTPS. The rule checks if the HTTPS variable is off and, if so, issues a 301 permanent redirect to the same URL with https:// as the scheme. This ensures all visitors use the encrypted connection. The redirect should be one of the first rules in your .htaccess file so it applies before any other URL rewriting occurs." },
+  { question: "What are security headers in .htaccess?", answer: "Security headers are HTTP response headers that instruct browsers to enable protective features. In .htaccess, you set them using the Header directive from mod_headers. Key security headers include X-Content-Type-Options (prevents MIME sniffing), X-Frame-Options (prevents clickjacking), X-XSS-Protection (enables XSS filtering), Referrer-Policy (controls referrer information leakage), and Content-Security-Policy (controls allowed content sources). Adding these headers significantly improves your site's security posture." }
+]) %>
+
+<%= calculator_schema(
+  name: ".htaccess Generator",
+  description: "Generate .htaccess rules for Apache servers including HTTPS redirects, compression, caching, security headers, and more.",
+  url: everyday_htaccess_generator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: ".htaccess Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">.htaccess Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Generate .htaccess rules for Apache servers. Select the features you need and copy the generated configuration to your server.</p>
+
+    <div data-controller="htaccess-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <div class="space-y-5">
+        <%# Redirect options %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-3">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Redirects</h3>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="forceHttps"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Force HTTPS</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="wwwRedirect"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Redirect to www</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="nonWwwRedirect"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Redirect to non-www</span>
+          </label>
+        </div>
+
+        <%# Performance options %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-3">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Performance</h3>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="gzip"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Gzip Compression</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="caching"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Browser Caching</span>
+          </label>
+        </div>
+
+        <%# Security options %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-3">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Security</h3>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="securityHeaders"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Security Headers</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="disableDirectoryListing"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Disable Directory Listing</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="protectSensitiveFiles"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Protect Sensitive Files</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="hotlinkProtection"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Hotlink Protection</span>
+          </label>
+          <div class="ml-7">
+            <input type="text" data-htaccess-generator-calculator-target="hotlinkDomain"
+                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono"
+                   placeholder="example.com" autocomplete="off">
+          </div>
+        </div>
+
+        <%# Error pages %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-3">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Misc</h3>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="errorPages"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Custom Error Pages</span>
+          </label>
+        </div>
+
+        <%# Generate button %>
+        <button data-action="click->htaccess-generator-calculator#generate"
+                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+          Generate .htaccess
+        </button>
+      </div>
+
+      <%# Results %>
+      <div class="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Generated .htaccess</h2>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-500 dark:text-gray-400">Sections: <span class="font-bold text-blue-600 dark:text-blue-400" data-htaccess-generator-calculator-target="resultSectionCount">0</span></span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">Lines: <span class="font-bold text-blue-600 dark:text-blue-400" data-htaccess-generator-calculator-target="resultLineCount">0</span></span>
+            <button data-action="click->htaccess-generator-calculator#copy"
+                    class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+              Copy
+            </button>
+          </div>
+        </div>
+        <textarea data-htaccess-generator-calculator-target="output" readonly rows="12"
+                  class="w-full font-mono text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none resize-y"
+                  placeholder="Select options and click 'Generate' to see your .htaccess here"></textarea>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "htaccess-generator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>What Is a .htaccess File?</h2>
+      <p>
+        The .htaccess file is a powerful configuration file used by Apache web servers to control server behavior on a per-directory basis. The name stands for "hypertext access" and the file has been a cornerstone of Apache server administration since the early days of the web. Unlike the main Apache configuration files (httpd.conf or apache2.conf), which require server restart to take effect, .htaccess changes are applied immediately on the next request. This makes .htaccess especially valuable on shared hosting environments where users do not have access to the main server configuration.
+      </p>
+      <p>
+        When Apache receives a request, it checks for .htaccess files in every directory from the document root down to the directory containing the requested file. The directives from all matching .htaccess files are merged, with directives in more specific directories overriding those in parent directories. This cascading behavior allows you to set site-wide defaults in the root .htaccess and override them in specific subdirectories as needed.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Common .htaccess Use Cases</h2>
+
+      <h3>HTTPS and WWW Redirects</h3>
+      <p>
+        Forcing HTTPS ensures that all traffic to your site is encrypted. The redirect rule uses Apache's mod_rewrite module to check if the current connection is not using HTTPS and, if so, redirects to the HTTPS version with a 301 permanent redirect. Similarly, you can standardize your domain by redirecting www to non-www or vice versa. These redirects are important for SEO because search engines treat www and non-www URLs as separate sites, and having both active can split your link equity and cause duplicate content issues.
+      </p>
+
+      <h3>Gzip Compression and Browser Caching</h3>
+      <p>
+        Enabling gzip compression via mod_deflate can reduce the size of text-based responses by 60 to 80 percent. The .htaccess rules specify which MIME types to compress, typically including HTML, CSS, JavaScript, JSON, XML, and SVG. Browser caching uses mod_expires or mod_headers to set Cache-Control and Expires headers for static assets like images, stylesheets, and JavaScript files. By telling browsers to cache these resources for days or weeks, you eliminate redundant downloads and dramatically improve page load times for returning visitors.
+      </p>
+
+      <h3>Security Headers and Access Control</h3>
+      <p>
+        Security headers protect your site against common web attacks. X-Content-Type-Options prevents MIME type sniffing. X-Frame-Options prevents clickjacking by controlling whether your page can be embedded in iframes. X-XSS-Protection enables the browser's built-in XSS filter. Referrer-Policy controls how much URL information is shared when users navigate away from your site. Disabling directory listing prevents visitors from browsing your file structure when no index file is present. Protecting sensitive files like .htaccess itself, .env, and configuration files prevents accidental exposure of server internals.
+      </p>
+
+      <h3>Hotlink Protection</h3>
+      <p>
+        Hotlink protection prevents other websites from embedding your images, videos, and other media files directly, which consumes your bandwidth without providing any benefit. The mod_rewrite rules check the HTTP Referer header and block requests that originate from domains other than your own. Legitimate requests from your own domain and search engine crawlers are allowed through, while requests from other domains are either blocked with a 403 Forbidden response or redirected to a placeholder image.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a .htaccess file?</h3>
+      <p>A configuration file for Apache web servers that applies settings on a per-directory basis. It controls redirects, access, caching, compression, security headers, and custom error pages without requiring access to the main server configuration.</p>
+
+      <h3>Where do I put the .htaccess file?</h3>
+      <p>Place it in your website's root directory (usually public_html or www). Rules apply to that directory and all subdirectories. The file must have 644 permissions and Unix-style line endings.</p>
+
+      <h3>Does .htaccess affect performance?</h3>
+      <p>Apache reads .htaccess files on every request, which adds overhead. On high-traffic sites, placing directives in the main config is better. For most sites on shared hosting, the impact is negligible.</p>
+
+      <h3>Can .htaccess force HTTPS?</h3>
+      <p>Yes. Using mod_rewrite, you redirect all HTTP traffic to HTTPS with a 301 permanent redirect. This should be one of the first rules in your .htaccess file.</p>
+
+      <h3>What are security headers in .htaccess?</h3>
+      <p>HTTP response headers set via mod_headers that instruct browsers to enable security features. They prevent MIME sniffing, clickjacking, XSS, and referrer leakage.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: ".htaccess Generator", url: everyday_htaccess_generator_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Nginx Config Generator", description: "Generate Nginx server block configurations with SSL and reverse proxy.", path: everyday_nginx_config_generator_path, icon_path: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" },
+      { name: "robots.txt Generator", description: "Generate and test robots.txt files for controlling search engine crawlers.", path: everyday_robots_txt_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "CSP Header Builder", description: "Build Content-Security-Policy headers with a visual interface.", path: everyday_csp_builder_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("htaccess-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

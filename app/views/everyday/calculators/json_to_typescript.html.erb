@@ -1,0 +1,215 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "JSON to TypeScript Generator - Interfaces from JSON",
+  description: "Generate TypeScript interfaces from JSON data. Automatically infer types, create nested interfaces, and handle arrays.",
+  canonical: everyday_json_to_typescript_url,
+  og: {
+    title: "JSON to TypeScript Interface Generator - Free Online Tool | CalcWise",
+    description: "Generate TypeScript interfaces from JSON data. Automatically infer types, create nested interfaces, and handle arrays.",
+    url: everyday_json_to_typescript_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "JSON to TypeScript Generator", url: everyday_json_to_typescript_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are TypeScript interfaces?", answer: "TypeScript interfaces define the shape of an object by specifying the names and types of its properties. They provide compile-time type checking, meaning TypeScript will catch errors when code tries to access a property that does not exist or assigns a value of the wrong type. Interfaces are purely a development-time construct and are removed during compilation to JavaScript." },
+  { question: "Why generate TypeScript interfaces from JSON?", answer: "Manually writing TypeScript interfaces for API responses is tedious and error-prone, especially for large or deeply nested JSON structures. Generating interfaces from actual JSON data ensures accuracy and saves significant development time. It is particularly useful when integrating with third-party APIs where you have sample responses but no official type definitions." },
+  { question: "Does it handle nested objects?", answer: "Yes, the generator creates separate interfaces for each nested object in the JSON structure. A nested object like {user: {name: 'John', address: {city: 'NYC'}}} produces three interfaces: a Root interface, a User interface, and an Address interface. Each nested object gets a descriptive name based on its key in the parent object." },
+  { question: "Can it handle arrays?", answer: "Yes, the generator detects array types and infers the type of array elements. An array of strings becomes string[], an array of numbers becomes number[], and an array of objects generates a separate interface for the element type. Mixed-type arrays are represented as union types. Empty arrays are typed as any[] since the element type cannot be inferred." },
+  { question: "What about optional fields?", answer: "When generating from a single JSON sample, all fields are treated as required because there is no way to determine optionality from one example. In practice, you may want to mark some fields as optional (using the ? modifier) based on your knowledge of the API. The generated interfaces provide a starting point that you can refine." }
+]) %>
+
+<%= calculator_schema(
+  name: "JSON to TypeScript Interface Generator",
+  description: "Generate TypeScript interfaces from JSON data with automatic type inference and nested interface creation.",
+  url: everyday_json_to_typescript_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "JSON to TypeScript Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">JSON to TypeScript Interface Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Generate TypeScript interfaces from JSON data. Automatically infer types, create nested interfaces, and handle arrays.</p>
+
+    <div data-controller="json-to-typescript-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="json-to-typescript-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Input JSON</label>
+          <textarea id="json-to-typescript-input" data-json-to-typescript-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="8" placeholder='{"name": "John", "age": 30, "address": {"city": "NYC", "zip": "10001"}}'></textarea>
+        </div>
+
+        <div>
+          <label for="json-to-typescript-root-name" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Root Interface Name</label>
+          <input type="text" id="json-to-typescript-root-name" data-json-to-typescript-calculator-target="rootName" value="Root" placeholder="Root interface name"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div>
+          <button data-action="click->json-to-typescript-calculator#convert"
+            class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Generate TypeScript</button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Interfaces</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-to-typescript-calculator-target="resultInterfaceCount">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Root Type</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-to-typescript-calculator-target="resultRootType">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="json-to-typescript-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">TypeScript Output</label>
+            <button data-action="click->json-to-typescript-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+          </div>
+          <textarea id="json-to-typescript-output" data-json-to-typescript-calculator-target="output" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="10" placeholder="Generated TypeScript interfaces will appear here..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "json-to-typescript" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the JSON to TypeScript Generator</h2>
+      <p>
+        Paste your JSON data into the input area, optionally change the root interface name, and click Generate TypeScript. The tool parses the JSON, infers the types of all properties, and generates TypeScript interfaces for every object in the structure. Nested objects produce separate named interfaces. The stats panel shows how many interfaces were generated and the root data type. Use the Copy button to copy the output directly into your TypeScript project.
+      </p>
+      <p>
+        This generator is especially useful when working with REST APIs that return JSON responses. Instead of manually typing out interface definitions for complex response objects, paste a sample response and get accurate type definitions instantly. This accelerates development and reduces the chance of type errors in your code.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding TypeScript Interfaces</h2>
+      <p>
+        TypeScript interfaces are one of the language's most powerful features for building robust applications. An interface defines a contract that objects must satisfy: it specifies what properties an object has and what types those properties hold. When you declare a variable with an interface type, TypeScript's compiler ensures that the object assigned to it has the correct shape. This catches many common bugs at compile time rather than at runtime.
+      </p>
+      <p>
+        Interfaces are especially valuable when working with external data sources like APIs. Without type definitions, accessing a property that does not exist on an API response silently returns <code>undefined</code>, which can propagate through your application and cause hard-to-debug errors. With interfaces, TypeScript immediately flags the incorrect property access in your editor, before you even run the code.
+      </p>
+
+      <h3>Type Inference from JSON</h3>
+      <p>
+        The generator examines each value in the JSON to determine its TypeScript type. JSON strings become <code>string</code>, numbers become <code>number</code>, booleans become <code>boolean</code>, and null becomes <code>null</code>. Objects generate new interfaces with their own property types. Arrays are typed based on their elements: an array of strings becomes <code>string[]</code>, an array of objects generates an element interface with the array typed as that interface array. Empty arrays become <code>any[]</code> since no element type can be inferred.
+      </p>
+
+      <h3>Nested Interfaces and Naming</h3>
+      <p>
+        When a JSON object contains nested objects, the generator creates separate interfaces for each level. The names are derived from the property keys, converted to PascalCase. For example, a property called <code>shipping_address</code> containing an object would generate a <code>ShippingAddress</code> interface. This produces clean, well-organized type definitions that follow TypeScript naming conventions and are easy to import and reuse across your codebase.
+      </p>
+
+      <h3>Working with API Responses</h3>
+      <p>
+        The typical workflow is to make an API call, copy the JSON response, paste it into this tool, and generate interfaces. You then place these interfaces in a types file in your project. When the API evolves and adds new fields, you can regenerate the interfaces from a fresh response. Many teams use this approach as a quick alternative to writing interfaces by hand, especially during prototyping and when official SDK types are not available.
+      </p>
+
+      <h2>How Type Inference Works</h2>
+      <p>
+        Type inference is the process of examining raw JSON values and determining the most accurate TypeScript type for each one. Since JSON is an untyped format at the language level, the generator must analyze values structurally to produce meaningful types. The rules are straightforward for primitives: any value wrapped in double quotes becomes <code>string</code>, any numeric literal without quotes becomes <code>number</code>, the literals <code>true</code> and <code>false</code> become <code>boolean</code>, and <code>null</code> stays as <code>null</code>. These mappings cover the four JSON primitive types exactly.
+      </p>
+      <p>
+        Where inference becomes more interesting is with compound structures. When the generator encounters a nested object, it does not simply type that property as <code>object</code> or <code>Record&lt;string, unknown&gt;</code>. Instead, it recursively analyzes every property inside the nested object and creates a brand-new interface for it. The property in the parent interface is then typed as that new interface name. This means a JSON structure three levels deep produces three separate interfaces, each fully describing its own level. The naming convention derives the interface name from the property key, converting snake_case or kebab-case into PascalCase. A property called <code>billing_details</code> generates a <code>BillingDetails</code> interface, making the output feel like hand-written TypeScript rather than machine-generated boilerplate.
+      </p>
+      <p>
+        Arrays require a different strategy. The generator inspects the first element of the array to determine the element type. If the array contains primitive values, the result is a simple typed array like <code>string[]</code> or <code>number[]</code>. If the array contains objects, the generator creates an interface for the object shape and types the array as that interface followed by <code>[]</code>. When an array mixes different types, such as strings and numbers together, the generator produces a union type like <code>(string | number)[]</code>. Empty arrays present an edge case where no element exists to inspect, so they default to <code>any[]</code>. In practice, you should replace <code>any[]</code> with the correct type once you know what the array will contain.
+      </p>
+
+      <h2>Working with Generated Interfaces</h2>
+      <p>
+        Once you have generated your TypeScript interfaces, the next step is integrating them into your project. The standard practice is to create a dedicated types directory or file, such as <code>src/types/api.ts</code> or <code>src/types/index.ts</code>, and paste the generated interfaces there. Export each interface with the <code>export</code> keyword so that other modules can import them. For example, after generating a <code>UserResponse</code> interface, you would write <code>export interface UserResponse { ... }</code> and then import it wherever you make the corresponding API call with <code>import { UserResponse } from '../types/api'</code>.
+      </p>
+      <p>
+        Generated interfaces serve as a starting point, not a finished product. You will often want to refine them based on domain knowledge that cannot be inferred from a single JSON sample. The most common refinement is marking properties as optional. If an API sometimes omits a field, add the <code>?</code> modifier after the property name: <code>middleName?: string</code>. You can also narrow types that the generator made too broad. For instance, if a <code>status</code> field only ever contains <code>"active"</code>, <code>"inactive"</code>, or <code>"pending"</code>, replace the inferred <code>string</code> type with a union literal type: <code>status: "active" | "inactive" | "pending"</code>. This gives you much tighter type safety.
+      </p>
+      <p>
+        Extending interfaces is another powerful technique. If two API endpoints return similar but not identical shapes, generate interfaces for both and use the <code>extends</code> keyword to share common properties. For example, if both a <code>UserSummary</code> and <code>UserDetail</code> share an <code>id</code>, <code>name</code>, and <code>email</code>, extract those into a <code>BaseUser</code> interface and have both extend it: <code>interface UserDetail extends BaseUser { ... }</code>. This reduces duplication and makes future changes easier because shared properties are defined in a single place. You can also use <code>Pick</code>, <code>Omit</code>, and <code>Partial</code> utility types to derive new types from existing interfaces without rewriting properties.
+      </p>
+      <p>
+        For projects that consume many APIs, consider organizing interfaces by endpoint or domain. A <code>types/users.ts</code> file for user-related interfaces, a <code>types/products.ts</code> file for product interfaces, and so on. This structure scales well as the project grows and makes it easy for team members to find the type definitions they need. Re-exporting everything from a central <code>types/index.ts</code> file provides a convenient single import point.
+      </p>
+
+      <h2>TypeScript Type Safety Benefits</h2>
+      <p>
+        The primary benefit of TypeScript interfaces is catching errors at compile time rather than at runtime. When you type an API response with an interface, every property access is validated by the compiler. If you write <code>response.user.nmae</code> instead of <code>response.user.name</code>, TypeScript flags the typo immediately in your editor with a red underline and a clear error message. Without interfaces, this typo would silently return <code>undefined</code>, and you might not discover the bug until a user reports broken behavior in production. Compile-time checking eliminates entire categories of these subtle mistakes.
+      </p>
+      <p>
+        IDE autocomplete is another significant advantage that interfaces unlock. When your editor knows the shape of an object through its interface, it can suggest property names as you type. Instead of switching back and forth between your code and API documentation to remember whether the field is called <code>firstName</code>, <code>first_name</code>, or <code>name</code>, you simply type a dot and the editor shows you every available property with its type. This speeds up development noticeably, especially when working with deeply nested response objects that have dozens of fields.
+      </p>
+      <p>
+        Refactoring confidence is a less obvious but equally important benefit. When you rename a property in an interface, TypeScript highlights every file that references the old property name. This makes large-scale refactors safe because the compiler tells you exactly what needs to change. Without type definitions, renaming a property across a codebase requires error-prone find-and-replace operations and extensive manual testing. With interfaces, the compiler serves as a refactoring safety net that guarantees you have updated every reference.
+      </p>
+      <p>
+        Finally, interfaces act as living documentation for your codebase. When a new developer joins the team and needs to understand what an API returns, they can read the interface definition instead of making test API calls or searching through documentation. The interface tells them every property name, every type, and every nested structure at a glance. Unlike code comments or wiki pages that can become outdated, interfaces are enforced by the compiler, so they always reflect the actual shape of the data flowing through the application. This makes the codebase more maintainable and reduces onboarding time for new team members.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What are TypeScript interfaces?</h3>
+      <p>Interfaces define object shapes with property names and types. They provide compile-time checking and are removed during compilation to JavaScript.</p>
+
+      <h3>Why generate from JSON?</h3>
+      <p>Writing interfaces manually for large API responses is tedious and error-prone. Generating from actual JSON data ensures accuracy and saves development time.</p>
+
+      <h3>Does it handle nested objects?</h3>
+      <p>Yes. Each nested object gets its own named interface derived from its property key, producing clean, well-organized type definitions.</p>
+
+      <h3>Can it handle arrays?</h3>
+      <p>Yes. Arrays of primitives become typed arrays (string[], number[]). Arrays of objects generate element interfaces. Empty arrays become any[].</p>
+
+      <h3>What about optional fields?</h3>
+      <p>All fields are generated as required from a single sample. You can manually add the ? modifier for fields you know to be optional.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "JSON to TypeScript Interface Generator", url: everyday_json_to_typescript_url %>
+
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "JSON Validator", description: "Validate JSON data with syntax checking, key count, nesting depth, and formatted output.", path: everyday_json_validator_path, icon_path: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "JSON Formatter", description: "Format, prettify, minify, and validate JSON with key count and nesting depth analysis.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "HTML to JSX Converter", description: "Convert HTML to JSX for React with automatic attribute and style conversion.", path: everyday_html_to_jsx_path, icon_path: "M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("json-to-typescript") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

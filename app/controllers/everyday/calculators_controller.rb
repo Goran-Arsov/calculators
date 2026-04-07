@@ -110,5 +110,17 @@ module Everyday
     def css_formatter; end
     def js_formatter; end
     def docx_to_odt; end
+    def json_validator; end
+    def json_to_yaml; end
+    def curl_to_code; end
+    def json_to_typescript; end
+    def html_to_jsx; end
+    def hex_ascii; end
+    def http_status_reference; end
+    def robots_txt; end
+    def htaccess_generator; end
+    def regex_explainer; end
+    def og_preview; end
+    def svg_to_png; end
   end
 end

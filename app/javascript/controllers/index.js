@@ -36,6 +36,7 @@ import StudentLoanCalculatorController from "controllers/student_loan_calculator
 import EstateTaxCalculatorController from "controllers/estate_tax_calculator_controller"
 import CryptoProfitCalculatorController from "controllers/crypto_profit_calculator_controller"
 import SimpleInterestCalculatorController from "controllers/simple_interest_calculator_controller"
+import InvoiceGeneratorCalculatorController from "controllers/invoice_generator_calculator_controller"
 
 // Math calculators
 import PercentageCalculatorController from "controllers/percentage_calculator_controller"
@@ -284,6 +285,7 @@ application.register("student-loan-calculator", StudentLoanCalculatorController)
 application.register("estate-tax-calculator", EstateTaxCalculatorController)
 application.register("crypto-profit-calculator", CryptoProfitCalculatorController)
 application.register("simple-interest-calculator", SimpleInterestCalculatorController)
+application.register("invoice-generator-calculator", InvoiceGeneratorCalculatorController)
 
 // Math
 application.register("percentage-calculator", PercentageCalculatorController)
