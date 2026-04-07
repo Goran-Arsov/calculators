@@ -200,6 +200,7 @@ import DnsLookupCalculatorController from "controllers/dns_lookup_calculator_con
 import MacLookupCalculatorController from "controllers/mac_lookup_calculator_controller"
 import OdtToDocxCalculatorController from "controllers/odt_to_docx_calculator_controller"
 import OdtToPdfCalculatorController from "controllers/odt_to_pdf_calculator_controller"
+import DocxToOdtCalculatorController from "controllers/docx_to_odt_calculator_controller"
 
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
@@ -480,6 +481,7 @@ application.register("dns-lookup-calculator", DnsLookupCalculatorController)
 application.register("mac-lookup-calculator", MacLookupCalculatorController)
 application.register("odt-to-docx-calculator", OdtToDocxCalculatorController)
 application.register("odt-to-pdf-calculator", OdtToPdfCalculatorController)
+application.register("docx-to-odt-calculator", DocxToOdtCalculatorController)
 
 // Suites
 application.register("suite-stepper", SuiteStepperController)

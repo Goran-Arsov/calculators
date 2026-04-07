@@ -19,6 +19,7 @@ module CalculatorHelper
     cors-header-checker ssl-certificate-decoder ip-address-lookup
     dns-lookup mac-address-lookup
     odt-to-docx-converter odt-to-pdf-converter
+    docx-to-odt-converter
   ].freeze
 
   FINANCE_CALCULATORS = [
@@ -207,7 +208,8 @@ module CalculatorHelper
     { name: "DNS Lookup", slug: "dns-lookup", path: :everyday_dns_lookup_path, description: "Query DNS records (A, AAAA, MX, TXT, CNAME, NS, SOA) via DNS-over-HTTPS.", icon_path: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" },
     { name: "MAC Address Lookup", slug: "mac-address-lookup", path: :everyday_mac_lookup_path, description: "Identify network device manufacturers from MAC address OUI prefixes.", icon_path: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" },
     { name: "ODT to DOCX Converter", slug: "odt-to-docx-converter", path: :everyday_odt_to_docx_path, description: "Convert OpenDocument .odt files to Microsoft Word .docx format entirely in the browser.", icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
-    { name: "ODT to PDF Converter", slug: "odt-to-pdf-converter", path: :everyday_odt_to_pdf_path, description: "Convert OpenDocument .odt files to PDF format with headings and paragraphs entirely in the browser.", icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
+    { name: "ODT to PDF Converter", slug: "odt-to-pdf-converter", path: :everyday_odt_to_pdf_path, description: "Convert OpenDocument .odt files to PDF format with headings and paragraphs entirely in the browser.", icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+    { name: "DOCX to ODT Converter", slug: "docx-to-odt-converter", path: :everyday_docx_to_odt_path, description: "Convert Microsoft Word .docx files to OpenDocument .odt format for LibreOffice and OpenOffice.", icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
   ].freeze
 
   ALL_CATEGORIES = {

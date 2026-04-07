@@ -109,5 +109,6 @@ module Everyday
     def html_formatter; end
     def css_formatter; end
     def js_formatter; end
+    def docx_to_odt; end
   end
 end
