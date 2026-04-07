@@ -78,12 +78,7 @@ export default class extends Controller {
       '<td class="py-2 px-3 text-sm font-mono text-gray-700 dark:text-gray-300">' + this.formatTime(splitTime) + '</td>' +
       '<td class="py-2 px-3 text-sm font-mono text-gray-700 dark:text-gray-300">' + this.formatTime(this.elapsed) + '</td>'
 
-    // Insert at the top of the list
-    if (this.lapListTarget.firstChild) {
-      this.lapListTarget.insertBefore(row, this.lapListTarget.firstChild)
-    } else {
-      this.lapListTarget.appendChild(row)
-    }
+    this.lapListTarget.appendChild(row)
   }
 
   tick() {
