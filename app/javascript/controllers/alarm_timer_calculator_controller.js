@@ -8,11 +8,13 @@ export default class extends Controller {
     "startBtn", "pauseBtn", "resetBtn", "stopAlarmBtn",
     "status",
     "alarmOverlay",
-    "reasonDisplay"
+    "reasonDisplay",
+    "progressContainer", "progressLabel"
   ]
 
   connect() {
     this.totalSeconds = 0
+    this.initialTotalSeconds = 0
     this.interval = null
     this.running = false
     this.audioContext = null
@@ -20,6 +22,7 @@ export default class extends Controller {
     this.flashInterval = null
     this.originalTitle = document.title
 
+    this.buildProgressBars()
     this.updateDisplay(0)
     this.pauseBtnTarget.classList.add("hidden")
     this.stopAlarmBtnTarget.classList.add("hidden")
@@ -49,6 +52,8 @@ export default class extends Controller {
 
       if (this.totalSeconds <= 0) return
 
+      this.initialTotalSeconds = this.totalSeconds
+      this.updateProgress()
       this.running = true
       this.statusTarget.textContent = "Running"
       this.statusTarget.classList.remove("text-red-600", "dark:text-red-400", "animate-pulse")
@@ -59,6 +64,7 @@ export default class extends Controller {
       this.interval = setInterval(() => {
         this.totalSeconds--
         this.updateDisplay(this.totalSeconds)
+        this.updateProgress()
 
         if (this.totalSeconds <= 0) {
           clearInterval(this.interval)
@@ -89,8 +95,10 @@ export default class extends Controller {
     this.interval = null
     this.running = false
     this.totalSeconds = 0
+    this.initialTotalSeconds = 0
     this.stopAlarm()
     this.updateDisplay(0)
+    this.resetProgress()
     this.hoursTarget.value = ""
     this.minutesTarget.value = ""
     this.secondsTarget.value = ""
@@ -247,6 +255,58 @@ export default class extends Controller {
     this.startBtnTarget.textContent = "Start"
 
     document.title = this.originalTitle
+  }
+
+  buildProgressBars() {
+    if (!this.hasProgressContainerTarget) return
+    var container = this.progressContainerTarget
+    container.innerHTML = ""
+    this.bars = []
+    for (var i = 0; i < 100; i++) {
+      var bar = document.createElement("div")
+      bar.className = "w-full rounded-sm transition-all duration-300"
+      bar.style.height = "4px"
+      bar.style.backgroundColor = "#d1d5db"
+      container.appendChild(bar)
+      this.bars.push(bar)
+    }
+  }
+
+  updateProgress() {
+    if (!this.bars || this.initialTotalSeconds <= 0) return
+    var elapsed = this.initialTotalSeconds - this.totalSeconds
+    var pct = Math.min(100, Math.floor((elapsed / this.initialTotalSeconds) * 100))
+
+    for (var i = 0; i < 100; i++) {
+      if (i < 100 - pct) {
+        // Remaining — colored by position: green at top, yellow in middle, red near bottom
+        var ratio = i / 100
+        if (ratio < 0.5) {
+          this.bars[i].style.backgroundColor = "#22c55e"
+        } else if (ratio < 0.8) {
+          this.bars[i].style.backgroundColor = "#eab308"
+        } else {
+          this.bars[i].style.backgroundColor = "#ef4444"
+        }
+      } else {
+        // Elapsed — gray
+        this.bars[i].style.backgroundColor = "#e5e7eb"
+      }
+    }
+
+    if (this.hasProgressLabelTarget) {
+      this.progressLabelTarget.textContent = (100 - pct) + "% remaining"
+    }
+  }
+
+  resetProgress() {
+    if (!this.bars) return
+    for (var i = 0; i < 100; i++) {
+      this.bars[i].style.backgroundColor = "#d1d5db"
+    }
+    if (this.hasProgressLabelTarget) {
+      this.progressLabelTarget.textContent = ""
+    }
   }
 
   updateDisplay(seconds) {
