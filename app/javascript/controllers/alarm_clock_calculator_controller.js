@@ -331,7 +331,7 @@ export default class extends Controller {
       var bar = document.createElement("div")
       bar.className = "w-full transition-colors duration-300"
       bar.style.height = "3px"
-      bar.style.backgroundColor = "#d1d5db"
+      bar.style.backgroundColor = "transparent"
       container.appendChild(bar)
       this.bars.push(bar)
     }
@@ -356,8 +356,10 @@ export default class extends Controller {
         } else {
           this.bars[i].style.backgroundColor = "#ef4444"
         }
+        this.bars[i].style.height = "3px"
       } else {
-        this.bars[i].style.backgroundColor = "#f3f4f6"
+        this.bars[i].style.backgroundColor = "#d1d5db"
+        this.bars[i].style.height = "1px"
       }
     }
 
@@ -369,7 +371,7 @@ export default class extends Controller {
   resetProgress() {
     if (!this.bars) return
     for (var i = 0; i < 100; i++) {
-      this.bars[i].style.backgroundColor = "#d1d5db"
+      this.bars[i].style.backgroundColor = "transparent"
     }
     if (this.hasProgressLabelTarget) {
       this.progressLabelTarget.textContent = ""

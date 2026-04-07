@@ -25,6 +25,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Browse all
+  get "browse", to: "browse#index", as: :browse
+
   # IT Tools
   get "information-technology", to: "it_tools#index", as: :it_tools
 
