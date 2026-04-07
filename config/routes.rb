@@ -311,6 +311,7 @@ Rails.application.routes.draw do
     get "regex-explainer", to: "calculators#regex_explainer", as: :regex_explainer
     get "open-graph-preview", to: "calculators#og_preview", as: :og_preview
     get "svg-to-png-converter", to: "calculators#svg_to_png", as: :svg_to_png
+    get "alarm-timer", to: "calculators#alarm_timer", as: :alarm_timer
   end
 
   # Blog

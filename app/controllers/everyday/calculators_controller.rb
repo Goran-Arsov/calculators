@@ -122,5 +122,6 @@ module Everyday
     def regex_explainer; end
     def og_preview; end
     def svg_to_png; end
+    def alarm_timer; end
   end
 end

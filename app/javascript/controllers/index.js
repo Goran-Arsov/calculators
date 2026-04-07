@@ -203,6 +203,8 @@ import OdtToDocxCalculatorController from "controllers/odt_to_docx_calculator_co
 import OdtToPdfCalculatorController from "controllers/odt_to_pdf_calculator_controller"
 import DocxToOdtCalculatorController from "controllers/docx_to_odt_calculator_controller"
 
+import AlarmTimerCalculatorController from "controllers/alarm_timer_calculator_controller"
+
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
 import FlooringCalculatorController from "controllers/flooring_calculator_controller"
@@ -484,6 +486,8 @@ application.register("mac-lookup-calculator", MacLookupCalculatorController)
 application.register("odt-to-docx-calculator", OdtToDocxCalculatorController)
 application.register("odt-to-pdf-calculator", OdtToPdfCalculatorController)
 application.register("docx-to-odt-calculator", DocxToOdtCalculatorController)
+
+application.register("alarm-timer-calculator", AlarmTimerCalculatorController)
 
 // Suites
 application.register("suite-stepper", SuiteStepperController)
