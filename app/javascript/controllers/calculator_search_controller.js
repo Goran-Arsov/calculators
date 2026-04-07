@@ -62,7 +62,11 @@ export default class extends Controller {
       this.highlight(options)
     } else if (event.key === "Enter") {
       event.preventDefault()
-      if (this.selectedIndex >= 0 && options[this.selectedIndex]) {
+      if (this.dropdownTarget.classList.contains("hidden")) {
+        this.search()
+        var freshOptions = this.listTarget.querySelectorAll(".search-option")
+        if (freshOptions.length > 0) freshOptions[0].click()
+      } else if (this.selectedIndex >= 0 && options[this.selectedIndex]) {
         options[this.selectedIndex].click()
       } else if (options.length > 0) {
         options[0].click()
