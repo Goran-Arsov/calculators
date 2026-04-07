@@ -292,6 +292,11 @@ Rails.application.routes.draw do
     get "mac-address-lookup", to: "calculators#mac_lookup", as: :mac_lookup
     get "odt-to-docx-converter", to: "calculators#odt_to_docx", as: :odt_to_docx
     get "odt-to-pdf-converter", to: "calculators#odt_to_pdf", as: :odt_to_pdf
+    get "base64-encoder-decoder", to: "calculators#base64_encoder", as: :base64_encoder
+    get "url-encoder-decoder", to: "calculators#url_encoder", as: :url_encoder
+    get "html-formatter-beautifier", to: "calculators#html_formatter", as: :html_formatter
+    get "css-formatter-beautifier", to: "calculators#css_formatter", as: :css_formatter
+    get "javascript-formatter-beautifier", to: "calculators#js_formatter", as: :js_formatter
   end
 
   # Blog

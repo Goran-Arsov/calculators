@@ -104,5 +104,10 @@ module Everyday
     def mac_lookup; end
     def odt_to_docx; end
     def odt_to_pdf; end
+    def base64_encoder; end
+    def url_encoder; end
+    def html_formatter; end
+    def css_formatter; end
+    def js_formatter; end
   end
 end
