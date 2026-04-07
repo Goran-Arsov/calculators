@@ -59,7 +59,7 @@ module Admin
     end
 
     def admin_token
-      ENV.fetch("ADMIN_TOKEN", "calcwise-admin-2026")
+      ENV.fetch("ADMIN_TOKEN", "calchammer-admin-2026")
     end
   end
 end
