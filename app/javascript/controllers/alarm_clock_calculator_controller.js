@@ -10,7 +10,8 @@ export default class extends Controller {
     "startBtn", "cancelBtn", "stopAlarmBtn",
     "status",
     "alarmOverlay",
-    "reasonDisplay"
+    "reasonDisplay",
+    "progressContainer", "progressLabel"
   ]
 
   connect() {
@@ -21,11 +22,15 @@ export default class extends Controller {
     this.originalTitle = document.title
     this.alarmActive = false
 
+    this.alarmSetTime = null
+    this.buildProgressBars()
+
     // Start live clock
     this.updateClock()
     this.clockInterval = setInterval(() => {
       this.updateClock()
       if (this.targetTime && !this.alarmActive) {
+        this.updateProgress()
         this.checkAlarm()
       }
     }, 1000)
@@ -105,6 +110,8 @@ export default class extends Controller {
     }
 
     this.targetTime = target
+    this.alarmSetTime = new Date()
+    this.updateProgress()
 
     // Format display
     var dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -272,7 +279,9 @@ export default class extends Controller {
 
     // Reset target time
     this.targetTime = null
+    this.alarmSetTime = null
     this.alarmActive = false
+    this.resetProgress()
 
     // Reset status
     this.statusTarget.textContent = "Ready"
@@ -293,7 +302,9 @@ export default class extends Controller {
 
   cancelAlarm() {
     this.targetTime = null
+    this.alarmSetTime = null
     this.alarmActive = false
+    this.resetProgress()
 
     // Reset status
     this.statusTarget.textContent = "Ready"
@@ -309,6 +320,60 @@ export default class extends Controller {
     this.startBtnTarget.classList.remove("hidden")
 
     document.title = this.originalTitle
+  }
+
+  buildProgressBars() {
+    if (!this.hasProgressContainerTarget) return
+    var container = this.progressContainerTarget
+    container.innerHTML = ""
+    this.bars = []
+    for (var i = 0; i < 100; i++) {
+      var bar = document.createElement("div")
+      bar.className = "w-full transition-colors duration-300"
+      bar.style.height = "3px"
+      bar.style.backgroundColor = "#d1d5db"
+      container.appendChild(bar)
+      this.bars.push(bar)
+    }
+  }
+
+  updateProgress() {
+    if (!this.bars || !this.alarmSetTime || !this.targetTime) return
+    var now = new Date()
+    var totalMs = this.targetTime.getTime() - this.alarmSetTime.getTime()
+    var elapsedMs = now.getTime() - this.alarmSetTime.getTime()
+    if (totalMs <= 0) return
+
+    var pct = Math.min(100, Math.floor((elapsedMs / totalMs) * 100))
+    var remaining = 100 - pct
+
+    for (var i = 0; i < 100; i++) {
+      if (i < remaining) {
+        if (remaining > 50) {
+          this.bars[i].style.backgroundColor = "#22c55e"
+        } else if (remaining > 20) {
+          this.bars[i].style.backgroundColor = "#eab308"
+        } else {
+          this.bars[i].style.backgroundColor = "#ef4444"
+        }
+      } else {
+        this.bars[i].style.backgroundColor = "#f3f4f6"
+      }
+    }
+
+    if (this.hasProgressLabelTarget) {
+      this.progressLabelTarget.textContent = remaining + "% remaining"
+    }
+  }
+
+  resetProgress() {
+    if (!this.bars) return
+    for (var i = 0; i < 100; i++) {
+      this.bars[i].style.backgroundColor = "#d1d5db"
+    }
+    if (this.hasProgressLabelTarget) {
+      this.progressLabelTarget.textContent = ""
+    }
   }
 
   pad(n) {
