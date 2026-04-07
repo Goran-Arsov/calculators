@@ -1,0 +1,215 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Convertisseur Hex vers ASCII / ASCII vers Hex - Outil en ligne gratuit",
+  description: "Convertissez entre hexadecimal et texte ASCII. Affichez les representations hexadecimales, binaires et decimales avec plusieurs formats de sortie.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Convertisseur Hex vers ASCII / ASCII vers Hex - Outil en ligne gratuit | CalcWise",
+    description: "Convertissez entre hexadecimal et texte ASCII. Affichez les representations hexadecimales, binaires et decimales avec plusieurs formats de sortie.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Accueil", url: root_url },
+  { name: "Quotidien", url: category_url("everyday") },
+  { name: "Convertisseur Hex / ASCII", url: everyday_hex_ascii_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Qu'est-ce que l'hexadecimal ?", answer: "L'hexadecimal (hex) est un systeme de numeration en base 16 qui utilise les chiffres 0-9 et les lettres A-F pour representer des valeurs. Chaque chiffre hexadecimal represente 4 bits, donc deux chiffres hexadecimaux representent un octet (8 bits). L'hexadecimal est largement utilise en informatique car il fournit une representation compacte et lisible des donnees binaires. Par exemple, l'octet 11111111 en binaire est FF en hexadecimal et 255 en decimal." },
+  { question: "Qu'est-ce que l'ASCII ?", answer: "ASCII (American Standard Code for Information Interchange) est une norme d'encodage de caracteres qui associe 128 caracteres a des valeurs numeriques de 0 a 127. Il comprend les lettres majuscules et minuscules anglaises, les chiffres 0-9, les signes de ponctuation et les caracteres de controle. Chaque caractere ASCII tient dans 7 bits, le 8e bit etant traditionnellement utilise pour la parite. ASCII constitue la base des normes modernes d'encodage de texte comme UTF-8." },
+  { question: "Comment convertir de l'hexadecimal en texte ?", answer: "Pour convertir de l'hexadecimal en texte, prenez chaque paire de chiffres hexadecimaux, convertissez-la en valeur decimale, puis recherchez le caractere ASCII correspondant. Par exemple, 48 65 6C 6C 6F se convertit en Hello car 48 en hex vaut 72 en decimal (H), 65 en hex vaut 101 en decimal (e), 6C en hex vaut 108 en decimal (l), et 6F en hex vaut 111 en decimal (o). Cet outil effectue cette conversion instantanement." },
+  { question: "Quels sont les differents formats hexadecimaux ?", answer: "L'hexadecimal peut s'ecrire sous plusieurs formats : paires espacees (48 65 6C), compact sans espaces (48656C), avec prefixe 0x (0x48 0x65 0x6C), ou avec echappement backslash-x (\\x48\\x65\\x6C). Les paires espacees sont les plus lisibles. Le format compact est utilise pour les valeurs de hachage et les codes couleur. Le prefixe 0x est utilise dans les langages de programmation comme C et JavaScript. Le format backslash-x est utilise dans les litteraux de chaines." },
+  { question: "Quand l'encodage hexadecimal est-il utile ?", answer: "L'encodage hexadecimal est utile pour examiner le contenu de fichiers binaires, deboguer des protocoles reseau, travailler avec des hachages cryptographiques et des sommes de controle, definir des couleurs en CSS (par exemple #FF0000 pour le rouge), analyser des vidages memoire et integrer des donnees binaires dans du code source. Il offre un moyen lisible de representer des donnees binaires qui seraient autrement incomprehensibles sous forme d'octets bruts." }
+]) %>
+
+<%= calculator_schema(
+  name: "Convertisseur Hex / ASCII",
+  description: "Convertissez entre hexadecimal et texte ASCII avec des formats de sortie hex, binaire et decimal.",
+  url: everyday_hex_ascii_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Accueil", url: root_path },
+  { name: "Quotidien", url: category_path("everyday") },
+  { name: "Convertisseur Hex / ASCII" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Convertisseur Hex vers ASCII / ASCII vers Hex</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convertissez entre hexadecimal et texte ASCII. Affichez les representations hexadecimales, binaires et decimales avec plusieurs formats de sortie.</p>
+
+    <div data-controller="hex-ascii-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="hex-ascii-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Entree</label>
+          <textarea id="hex-ascii-input" data-hex-ascii-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="4" placeholder="Entrez du texte ou des valeurs hexadecimales..."></textarea>
+        </div>
+
+        <div class="flex gap-4">
+          <button data-action="click->hex-ascii-calculator#textToHex"
+            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Texte vers Hex</button>
+          <button data-action="click->hex-ascii-calculator#hexToText"
+            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-sm shadow-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Hex vers texte</button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Caracteres</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-hex-ascii-calculator-target="resultCharCount">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Octets</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-hex-ascii-calculator-target="resultByteCount">&mdash;</span>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Hex (espace)</label>
+              <button data-action="click->hex-ascii-calculator#copyHexSpaced" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copier</button>
+            </div>
+            <textarea data-hex-ascii-calculator-target="outputHexSpaced" readonly
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+              rows="2" placeholder="48 65 6C 6C 6F"></textarea>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Hex (compact)</label>
+              <button data-action="click->hex-ascii-calculator#copyHexCompact" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copier</button>
+            </div>
+            <textarea data-hex-ascii-calculator-target="outputHexCompact" readonly
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+              rows="2" placeholder="48656C6C6F"></textarea>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Hex (prefixe 0x)</label>
+            </div>
+            <textarea data-hex-ascii-calculator-target="outputHexPrefixed" readonly
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+              rows="2" placeholder="0x48 0x65 0x6C 0x6C 0x6F"></textarea>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Binaire</label>
+              <button data-action="click->hex-ascii-calculator#copyBinary" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copier</button>
+            </div>
+            <textarea data-hex-ascii-calculator-target="outputBinary" readonly
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+              rows="2" placeholder="01001000 01100101 01101100 01101100 01101111"></textarea>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Decimal</label>
+              <button data-action="click->hex-ascii-calculator#copyDecimal" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copier</button>
+            </div>
+            <textarea data-hex-ascii-calculator-target="outputDecimal" readonly
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+              rows="2" placeholder="72 101 108 108 111"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "hex-ascii" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Comment utiliser le convertisseur Hex / ASCII</h2>
+      <p>
+        Entrez du texte ou des valeurs hexadecimales dans la zone de saisie, puis cliquez sur le bouton approprie. Cliquez sur Texte vers Hex pour convertir du texte brut en ses representations hexadecimale, binaire et decimale par octet. Cliquez sur Hex vers texte pour decoder des valeurs hexadecimales en texte lisible. L'outil fournit plusieurs formats hexadecimaux (espace, compact et avec prefixe 0x) ainsi que les representations binaire et decimale. Chaque sortie dispose d'un bouton Copier pour un acces rapide au presse-papiers.
+      </p>
+      <p>
+        Cet outil est essentiel pour les developpeurs, les chercheurs en securite et les administrateurs systeme qui travaillent avec des donnees binaires, des protocoles reseau ou l'encodage de caracteres. Que vous ayez besoin de decoder un dump hexadecimal, d'encoder du texte pour un protocole ou de verifier la representation en octets d'une chaine, le convertisseur fournit tous les formats courants en un seul endroit.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Comprendre l'encodage hexadecimal</h2>
+      <p>
+        L'hexadecimal est le systeme de numeration prefere pour representer les donnees binaires en raison de la relation elegante entre la base 16 et la base 2. Chaque chiffre hexadecimal correspond exactement a quatre chiffres binaires (bits), ce qui signifie que deux chiffres hexadecimaux representent exactement un octet. Cela rend la conversion entre hexadecimal et binaire triviale et rend les valeurs hexadecimales faciles a lire et a verifier. La valeur decimale 255, par exemple, est <code>FF</code> en hexadecimal et <code>11111111</code> en binaire. La correspondance est immediate et exacte.
+      </p>
+      <p>
+        L'hexadecimal est omnipresent en informatique. Les adresses memoire sont affichees en hexadecimal. Les codes couleur en CSS utilisent l'hexadecimal (<code>#FF0000</code> pour le rouge). Les adresses MAC utilisent des paires hexadecimales separees par des deux-points. Les hachages cryptographiques comme SHA-256 produisent des chaines hexadecimales. Les analyseurs de paquets reseau affichent les donnees utiles en hexadecimal. Comprendre l'hexadecimal est une competence fondamentale pour quiconque travaille au niveau systeme.
+      </p>
+
+      <h3>Encodage de caracteres ASCII</h3>
+      <p>
+        ASCII definit 128 caracteres en utilisant les valeurs 0 a 127. Les caracteres 0-31 et 127 sont des caracteres de controle (comme le retour a la ligne, la tabulation et le retour chariot). Les caracteres 32-126 sont des caracteres imprimables comprenant les lettres, les chiffres et la ponctuation. Les lettres majuscules A-Z occupent les positions 65-90, les minuscules a-z occupent 97-122, et les chiffres 0-9 occupent 48-57. Cet ordre signifie que la comparaison des valeurs ASCII compare egalement les caracteres alphabetiquement, c'est pourquoi le tri base sur ASCII fonctionne naturellement pour le texte anglais.
+      </p>
+
+      <h3>Conventions de format hexadecimal</h3>
+      <p>
+        Differents contextes utilisent differents formats hexadecimaux. Les paires hexadecimales espacees (<code>48 65 6C 6C 6F</code>) sont les plus lisibles et sont utilisees dans les editeurs hexadecimaux et les analyseurs de paquets. L'hexadecimal compact sans espaces (<code>48656C6C6F</code>) est utilise pour les valeurs de hachage, les codes couleur et les representations compactes. Le format avec prefixe <code>0x</code> (<code>0x48 0x65</code>) indique un litteral hexadecimal en C, JavaScript et de nombreux autres langages de programmation. Le format <code>\x</code> (<code>\x48\x65</code>) est utilise dans les sequences d'echappement de chaines. Cet outil fournit tous ces formats simultanement.
+      </p>
+
+      <h3>Representations binaire et decimale</h3>
+      <p>
+        Au-dela de l'hexadecimal, l'outil affiche egalement les representations binaire (base 2) et decimale (base 10). Le binaire montre le motif de bits reel que l'ordinateur stocke, chaque caractere etant affiche sous forme de groupe de 8 bits. Le decimal montre la valeur numerique qui correspond a chaque caractere dans la table ASCII. Avoir les trois representations cote a cote facilite la comprehension de la relation entre le texte, les nombres et les bits, ce qui est fondamental pour comprendre comment les ordinateurs traitent le texte.
+      </p>
+
+      <h2>Foire aux questions</h2>
+
+      <h3>Qu'est-ce que l'hexadecimal ?</h3>
+      <p>Un systeme de numeration en base 16 utilisant 0-9 et A-F. Deux chiffres hexadecimaux representent un octet, ce qui en fait un moyen compact d'afficher des donnees binaires.</p>
+
+      <h3>Qu'est-ce que l'ASCII ?</h3>
+      <p>Une norme d'encodage de caracteres associant 128 caracteres a des valeurs numeriques de 0 a 127, comprenant des lettres, des chiffres, de la ponctuation et des caracteres de controle.</p>
+
+      <h3>Comment convertir de l'hexadecimal en texte ?</h3>
+      <p>Prenez chaque paire de chiffres hexadecimaux, convertissez en decimal et recherchez le caractere ASCII. 48 65 6C 6C 6F devient Hello.</p>
+
+      <h3>Quels sont les differents formats hexadecimaux ?</h3>
+      <p>Espace (48 65), compact (4865), avec prefixe 0x (0x48 0x65) et backslash-x (\x48\x65). Chacun est utilise dans differents contextes informatiques.</p>
+
+      <h3>Quand l'encodage hexadecimal est-il utile ?</h3>
+      <p>Pour examiner des donnees binaires, deboguer des protocoles, travailler avec des hachages cryptographiques, definir des couleurs CSS et analyser des vidages memoire.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Convertisseur Hex / ASCII", url: everyday_hex_ascii_url %>
+
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Encodeur/Decodeur Base64", description: "Encodez et decodez du texte et des donnees avec l'encodage Base64.", path: everyday_base64_encoder_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "Encodeur/Decodeur de chaines", description: "Encodez et decodez du texte avec Base64, l'encodage URL et les entites HTML.", path: everyday_string_encoder_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Analyseur d'URL", description: "Decomposez n'importe quelle URL en ses composants : schema, hote, port, chemin, requete et fragment.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("hex-ascii") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

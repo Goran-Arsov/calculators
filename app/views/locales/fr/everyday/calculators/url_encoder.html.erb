@@ -1,0 +1,207 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Encodeur et Decodeur URL - Outil en ligne gratuit",
+  description: "Encodez et decodez les URL en ligne. Convertissez les caracteres speciaux au format encode en pourcentage pour une utilisation securisee dans les adresses Web et les chaines de requete.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Encodeur et Decodeur URL - Outil en ligne gratuit | CalcWise",
+    description: "Encodez et decodez les URL en ligne. Convertissez les caracteres speciaux au format encode en pourcentage pour une utilisation securisee dans les adresses Web et les chaines de requete.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Accueil", url: root_url },
+  { name: "Quotidien", url: category_url("everyday") },
+  { name: "Encodeur et Decodeur URL", url: everyday_url_encoder_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Qu'est-ce que l'encodage URL ?", answer: "L'encodage URL (encodage en pourcentage) convertit les caracteres non autorises dans les URL en un format utilisant le signe pourcentage suivi de deux chiffres hexadecimaux. Par exemple, un espace devient %20 et une esperluette devient %26." },
+  { question: "Quelle est la difference entre encodeURI et encodeURIComponent ?", answer: "encodeURI encode une URI complete en preservant les caracteres comme :, /, ?, et # qui ont une signification speciale dans les URL. encodeURIComponent encode tout sauf les caracteres non reserves (lettres, chiffres, -, _, ., ~), ce qui le rend adapte a l'encodage de valeurs individuelles de parametres de requete." },
+  { question: "Pourquoi les espaces sont-ils encodes en + ou %20 ?", answer: "Le format application/x-www-form-urlencoded utilise + pour les espaces, ce qui est courant dans les soumissions de formulaires HTML. La norme d'encodage en pourcentage utilise %20 pour les espaces. Les deux sont valides mais utilises dans des contextes differents. Les parametres de requete utilisent generalement +, tandis que les segments de chemin utilisent %20." },
+  { question: "Quand dois-je encoder du texte pour une URL ?", answer: "Encodez le texte chaque fois que vous incluez des donnees utilisateur ou des caracteres speciaux dans les composants d'URL tels que les parametres de requete, les segments de chemin ou les identifiants de fragment. Cela empeche les caracteres comme &, = et ? d'etre interpretes comme des delimiteurs d'URL au lieu de donnees litterales." },
+  { question: "Puis-je encoder une URL entiere ?", answer: "Vous ne devriez pas encoder une URL entiere car les caracteres structurels (://, /, ?, #, &, =) seraient echappes et l'URL deviendrait invalide. Encodez plutot uniquement les composants individuels comme les valeurs de parametres et les segments de chemin." }
+]) %>
+
+<%= calculator_schema(
+  name: "Encodeur et Decodeur URL",
+  description: "Encodez et decodez les URL en ligne. Convertissez les caracteres speciaux au format encode en pourcentage en utilisant les equivalents d'encodeURIComponent et encodeURI.",
+  url: everyday_url_encoder_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Accueil", url: root_path },
+  { name: "Quotidien", url: category_path("everyday") },
+  { name: "Encodeur et Decodeur URL" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Encodeur et Decodeur URL</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Encodez et decodez les URL en ligne. Convertissez les caracteres speciaux au format encode en pourcentage pour une utilisation securisee dans les adresses Web et les chaines de requete.</p>
+
+    <div data-controller="url-encoder-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+
+        <%# Input %>
+        <div>
+          <label for="url-encoder-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Texte d'entree</label>
+          <textarea id="url-encoder-input" data-url-encoder-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="4" placeholder="Saisissez du texte ou une URL a encoder/decoder..."></textarea>
+        </div>
+
+        <%# Action Buttons %>
+        <div class="flex gap-4">
+          <button data-action="click->url-encoder-calculator#encode"
+            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Encoder</button>
+          <button data-action="click->url-encoder-calculator#decode"
+            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-sm shadow-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Decoder</button>
+        </div>
+
+        <%# Component Encoded Output %>
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="url-encoder-output-component" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Encodage par composant</label>
+            <button data-action="click->url-encoder-calculator#copyComponent"
+              class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copier</button>
+          </div>
+          <textarea id="url-encoder-output-component" data-url-encoder-calculator-target="outputComponent" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="3" placeholder="Sortie encodeURIComponent..."></textarea>
+        </div>
+
+        <%# Full URL Encoded Output %>
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="url-encoder-output-full" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Encodage URL complet</label>
+            <button data-action="click->url-encoder-calculator#copyFull"
+              class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copier</button>
+          </div>
+          <textarea id="url-encoder-output-full" data-url-encoder-calculator-target="outputFull" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="3" placeholder="Sortie encodeURI..."></textarea>
+        </div>
+
+        <%# Stats Grid %>
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Longueur d'entree</span>
+            <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-url-encoder-calculator-target="resultInputLength">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Longueur de sortie</span>
+            <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-url-encoder-calculator-target="resultOutputLength">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Taille d'entree</span>
+            <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-url-encoder-calculator-target="resultInputBytes">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Taille de sortie</span>
+            <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-url-encoder-calculator-target="resultOutputBytes">&mdash;</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "url-encoder" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Comment utiliser l'encodeur et decodeur URL</h2>
+      <p>
+        Saisissez ou collez du texte dans le champ d'entree et cliquez sur Encoder pour le convertir au format encode en URL. L'outil fournit deux formats de sortie simultanement : l'Encodage par composant utilise l'equivalent de la fonction JavaScript <code>encodeURIComponent()</code>, qui encode tous les caracteres speciaux, y compris les delimiteurs d'URL comme <code>/</code>, <code>?</code> et <code>#</code>. L'Encodage URL complet utilise l'equivalent de <code>encodeURI()</code>, qui preserve les caracteres structurels de l'URL tout en encodant le reste. Pour inverser le processus, collez du texte encode dans le champ d'entree et cliquez sur Decoder. Les deux champs de sortie afficheront le meme resultat decode.
+      </p>
+      <p>
+        La grille de statistiques sous la sortie affiche la longueur en caracteres et la taille en octets de l'entree et de la sortie, vous aidant a comprendre comment l'encodage affecte la taille des donnees. Chaque champ de sortie possede son propre bouton Copier pour un acces rapide au presse-papiers. Cet outil fonctionne entierement dans votre navigateur, aucune donnee n'est envoyee a un serveur.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Qu'est-ce que l'encodage URL ?</h2>
+      <p>
+        L'encodage URL, formellement connu sous le nom d'encodage en pourcentage, est defini dans le RFC 3986 comme le mecanisme de representation des caracteres dans un identifiant de ressource uniforme (URI) qui ne sont pas autorises dans la syntaxe de l'URI. Les URL ne peuvent contenir qu'un ensemble limite de caracteres ASCII : des lettres, des chiffres et quelques caracteres speciaux (<code>- _ . ~</code>) connus comme caracteres non reserves. Tout autre caractere doit etre encode sous forme d'un signe pourcentage suivi de deux chiffres hexadecimaux representant sa valeur en octets. Par exemple, un espace est encode en <code>%20</code>, une esperluette en <code>%26</code> et un signe plus en <code>%2B</code>.
+      </p>
+      <p>
+        Les caracteres reserves tels que <code>: / ? # [ ] @ ! $ & ' ( ) * + , ; =</code> ont une signification structurelle speciale dans les URL. Lorsque ces caracteres apparaissent comme des donnees plutot que comme des delimiteurs, ils doivent etre encodes en pourcentage. Par exemple, si une requete de recherche contient une esperluette, elle doit etre encodee en <code>%26</code> pour ne pas etre interpretee comme un separateur de parametres.
+      </p>
+
+      <h2>encodeURIComponent vs encodeURI</h2>
+      <p>
+        JavaScript fournit deux fonctions integrees pour l'encodage d'URL, chacune servant un objectif different. <code>encodeURIComponent()</code> encode tous les caracteres sauf les caracteres non reserves (A-Z, a-z, 0-9, <code>- _ . ~</code>). Cela le rend ideal pour encoder les composants individuels d'une URL tels que les valeurs de parametres de requete, les segments de chemin ou les identifiants de fragment. Il encode les caracteres comme <code>/ ? # & =</code> car ceux-ci casseraient la structure s'ils etaient laisses non encodes dans une valeur de composant.
+      </p>
+      <p>
+        <code>encodeURI()</code> encode une URI complete tout en preservant les caracteres qui donnent a une URL sa structure : <code>: / ? # [ ] @ ! $ & ' ( ) * + , ; =</code>. Utilisez-le lorsque vous avez une URL complete qui peut contenir des caracteres non-ASCII (comme des lettres accentuees ou des espaces dans le chemin) mais dont les delimiteurs structurels doivent rester intacts. Par exemple, <code>encodeURI("https://example.com/chemin avec espaces")</code> encode correctement uniquement les espaces tout en conservant les delimiteurs <code>://</code> et <code>/</code>.
+      </p>
+
+      <h3>Espaces : + vs %20</h3>
+      <p>
+        Le traitement des espaces dans les URL suit deux conventions. La norme d'encodage en pourcentage (RFC 3986) encode les espaces en <code>%20</code>, et c'est l'encodage correct pour les segments de chemin et les identifiants de fragment. Le format <code>application/x-www-form-urlencoded</code>, utilise par les formulaires HTML lors de la soumission de donnees via GET ou POST, encode les espaces en <code>+</code>. Ce format est defini dans la specification HTML et c'est ce que les navigateurs utilisent pour serialiser les donnees de formulaire en chaines de requete. <code>%20</code> et <code>+</code> sont tous deux des representations valides d'un espace, mais ils appartiennent a des contextes differents. Lors de la construction d'URL par programmation, preferez <code>%20</code> pour la coherence avec le RFC 3986.
+      </p>
+
+      <h3>Cas d'utilisation courants</h3>
+      <p>
+        L'encodage URL est essentiel dans de nombreux scenarios de developpement Web. Lors de la construction d'URL avec des parametres de requete dynamiques, chaque valeur de parametre doit etre encodee pour empecher les caracteres speciaux de casser la structure de l'URL. Les requetes API necessitent frequemment l'encodage des valeurs de parametres, en particulier lors de la transmission de contenu genere par l'utilisateur, de termes de recherche ou de noms de fichiers. Les URL de redirection integrees comme parametres de requete doivent etre entierement encodees pour que l'ensemble de la cible de redirection soit traite comme une valeur unique. Les donnees de formulaire envoyees dans des requetes GET sont automatiquement encodees par les navigateurs, mais le code cote serveur doit souvent encoder les valeurs lors de la construction d'URL pour les redirections, les appels API ou la generation de liens.
+      </p>
+      <p>
+        Un autre scenario courant est l'encodage de donnees pour une utilisation dans les URI <code>data:</code>, les bookmarklets et les affectations JavaScript <code>location.href</code>. L'encodage est egalement critique lors de la construction de signatures OAuth, d'URL signees par HMAC et de toute manipulation d'URL sensible a la securite ou un encodage incorrect pourrait entrainer des incompatibilites de signature ou des vulnerabilites d'injection.
+      </p>
+
+      <h2>Questions frequemment posees</h2>
+
+      <h3>Qu'est-ce que l'encodage URL ?</h3>
+      <p>L'encodage URL (encodage en pourcentage) convertit les caracteres non autorises dans les URL en un signe pourcentage suivi de deux chiffres hexadecimaux. Les espaces deviennent %20, les esperluettes deviennent %26.</p>
+
+      <h3>Quelle est la difference entre encodeURI et encodeURIComponent ?</h3>
+      <p>encodeURI preserve les caracteres structurels de l'URL comme :, /, ?, et #. encodeURIComponent encode tout sauf les caracteres non reserves, ce qui le rend adapte a l'encodage de valeurs individuelles de parametres de requete.</p>
+
+      <h3>Pourquoi les espaces sont-ils encodes en + ou %20 ?</h3>
+      <p>Le format application/x-www-form-urlencoded utilise + pour les espaces dans les soumissions de formulaires. La norme RFC 3986 utilise %20. Les deux sont valides dans des contextes differents.</p>
+
+      <h3>Quand dois-je encoder du texte pour une URL ?</h3>
+      <p>Chaque fois que vous incluez des donnees utilisateur ou des caracteres speciaux dans les parametres de requete, les segments de chemin ou les identifiants de fragment. Cela empeche les caracteres comme & et = d'etre interpretes comme des delimiteurs d'URL.</p>
+
+      <h3>Puis-je encoder une URL entiere ?</h3>
+      <p>Non. Encoder une URL entiere echapperait les caracteres structurels comme :// et / rendant l'URL invalide. Encodez uniquement les composants individuels comme les valeurs de parametres et les segments de chemin.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Encodeur et Decodeur URL", url: everyday_url_encoder_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Encodeur/Decodeur Base64", description: "Encodez et decodez du texte en Base64 pour une transmission securisee des donnees.", path: everyday_base64_encoder_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Analyseur URL", description: "Decomposez n'importe quelle URL en ses composants : schema, hote, port, chemin, requete et fragment.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" },
+      { name: "Encodeur/Decodeur d'entites HTML", description: "Encodez et decodez les entites HTML avec une sortie en entites nommees et numeriques.", path: everyday_html_entity_encoder_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("url-encoder") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

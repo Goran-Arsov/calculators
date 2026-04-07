@@ -1,0 +1,217 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Generador de JSON a TypeScript - Interfaces desde JSON",
+  description: "Genere interfaces TypeScript a partir de datos JSON. Infiera tipos automáticamente, cree interfaces anidadas y maneje arreglos.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Generador de Interfaces JSON a TypeScript - Herramienta Gratuita en Línea | CalcWise",
+    description: "Genere interfaces TypeScript a partir de datos JSON. Infiera tipos automáticamente, cree interfaces anidadas y maneje arreglos.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Inicio", url: root_url },
+  { name: "Uso Diario", url: category_url("everyday") },
+  { name: "Generador de JSON a TypeScript", url: everyday_json_to_typescript_url }
+]) %>
+
+<%= faq_schema([
+  { question: "¿Qué son las interfaces de TypeScript?", answer: "Las interfaces de TypeScript definen la forma de un objeto especificando los nombres y tipos de sus propiedades. Proporcionan verificación de tipos en tiempo de compilación, lo que significa que TypeScript detectará errores cuando el código intente acceder a una propiedad que no existe o asigne un valor del tipo incorrecto. Las interfaces son puramente una construcción de tiempo de desarrollo y se eliminan durante la compilación a JavaScript." },
+  { question: "¿Por qué generar interfaces TypeScript desde JSON?", answer: "Escribir manualmente interfaces TypeScript para respuestas de API es tedioso y propenso a errores, especialmente para estructuras JSON grandes o profundamente anidadas. Generar interfaces a partir de datos JSON reales asegura precisión y ahorra tiempo significativo de desarrollo. Es particularmente útil al integrarse con APIs de terceros donde tiene respuestas de ejemplo pero no definiciones de tipos oficiales." },
+  { question: "¿Maneja objetos anidados?", answer: "Sí, el generador crea interfaces separadas para cada objeto anidado en la estructura JSON. Un objeto anidado como {user: {name: 'John', address: {city: 'NYC'}}} produce tres interfaces: una interfaz Root, una interfaz User y una interfaz Address. Cada objeto anidado obtiene un nombre descriptivo basado en su clave en el objeto padre." },
+  { question: "¿Puede manejar arreglos?", answer: "Sí, el generador detecta tipos de arreglos e infiere el tipo de los elementos del arreglo. Un arreglo de cadenas se convierte en string[], un arreglo de números en number[], y un arreglo de objetos genera una interfaz separada para el tipo del elemento. Los arreglos de tipos mixtos se representan como tipos de unión. Los arreglos vacíos se tipan como any[] ya que el tipo del elemento no puede inferirse." },
+  { question: "¿Qué pasa con los campos opcionales?", answer: "Al generar desde una sola muestra JSON, todos los campos se tratan como obligatorios porque no hay forma de determinar la opcionalidad a partir de un solo ejemplo. En la práctica, puede que desee marcar algunos campos como opcionales (usando el modificador ?) basándose en su conocimiento de la API. Las interfaces generadas proporcionan un punto de partida que puede refinar." }
+]) %>
+
+<%= calculator_schema(
+  name: "Generador de Interfaces JSON a TypeScript",
+  description: "Genere interfaces TypeScript a partir de datos JSON con inferencia automática de tipos y creación de interfaces anidadas.",
+  url: everyday_json_to_typescript_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Inicio", url: root_path },
+  { name: "Uso Diario", url: category_path("everyday") },
+  { name: "Generador de JSON a TypeScript" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Generador de Interfaces JSON a TypeScript</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Genere interfaces TypeScript a partir de datos JSON. Infiera tipos automáticamente, cree interfaces anidadas y maneje arreglos.</p>
+
+    <div data-controller="json-to-typescript-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="json-to-typescript-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">JSON de Entrada</label>
+          <textarea id="json-to-typescript-input" data-json-to-typescript-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="8" placeholder='{"name": "John", "age": 30, "address": {"city": "NYC", "zip": "10001"}}'></textarea>
+        </div>
+
+        <div>
+          <label for="json-to-typescript-root-name" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Nombre de la Interfaz Raíz</label>
+          <input type="text" id="json-to-typescript-root-name" data-json-to-typescript-calculator-target="rootName" value="Root" placeholder="Nombre de la interfaz raíz"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div>
+          <button data-action="click->json-to-typescript-calculator#convert"
+            class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Generar TypeScript</button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Interfaces</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-to-typescript-calculator-target="resultInterfaceCount">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Tipo Raíz</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-to-typescript-calculator-target="resultRootType">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="json-to-typescript-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Salida TypeScript</label>
+            <button data-action="click->json-to-typescript-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copiar</button>
+          </div>
+          <textarea id="json-to-typescript-output" data-json-to-typescript-calculator-target="output" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="10" placeholder="Las interfaces TypeScript generadas aparecerán aquí..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "json-to-typescript" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Cómo Usar el Generador de JSON a TypeScript</h2>
+      <p>
+        Pegue sus datos JSON en el área de entrada, opcionalmente cambie el nombre de la interfaz raíz y haga clic en Generar TypeScript. La herramienta analiza el JSON, infiere los tipos de todas las propiedades y genera interfaces TypeScript para cada objeto en la estructura. Los objetos anidados producen interfaces con nombre separadas. El panel de estadísticas muestra cuántas interfaces se generaron y el tipo de dato raíz. Use el botón Copiar para copiar la salida directamente a su proyecto TypeScript.
+      </p>
+      <p>
+        Este generador es especialmente útil al trabajar con APIs REST que devuelven respuestas JSON. En lugar de escribir manualmente definiciones de interfaces para objetos de respuesta complejos, pegue una respuesta de ejemplo y obtenga definiciones de tipos precisas al instante. Esto acelera el desarrollo y reduce la posibilidad de errores de tipos en su código.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Entendiendo las Interfaces de TypeScript</h2>
+      <p>
+        Las interfaces de TypeScript son una de las características más poderosas del lenguaje para construir aplicaciones robustas. Una interfaz define un contrato que los objetos deben satisfacer: especifica qué propiedades tiene un objeto y qué tipos contienen esas propiedades. Cuando declara una variable con un tipo de interfaz, el compilador de TypeScript asegura que el objeto asignado tenga la forma correcta. Esto detecta muchos errores comunes en tiempo de compilación en lugar de en tiempo de ejecución.
+      </p>
+      <p>
+        Las interfaces son especialmente valiosas al trabajar con fuentes de datos externas como APIs. Sin definiciones de tipos, acceder a una propiedad que no existe en una respuesta de API silenciosamente devuelve <code>undefined</code>, lo que puede propagarse por su aplicación y causar errores difíciles de depurar. Con interfaces, TypeScript inmediatamente señala el acceso incorrecto a la propiedad en su editor, antes de que siquiera ejecute el código.
+      </p>
+
+      <h3>Inferencia de Tipos desde JSON</h3>
+      <p>
+        El generador examina cada valor en el JSON para determinar su tipo TypeScript. Las cadenas JSON se convierten en <code>string</code>, los números en <code>number</code>, los booleanos en <code>boolean</code> y null en <code>null</code>. Los objetos generan nuevas interfaces con sus propios tipos de propiedades. Los arreglos se tipan según sus elementos: un arreglo de cadenas se convierte en <code>string[]</code>, un arreglo de objetos genera una interfaz de elemento con el arreglo tipado como ese arreglo de interfaz. Los arreglos vacíos se convierten en <code>any[]</code> ya que no se puede inferir ningún tipo de elemento.
+      </p>
+
+      <h3>Interfaces Anidadas y Nomenclatura</h3>
+      <p>
+        Cuando un objeto JSON contiene objetos anidados, el generador crea interfaces separadas para cada nivel. Los nombres se derivan de las claves de propiedades, convertidos a PascalCase. Por ejemplo, una propiedad llamada <code>shipping_address</code> que contiene un objeto generaría una interfaz <code>ShippingAddress</code>. Esto produce definiciones de tipos limpias y bien organizadas que siguen las convenciones de nomenclatura de TypeScript y son fáciles de importar y reutilizar en su base de código.
+      </p>
+
+      <h3>Trabajando con Respuestas de API</h3>
+      <p>
+        El flujo de trabajo típico es hacer una llamada a la API, copiar la respuesta JSON, pegarla en esta herramienta y generar las interfaces. Luego coloca estas interfaces en un archivo de tipos en su proyecto. Cuando la API evoluciona y agrega nuevos campos, puede regenerar las interfaces desde una respuesta nueva. Muchos equipos usan este enfoque como una alternativa rápida a escribir interfaces manualmente, especialmente durante la creación de prototipos y cuando los tipos oficiales del SDK no están disponibles.
+      </p>
+
+      <h2>Cómo Funciona la Inferencia de Tipos</h2>
+      <p>
+        La inferencia de tipos es el proceso de examinar valores JSON sin procesar y determinar el tipo TypeScript más preciso para cada uno. Dado que JSON es un formato sin tipos a nivel de lenguaje, el generador debe analizar valores estructuralmente para producir tipos significativos. Las reglas son directas para los primitivos: cualquier valor envuelto en comillas dobles se convierte en <code>string</code>, cualquier literal numérico sin comillas se convierte en <code>number</code>, los literales <code>true</code> y <code>false</code> se convierten en <code>boolean</code>, y <code>null</code> permanece como <code>null</code>. Estos mapeos cubren exactamente los cuatro tipos primitivos de JSON.
+      </p>
+      <p>
+        Donde la inferencia se vuelve más interesante es con las estructuras compuestas. Cuando el generador encuentra un objeto anidado, no simplemente tipa esa propiedad como <code>object</code> o <code>Record&lt;string, unknown&gt;</code>. En su lugar, analiza recursivamente cada propiedad dentro del objeto anidado y crea una interfaz completamente nueva para él. La propiedad en la interfaz padre se tipa entonces con ese nuevo nombre de interfaz. Esto significa que una estructura JSON de tres niveles de profundidad produce tres interfaces separadas, cada una describiendo completamente su propio nivel. La convención de nomenclatura deriva el nombre de la interfaz de la clave de propiedad, convirtiendo snake_case o kebab-case a PascalCase. Una propiedad llamada <code>billing_details</code> genera una interfaz <code>BillingDetails</code>, haciendo que la salida se sienta como TypeScript escrito a mano en lugar de código repetitivo generado por máquina.
+      </p>
+      <p>
+        Los arreglos requieren una estrategia diferente. El generador inspecciona el primer elemento del arreglo para determinar el tipo del elemento. Si el arreglo contiene valores primitivos, el resultado es un arreglo tipado simple como <code>string[]</code> o <code>number[]</code>. Si el arreglo contiene objetos, el generador crea una interfaz para la forma del objeto y tipa el arreglo como esa interfaz seguida de <code>[]</code>. Cuando un arreglo mezcla diferentes tipos, como cadenas y números juntos, el generador produce un tipo de unión como <code>(string | number)[]</code>. Los arreglos vacíos presentan un caso especial donde no existe ningún elemento para inspeccionar, por lo que se establecen como <code>any[]</code> por defecto. En la práctica, debe reemplazar <code>any[]</code> con el tipo correcto una vez que sepa qué contendrá el arreglo.
+      </p>
+
+      <h2>Trabajando con Interfaces Generadas</h2>
+      <p>
+        Una vez que ha generado sus interfaces TypeScript, el siguiente paso es integrarlas en su proyecto. La práctica estándar es crear un directorio o archivo de tipos dedicado, como <code>src/types/api.ts</code> o <code>src/types/index.ts</code>, y pegar las interfaces generadas allí. Exporte cada interfaz con la palabra clave <code>export</code> para que otros módulos puedan importarlas. Por ejemplo, después de generar una interfaz <code>UserResponse</code>, escribiría <code>export interface UserResponse { ... }</code> y luego la importaría donde haga la llamada API correspondiente con <code>import { UserResponse } from '../types/api'</code>.
+      </p>
+      <p>
+        Las interfaces generadas sirven como punto de partida, no como producto terminado. A menudo querrá refinarlas basándose en conocimiento del dominio que no puede inferirse de una sola muestra JSON. El refinamiento más común es marcar propiedades como opcionales. Si una API a veces omite un campo, agregue el modificador <code>?</code> después del nombre de la propiedad: <code>middleName?: string</code>. También puede estrechar tipos que el generador hizo demasiado amplios. Por ejemplo, si un campo <code>status</code> solo contiene <code>"active"</code>, <code>"inactive"</code> o <code>"pending"</code>, reemplace el tipo <code>string</code> inferido con un tipo literal de unión: <code>status: "active" | "inactive" | "pending"</code>. Esto le da una seguridad de tipos mucho más estricta.
+      </p>
+      <p>
+        Extender interfaces es otra técnica poderosa. Si dos endpoints de API devuelven formas similares pero no idénticas, genere interfaces para ambos y use la palabra clave <code>extends</code> para compartir propiedades comunes. Por ejemplo, si tanto un <code>UserSummary</code> como un <code>UserDetail</code> comparten <code>id</code>, <code>name</code> y <code>email</code>, extraiga esos en una interfaz <code>BaseUser</code> y haga que ambos la extiendan: <code>interface UserDetail extends BaseUser { ... }</code>. Esto reduce la duplicación y facilita cambios futuros porque las propiedades compartidas se definen en un solo lugar. También puede usar los tipos de utilidad <code>Pick</code>, <code>Omit</code> y <code>Partial</code> para derivar nuevos tipos de interfaces existentes sin reescribir propiedades.
+      </p>
+      <p>
+        Para proyectos que consumen muchas APIs, considere organizar las interfaces por endpoint o dominio. Un archivo <code>types/users.ts</code> para interfaces relacionadas con usuarios, un archivo <code>types/products.ts</code> para interfaces de productos, y así sucesivamente. Esta estructura escala bien a medida que el proyecto crece y facilita a los miembros del equipo encontrar las definiciones de tipos que necesitan. Re-exportar todo desde un archivo central <code>types/index.ts</code> proporciona un punto de importación único y conveniente.
+      </p>
+
+      <h2>Beneficios de Seguridad de Tipos de TypeScript</h2>
+      <p>
+        El beneficio principal de las interfaces TypeScript es detectar errores en tiempo de compilación en lugar de en tiempo de ejecución. Cuando tipa una respuesta de API con una interfaz, cada acceso a propiedad es validado por el compilador. Si escribe <code>response.user.nmae</code> en lugar de <code>response.user.name</code>, TypeScript señala el error tipográfico inmediatamente en su editor con un subrayado rojo y un mensaje de error claro. Sin interfaces, este error tipográfico silenciosamente devolvería <code>undefined</code>, y podría no descubrir el error hasta que un usuario reporte un comportamiento roto en producción. La verificación en tiempo de compilación elimina categorías enteras de estos errores sutiles.
+      </p>
+      <p>
+        El autocompletado del IDE es otra ventaja significativa que las interfaces desbloquean. Cuando su editor conoce la forma de un objeto a través de su interfaz, puede sugerir nombres de propiedades mientras escribe. En lugar de alternar entre su código y la documentación de la API para recordar si el campo se llama <code>firstName</code>, <code>first_name</code> o <code>name</code>, simplemente escribe un punto y el editor le muestra cada propiedad disponible con su tipo. Esto acelera el desarrollo notablemente, especialmente al trabajar con objetos de respuesta profundamente anidados que tienen docenas de campos.
+      </p>
+      <p>
+        La confianza en la refactorización es un beneficio menos obvio pero igualmente importante. Cuando renombra una propiedad en una interfaz, TypeScript resalta cada archivo que referencia el nombre de propiedad antiguo. Esto hace que las refactorizaciones a gran escala sean seguras porque el compilador le dice exactamente qué necesita cambiar. Sin definiciones de tipos, renombrar una propiedad en toda una base de código requiere operaciones de buscar y reemplazar propensas a errores y pruebas manuales extensivas. Con interfaces, el compilador sirve como red de seguridad de refactorización que garantiza que ha actualizado cada referencia.
+      </p>
+      <p>
+        Finalmente, las interfaces actúan como documentación viva para su base de código. Cuando un nuevo desarrollador se une al equipo y necesita entender qué devuelve una API, puede leer la definición de la interfaz en lugar de hacer llamadas de prueba a la API o buscar en la documentación. La interfaz le dice cada nombre de propiedad, cada tipo y cada estructura anidada de un vistazo. A diferencia de los comentarios de código o páginas wiki que pueden quedar desactualizadas, las interfaces son aplicadas por el compilador, por lo que siempre reflejan la forma real de los datos que fluyen a través de la aplicación. Esto hace que la base de código sea más mantenible y reduce el tiempo de incorporación para nuevos miembros del equipo.
+      </p>
+
+      <h2>Preguntas Frecuentes</h2>
+
+      <h3>¿Qué son las interfaces de TypeScript?</h3>
+      <p>Las interfaces definen formas de objetos con nombres de propiedades y tipos. Proporcionan verificación en tiempo de compilación y se eliminan durante la compilación a JavaScript.</p>
+
+      <h3>¿Por qué generar desde JSON?</h3>
+      <p>Escribir interfaces manualmente para respuestas grandes de API es tedioso y propenso a errores. Generar desde datos JSON reales asegura precisión y ahorra tiempo de desarrollo.</p>
+
+      <h3>¿Maneja objetos anidados?</h3>
+      <p>Sí. Cada objeto anidado obtiene su propia interfaz con nombre derivada de su clave de propiedad, produciendo definiciones de tipos limpias y bien organizadas.</p>
+
+      <h3>¿Puede manejar arreglos?</h3>
+      <p>Sí. Los arreglos de primitivos se convierten en arreglos tipados (string[], number[]). Los arreglos de objetos generan interfaces de elemento. Los arreglos vacíos se convierten en any[].</p>
+
+      <h3>¿Qué pasa con los campos opcionales?</h3>
+      <p>Todos los campos se generan como obligatorios a partir de una sola muestra. Puede agregar manualmente el modificador ? para campos que sepa que son opcionales.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Generador de Interfaces JSON a TypeScript", url: everyday_json_to_typescript_url %>
+
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Validador JSON", description: "Valide datos JSON con verificación de sintaxis, conteo de claves, profundidad de anidamiento y salida formateada.", path: everyday_json_validator_path, icon_path: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Formateador JSON", description: "Formatee, embellezca, minifique y valide JSON con conteo de claves y análisis de profundidad de anidamiento.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Convertidor de HTML a JSX", description: "Convierta HTML a JSX para React con conversión automática de atributos y estilos.", path: everyday_html_to_jsx_path, icon_path: "M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("json-to-typescript") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

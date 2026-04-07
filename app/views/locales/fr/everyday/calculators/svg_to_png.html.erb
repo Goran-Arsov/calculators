@@ -1,0 +1,190 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Convertisseur SVG vers PNG - Outil en ligne gratuit",
+  description: "Convertissez des SVG en images PNG en ligne. Fonctionne entierement dans votre navigateur via l'API Canvas. Ajustez l'echelle et telechargez le resultat.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Convertisseur SVG vers PNG - Outil en ligne gratuit | CalcWise",
+    description: "Convertissez des SVG en images PNG en ligne. Fonctionne entierement dans votre navigateur via l'API Canvas. Ajustez l'echelle et telechargez le resultat.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Accueil", url: root_url },
+  { name: "Quotidien", url: category_url("everyday") },
+  { name: "Convertisseur SVG vers PNG", url: everyday_svg_to_png_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Pourquoi convertir un SVG en PNG ?", answer: "SVG (Scalable Vector Graphics) est un format vectoriel base sur XML, ideal pour les logos, icones et illustrations car il s'adapte a toutes les tailles sans perte de qualite. Cependant, toutes les applications et plateformes ne prennent pas en charge le SVG. Les clients de messagerie, certaines plateformes de reseaux sociaux, les logiciels anciens et certains editeurs d'images necessitent des formats raster comme le PNG. Convertir un SVG en PNG cree une image a resolution fixe universellement prise en charge. Le PNG preserve la transparence, ce qui le rend ideal pour les logos et graphiques devant apparaitre sur differents arriere-plans." },
+  { question: "Cet outil est-il confidentiel ?", answer: "Oui, entierement. Cet outil fonctionne entierement dans votre navigateur en utilisant l'API Canvas HTML5. Votre code SVG n'est jamais envoye a aucun serveur. La conversion s'effectue localement sur votre appareil via JavaScript. Le SVG est rendu sur un element canvas, puis le canvas est exporte sous forme d'URL de donnees PNG. Cela signifie que vos graphiques, logos et designs restent prives et ne sont jamais telecharges ni stockes nulle part." },
+  { question: "Quelle echelle utiliser ?", answer: "Le facteur d'echelle multiplie les dimensions originales du SVG pour determiner la taille de sortie du PNG. Une echelle de 1x produit un PNG aux dimensions natives du SVG. Une echelle de 2x produit un PNG au double de la largeur et de la hauteur, ideal pour les ecrans Retina et haute resolution. Une echelle de 3x convient aux supports imprimes. Pour les images de reseaux sociaux, 2x est generalement suffisant. Pour les icones, 1x a la taille cible en pixels fonctionne le mieux. Les echelles superieures produisent des fichiers plus volumineux." },
+  { question: "Puis-je convertir des SVG animes ?", answer: "Cet outil capture un instantane statique du SVG au moment de la conversion. Si le SVG contient des animations SMIL ou des animations CSS, l'outil rendra l'etat initial de l'animation sous forme d'image PNG fixe. Les SVG animes ne peuvent pas etre convertis en PNG anime (APNG) avec cet outil. Pour du contenu anime, envisagez l'exportation au format GIF ou video. Si vous avez besoin d'une image specifique d'une animation, modifiez le SVG pour afficher cette image avant la conversion." },
+  { question: "Quels navigateurs prennent en charge cet outil ?", answer: "Cet outil fonctionne dans tous les navigateurs modernes prenant en charge l'API Canvas HTML5 et le rendu SVG, ce qui inclut Chrome, Firefox, Safari, Edge et Opera sur ordinateur et mobile. La methode toDataURL de l'API Canvas est utilisee pour exporter l'image rendue en PNG. Internet Explorer 11 a une prise en charge partielle mais peut ne pas gerer correctement toutes les fonctionnalites SVG. Pour de meilleurs resultats, utilisez la derniere version de Chrome, Firefox ou Safari." }
+]) %>
+
+<%= calculator_schema(
+  name: "Convertisseur SVG vers PNG",
+  description: "Convertissez des SVG en images PNG en ligne en utilisant l'API Canvas du navigateur. Ajustez l'echelle et telechargez le resultat.",
+  url: everyday_svg_to_png_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Accueil", url: root_path },
+  { name: "Quotidien", url: category_path("everyday") },
+  { name: "Convertisseur SVG vers PNG" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Convertisseur SVG vers PNG</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Collez du code SVG, ajustez l'echelle et convertissez en PNG. Tout fonctionne dans votre navigateur via l'API Canvas. Aucune donnee n'est envoyee a un serveur.</p>
+
+    <div data-controller="svg-to-png-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="svg-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Code SVG</label>
+          <textarea id="svg-input" data-svg-to-png-calculator-target="input"
+                    class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows="8" placeholder="Collez le code SVG ici..."></textarea>
+        </div>
+
+        <div>
+          <label for="svg-scale" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Echelle</label>
+          <input id="svg-scale" type="number" data-svg-to-png-calculator-target="scale"
+                 class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 value="1" min="0.1" max="10" step="0.5">
+        </div>
+
+        <button data-action="click->svg-to-png-calculator#convert"
+                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+          Convertir en PNG
+        </button>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Largeur</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-svg-to-png-calculator-target="resultWidth">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Hauteur</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-svg-to-png-calculator-target="resultHeight">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Elements</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-svg-to-png-calculator-target="resultElements">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Taille SVG</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-svg-to-png-calculator-target="resultSvgSize">&mdash;</span>
+          </div>
+        </div>
+
+        <%# Preview area %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Apercu</h3>
+          <div data-svg-to-png-calculator-target="preview"
+               class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 min-h-[10rem] flex items-center justify-center text-gray-400 dark:text-gray-500 overflow-auto">
+            <span>L'apercu PNG apparaitra ici</span>
+          </div>
+        </div>
+
+        <%# Download link %>
+        <div class="text-center">
+          <a data-svg-to-png-calculator-target="downloadLink"
+             class="hidden inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Telecharger le PNG
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "svg-to-png" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Comment convertir un SVG en PNG</h2>
+      <p>
+        Collez votre code SVG dans la zone de saisie, ajustez eventuellement le facteur d'echelle et cliquez sur "Convertir en PNG". L'outil analyse le SVG, le rend sur un element Canvas HTML5 et exporte le canvas en image PNG. L'apercu affiche l'image convertie et vous pouvez la telecharger en un seul clic. L'ensemble du processus se deroule dans votre navigateur. Votre code SVG n'est jamais transmis a aucun serveur, ce qui rend cet outil sur pour les logos proprietaires, les icones et les ressources de design.
+      </p>
+      <p>
+        Le facteur d'echelle controle la resolution de sortie. Une echelle de 1x produit un PNG aux dimensions natives du SVG telles que definies par son viewBox ou ses attributs width/height. Une echelle de 2x double les dimensions, ce qui est ideal pour les ecrans Retina et les ecrans haute resolution. Les echelles superieures produisent des images plus grandes et plus detaillees adaptees aux supports imprimes. Le panneau de statistiques affiche les dimensions de sortie, le nombre d'elements SVG et la taille du fichier SVG original afin que vous puissiez evaluer la complexite et la taille de votre graphique.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>SVG vs PNG : quand utiliser chaque format</h2>
+      <p>
+        SVG et PNG servent des objectifs differents et comprendre quand utiliser chacun est important pour les performances web et la qualite visuelle. SVG est un format vectoriel qui decrit les formes mathematiquement en utilisant XML. Il s'adapte a n'importe quelle taille sans perte de qualite, ce qui le rend parfait pour les logos, les icones, les illustrations, les graphiques et tout element visuel devant etre net a plusieurs tailles. Les fichiers SVG sont souvent plus petits que les images raster equivalentes pour les graphiques simples et peuvent etre stylises avec CSS, animes avec JavaScript et rendus accessibles avec un balisage correct.
+      </p>
+      <p>
+        PNG est un format raster qui stocke les images sous forme de grille de pixels. Il prend en charge la compression sans perte et la transparence, ce qui en fait le format standard pour les captures d'ecran, les images complexes avec du texte et les graphiques devant etre affiches dans des environnements ne prenant pas en charge le SVG. Les images PNG ont une resolution fixe, elles peuvent donc apparaitre floues lorsqu'elles sont agrandies au-dela de leurs dimensions originales. Pour les photographies, JPEG ou WebP offrent generalement une meilleure compression, mais PNG reste le meilleur choix lorsque la transparence ou le rendu de texte au pixel pres est necessaire.
+      </p>
+
+      <h3>Comment fonctionne la conversion via l'API Canvas</h3>
+      <p>
+        Le processus de conversion utilise le moteur de rendu SVG integre au navigateur et l'API Canvas HTML5. Tout d'abord, le balisage SVG est converti en URL de donnees. Un element Image est cree avec cette URL de donnees comme source. Une fois l'image chargee, elle est dessinee sur un element Canvas a l'echelle specifiee. La methode <code>toDataURL('image/png')</code> du Canvas exporte ensuite les pixels rendus sous forme de PNG encode en base64. Cette approche exploite le moteur de rendu SVG natif du navigateur, qui gere les fonctionnalites SVG complexes incluant les degrades, les filtres, le texte, les chemins de decoupage et les polices integrees.
+      </p>
+
+      <h3>Limitations et considerations</h3>
+      <p>
+        Certaines fonctionnalites SVG peuvent ne pas se convertir parfaitement selon le navigateur. Les ressources externes referencees dans le SVG, telles que les feuilles de style liees, les polices chargees via <code>@font-face</code> ou les images referencees par URL, peuvent ne pas etre disponibles lors du rendu canvas en raison des restrictions d'origine croisee. Pour de meilleurs resultats, integrez toutes les ressources directement dans le SVG en utilisant des styles inline, des polices integrees et des URI de donnees pour les images. Les SVG reposant sur des animations CSS ou des interactions JavaScript seront captures sous forme d'instantane statique a leur etat initial.
+      </p>
+
+      <h2>Foire aux questions</h2>
+
+      <h3>Pourquoi convertir un SVG en PNG ?</h3>
+      <p>Toutes les plateformes ne prennent pas en charge le SVG. Les clients de messagerie, certaines plateformes de reseaux sociaux et les logiciels anciens necessitent des formats raster comme le PNG. Le PNG preserve la transparence, ce qui le rend ideal pour les logos sur des arriere-plans varies.</p>
+
+      <h3>Cet outil est-il confidentiel ?</h3>
+      <p>Oui. Tout fonctionne dans votre navigateur via l'API Canvas. Aucune donnee n'est envoyee a un serveur. Votre code SVG et les images converties restent entierement sur votre appareil.</p>
+
+      <h3>Quelle echelle utiliser ?</h3>
+      <p>1x pour les ecrans standard, 2x pour les ecrans Retina et haute resolution, 3x pour l'impression. Les echelles superieures produisent des fichiers plus volumineux. Choisissez en fonction de l'utilisation prevue du PNG.</p>
+
+      <h3>Puis-je convertir des SVG animes ?</h3>
+      <p>L'outil capture un instantane statique de l'etat initial du SVG. Les animations SMIL et CSS ne sont pas preservees dans la sortie PNG. Pour du contenu anime, envisagez les formats GIF ou video.</p>
+
+      <h3>Quels navigateurs prennent en charge cet outil ?</h3>
+      <p>Tous les navigateurs modernes avec prise en charge de l'API Canvas : Chrome, Firefox, Safari, Edge et Opera sur ordinateur et mobile. Utilisez la derniere version pour de meilleurs resultats.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Convertisseur SVG vers PNG", url: everyday_svg_to_png_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Generateur de QR Code", description: "Generez des QR codes a partir de texte, d'URL, d'e-mails et de numeros de telephone instantanement.", path: everyday_qr_code_generator_path, icon_path: "M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" },
+      { name: "Encodeur d'images Base64", description: "Encodez des images en chaines Base64 pour les integrer dans du HTML et du CSS.", path: everyday_base64_image_encoder_path, icon_path: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Convertisseur de couleurs", description: "Convertissez des couleurs entre les formats HEX, RGB, HSL et autres.", path: everyday_color_converter_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("svg-to-png") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

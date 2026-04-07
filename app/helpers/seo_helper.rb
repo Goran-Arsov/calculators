@@ -199,6 +199,48 @@ module SeoHelper
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end
 
+  LOCALE_NAMES = { "de" => "Deutsch", "fr" => "Fran\u00e7ais", "es" => "Espa\u00f1ol", "pt" => "Portugu\u00eas" }.freeze
+  SUPPORTED_LOCALES = %w[de fr es pt].freeze
+
+  def hreflang_tags
+    return "" unless translatable_tool_page?
+
+    base_path = request.path.sub(%r{\A/(de|fr|es|pt)/}, "/")
+    base_url = "#{request.protocol}#{request.host_with_port}"
+
+    tags = []
+    tags << tag.link(rel: "alternate", hreflang: "en", href: "#{base_url}#{base_path}")
+    tags << tag.link(rel: "alternate", hreflang: "x-default", href: "#{base_url}#{base_path}")
+    SUPPORTED_LOCALES.each do |locale|
+      tags << tag.link(rel: "alternate", hreflang: locale, href: "#{base_url}/#{locale}#{base_path}")
+    end
+    safe_join(tags, "\n")
+  end
+
+  def locale_canonical_url
+    "#{request.protocol}#{request.host_with_port}#{request.path}"
+  end
+
+  def language_switcher
+    return "" unless translatable_tool_page?
+
+    base_path = request.path.sub(%r{\A/(de|fr|es|pt)/}, "/")
+    current = params[:locale] || "en"
+
+    links = []
+    links << { locale: "en", name: "English", path: base_path, current: current == "en" }
+    SUPPORTED_LOCALES.each do |locale|
+      links << { locale: locale, name: LOCALE_NAMES[locale], path: "/#{locale}#{base_path}", current: current == locale }
+    end
+    links
+  end
+
+  private def translatable_tool_page?
+    controller_path == "everyday/calculators" && params[:action].present?
+  end
+
+  public
+
   def calculator_schema_with_ratings(name:, description:, url:, category:, calculator_slug:)
     rating = CalculatorRating.rating_for_schema(calculator_slug)
     calculator_schema(

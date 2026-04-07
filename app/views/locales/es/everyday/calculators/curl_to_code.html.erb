@@ -1,0 +1,231 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Convertidor de cURL a Código - Python, JS, Ruby y PHP",
+  description: "Convierta comandos cURL a código Python, JavaScript, Ruby y PHP. Pegue su comando cURL y obtenga código limpio y listo para usar.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Convertidor de cURL a Código - Python, JS, Ruby y PHP | CalcWise",
+    description: "Convierta comandos cURL a código Python, JavaScript, Ruby y PHP. Pegue su comando cURL y obtenga código limpio y listo para usar.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Inicio", url: root_url },
+  { name: "Uso Diario", url: category_url("everyday") },
+  { name: "Convertidor de cURL a Código", url: everyday_curl_to_code_url }
+]) %>
+
+<%= faq_schema([
+  { question: "¿Qué es cURL?", answer: "cURL (Client URL) es una herramienta de línea de comandos para transferir datos usando varios protocolos de red, más comúnmente HTTP y HTTPS. Viene preinstalado en la mayoría de los sistemas operativos incluyendo Linux, macOS y Windows 10+. Los desarrolladores usan cURL para probar APIs, descargar archivos y depurar solicitudes de red. Las herramientas de desarrollo del navegador a menudo proporcionan una opción 'Copiar como cURL' para las solicitudes de red." },
+  { question: "¿Cómo leo un comando cURL?", answer: "Un comando cURL comienza con 'curl' seguido de una URL. Las opciones comunes incluyen -X para establecer el método HTTP, -H para agregar encabezados, -d para enviar datos del cuerpo de la solicitud, -u para autenticación, -o para guardar la salida en un archivo y -v para salida detallada. Por ejemplo, 'curl -X POST -H \"Content-Type: application/json\" -d '{\"key\":\"value\"}' https://api.example.com' envía una solicitud POST con JSON." },
+  { question: "¿Qué métodos HTTP soporta cURL?", answer: "cURL soporta todos los métodos HTTP incluyendo GET, POST, PUT, PATCH, DELETE, HEAD y OPTIONS. El método se especifica con la opción -X (ej., -X POST). Si no se especifica un método, GET es el predeterminado. Cuando se usa -d sin -X, cURL automáticamente usa POST." },
+  { question: "¿Puedo convertir cURL con autenticación?", answer: "Sí, esta herramienta maneja comandos cURL con varios métodos de autenticación. Convierte -u usuario:contraseña (autenticación Basic), -H 'Authorization: Bearer token' (autenticación con token Bearer) y otros patrones de autenticación basados en encabezados al código equivalente para cada lenguaje de destino usando sus bibliotecas HTTP nativas." },
+  { question: "¿Maneja datos de formulario multiparte?", answer: "Sí, el convertidor maneja comandos cURL con opciones -F para datos de formulario multiparte. Traduce campos de formulario y subidas de archivos a la sintaxis de solicitud multiparte apropiada para cada lenguaje de destino. El código generado usa la biblioteca estándar de cada lenguaje para construir solicitudes multiparte." }
+]) %>
+
+<%= calculator_schema(
+  name: "Convertidor de cURL a Código",
+  description: "Convierta comandos cURL a código Python, JavaScript, Ruby y PHP con análisis de método, encabezados y cuerpo.",
+  url: everyday_curl_to_code_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Inicio", url: root_path },
+  { name: "Uso Diario", url: category_path("everyday") },
+  { name: "Convertidor de cURL a Código" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Convertidor de cURL a Código</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convierta comandos cURL a código Python, JavaScript, Ruby y PHP. Pegue su comando cURL y obtenga código limpio y listo para usar.</p>
+
+    <div data-controller="curl-to-code-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="curl-to-code-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Comando cURL</label>
+          <textarea id="curl-to-code-input" data-curl-to-code-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="6" placeholder="curl https://api.example.com -H 'Authorization: Bearer token'"></textarea>
+        </div>
+
+        <div>
+          <label for="curl-to-code-language" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Lenguaje de Destino</label>
+          <select id="curl-to-code-language" data-curl-to-code-calculator-target="language" data-action="change->curl-to-code-calculator#convert"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="ruby">Ruby</option>
+            <option value="php">PHP</option>
+          </select>
+        </div>
+
+        <div>
+          <button data-action="click->curl-to-code-calculator#convert"
+            class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Convertir</button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Método</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-curl-to-code-calculator-target="resultMethod">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">URL</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400 truncate block" data-curl-to-code-calculator-target="resultUrl">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Encabezados</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-curl-to-code-calculator-target="resultHeaders">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Cuerpo</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-curl-to-code-calculator-target="resultHasBody">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="curl-to-code-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Código Generado</label>
+            <button data-action="click->curl-to-code-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copiar</button>
+          </div>
+          <textarea id="curl-to-code-output" data-curl-to-code-calculator-target="output" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="10" placeholder="El código generado aparecerá aquí..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "curl-to-code" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Cómo Usar el Convertidor de cURL a Código</h2>
+      <p>
+        Pegue un comando cURL en el área de entrada, seleccione su lenguaje de programación de destino del menú desplegable y haga clic en Convertir. La herramienta analiza el comando cURL para extraer el método HTTP, la URL, los encabezados y el cuerpo de la solicitud, luego genera código equivalente usando la biblioteca HTTP estándar del lenguaje seleccionado. El panel de estadísticas muestra el método analizado, la URL, el conteo de encabezados y si hay un cuerpo presente. Use el botón Copiar para copiar el código generado a su portapapeles.
+      </p>
+      <p>
+        Esta herramienta es invaluable para desarrolladores que prueban APIs con cURL y luego necesitan integrar esas solicitudes en el código de su aplicación. Las herramientas de desarrollo del navegador le permiten copiar cualquier solicitud de red como un comando cURL, facilitando capturar una solicitud funcional y convertirla a código en el lenguaje de su elección.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Entendiendo los Comandos cURL</h2>
+      <p>
+        cURL es el cliente HTTP de línea de comandos más utilizado, instalado por defecto en prácticamente todos los sistemas operativos. Un comando cURL consiste en la palabra clave <code>curl</code> seguida de una URL y opciones opcionales. La opción <code>-X</code> especifica el método HTTP (GET, POST, PUT, DELETE, etc.). La opción <code>-H</code> agrega encabezados de solicitud como <code>Content-Type</code> y <code>Authorization</code>. La opción <code>-d</code> envía datos en el cuerpo de la solicitud. La opción <code>-u</code> proporciona credenciales de autenticación básica.
+      </p>
+      <p>
+        Cuando no se especifica explícitamente un método, cURL usa GET por defecto. Cuando se usa la opción <code>-d</code> sin <code>-X</code>, cURL cambia automáticamente a POST. Estos comportamientos implícitos se preservan en el código generado, que establece explícitamente el método para hacer clara la intención independientemente de los valores predeterminados específicos del lenguaje.
+      </p>
+
+      <h3>Lenguajes y Bibliotecas Soportados</h3>
+      <p>
+        El convertidor genera código idiomático para cuatro lenguajes populares. El código Python usa la biblioteca <code>requests</code>, que es el estándar de facto para HTTP en Python. El código JavaScript usa la API <code>fetch</code> integrada, que está disponible en todos los navegadores modernos y Node.js. El código Ruby usa <code>Net::HTTP</code> de la biblioteca estándar. El código PHP usa las funciones de <code>cURL</code> (<code>curl_init</code>, <code>curl_setopt</code>, <code>curl_exec</code>), que están disponibles en prácticamente todas las instalaciones de PHP.
+      </p>
+
+      <h3>Manejo de Autenticación y Encabezados</h3>
+      <p>
+        Las solicitudes de API a menudo requieren autenticación. El convertidor maneja autenticación con token Bearer pasada mediante <code>-H 'Authorization: Bearer ...'</code>, autenticación Basic mediante <code>-u usuario:contraseña</code> y encabezados de clave de API. Los encabezados personalizados se traducen al mecanismo apropiado de configuración de encabezados para cada lenguaje. Los encabezados Content-Type se preservan para asegurar que el cuerpo de la solicitud se envíe en el formato correcto, ya sea JSON, codificado en formulario o multiparte.
+      </p>
+
+      <h2>Entendiendo las Opciones de cURL</h2>
+      <p>
+        cURL ofrece docenas de opciones de línea de comandos, pero un puñado representa la gran mayoría del uso en el mundo real. Aprender qué hace cada una le ayuda a leer y escribir comandos cURL con confianza, y entenderlas facilita verificar que el código convertido sea correcto.
+      </p>
+      <h3>Opciones de Solicitud</h3>
+      <p>
+        La opción <code>-X</code> (o <code>--request</code>) establece el método HTTP. Los valores comunes son <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code> y <code>DELETE</code>. Si omite <code>-X</code> completamente, cURL usa <code>GET</code> por defecto a menos que esté presente una opción de datos como <code>-d</code>, en cuyo caso cambia a <code>POST</code> automáticamente. La opción <code>-H</code> (o <code>--header</code>) agrega un encabezado personalizado a la solicitud. Puede usarla múltiples veces para establecer varios encabezados: <code>-H 'Content-Type: application/json' -H 'Accept: application/json'</code>. La opción <code>-d</code> (o <code>--data</code>) envía datos en el cuerpo de la solicitud e implica <code>POST</code>. Para cargas JSON típicamente se combina con <code>-H 'Content-Type: application/json'</code>. La variante <code>--data-raw</code> se comporta de manera idéntica pero no interpreta el prefijo <code>@</code> como una referencia a archivo.
+      </p>
+      <h3>Opciones de Autenticación y Salida</h3>
+      <p>
+        La opción <code>-u</code> (o <code>--user</code>) proporciona credenciales de autenticación Basic en el formato <code>usuario:contraseña</code>. cURL las codifica en Base64 y las envía en el encabezado <code>Authorization</code>. La opción <code>-o</code> (o <code>--output</code>) escribe el cuerpo de la respuesta a un archivo en lugar de la salida estándar. La opción <code>-O</code> guarda a un archivo usando el nombre de archivo remoto de la URL. La opción <code>-v</code> (o <code>--verbose</code>) imprime información detallada de solicitud y respuesta, incluyendo detalles del handshake TLS e intercambios de encabezados, lo cual es invaluable para depuración. La opción <code>-k</code> (o <code>--insecure</code>) le dice a cURL que omita la verificación de certificados TLS, útil para entornos de desarrollo con certificados autofirmados pero peligroso en producción. La opción <code>-L</code> (o <code>--location</code>) le dice a cURL que siga redirecciones HTTP (respuestas 3xx), que muchas APIs y sitios web emiten.
+      </p>
+
+      <h2>Cómo Funciona la Conversión</h2>
+      <p>
+        Convertir un comando cURL a código fuente involucra varios pasos discretos. El convertidor primero tokeniza la cadena de entrada, dividiéndola en espacios en blanco mientras respeta las comillas simples y dobles para que los valores de encabezados y los cuerpos JSON con espacios se mantengan intactos. Luego, recorre la lista de tokens secuencialmente, identificando opciones conocidas y consumiendo sus argumentos. Una opción como <code>-X</code> consume el siguiente token como el método HTTP; <code>-H</code> consume el siguiente token como una cadena de encabezado; <code>-d</code> o <code>--data</code> consume el siguiente token como el cuerpo de la solicitud. Los tokens que no están asociados con ninguna opción y parecen URLs (que comienzan con <code>http://</code> o <code>https://</code>) se capturan como la URL de destino.
+      </p>
+      <p>
+        Una vez completado el análisis, el convertidor mantiene una representación estructurada de la solicitud: la URL, el método HTTP, una lista de encabezados (cada uno dividido en nombre y valor en el primer dos puntos), la cadena del cuerpo sin procesar y cualquier credencial de autenticación. Esta representación intermedia es independiente del lenguaje. El paso final es la generación de código, donde una plantilla específica del lenguaje mapea cada componente a los idiomas HTTP del lenguaje de destino. El método se convierte en un argumento de función o una constante, los encabezados se convierten en un diccionario o arreglo asociativo, y el cuerpo se adjunta de la manera que la biblioteca espera. El código generado está formateado con indentación adecuada y listo para ejecutar.
+      </p>
+      <p>
+        Los casos especiales requieren manejo especial. Los comandos cURL multilínea que usan continuación con barra invertida (<code>\</code> al final de una línea) se unen antes del análisis. La opción <code>-u</code> se traduce a un mecanismo de autenticación Basic específico del lenguaje en lugar de dejarse como un encabezado sin procesar. Los encabezados duplicados se preservan en orden, porque algunas APIs dependen de múltiples valores para el mismo nombre de encabezado (por ejemplo, múltiples encabezados <code>Set-Cookie</code>). El convertidor también elimina los caracteres de prompt de shell <code>$</code> o <code>%</code> que a veces aparecen cuando un comando se copia de un tutorial o captura de pantalla de terminal.
+      </p>
+
+      <h2>Bibliotecas HTTP Específicas por Lenguaje</h2>
+      <p>
+        Cada lenguaje de destino usa una biblioteca diferente con sus propias convenciones para construir solicitudes HTTP. Entender estas diferencias le ayuda a elegir la salida correcta y modificar el código generado cuando sea necesario.
+      </p>
+      <h3>Python &mdash; requests</h3>
+      <p>
+        La biblioteca <code>requests</code> es el cliente HTTP más popular en el ecosistema Python. Proporciona una API simple y de alto nivel donde el método HTTP se mapea directamente a un nombre de función: <code>requests.get()</code>, <code>requests.post()</code>, y así sucesivamente. Los encabezados se pasan como un diccionario simple al argumento de palabra clave <code>headers</code>. Los cuerpos JSON pueden pasarse mediante el parámetro <code>json</code>, que establece automáticamente el encabezado Content-Type y serializa el diccionario. El parámetro <code>auth</code> acepta una tupla para autenticación Basic. Los datos de respuesta están disponibles a través de <code>.json()</code>, <code>.text</code> o <code>.content</code> dependiendo del formato deseado.
+      </p>
+      <h3>JavaScript &mdash; API fetch</h3>
+      <p>
+        La API <code>fetch</code> está integrada en todos los navegadores modernos y Node.js 18+. Toma una URL como primer argumento y un objeto de opciones como segundo. El objeto de opciones acepta las propiedades <code>method</code>, <code>headers</code> y <code>body</code>. Los encabezados pueden ser un objeto simple o una instancia de <code>Headers</code>. A diferencia de <code>requests</code> en Python, <code>fetch</code> no lanza una excepción en códigos de estado de error HTTP; debe verificar <code>response.ok</code> usted mismo. El cuerpo de la respuesta se consume asincrónicamente a través de métodos como <code>response.json()</code> o <code>response.text()</code>. Como <code>fetch</code> devuelve una Promise, el código generado usa <code>async/await</code> para legibilidad.
+      </p>
+      <h3>Ruby &mdash; Net::HTTP</h3>
+      <p>
+        La biblioteca estándar de Ruby incluye <code>Net::HTTP</code>, que es más verbosa que los equivalentes de Python o JavaScript pero no requiere dependencias externas. Una solicitud típica comienza analizando la URL en un objeto <code>URI</code>, luego creando una instancia de <code>Net::HTTP</code> configurada para el host y puerto. Los objetos de solicitud como <code>Net::HTTP::Post</code> o <code>Net::HTTP::Get</code> representan el método. Los encabezados se establecen usando notación de corchetes en el objeto de solicitud. El cuerpo se asigna directamente. Para URLs HTTPS, <code>use_ssl</code> debe establecerse en <code>true</code>. Debido a esta ceremonia, muchos desarrolladores Ruby usan gemas envolventes como <code>Faraday</code> o <code>HTTParty</code>, pero el código generado se mantiene en la biblioteca estándar para máxima portabilidad.
+      </p>
+      <h3>PHP &mdash; Extensión cURL</h3>
+      <p>
+        La extensión cURL de PHP envuelve la misma biblioteca libcurl que alimenta la herramienta de línea de comandos <code>curl</code>. El flujo de trabajo gira en torno a un handle creado con <code>curl_init()</code>. Las opciones se establecen mediante llamadas a <code>curl_setopt()</code>: <code>CURLOPT_URL</code> para la URL de destino, <code>CURLOPT_CUSTOMREQUEST</code> para el método HTTP, <code>CURLOPT_HTTPHEADER</code> para un arreglo de cadenas de encabezados y <code>CURLOPT_POSTFIELDS</code> para el cuerpo de la solicitud. Establecer <code>CURLOPT_RETURNTRANSFER</code> en <code>true</code> hace que <code>curl_exec()</code> devuelva la respuesta como una cadena en lugar de imprimirla. Como la extensión PHP refleja de cerca la API en C de libcurl, el código PHP generado se mapea casi uno a uno con las opciones originales de cURL, haciendo esta la conversión más transparente de los cuatro lenguajes.
+      </p>
+
+      <h2>Preguntas Frecuentes</h2>
+
+      <h3>¿Qué es cURL?</h3>
+      <p>cURL es una herramienta de línea de comandos para hacer solicitudes HTTP. Viene preinstalado en Linux, macOS y Windows 10+, y es la herramienta estándar para probar APIs.</p>
+
+      <h3>¿Cómo leo un comando cURL?</h3>
+      <p>Comienza con <code>curl</code> seguido de una URL. Use -X para el método, -H para encabezados, -d para datos del cuerpo y -u para autenticación.</p>
+
+      <h3>¿Qué métodos HTTP soporta cURL?</h3>
+      <p>Todos los métodos estándar: GET, POST, PUT, PATCH, DELETE, HEAD y OPTIONS. Establezca el método con la opción -X.</p>
+
+      <h3>¿Puedo convertir cURL con autenticación?</h3>
+      <p>Sí. La herramienta maneja autenticación Basic (-u), tokens Bearer (-H Authorization) y otros patrones de autenticación basados en encabezados.</p>
+
+      <h3>¿Maneja datos de formulario multiparte?</h3>
+      <p>Sí. Los comandos con opciones -F para subidas de archivos y campos de formulario se convierten a la sintaxis multiparte apropiada en cada lenguaje.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Convertidor de cURL a Código", url: everyday_curl_to_code_url %>
+
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Analizador de URL", description: "Descomponga cualquier URL en sus componentes: esquema, host, puerto, ruta, consulta y fragmento.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" },
+      { name: "Analizador de Encabezados HTTP", description: "Analice y examine encabezados HTTP de texto de solicitud o respuesta sin procesar.", path: everyday_http_header_parser_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "Formateador JSON", description: "Formatee, embellezca, minifique y valide JSON con conteo de claves y análisis de profundidad de anidamiento.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("curl-to-code") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

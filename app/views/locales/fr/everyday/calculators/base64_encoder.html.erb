@@ -1,0 +1,182 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Encodeur et Decodeur Base64 - Outil en ligne gratuit",
+  description: "Encodez et decodez du texte en Base64 en ligne. Prise en charge de l'encodage Base64 standard et URL-safe avec resultats instantanes et analyse de la taille en octets.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Encodeur et Decodeur Base64 - Outil en ligne gratuit | CalcWise",
+    description: "Encodez et decodez du texte en Base64 en ligne. Prise en charge de l'encodage Base64 standard et URL-safe avec resultats instantanes et analyse de la taille en octets.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Accueil", url: root_url },
+  { name: "Quotidien", url: category_url("everyday") },
+  { name: "Encodeur et Decodeur Base64", url: everyday_base64_encoder_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Qu'est-ce que l'encodage Base64 ?", answer: "Base64 est un schema d'encodage binaire-vers-texte qui represente des donnees binaires a l'aide de 64 caracteres ASCII (A-Z, a-z, 0-9, +, /). Il est couramment utilise pour integrer des donnees binaires dans des formats textuels comme JSON, XML, HTML et les e-mails." },
+  { question: "Pourquoi Base64 augmente-t-il la taille des donnees ?", answer: "Base64 utilise 4 caracteres pour representer chaque 3 octets de donnees d'entree, ce qui entraine une augmentation d'environ 33 % de la taille. Ce compromis est accepte car le texte encode peut etre transmis en toute securite via des canaux textuels qui pourraient corrompre les donnees binaires brutes." },
+  { question: "Qu'est-ce que le Base64 URL-safe ?", answer: "Le Base64 URL-safe remplace les caracteres + et / par - et _ respectivement, rendant la chaine encodee utilisable dans les URL et les noms de fichiers sans encodage en pourcentage supplementaire. Le caractere de remplissage = peut egalement etre omis." },
+  { question: "Quand dois-je utiliser l'encodage Base64 ?", answer: "Les utilisations courantes incluent l'integration d'images dans CSS ou HTML sous forme de data URI, la transmission de donnees binaires via des API JSON, l'encodage d'identifiants d'authentification dans les en-tetes HTTP, et le stockage de donnees binaires dans des bases de donnees ou fichiers de configuration textuels." },
+  { question: "Le Base64 peut-il etre utilise pour le chiffrement ?", answer: "Non. Base64 est un schema d'encodage, pas du chiffrement. Il est trivialement reversible et ne fournit aucune securite. N'importe qui peut decoder du texte Base64 sans cle. Pour la securite, utilisez des algorithmes de chiffrement comme AES, puis encodez eventuellement la sortie chiffree en Base64 pour le transport textuel." }
+]) %>
+
+<%= calculator_schema(
+  name: "Encodeur et Decodeur Base64",
+  description: "Encodez et decodez du texte en Base64 avec des resultats instantanes et une analyse de la taille en octets.",
+  url: everyday_base64_encoder_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Accueil", url: root_path },
+  { name: "Quotidien", url: category_path("everyday") },
+  { name: "Encodeur et Decodeur Base64" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Encodeur et Decodeur Base64</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Encodez ou decodez du texte vers et depuis le format Base64. Consultez instantanement les longueurs de caracteres et les tailles en octets de l'entree et de la sortie.</p>
+
+    <div data-controller="base64-encoder-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="base64-encoder-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Texte d'entree</label>
+          <textarea id="base64-encoder-input" data-base64-encoder-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="6" placeholder="Saisissez le texte a encoder ou decoder..."></textarea>
+        </div>
+
+        <div class="flex gap-4">
+          <button data-action="click->base64-encoder-calculator#encode"
+            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Encoder</button>
+          <button data-action="click->base64-encoder-calculator#decode"
+            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-sm shadow-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Decoder</button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Longueur d'entree</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-base64-encoder-calculator-target="resultInputLength">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Longueur de sortie</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-base64-encoder-calculator-target="resultOutputLength">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Taille d'entree</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-base64-encoder-calculator-target="resultInputBytes">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Taille de sortie</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-base64-encoder-calculator-target="resultOutputBytes">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="base64-encoder-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Sortie</label>
+            <button data-action="click->base64-encoder-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copier</button>
+          </div>
+          <textarea id="base64-encoder-output" data-base64-encoder-calculator-target="output" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="6" placeholder="Le texte encode ou decode apparaitra ici..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "base64-encoder" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Comment utiliser l'encodeur et decodeur Base64</h2>
+      <p>
+        Collez votre texte dans la zone de saisie et cliquez sur Encoder pour le convertir au format Base64, ou collez du texte encode en Base64 et cliquez sur Decoder pour restaurer le contenu original. L'outil traite votre texte instantanement et affiche le resultat dans la zone de sortie. La grille de statistiques affiche les longueurs de caracteres et les tailles en octets pour l'entree et la sortie, ce qui permet de voir facilement le surplus de taille introduit par l'encodage. Utilisez le bouton Copier pour copier la sortie dans votre presse-papiers en un clic.
+      </p>
+      <p>
+        Cet outil est ideal pour les developpeurs qui ont besoin d'encoder rapidement des chaines pour des requetes API, de decoder des jetons Base64 pour le debogage, ou de verifier que les donnees encodees effectuent un aller-retour correctement. Il gere le texte UTF-8 de maniere transparente, de sorte que les caracteres multi-octets tels que les lettres accentuees, les emojis et les ideogrammes CJK sont encodes et decodes sans corruption.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Qu'est-ce que l'encodage Base64 et comment fonctionne-t-il ?</h2>
+      <p>
+        Base64 est un schema d'encodage binaire-vers-texte qui represente des donnees binaires arbitraires a l'aide d'un ensemble de 64 caracteres ASCII imprimables : les lettres majuscules A a Z, les lettres minuscules a a z, les chiffres 0 a 9, et les deux symboles + et /. Un caractere de remplissage = est utilise lorsque la longueur de l'entree n'est pas un multiple de trois octets. Le processus d'encodage prend chaque groupe de trois octets d'entree (24 bits) et les divise en quatre groupes de six bits, chacun correspondant a l'un des 64 caracteres. Cela produit quatre caracteres de sortie pour chaque trois octets d'entree.
+      </p>
+      <p>
+        Ce schema a ete initialement defini pour l'encodage MIME des e-mails et est maintenant specifie dans le RFC 4648. C'est l'un des schemas d'encodage les plus largement utilises sur le Web car il transforme n'importe quelle charge utile binaire en une chaine pouvant etre incluse en toute securite dans les protocoles et formats textuels.
+      </p>
+
+      <h3>Cas d'utilisation courants</h3>
+      <p>
+        L'encodage Base64 est present dans tout le developpement Web moderne. Les data URI utilisent Base64 pour integrer des images, des polices et d'autres ressources binaires directement dans le HTML et le CSS, eliminant ainsi les requetes HTTP supplementaires. L'authentification HTTP Basic encode la paire nom d'utilisateur et mot de passe en chaine Base64 dans l'en-tete Authorization. Les JSON Web Tokens (JWT) utilisent l'encodage Base64url pour les segments d'en-tete et de charge utile. Les pieces jointes d'e-mails sont encodees en Base64 via la norme MIME. Les charges utiles d'API qui doivent transporter des donnees binaires, comme les telechargements de fichiers envoyes en JSON, s'appuient sur Base64 pour serialiser le contenu des fichiers en une chaine compatible texte.
+      </p>
+
+      <h3>Base64 standard vs URL-safe</h3>
+      <p>
+        Le Base64 standard utilise + et / comme 63e et 64e caracteres, mais ces caracteres ont des significations speciales dans les URL et les noms de fichiers. Le Base64 URL-safe (egalement appele Base64url, defini dans la section 5 du RFC 4648) remplace + par - et / par _ pour eviter les conflits. Le caractere de remplissage = peut egalement etre omis dans les variantes URL-safe car la longueur originale peut etre deduite de la longueur encodee. Les jetons JWT, par exemple, utilisent le Base64url sans remplissage. Lorsque vous travaillez avec des API Web, verifiez toujours si le point de terminaison attend un encodage standard ou URL-safe.
+      </p>
+
+      <h3>Explication du surplus de taille</h3>
+      <p>
+        Comme Base64 fait correspondre chaque 3 octets d'entree a 4 caracteres de sortie, les donnees encodees sont toujours environ 33 % plus volumineuses que l'original. Pour un fichier de 1 Ko, la representation Base64 fait environ 1,37 Ko. Pour une image de 1 Mo integree comme data URI, la chaine encodee fait environ 1,33 Mo. Ce surplus est le compromis pour une representation compatible texte. Lorsque la bande passante ou le stockage est une preoccupation, demandez-vous si Base64 est vraiment necessaire ou si un transport binaire comme les donnees multipart serait plus efficace.
+      </p>
+
+      <h2>Questions frequemment posees</h2>
+
+      <h3>Qu'est-ce que l'encodage Base64 ?</h3>
+      <p>Base64 est un schema binaire-vers-texte utilisant 64 caracteres ASCII (A-Z, a-z, 0-9, +, /). Il integre les donnees binaires en toute securite dans les formats textuels comme JSON, XML, HTML et les e-mails.</p>
+
+      <h3>Pourquoi Base64 augmente-t-il la taille des donnees ?</h3>
+      <p>Il utilise 4 caracteres pour chaque 3 octets d'entree, provoquant une augmentation d'environ 33 %. Ce compromis est accepte car la sortie est compatible avec les canaux textuels uniquement.</p>
+
+      <h3>Qu'est-ce que le Base64 URL-safe ?</h3>
+      <p>Le Base64 URL-safe remplace + par - et / par _, rendant les chaines encodees utilisables dans les URL et les noms de fichiers sans encodage en pourcentage. Le remplissage peut egalement etre omis.</p>
+
+      <h3>Quand dois-je utiliser l'encodage Base64 ?</h3>
+      <p>Pour les data URI, les charges utiles binaires d'API JSON, les en-tetes d'authentification HTTP Basic, les jetons JWT, les pieces jointes d'e-mails, et le stockage de donnees binaires dans des fichiers de configuration textuels.</p>
+
+      <h3>Le Base64 peut-il etre utilise pour le chiffrement ?</h3>
+      <p>Non. Base64 est un schema d'encodage, pas du chiffrement. Il est trivialement reversible sans cle. Utilisez d'abord un chiffrement adequat comme AES, puis encodez eventuellement le texte chiffre en Base64.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Encodeur et Decodeur Base64", url: everyday_base64_encoder_url %>
+
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Encodeur/Decodeur de chaines", description: "Encodez et decodez du texte avec Base64, l'encodage URL et les entites HTML.", path: everyday_string_encoder_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "Encodeur/Decodeur URL", description: "Encodez et decodez les URL avec l'encodage en pourcentage pour une utilisation securisee dans les adresses Web.", path: everyday_url_encoder_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" },
+      { name: "Generateur de hachage", description: "Generez des hachages MD5, SHA-1, SHA-256 et SHA-512 a partir de texte.", path: everyday_hash_generator_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("base64-encoder") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

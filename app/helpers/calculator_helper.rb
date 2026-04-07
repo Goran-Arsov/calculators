@@ -211,7 +211,8 @@ module CalculatorHelper
     { name: "ODT to DOCX Converter", slug: "odt-to-docx-converter", path: :everyday_odt_to_docx_path, description: "Convert OpenDocument .odt files to Microsoft Word .docx format entirely in the browser.", icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
     { name: "ODT to PDF Converter", slug: "odt-to-pdf-converter", path: :everyday_odt_to_pdf_path, description: "Convert OpenDocument .odt files to PDF format with headings and paragraphs entirely in the browser.", icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
     { name: "DOCX to ODT Converter", slug: "docx-to-odt-converter", path: :everyday_docx_to_odt_path, description: "Convert Microsoft Word .docx files to OpenDocument .odt format for LibreOffice and OpenOffice.", icon_path: "M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
-    { name: "Alarm Timer", slug: "alarm-timer", path: :everyday_alarm_timer_path, description: "Set a countdown alarm with sound alert and screen flash when time expires.", icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" }
+    { name: "Alarm Timer", slug: "alarm-timer", path: :everyday_alarm_timer_path, description: "Set a countdown alarm with sound alert and screen flash when time expires.", icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+    { name: "Alarm Clock", slug: "alarm-clock", path: :everyday_alarm_clock_path, description: "Set an alarm for a specific time and day with sound alert and screen flash.", icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" }
   ].freeze
 
   ALL_CATEGORIES = {

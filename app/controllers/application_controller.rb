@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
+  before_action :set_locale
   before_action :set_default_meta_tags
   before_action :set_http_cache
 
@@ -15,6 +16,18 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  SUPPORTED_LOCALES = %w[de fr es pt].freeze
+
+  def set_locale
+    locale = params[:locale]
+    if locale && SUPPORTED_LOCALES.include?(locale)
+      I18n.locale = locale.to_sym
+      prepend_view_path Rails.root.join("app", "views", "locales", locale)
+    else
+      I18n.locale = I18n.default_locale
+    end
+  end
 
   def set_default_meta_tags
     domain = ENV.fetch("DOMAIN", request.base_url)

@@ -1,0 +1,174 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Explicateur de regex en francais - Outil en ligne gratuit",
+  description: "Convertissez des expressions regulieres en explications en langage clair. Comprenez ce que chaque partie d'un pattern regex signifie.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Explicateur de regex en francais - Outil en ligne gratuit | CalcWise",
+    description: "Convertissez des expressions regulieres en explications en langage clair. Comprenez ce que chaque partie d'un pattern regex signifie.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Accueil", url: root_url },
+  { name: "Quotidien", url: category_url("everyday") },
+  { name: "Explicateur de regex", url: everyday_regex_explainer_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Qu'est-ce qu'une regex ?", answer: "Une regex (expression reguliere) est une sequence de caracteres qui definit un motif de recherche. Elle est utilisee en programmation et dans le traitement de texte pour trouver, faire correspondre, valider et manipuler des chaines de caracteres. Les expressions regulieres sont prises en charge par pratiquement tous les langages de programmation, notamment JavaScript, Python, Ruby, Java, Go et PHP. Elles peuvent faire correspondre du texte litteral simple ou des motifs complexes impliquant des classes de caracteres, des quantificateurs, des ancres, des groupes et des assertions avant." },
+  { question: "Comment lire une expression reguliere ?", answer: "Lisez une regex de gauche a droite en la decomposant en tokens. Chaque token est soit un caractere litteral, soit une classe de caracteres speciale (comme \\d pour les chiffres ou \\w pour les caracteres de mot), un quantificateur (comme + pour un ou plus, * pour zero ou plus, ? pour optionnel), une ancre (^ pour le debut, $ pour la fin), ou un groupe (parentheses). La cle est d'identifier chaque token et de comprendre ce qu'il fait correspondre. Par exemple, ^\\d{3}-\\d{4}$ se lit : debut de chaine, exactement 3 chiffres, un tiret litteral, exactement 4 chiffres, fin de chaine." },
+  { question: "Que sont les groupes de capture en regex ?", answer: "Les groupes de capture sont crees en encadrant une partie d'un pattern regex entre parentheses. Ils servent deux objectifs : ils regroupent des tokens pour que les quantificateurs puissent s'appliquer au groupe entier, et ils capturent le texte correspondant pour une reference ulterieure. Par exemple, (\\w+)@(\\w+) capture les parties nom d'utilisateur et domaine d'un motif de type email separement. Les groupes non capturants (?:...) fournissent le regroupement sans la capture. Les groupes nommes (?<nom>...) permettent de referencer les captures par nom plutot que par numero." },
+  { question: "Qu'est-ce que la correspondance paresseuse vs gourmande ?", answer: "Par defaut, les quantificateurs comme *, + et {n,m} sont gourmands, ce qui signifie qu'ils font correspondre autant de caracteres que possible. Ajouter un ? apres le quantificateur le rend paresseux, faisant correspondre aussi peu de caracteres que possible. Par exemple, pour la chaine '<b>gras</b>', le pattern gourmand <.*> fait correspondre la chaine entiere '<b>gras</b>', tandis que le pattern paresseux <.*?> fait correspondre uniquement '<b>'. La correspondance paresseuse est essentielle lorsque vous voulez faire correspondre la sous-chaine la plus courte possible." },
+  { question: "Que sont les assertions avant et arriere ?", answer: "Les assertions avant (lookahead) et arriere (lookbehind) sont des assertions de largeur zero qui verifient un motif sans l'inclure dans la correspondance. Une assertion avant positive (?=...) affirme que ce qui suit correspond au motif. Une assertion avant negative (?!...) affirme que ce qui suit ne correspond pas. De meme, (?<=...) est une assertion arriere positive et (?<!...) est une assertion arriere negative. Par exemple, \\d+(?= euros) fait correspondre les chiffres uniquement lorsqu'ils sont suivis de ' euros' mais n'inclut pas ' euros' dans le resultat." }
+]) %>
+
+<%= calculator_schema(
+  name: "Explicateur de regex",
+  description: "Convertissez des expressions regulieres en explications en langage clair. Comprenez ce que chaque partie d'un pattern regex signifie.",
+  url: everyday_regex_explainer_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Accueil", url: root_path },
+  { name: "Quotidien", url: category_path("everyday") },
+  { name: "Explicateur de regex" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Explicateur de regex</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Collez une expression reguliere pour obtenir une explication en langage clair de ce que chaque partie fait correspondre. Comprenez instantanement les patterns regex complexes.</p>
+
+    <div data-controller="regex-explainer-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="regex-explainer-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Expression reguliere</label>
+          <input id="regex-explainer-input" type="text" data-regex-explainer-calculator-target="input"
+                 data-action="input->regex-explainer-calculator#explain"
+                 class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="^[a-zA-Z0-9]+@[a-zA-Z]+\.[a-zA-Z]{2,}$" autocomplete="off">
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-3 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Tokens</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-regex-explainer-calculator-target="resultTokenCount">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Groupes</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-regex-explainer-calculator-target="resultHasGroups">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Quantificateurs</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-regex-explainer-calculator-target="resultHasQuantifiers">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="regex-explainer-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Explication</label>
+            <button data-action="click->regex-explainer-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copier</button>
+          </div>
+          <textarea id="regex-explainer-output" data-regex-explainer-calculator-target="output" readonly
+                    class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+                    rows="12" placeholder="Saisissez une regex ci-dessus pour voir son explication ici..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "regex-explainer" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Comment utiliser l'explicateur de regex</h2>
+      <p>
+        Saisissez ou collez une expression reguliere dans le champ de saisie et l'outil la decompose immediatement en une explication en langage clair. Chaque token de la regex est identifie et decrit : classes de caracteres, quantificateurs, ancres, groupes, assertions avant et caracteres litteraux. Le panneau de statistiques affiche le nombre total de tokens, si le pattern contient des groupes de capture et s'il utilise des quantificateurs. L'explication se met a jour en temps reel pendant que vous saisissez, vous permettant de construire un pattern et de voir comment chaque ajout en modifie la signification.
+      </p>
+      <p>
+        Cet outil est particulierement utile pour lire la regex de quelqu'un d'autre, deboguer un pattern qui ne correspond pas comme prevu ou apprendre la syntaxe regex en experimentant avec differents tokens. Copiez l'explication pour l'inclure en commentaire dans votre code source, rendant les patterns complexes comprehensibles pour les futurs mainteneurs.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Types de tokens des expressions regulieres</h2>
+      <p>
+        Les expressions regulieres sont construites a partir de plusieurs types de tokens, chacun servant un objectif specifique. Comprendre ces elements de base est la cle pour lire et ecrire efficacement des patterns regex. Bien que la syntaxe puisse sembler cryptique au premier abord, il n'y a qu'une poignee de concepts fondamentaux qui se combinent pour creer un comportement de correspondance complexe.
+      </p>
+
+      <h3>Classes de caracteres et raccourcis</h3>
+      <p>
+        Les classes de caracteres font correspondre un caractere a partir d'un ensemble defini. Les crochets definissent des classes personnalisees : <code>[abc]</code> correspond a a, b ou c. Les plages sont definies avec des tirets : <code>[a-z]</code> correspond a toute lettre minuscule. Les classes negatives utilisent un accent circonflexe : <code>[^0-9]</code> correspond a tout sauf un chiffre. Les classes raccourcies fournissent des motifs courants : <code>\d</code> correspond a tout chiffre (equivalent a <code>[0-9]</code>), <code>\w</code> correspond aux caracteres de mot (lettres, chiffres, underscore), <code>\s</code> correspond aux espaces blancs (espace, tabulation, retour a la ligne), et le point <code>.</code> correspond a tout caractere sauf le retour a la ligne.
+      </p>
+
+      <h3>Quantificateurs</h3>
+      <p>
+        Les quantificateurs controlent combien de fois le token precedent doit apparaitre. Le quantificateur <code>+</code> correspond une ou plusieurs fois. Le quantificateur <code>*</code> correspond zero ou plusieurs fois. Le quantificateur <code>?</code> correspond zero ou une fois (optionnel). Les accolades specifient des comptes exacts : <code>{3}</code> correspond exactement 3 fois, <code>{2,5}</code> correspond entre 2 et 5 fois, et <code>{3,}</code> correspond 3 fois ou plus. Par defaut, les quantificateurs sont gourmands (correspondent au maximum possible), mais ajouter <code>?</code> apres eux les rend paresseux (correspondent au minimum possible).
+      </p>
+
+      <h3>Ancres et limites</h3>
+      <p>
+        Les ancres ne correspondent pas a des caracteres mais a des positions dans la chaine. L'accent circonflexe <code>^</code> correspond au debut de la chaine (ou de la ligne en mode multiligne). Le signe dollar <code>$</code> correspond a la fin. La limite de mot <code>\b</code> correspond a la position entre un caractere de mot et un caractere non-mot, utile pour faire correspondre des mots entiers sans capturer les espaces ou la ponctuation environnants.
+      </p>
+
+      <h3>Groupes et alternance</h3>
+      <p>
+        Les parentheses creent des groupes qui peuvent etre quantifies comme une unite et capturent optionnellement le texte correspondant. Le pattern <code>(abc)+</code> correspond a une ou plusieurs repetitions de la sequence "abc". Le symbole pipe <code>|</code> a l'interieur d'un groupe cree une alternance : <code>(chat|chien)</code> correspond a "chat" ou "chien". Les groupes non capturants <code>(?:...)</code> fournissent le regroupement sans la surcharge de la capture. Les groupes nommes <code>(?&lt;nom&gt;...)</code> attribuent un nom au texte capture pour une reference plus facile dans le code.
+      </p>
+
+      <h2>Foire aux questions</h2>
+
+      <h3>Qu'est-ce qu'une regex ?</h3>
+      <p>Une sequence de caracteres definissant un motif de recherche, utilisee en programmation pour trouver, faire correspondre, valider et manipuler des chaines. Prise en charge par pratiquement tous les langages de programmation.</p>
+
+      <h3>Comment lire une expression reguliere ?</h3>
+      <p>Lisez de gauche a droite en identifiant chaque token : caracteres litteraux, classes de caracteres (\d, \w), quantificateurs (+, *, ?), ancres (^, $) et groupes (parentheses). Cet outil automatise ce processus.</p>
+
+      <h3>Que sont les groupes de capture ?</h3>
+      <p>Des portions d'un pattern entre parentheses qui capturent le texte correspondant pour une reference ulterieure. Les groupes non capturants (?:...) regroupent sans capturer. Les groupes nommes (?&lt;nom&gt;...) permettent la reference par nom.</p>
+
+      <h3>Qu'est-ce que la correspondance paresseuse vs gourmande ?</h3>
+      <p>Les quantificateurs gourmands (*, +) correspondent au maximum possible. Ajouter ? les rend paresseux, correspondant au minimum possible. Utilisez la correspondance paresseuse pour trouver la correspondance la plus courte.</p>
+
+      <h3>Que sont les assertions avant et arriere ?</h3>
+      <p>Des assertions de largeur zero qui verifient un motif sans l'inclure dans la correspondance. (?=...) est une assertion avant positive, (?!...) est negative, (?&lt;=...) est une assertion arriere positive, (?&lt;!...) est negative.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Explicateur de regex", url: everyday_regex_explainer_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Testeur de regex", description: "Testez des expressions regulieres avec la mise en surbrillance en direct des correspondances et l'affichage des groupes de capture.", path: everyday_regex_tester_path, icon_path: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" },
+      { name: "Constructeur de regex", description: "Construisez des expressions regulieres visuellement avec des blocs de motifs et un apercu en direct.", path: everyday_regex_builder_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Encodeur/Decodeur de chaines", description: "Encodez et decodez du texte avec Base64, l'encodage URL et les entites HTML.", path: everyday_string_encoder_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("regex-explainer") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

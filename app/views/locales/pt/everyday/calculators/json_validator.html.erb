@@ -1,0 +1,237 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Validador de JSON - Verifique e Valide JSON Online",
+  description: "Valide dados JSON online. Verifique a sintaxe, visualize análise de estrutura com contagem de chaves, profundidade de aninhamento e saída formatada.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Validador de JSON - Verifique e Valide JSON Online | CalcWise",
+    description: "Valide dados JSON online. Verifique a sintaxe, visualize análise de estrutura com contagem de chaves, profundidade de aninhamento e saída formatada.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Início", url: root_url },
+  { name: "Dia a Dia", url: category_url("everyday") },
+  { name: "Validador de JSON", url: everyday_json_validator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "O que é validação de JSON?", answer: "A validação de JSON verifica se uma string está em conformidade com a especificação JSON (RFC 8259). Um documento JSON válido deve usar strings com aspas duplas, não ter vírgulas à direita, não ter comentários e ter colchetes e chaves correspondentes. O validador analisa sua entrada e informa se ela está bem formada ou identifica o erro de sintaxe específico e sua localização." },
+  { question: "Por que devo validar JSON?", answer: "Validar JSON antes de usá-lo previne erros em tempo de execução nas suas aplicações. APIs, arquivos de configuração e importações de dados dependem de JSON bem formado. Uma única vírgula ausente ou colchete incompatível pode causar a falha de uma requisição inteira. Validar cedo captura esses problemas antes que eles cheguem aos sistemas de produção." },
+  { question: "Quais são os erros de JSON mais comuns?", answer: "Os erros de JSON mais comuns incluem vírgulas à direita após o último item em um array ou objeto, aspas simples em vez de aspas duplas para strings, chaves de propriedade sem aspas, vírgulas ausentes entre itens, comentários (que não são permitidos no JSON padrão) e colchetes e chaves incompatíveis ou ausentes." },
+  { question: "JSON pode ter comentários?", answer: "Não, a especificação JSON não permite comentários. Esta é uma das fontes mais comuns de erros de validação. Se você precisa de comentários em arquivos de configuração, considere usar JSONC (JSON com Comentários) ou YAML. Alguns analisadores suportam uma extensão de comentários não padrão, mas validadores JSON padrão irão rejeitá-los." },
+  { question: "Qual é o tamanho máximo de um documento JSON?", answer: "A especificação JSON não define um tamanho máximo. Na prática, os limites dependem do analisador e do ambiente. Navegadores tipicamente lidam com documentos JSON de até várias centenas de megabytes. Analisadores do lado do servidor podem ter limites configuráveis. Esta ferramenta online funciona bem com JSON de até alguns megabytes." }
+]) %>
+
+<%= calculator_schema(
+  name: "Validador de JSON",
+  description: "Valide dados JSON com verificação de sintaxe, contagem de chaves, profundidade de aninhamento e saída formatada.",
+  url: everyday_json_validator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Início", url: root_path },
+  { name: "Dia a Dia", url: category_path("everyday") },
+  { name: "Validador de JSON" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Validador de JSON</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Valide dados JSON online. Verifique a sintaxe, visualize análise de estrutura com contagem de chaves, profundidade de aninhamento e saída formatada.</p>
+
+    <div data-controller="json-validator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="json-validator-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">JSON de Entrada</label>
+          <textarea id="json-validator-input" data-json-validator-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="8" placeholder="Cole JSON para validar..."></textarea>
+        </div>
+
+        <div>
+          <button data-action="click->json-validator-calculator#validate"
+            class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Validar JSON</button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Status</span>
+            <span class="text-sm font-bold" data-json-validator-calculator-target="resultStatus">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Chaves</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-validator-calculator-target="resultKeyCount">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Profundidade</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-validator-calculator-target="resultDepth">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Tipo</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-validator-calculator-target="resultType">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Tamanho</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-json-validator-calculator-target="resultSize">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="json-validator-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Saída Formatada</label>
+            <button data-action="click->json-validator-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copiar</button>
+          </div>
+          <textarea id="json-validator-output" data-json-validator-calculator-target="outputFormatted" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="8" placeholder="O JSON validado e formatado aparecerá aqui..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "json-validator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Como Usar o Validador de JSON</h2>
+      <p>
+        Cole seu JSON na área de entrada e clique em Validar JSON. A ferramenta analisa sua entrada e informa se ela é válida ou identifica o erro de sintaxe específico. Quando o JSON é válido, você vê uma versão formatada na área de saída junto com estatísticas incluindo a contagem total de chaves, profundidade de aninhamento, tipo de dados raiz e tamanho do documento. Use o botão Copiar para copiar a saída formatada para a área de transferência.
+      </p>
+      <p>
+        Esta ferramenta é essencial para desenvolvedores que trabalham com respostas de API, arquivos de configuração, exportações de banco de dados e quaisquer outros dados JSON. Em vez de esperar por um erro em tempo de execução para informá-lo de que algo está errado com seu JSON, valide-o primeiro e corrija os problemas antes que eles causem problemas downstream.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Entendendo as Regras de Sintaxe JSON</h2>
+      <p>
+        JSON tem uma sintaxe aparentemente simples que engana até desenvolvedores experientes. A especificação requer que todas as strings usem aspas duplas, não aspas simples. As chaves de objetos devem ser strings entre aspas. Arrays e objetos não devem ter vírgulas à direita. Não há comentários de nenhum tipo. Números não podem ter zeros à esquerda (exceto para o valor 0 em si ou decimais como 0.5). Valores booleanos devem ser <code>true</code> ou <code>false</code> em minúsculas, e o valor nulo deve ser <code>null</code> em minúsculas.
+      </p>
+      <p>
+        Muitos desenvolvedores estão acostumados a escrever literais de objetos JavaScript, que são mais permissivos que JSON. JavaScript permite aspas simples, chaves sem aspas, vírgulas à direita e comentários. Quando desenvolvedores copiam objetos JavaScript e tentam usá-los como JSON, o validador captura essas diferenças imediatamente. Entender a distinção entre objetos JavaScript e JSON é fundamental para trabalhar com APIs web.
+      </p>
+
+      <h3>Erros Comuns de JSON e Como Corrigi-los</h3>
+      <p>
+        Vírgulas à direita são o erro de JSON mais comum. Em JavaScript, <code>{"a": 1, "b": 2,}</code> é válido, mas em JSON a vírgula à direita após o último valor é um erro de sintaxe. A correção é simplesmente remover a vírgula após o último elemento. Aspas simples são o segundo erro mais comum. JSON requer <code>"hello"</code>, não <code>'hello'</code>. Chaves sem aspas como <code>{name: "John"}</code> devem ser alteradas para <code>{"name": "John"}</code>. Colchetes incompatíveis são mais difíceis de identificar em documentos grandes, que é onde um validador se torna indispensável.
+      </p>
+
+      <h3>Análise de Contagem de Chaves e Profundidade de Aninhamento</h3>
+      <p>
+        A contagem de chaves indica o número total de propriedades em todos os objetos do seu documento JSON, incluindo aquelas em objetos aninhados. A profundidade de aninhamento mede quantos níveis de profundidade o valor mais profundo está. Essas métricas são úteis para entender a complexidade de uma estrutura de dados. JSON profundamente aninhado com mais de cinco ou seis níveis pode ser difícil de trabalhar e pode indicar que o modelo de dados precisa de reestruturação. Muitas APIs impõem limites de profundidade para prevenir abuso, e conhecer sua profundidade ajuda a permanecer dentro desses limites.
+      </p>
+
+      <h2>Regras de Sintaxe JSON Explicadas</h2>
+      <p>
+        JSON, abreviação de JavaScript Object Notation, define duas estruturas primárias: objetos e arrays. Um objeto é uma coleção não ordenada de pares chave-valor entre chaves <code>{}</code>. Cada chave deve ser uma string entre aspas duplas, seguida por dois-pontos e um valor. Múltiplos pares chave-valor são separados por vírgulas. Um array é uma lista ordenada de valores entre colchetes <code>[]</code>, com cada valor separado por uma vírgula. Ambas as estruturas podem ser aninhadas em qualquer profundidade, permitindo representar dados hierárquicos complexos.
+      </p>
+      <p>
+        Os tipos de valores permitidos em JSON são estritamente limitados. Um valor pode ser uma string (entre aspas duplas), um número (inteiro ou ponto flutuante, sem zeros à esquerda), um booleano (<code>true</code> ou <code>false</code>, sempre em minúsculas), <code>null</code> (também em minúsculas), um objeto ou um array. Não há outros tipos de valores. Notavelmente, JSON não suporta <code>undefined</code>, datas, expressões regulares, funções ou qualquer outro tipo complexo encontrado em linguagens de programação. Datas são tipicamente representadas como strings ISO 8601 como <code>"2026-04-07T12:00:00Z"</code>, e a aplicação é responsável por analisá-las.
+      </p>
+      <p>
+        A questão da vírgula à direita merece ênfase especial porque é responsável por um número desproporcional de falhas de validação. Em muitas linguagens de programação, uma vírgula após o último elemento de uma lista ou a última propriedade de um objeto é perfeitamente aceitável e até encorajada para diffs de controle de versão mais limpos. JSON, no entanto, proíbe estritamente vírgulas à direita. A entrada <code>{"a": 1, "b": 2,}</code> é JSON inválido e será rejeitada por qualquer analisador em conformidade. Da mesma forma, <code>[1, 2, 3,]</code> falha na validação. Este é um dos erros mais frequentes que desenvolvedores cometem ao editar arquivos JSON manualmente, e é a principal razão para usar um validador antes de enviar dados a uma API ou carregar um arquivo de configuração.
+      </p>
+
+      <h2>Erros Comuns de Validação JSON em Detalhe</h2>
+      <p>
+        Além das vírgulas à direita, existem várias outras fontes frequentes de erros de validação JSON que vale a pena entender em profundidade. Cada um deriva de uma incompatibilidade entre o que os desenvolvedores esperam que o JSON aceite e o que a especificação realmente permite.
+      </p>
+
+      <h3>Aspas Ausentes ou Incorretas nas Chaves</h3>
+      <p>
+        Em JavaScript, você pode escrever <code>{name: "Alice"}</code> sem colocar aspas na chave. Em JSON, cada chave deve ser uma string entre aspas duplas: <code>{"name": "Alice"}</code>. Isso é inegociável. Alguns analisadores tolerantes aceitam chaves sem aspas, mas estão violando a especificação, e seus dados quebrarão quando processados por um analisador estrito. Sempre coloque aspas duplas em cada chave nos seus documentos JSON.
+      </p>
+
+      <h3>Aspas Simples vs. Aspas Duplas</h3>
+      <p>
+        JSON requer aspas duplas para todas as strings, tanto chaves quanto valores. Usar aspas simples como <code>{'name': 'Alice'}</code> é inválido. Este é um erro comum para desenvolvedores Python, já que Python usa aspas simples intercambiáveis com aspas duplas e sua representação <code>str()</code> de dicionários usa aspas simples. Se você está convertendo estruturas de dados Python para JSON, sempre use a função <code>json.dumps()</code> em vez de <code>str()</code>, porque <code>json.dumps()</code> produz corretamente saída com aspas duplas.
+      </p>
+
+      <h3>Comentários em JSON</h3>
+      <p>
+        A especificação JSON não permite nenhuma forma de comentários, nem de linha única (<code>//</code>) nem de múltiplas linhas (<code>/* */</code>). Esta é uma decisão de design intencional de Douglas Crockford, que criou o JSON. Ele argumentou que comentários estavam sendo usados para conter diretivas de análise, o que causava problemas de interoperabilidade. Se você precisa de comentários em arquivos de configuração, considere JSONC (JSON com Comentários, usado pelo VS Code), JSON5, YAML ou TOML. Quando você encontrar JSON com comentários, remova-os antes de analisar ou use um pré-processador tolerante a comentários.
+      </p>
+
+      <h3>Caracteres Especiais Não Escapados em Strings</h3>
+      <p>
+        Strings JSON devem escapar certos caracteres com uma barra invertida. Caracteres de controle (caracteres com pontos de código abaixo de U+0020) devem ser escapados. Os mais comuns são novas linhas (<code>\n</code>), tabulações (<code>\t</code>), retornos de carro (<code>\r</code>) e as próprias barras invertidas (<code>\\</code>). Aspas duplas dentro de uma string devem ser escapadas como <code>\"</code>. Esquecer de escapar uma barra invertida em um caminho de arquivo Windows como <code>"C:\new\folder"</code> produz uma string JSON inválida porque <code>\n</code> é interpretado como uma nova linha e <code>\f</code> como um avanço de formulário. A representação correta é <code>"C:\\new\\folder"</code>. Esse problema surge frequentemente ao incorporar caminhos de arquivo, padrões regex ou trechos HTML dentro de JSON.
+      </p>
+
+      <h3>Armadilhas na Formatação de Números</h3>
+      <p>
+        Números JSON seguem regras específicas que diferem de algumas linguagens de programação. Zeros à esquerda não são permitidos: <code>007</code> é inválido e deve ser escrito como <code>7</code>. Sinais positivos não são permitidos: <code>+5</code> é inválido, enquanto <code>-5</code> é válido. Notação hexadecimal como <code>0xFF</code> não é suportada. Infinity e NaN não são valores JSON válidos. Se você precisa representar valores numéricos especiais, deve codificá-los como strings ou usar um valor sentinela e lidar com a conversão no código da sua aplicação.
+      </p>
+
+      <h2>JSON em APIs e Arquivos de Configuração</h2>
+      <p>
+        JSON se tornou o formato dominante de intercâmbio de dados para APIs web. Quando você envia uma requisição POST para uma API REST com um cabeçalho <code>Content-Type: application/json</code>, o servidor espera um corpo JSON estritamente válido. Se o corpo da sua requisição contiver qualquer erro de sintaxe, o servidor tipicamente retornará uma resposta 400 Bad Request, frequentemente com uma mensagem de erro de análise críptica que pode ser difícil de depurar. Validar seu payload JSON antes de enviá-lo elimina toda essa classe de erros e acelera significativamente o desenvolvimento de APIs.
+      </p>
+      <p>
+        No contexto de APIs REST, a validação de JSON importa em ambas as pontas da comunicação. No lado do cliente, você precisa garantir que os dados que está enviando estão bem formados. No lado do servidor, você precisa validar o JSON recebido antes de processá-lo para evitar que dados malformados corrompam o estado da sua aplicação. Muitos frameworks web realizam análise JSON básica automaticamente, mas validação estrutural, garantindo que os campos corretos existam com os tipos corretos, requer ferramentas adicionais de validação de schema como JSON Schema.
+      </p>
+      <p>
+        Arquivos de configuração são outro caso de uso importante para JSON. Gerenciadores de pacotes como npm usam <code>package.json</code>, TypeScript usa <code>tsconfig.json</code>, ESLint usa <code>.eslintrc.json</code> e muitos serviços de nuvem como AWS CloudFormation e Azure Resource Manager usam templates JSON. Um erro de sintaxe em qualquer um desses arquivos pode impedir seu pipeline de build de executar, sua aplicação de iniciar ou sua infraestrutura de ser implantada. As consequências são particularmente altas em ambientes de CI/CD onde uma configuração JSON malformada pode bloquear todo um processo de release.
+      </p>
+      <p>
+        Sistemas de banco de dados também dependem fortemente de JSON. PostgreSQL tem tipos de coluna nativos <code>json</code> e <code>jsonb</code>, MongoDB armazena documentos como BSON (uma forma binária de JSON) e muitos outros bancos de dados suportam consultas JSON. Ao importar dados para esses sistemas, JSON inválido causa falhas de inserção que podem interromper trabalhos de processamento em lote. Validar seus dados JSON antes de carregá-los em um banco de dados economiza tempo e previne importações parciais que deixam seus dados em um estado inconsistente.
+      </p>
+      <p>
+        Além da validação básica de sintaxe, muitas organizações adotam JSON Schema para definir a estrutura esperada dos seus documentos JSON. JSON Schema permite especificar quais campos são obrigatórios, quais tipos de dados cada campo deve ter, faixas de valores aceitáveis, padrões de strings e mais. Embora esta ferramenta foque na validação de sintaxe, garantir que seu JSON está sintaticamente correto é o primeiro passo essencial antes que qualquer validação em nível de schema possa ocorrer. Um documento que não é analisado corretamente não pode ser validado contra um schema de forma alguma.
+      </p>
+
+      <h2>Perguntas Frequentes</h2>
+
+      <h3>O que é validação de JSON?</h3>
+      <p>A validação de JSON verifica se uma string está em conformidade com a especificação JSON. O validador analisa sua entrada e informa se ela está bem formada ou identifica o erro de sintaxe específico.</p>
+
+      <h3>Por que devo validar JSON?</h3>
+      <p>Validar JSON antes de usá-lo previne erros em tempo de execução. Uma única vírgula ausente ou colchete incompatível pode causar falha em requisições de API e carregamento de configurações.</p>
+
+      <h3>Quais são os erros de JSON mais comuns?</h3>
+      <p>Vírgulas à direita, aspas simples em vez de aspas duplas, chaves sem aspas, vírgulas ausentes entre itens, comentários e colchetes incompatíveis são os erros de JSON mais frequentes.</p>
+
+      <h3>JSON pode ter comentários?</h3>
+      <p>Não. A especificação JSON não permite comentários. Use JSONC ou YAML se você precisa de comentários nos seus arquivos de configuração.</p>
+
+      <h3>Qual é o tamanho máximo de um documento JSON?</h3>
+      <p>A especificação não tem limite. Na prática, analisadores de navegadores lidam com centenas de megabytes. Esta ferramenta online funciona bem com documentos de até alguns megabytes.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Validador de JSON", url: everyday_json_validator_url %>
+
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Formatador de JSON", description: "Formate, embeleze, minifique e valide JSON com contagem de chaves e análise de profundidade de aninhamento.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Conversor de JSON para YAML", description: "Converta JSON para formato YAML com comparação de tamanho e análise de chaves.", path: everyday_json_to_yaml_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Conversor de JSON para CSV", description: "Converta arrays JSON para formato CSV para importação em planilhas e análise de dados.", path: everyday_json_to_csv_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("json-validator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -204,6 +204,7 @@ import OdtToPdfCalculatorController from "controllers/odt_to_pdf_calculator_cont
 import DocxToOdtCalculatorController from "controllers/docx_to_odt_calculator_controller"
 
 import AlarmTimerCalculatorController from "controllers/alarm_timer_calculator_controller"
+import AlarmClockCalculatorController from "controllers/alarm_clock_calculator_controller"
 
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
@@ -488,6 +489,7 @@ application.register("odt-to-pdf-calculator", OdtToPdfCalculatorController)
 application.register("docx-to-odt-calculator", DocxToOdtCalculatorController)
 
 application.register("alarm-timer-calculator", AlarmTimerCalculatorController)
+application.register("alarm-clock-calculator", AlarmClockCalculatorController)
 
 // Suites
 application.register("suite-stepper", SuiteStepperController)

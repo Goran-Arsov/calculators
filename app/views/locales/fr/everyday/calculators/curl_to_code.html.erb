@@ -1,0 +1,231 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Convertisseur cURL vers code - Python, JS, Ruby et PHP",
+  description: "Convertissez des commandes cURL en code Python, JavaScript, Ruby et PHP. Collez votre commande cURL et obtenez du code propre et pret a l'emploi.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Convertisseur cURL vers code - Python, JS, Ruby et PHP | CalcWise",
+    description: "Convertissez des commandes cURL en code Python, JavaScript, Ruby et PHP. Collez votre commande cURL et obtenez du code propre et pret a l'emploi.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Accueil", url: root_url },
+  { name: "Quotidien", url: category_url("everyday") },
+  { name: "Convertisseur cURL vers code", url: everyday_curl_to_code_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Qu'est-ce que cURL ?", answer: "cURL (Client URL) est un outil en ligne de commande pour transferer des donnees en utilisant divers protocoles reseau, le plus souvent HTTP et HTTPS. Il est pre-installe sur la plupart des systemes d'exploitation, y compris Linux, macOS et Windows 10+. Les developpeurs utilisent cURL pour tester des API, telecharger des fichiers et deboguer les requetes reseau. Les outils de developpement des navigateurs offrent souvent une option 'Copier comme cURL' pour les requetes reseau." },
+  { question: "Comment lire une commande cURL ?", answer: "Une commande cURL commence par 'curl' suivi d'une URL. Les indicateurs courants incluent -X pour definir la methode HTTP, -H pour ajouter des en-tetes, -d pour envoyer des donnees dans le corps de la requete, -u pour l'authentification, -o pour enregistrer la sortie dans un fichier et -v pour la sortie detaillee. Par exemple, 'curl -X POST -H \"Content-Type: application/json\" -d '{\"key\":\"value\"}' https://api.example.com' envoie une requete POST JSON." },
+  { question: "Quelles methodes HTTP cURL prend-il en charge ?", answer: "cURL prend en charge toutes les methodes HTTP, y compris GET, POST, PUT, PATCH, DELETE, HEAD et OPTIONS. La methode est specifiee avec l'indicateur -X (par exemple, -X POST). Si aucune methode n'est specifiee, GET est la methode par defaut. Lorsque -d est utilise sans -X, cURL utilise automatiquement POST." },
+  { question: "Puis-je convertir cURL avec authentification ?", answer: "Oui, cet outil gere les commandes cURL avec divers methodes d'authentification. Il convertit -u username:password (Basic auth), -H 'Authorization: Bearer token' (authentification par jeton Bearer) et d'autres modeles d'authentification bases sur les en-tetes dans le code equivalent pour chaque langage cible en utilisant leurs bibliotheques HTTP natives." },
+  { question: "Cet outil gere-t-il les donnees multipart ?", answer: "Oui, le convertisseur gere les commandes cURL avec les indicateurs -F pour les donnees de formulaire multipart. Il traduit les champs de formulaire et les telechargements de fichiers dans la syntaxe de requete multipart appropriee pour chaque langage cible. Le code genere utilise la bibliotheque standard de chaque langage pour construire les requetes multipart." }
+]) %>
+
+<%= calculator_schema(
+  name: "Convertisseur cURL vers code",
+  description: "Convertissez des commandes cURL en code Python, JavaScript, Ruby et PHP avec analyse de la methode, des en-tetes et du corps.",
+  url: everyday_curl_to_code_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Accueil", url: root_path },
+  { name: "Quotidien", url: category_path("everyday") },
+  { name: "Convertisseur cURL vers code" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Convertisseur cURL vers code</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convertissez des commandes cURL en code Python, JavaScript, Ruby et PHP. Collez votre commande cURL et obtenez du code propre et pret a l'emploi.</p>
+
+    <div data-controller="curl-to-code-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="curl-to-code-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Commande cURL</label>
+          <textarea id="curl-to-code-input" data-curl-to-code-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="6" placeholder="curl https://api.example.com -H 'Authorization: Bearer token'"></textarea>
+        </div>
+
+        <div>
+          <label for="curl-to-code-language" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Langage cible</label>
+          <select id="curl-to-code-language" data-curl-to-code-calculator-target="language" data-action="change->curl-to-code-calculator#convert"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="ruby">Ruby</option>
+            <option value="php">PHP</option>
+          </select>
+        </div>
+
+        <div>
+          <button data-action="click->curl-to-code-calculator#convert"
+            class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Convertir</button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Methode</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-curl-to-code-calculator-target="resultMethod">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">URL</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400 truncate block" data-curl-to-code-calculator-target="resultUrl">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">En-tetes</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-curl-to-code-calculator-target="resultHeaders">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Corps</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-curl-to-code-calculator-target="resultHasBody">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="curl-to-code-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Code genere</label>
+            <button data-action="click->curl-to-code-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copier</button>
+          </div>
+          <textarea id="curl-to-code-output" data-curl-to-code-calculator-target="output" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="10" placeholder="Le code genere apparaitra ici..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "curl-to-code" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Comment utiliser le convertisseur cURL vers code</h2>
+      <p>
+        Collez une commande cURL dans la zone de saisie, selectionnez votre langage de programmation cible dans le menu deroulant et cliquez sur Convertir. L'outil analyse la commande cURL pour extraire la methode HTTP, l'URL, les en-tetes et le corps de la requete, puis genere du code equivalent en utilisant la bibliotheque HTTP standard du langage selectionne. Le panneau de statistiques affiche la methode analysee, l'URL, le nombre d'en-tetes et la presence ou non d'un corps. Utilisez le bouton Copier pour copier le code genere dans votre presse-papiers.
+      </p>
+      <p>
+        Cet outil est inestimable pour les developpeurs qui testent des API avec cURL et ont ensuite besoin d'integrer ces requetes dans le code de leur application. Les outils de developpement des navigateurs vous permettent de copier n'importe quelle requete reseau sous forme de commande cURL, ce qui facilite la capture d'une requete fonctionnelle et sa conversion en code dans le langage de votre choix.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Comprendre les commandes cURL</h2>
+      <p>
+        cURL est le client HTTP en ligne de commande le plus utilise, installe par defaut sur pratiquement tous les systemes d'exploitation. Une commande cURL se compose du mot-cle <code>curl</code> suivi d'une URL et d'indicateurs optionnels. L'indicateur <code>-X</code> specifie la methode HTTP (GET, POST, PUT, DELETE, etc.). L'indicateur <code>-H</code> ajoute des en-tetes de requete comme <code>Content-Type</code> et <code>Authorization</code>. L'indicateur <code>-d</code> envoie des donnees dans le corps de la requete. L'indicateur <code>-u</code> fournit les identifiants d'authentification basique.
+      </p>
+      <p>
+        Lorsqu'aucune methode n'est explicitement specifiee, cURL utilise par defaut GET. Lorsque l'indicateur <code>-d</code> est utilise sans <code>-X</code>, cURL bascule automatiquement en POST. Ces comportements implicites sont preserves dans le code genere, qui definit explicitement la methode pour rendre l'intention claire independamment des valeurs par defaut specifiques au langage.
+      </p>
+
+      <h3>Langages et bibliotheques pris en charge</h3>
+      <p>
+        Le convertisseur genere du code idiomatique pour quatre langages populaires. Le code Python utilise la bibliotheque <code>requests</code>, qui est la norme de facto pour HTTP en Python. Le code JavaScript utilise l'API <code>fetch</code> integree, disponible dans tous les navigateurs modernes et Node.js. Le code Ruby utilise <code>Net::HTTP</code> de la bibliotheque standard. Le code PHP utilise les fonctions <code>cURL</code> (<code>curl_init</code>, <code>curl_setopt</code>, <code>curl_exec</code>), disponibles dans pratiquement toutes les installations PHP.
+      </p>
+
+      <h3>Gestion de l'authentification et des en-tetes</h3>
+      <p>
+        Les requetes API necessitent souvent une authentification. Le convertisseur gere l'authentification par jeton Bearer transmise via <code>-H 'Authorization: Bearer ...'</code>, l'authentification basique via <code>-u username:password</code> et les en-tetes de cle API. Les en-tetes personnalises sont traduits dans le mecanisme de definition d'en-tetes approprie pour chaque langage. Les en-tetes Content-Type sont preserves pour garantir que le corps de la requete est envoye dans le bon format, que ce soit JSON, encode en formulaire ou multipart.
+      </p>
+
+      <h2>Comprendre les indicateurs cURL</h2>
+      <p>
+        cURL offre des dizaines d'indicateurs en ligne de commande, mais une poignee represente la grande majorite de l'utilisation reelle. Apprendre ce que fait chacun vous aide a lire et ecrire des commandes cURL avec confiance, et les comprendre facilite la verification que le code converti est correct.
+      </p>
+      <h3>Indicateurs de requete</h3>
+      <p>
+        L'indicateur <code>-X</code> (ou <code>--request</code>) definit la methode HTTP. Les valeurs courantes sont <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code> et <code>DELETE</code>. Si vous omettez <code>-X</code> entierement, cURL utilise par defaut <code>GET</code> sauf si un indicateur de donnees comme <code>-d</code> est present, auquel cas il bascule automatiquement en <code>POST</code>. L'indicateur <code>-H</code> (ou <code>--header</code>) ajoute un en-tete personnalise a la requete. Vous pouvez l'utiliser plusieurs fois pour definir plusieurs en-tetes : <code>-H 'Content-Type: application/json' -H 'Accept: application/json'</code>. L'indicateur <code>-d</code> (ou <code>--data</code>) envoie des donnees dans le corps de la requete et implique <code>POST</code>. Pour les charges utiles JSON, vous l'associez generalement avec <code>-H 'Content-Type: application/json'</code>. La variante <code>--data-raw</code> se comporte de maniere identique mais n'interprete pas le prefixe <code>@</code> comme une reference de fichier.
+      </p>
+      <h3>Indicateurs d'authentification et de sortie</h3>
+      <p>
+        L'indicateur <code>-u</code> (ou <code>--user</code>) fournit les identifiants d'authentification basique au format <code>username:password</code>. cURL les encode en Base64 et les envoie dans l'en-tete <code>Authorization</code>. L'indicateur <code>-o</code> (ou <code>--output</code>) ecrit le corps de la reponse dans un fichier au lieu de la sortie standard. L'indicateur <code>-O</code> enregistre dans un fichier en utilisant le nom de fichier distant de l'URL. L'indicateur <code>-v</code> (ou <code>--verbose</code>) affiche les informations detaillees de la requete et de la reponse, y compris les details de la poignee de main TLS et les echanges d'en-tetes, ce qui est inestimable pour le debogage. L'indicateur <code>-k</code> (ou <code>--insecure</code>) demande a cURL de ne pas verifier le certificat TLS, utile pour les environnements de developpement avec des certificats auto-signes mais dangereux en production. L'indicateur <code>-L</code> (ou <code>--location</code>) demande a cURL de suivre les redirections HTTP (reponses 3xx), que de nombreuses API et sites Web emettent.
+      </p>
+
+      <h2>Fonctionnement de la conversion</h2>
+      <p>
+        La conversion d'une commande cURL en code source implique plusieurs etapes distinctes. Le convertisseur tokenise d'abord la chaine d'entree, la divisant sur les espaces blancs tout en respectant les guillemets simples et doubles afin que les valeurs d'en-tetes et les corps JSON contenant des espaces restent intacts. Ensuite, il parcourt la liste de jetons sequentiellement, identifiant les indicateurs connus et consommant leurs arguments. Un indicateur comme <code>-X</code> consomme le jeton suivant comme methode HTTP ; <code>-H</code> consomme le jeton suivant comme chaine d'en-tete ; <code>-d</code> ou <code>--data</code> consomme le jeton suivant comme corps de requete. Les jetons non associes a un indicateur et ressemblant a des URL (commencant par <code>http://</code> ou <code>https://</code>) sont captures comme URL cible.
+      </p>
+      <p>
+        Une fois l'analyse terminee, le convertisseur detient une representation structuree de la requete : l'URL, la methode HTTP, une liste d'en-tetes (chacun divise en nom et valeur sur le premier deux-points), la chaine brute du corps et les identifiants d'authentification eventuels. Cette representation intermediaire est independante du langage. L'etape finale est la generation de code, ou un modele specifique au langage fait correspondre chaque composant aux idiomes HTTP du langage cible. La methode devient un argument de fonction ou une constante, les en-tetes deviennent un dictionnaire ou un tableau associatif, et le corps est attache de la maniere attendue par la bibliotheque. Le code genere est formate avec une indentation correcte et pret a etre execute.
+      </p>
+      <p>
+        Les cas particuliers necessitent un traitement special. Les commandes cURL multiligne utilisant la continuation par barre oblique inversee (<code>\</code> en fin de ligne) sont jointes avant l'analyse. L'indicateur <code>-u</code> est traduit en un mecanisme d'authentification basique specifique au langage plutot que d'etre laisse comme un en-tete brut. Les en-tetes en double sont preserves dans l'ordre, car certaines API s'appuient sur plusieurs valeurs pour le meme nom d'en-tete (par exemple, plusieurs en-tetes <code>Set-Cookie</code>). Le convertisseur supprime egalement les caracteres d'invite shell <code>$</code> ou <code>%</code> en debut de ligne qui apparaissent parfois lorsqu'une commande est copiee depuis un tutoriel ou une capture d'ecran de terminal.
+      </p>
+
+      <h2>Bibliotheques HTTP specifiques aux langages</h2>
+      <p>
+        Chaque langage cible utilise une bibliotheque differente avec ses propres conventions pour construire des requetes HTTP. Comprendre ces differences vous aide a choisir la bonne sortie et a modifier le code genere si necessaire.
+      </p>
+      <h3>Python &mdash; requests</h3>
+      <p>
+        La bibliotheque <code>requests</code> est le client HTTP le plus populaire de l'ecosysteme Python. Elle fournit une API simple et de haut niveau ou la methode HTTP correspond directement a un nom de fonction : <code>requests.get()</code>, <code>requests.post()</code>, etc. Les en-tetes sont passes sous forme de dictionnaire simple a l'argument mot-cle <code>headers</code>. Les corps JSON peuvent etre passes via le parametre <code>json</code>, qui definit automatiquement l'en-tete Content-Type et serialise le dictionnaire. Le parametre <code>auth</code> accepte un tuple pour l'authentification basique. Les donnees de reponse sont disponibles via <code>.json()</code>, <code>.text</code> ou <code>.content</code> selon le format souhaite.
+      </p>
+      <h3>JavaScript &mdash; API fetch</h3>
+      <p>
+        L'API <code>fetch</code> est integree dans tous les navigateurs modernes et Node.js 18+. Elle prend une URL comme premier argument et un objet d'options comme second. L'objet d'options accepte les proprietes <code>method</code>, <code>headers</code> et <code>body</code>. Les en-tetes peuvent etre un objet simple ou une instance <code>Headers</code>. Contrairement a <code>requests</code> en Python, <code>fetch</code> ne genere pas d'exception sur les codes de statut d'erreur HTTP ; vous devez verifier <code>response.ok</code> vous-meme. Le corps de la reponse est consomme de maniere asynchrone via des methodes comme <code>response.json()</code> ou <code>response.text()</code>. Comme <code>fetch</code> retourne une Promise, le code genere utilise <code>async/await</code> pour la lisibilite.
+      </p>
+      <h3>Ruby &mdash; Net::HTTP</h3>
+      <p>
+        La bibliotheque standard de Ruby inclut <code>Net::HTTP</code>, qui est plus verbeuse que les equivalents Python ou JavaScript mais ne necessite aucune dependance externe. Une requete typique commence par l'analyse de l'URL en un objet <code>URI</code>, puis la creation d'une instance <code>Net::HTTP</code> configuree pour l'hote et le port. Les objets de requete comme <code>Net::HTTP::Post</code> ou <code>Net::HTTP::Get</code> representent la methode. Les en-tetes sont definis en utilisant la notation entre crochets sur l'objet de requete. Le corps est assigne directement. Pour les URL HTTPS, <code>use_ssl</code> doit etre defini a <code>true</code>. En raison de cette verbosité, de nombreux developpeurs Ruby utilisent des gems enveloppantes comme <code>Faraday</code> ou <code>HTTParty</code>, mais le code genere s'en tient a la bibliotheque standard pour une portabilite maximale.
+      </p>
+      <h3>PHP &mdash; Extension cURL</h3>
+      <p>
+        L'extension cURL de PHP enveloppe la meme bibliotheque libcurl qui alimente l'outil en ligne de commande <code>curl</code>. Le flux de travail tourne autour d'un handle cree avec <code>curl_init()</code>. Les options sont definies via des appels a <code>curl_setopt()</code> : <code>CURLOPT_URL</code> pour l'URL cible, <code>CURLOPT_CUSTOMREQUEST</code> pour la methode HTTP, <code>CURLOPT_HTTPHEADER</code> pour un tableau de chaines d'en-tetes, et <code>CURLOPT_POSTFIELDS</code> pour le corps de la requete. Definir <code>CURLOPT_RETURNTRANSFER</code> a <code>true</code> fait que <code>curl_exec()</code> retourne la reponse sous forme de chaine au lieu de l'afficher. Comme l'extension PHP reflete etroitement l'API C de libcurl, le code PHP genere correspond presque un pour un avec les indicateurs cURL originaux, ce qui en fait la conversion la plus transparente des quatre langages.
+      </p>
+
+      <h2>Questions frequemment posees</h2>
+
+      <h3>Qu'est-ce que cURL ?</h3>
+      <p>cURL est un outil en ligne de commande pour effectuer des requetes HTTP. Il est pre-installe sur Linux, macOS et Windows 10+, et c'est l'outil standard pour tester les API.</p>
+
+      <h3>Comment lire une commande cURL ?</h3>
+      <p>Elle commence par <code>curl</code> suivi d'une URL. Utilisez -X pour la methode, -H pour les en-tetes, -d pour les donnees du corps et -u pour l'authentification.</p>
+
+      <h3>Quelles methodes HTTP cURL prend-il en charge ?</h3>
+      <p>Toutes les methodes standard : GET, POST, PUT, PATCH, DELETE, HEAD et OPTIONS. Definissez la methode avec l'indicateur -X.</p>
+
+      <h3>Puis-je convertir cURL avec authentification ?</h3>
+      <p>Oui. L'outil gere l'authentification basique (-u), les jetons Bearer (-H Authorization) et d'autres modeles d'authentification bases sur les en-tetes.</p>
+
+      <h3>Cet outil gere-t-il les donnees multipart ?</h3>
+      <p>Oui. Les commandes avec les indicateurs -F pour les telechargements de fichiers et les champs de formulaire sont converties dans la syntaxe multipart appropriee de chaque langage.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Convertisseur cURL vers code", url: everyday_curl_to_code_url %>
+
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Analyseur URL", description: "Decomposez n'importe quelle URL en ses composants : schema, hote, port, chemin, requete et fragment.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" },
+      { name: "Analyseur d'en-tetes HTTP", description: "Analysez et examinez les en-tetes HTTP a partir de texte brut de requete ou de reponse.", path: everyday_http_header_parser_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "Formateur JSON", description: "Formatez, embellissez, minifiez et validez du JSON avec analyse du nombre de cles et de la profondeur d'imbrication.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("curl-to-code") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

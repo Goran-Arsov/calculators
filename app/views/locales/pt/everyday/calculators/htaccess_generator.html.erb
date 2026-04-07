@@ -1,0 +1,238 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Gerador de .htaccess - Ferramenta Online Gratuita",
+  description: "Gere regras .htaccess para servidores Apache. Redirecionamentos HTTPS, compressao, cache, cabecalhos de seguranca e mais.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Gerador de .htaccess - Ferramenta Online Gratuita | CalcWise",
+    description: "Gere regras .htaccess para servidores Apache. Redirecionamentos HTTPS, compressao, cache, cabecalhos de seguranca e mais.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Inicio", url: root_url },
+  { name: "Dia a Dia", url: category_url("everyday") },
+  { name: "Gerador de .htaccess", url: everyday_htaccess_generator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "O que e um arquivo .htaccess?", answer: "Um arquivo .htaccess (hypertext access) e um arquivo de configuracao usado por servidores web Apache para aplicar configuracoes por diretorio. Ele permite substituir a configuracao do servidor sem editar os arquivos de configuracao principais do Apache, que normalmente requerem acesso root. Usos comuns incluem redirecionamentos de URL, controle de acesso, paginas de erro personalizadas, definicoes de tipo MIME e habilitacao de compressao. O arquivo e lido pelo Apache em cada requisicao para um diretorio que o contenha, e as regras se aplicam a esse diretorio e todos os subdiretorios." },
+  { question: "Onde devo colocar o arquivo .htaccess?", answer: "Coloque o arquivo .htaccess no diretorio raiz do seu site, normalmente a pasta public_html ou www. As regras se aplicam a esse diretorio e todos os subdiretorios. Voce tambem pode colocar arquivos .htaccess em subdiretorios para regras especificas a esses caminhos. O nome do arquivo deve ser exatamente .htaccess com o ponto inicial, o que o torna um arquivo oculto em sistemas Unix. Certifique-se de que o arquivo tenha permissoes 644 (legivel pelo servidor) e use finais de linha no estilo Unix." },
+  { question: "O .htaccess afeta o desempenho do servidor?", answer: "Sim, ha um custo de desempenho. O Apache le e analisa arquivos .htaccess em cada requisicao para cada diretorio no caminho ate o arquivo solicitado. Em sites com alto trafego, isso pode se acumular. Para maximo desempenho, o Apache recomenda colocar as diretivas na configuracao principal do servidor ou nos arquivos de virtual host. Porem, em hospedagem compartilhada onde voce nao tem acesso a configuracao principal, .htaccess e a unica opcao. Para a maioria dos sites com trafego moderado, o impacto no desempenho e insignificante." },
+  { question: "O .htaccess pode forcar HTTPS?", answer: "Sim. Usando mod_rewrite, voce pode redirecionar todo o trafego HTTP para HTTPS. A regra verifica se a variavel HTTPS esta desligada e, se estiver, emite um redirecionamento permanente 301 para a mesma URL com https:// como esquema. Isso garante que todos os visitantes usem a conexao criptografada. O redirecionamento deve ser uma das primeiras regras no seu arquivo .htaccess para que se aplique antes de qualquer outra reescrita de URL." },
+  { question: "O que sao cabecalhos de seguranca no .htaccess?", answer: "Cabecalhos de seguranca sao cabecalhos de resposta HTTP que instruem os navegadores a habilitar recursos de protecao. No .htaccess, voce os define usando a diretiva Header do mod_headers. Cabecalhos de seguranca importantes incluem X-Content-Type-Options (impede MIME sniffing), X-Frame-Options (impede clickjacking), X-XSS-Protection (habilita filtragem XSS), Referrer-Policy (controla vazamento de informacao do referrer) e Content-Security-Policy (controla fontes de conteudo permitidas). Adicionar esses cabecalhos melhora significativamente a postura de seguranca do seu site." }
+]) %>
+
+<%= calculator_schema(
+  name: "Gerador de .htaccess",
+  description: "Gere regras .htaccess para servidores Apache incluindo redirecionamentos HTTPS, compressao, cache, cabecalhos de seguranca e mais.",
+  url: everyday_htaccess_generator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Inicio", url: root_path },
+  { name: "Dia a Dia", url: category_path("everyday") },
+  { name: "Gerador de .htaccess" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Gerador de .htaccess</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Gere regras .htaccess para servidores Apache. Selecione os recursos que voce precisa e copie a configuracao gerada para o seu servidor.</p>
+
+    <div data-controller="htaccess-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <div class="space-y-5">
+        <%# Redirect options %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-3">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Redirecionamentos</h3>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="forceHttps"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Forcar HTTPS</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="wwwRedirect"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Redirecionar para www</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="nonWwwRedirect"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Redirecionar para sem www</span>
+          </label>
+        </div>
+
+        <%# Performance options %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-3">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Desempenho</h3>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="gzip"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Compressao Gzip</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="caching"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Cache do Navegador</span>
+          </label>
+        </div>
+
+        <%# Security options %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-3">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Seguranca</h3>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="securityHeaders"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Cabecalhos de Seguranca</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="disableDirectoryListing"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Desabilitar Listagem de Diretorios</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="protectSensitiveFiles"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Proteger Arquivos Sensiveis</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="hotlinkProtection"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Protecao contra Hotlink</span>
+          </label>
+          <div class="ml-7">
+            <input type="text" data-htaccess-generator-calculator-target="hotlinkDomain"
+                   class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono"
+                   placeholder="exemplo.com" autocomplete="off">
+          </div>
+        </div>
+
+        <%# Error pages %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-3">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Diversos</h3>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" data-htaccess-generator-calculator-target="errorPages"
+                   class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700 dark:text-gray-300 font-medium">Paginas de Erro Personalizadas</span>
+          </label>
+        </div>
+
+        <%# Generate button %>
+        <button data-action="click->htaccess-generator-calculator#generate"
+                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+          Gerar .htaccess
+        </button>
+      </div>
+
+      <%# Results %>
+      <div class="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">.htaccess Gerado</h2>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-500 dark:text-gray-400">Secoes: <span class="font-bold text-blue-600 dark:text-blue-400" data-htaccess-generator-calculator-target="resultSectionCount">0</span></span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">Linhas: <span class="font-bold text-blue-600 dark:text-blue-400" data-htaccess-generator-calculator-target="resultLineCount">0</span></span>
+            <button data-action="click->htaccess-generator-calculator#copy"
+                    class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+              Copiar
+            </button>
+          </div>
+        </div>
+        <textarea data-htaccess-generator-calculator-target="output" readonly rows="12"
+                  class="w-full font-mono text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none resize-y"
+                  placeholder="Selecione as opcoes e clique em 'Gerar' para ver seu .htaccess aqui"></textarea>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "htaccess-generator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>O Que e um Arquivo .htaccess?</h2>
+      <p>
+        O arquivo .htaccess e um poderoso arquivo de configuracao usado por servidores web Apache para controlar o comportamento do servidor por diretorio. O nome significa "hypertext access" e o arquivo tem sido uma pedra angular da administracao de servidores Apache desde os primordios da web. Diferente dos arquivos de configuracao principais do Apache (httpd.conf ou apache2.conf), que requerem reinicializacao do servidor para entrar em vigor, as alteracoes no .htaccess sao aplicadas imediatamente na proxima requisicao. Isso torna o .htaccess especialmente valioso em ambientes de hospedagem compartilhada onde os usuarios nao tem acesso a configuracao principal do servidor.
+      </p>
+      <p>
+        Quando o Apache recebe uma requisicao, ele verifica a existencia de arquivos .htaccess em cada diretorio desde a raiz do documento ate o diretorio que contem o arquivo solicitado. As diretivas de todos os arquivos .htaccess correspondentes sao mescladas, com diretivas em diretorios mais especificos substituindo as de diretorios superiores. Esse comportamento em cascata permite definir padroes em todo o site no .htaccess raiz e substitui-los em subdiretorios especificos conforme necessario.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Casos de Uso Comuns do .htaccess</h2>
+
+      <h3>Redirecionamentos HTTPS e WWW</h3>
+      <p>
+        Forcar HTTPS garante que todo o trafego para o seu site seja criptografado. A regra de redirecionamento usa o modulo mod_rewrite do Apache para verificar se a conexao atual nao esta usando HTTPS e, se nao estiver, redireciona para a versao HTTPS com um redirecionamento permanente 301. Da mesma forma, voce pode padronizar seu dominio redirecionando www para sem www ou vice-versa. Esses redirecionamentos sao importantes para SEO porque mecanismos de busca tratam URLs com e sem www como sites separados, e ter ambos ativos pode dividir sua autoridade de links e causar problemas de conteudo duplicado.
+      </p>
+
+      <h3>Compressao Gzip e Cache do Navegador</h3>
+      <p>
+        Habilitar a compressao gzip via mod_deflate pode reduzir o tamanho de respostas baseadas em texto em 60 a 80 por cento. As regras do .htaccess especificam quais tipos MIME comprimir, tipicamente incluindo HTML, CSS, JavaScript, JSON, XML e SVG. O cache do navegador usa mod_expires ou mod_headers para definir cabecalhos Cache-Control e Expires para ativos estaticos como imagens, folhas de estilo e arquivos JavaScript. Ao informar os navegadores para armazenar esses recursos em cache por dias ou semanas, voce elimina downloads redundantes e melhora dramaticamente os tempos de carregamento de pagina para visitantes recorrentes.
+      </p>
+
+      <h3>Cabecalhos de Seguranca e Controle de Acesso</h3>
+      <p>
+        Cabecalhos de seguranca protegem seu site contra ataques web comuns. X-Content-Type-Options impede MIME type sniffing. X-Frame-Options impede clickjacking controlando se sua pagina pode ser incorporada em iframes. X-XSS-Protection habilita o filtro XSS integrado do navegador. Referrer-Policy controla quanta informacao de URL e compartilhada quando usuarios navegam para fora do seu site. Desabilitar a listagem de diretorios impede que visitantes naveguem na estrutura de arquivos quando nao ha arquivo de indice presente. Proteger arquivos sensiveis como o proprio .htaccess, .env e arquivos de configuracao impede a exposicao acidental de detalhes internos do servidor.
+      </p>
+
+      <h3>Protecao contra Hotlink</h3>
+      <p>
+        A protecao contra hotlink impede que outros sites incorporem suas imagens, videos e outros arquivos de midia diretamente, o que consome sua largura de banda sem fornecer nenhum beneficio. As regras do mod_rewrite verificam o cabecalho HTTP Referer e bloqueiam requisicoes originadas de dominios diferentes do seu. Requisicoes legitimas do seu proprio dominio e crawlers de mecanismos de busca sao permitidos, enquanto requisicoes de outros dominios sao bloqueadas com uma resposta 403 Forbidden ou redirecionadas para uma imagem de substituicao.
+      </p>
+
+      <h2>Perguntas Frequentes</h2>
+
+      <h3>O que e um arquivo .htaccess?</h3>
+      <p>Um arquivo de configuracao para servidores web Apache que aplica configuracoes por diretorio. Ele controla redirecionamentos, acesso, cache, compressao, cabecalhos de seguranca e paginas de erro personalizadas sem necessidade de acesso a configuracao principal do servidor.</p>
+
+      <h3>Onde devo colocar o arquivo .htaccess?</h3>
+      <p>Coloque-o no diretorio raiz do seu site (geralmente public_html ou www). As regras se aplicam a esse diretorio e todos os subdiretorios. O arquivo deve ter permissoes 644 e finais de linha no estilo Unix.</p>
+
+      <h3>O .htaccess afeta o desempenho?</h3>
+      <p>O Apache le os arquivos .htaccess em cada requisicao, o que adiciona sobrecarga. Em sites com alto trafego, colocar as diretivas na configuracao principal e melhor. Para a maioria dos sites em hospedagem compartilhada, o impacto e insignificante.</p>
+
+      <h3>O .htaccess pode forcar HTTPS?</h3>
+      <p>Sim. Usando mod_rewrite, voce redireciona todo o trafego HTTP para HTTPS com um redirecionamento permanente 301. Essa deve ser uma das primeiras regras no seu arquivo .htaccess.</p>
+
+      <h3>O que sao cabecalhos de seguranca no .htaccess?</h3>
+      <p>Cabecalhos de resposta HTTP definidos via mod_headers que instruem os navegadores a habilitar recursos de seguranca. Eles impedem MIME sniffing, clickjacking, XSS e vazamento de referrer.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Gerador de .htaccess", url: everyday_htaccess_generator_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Gerador de Configuracao Nginx", description: "Gere configuracoes de blocos de servidor Nginx com SSL e proxy reverso.", path: everyday_nginx_config_generator_path, icon_path: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" },
+      { name: "Gerador de robots.txt", description: "Gere e teste arquivos robots.txt para controlar crawlers de mecanismos de busca.", path: everyday_robots_txt_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "Construtor de Cabecalho CSP", description: "Construa cabecalhos Content-Security-Policy com uma interface visual.", path: everyday_csp_builder_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("htaccess-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

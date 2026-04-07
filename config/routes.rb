@@ -2,6 +2,29 @@ Rails.application.routes.draw do
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Localized IT tool routes (de, fr, es, pt)
+  scope "/:locale", constraints: { locale: /de|fr|es|pt/ } do
+    scope :everyday, module: :everyday, as: nil do
+      get "base64-encoder-decoder", to: "calculators#base64_encoder"
+      get "url-encoder-decoder", to: "calculators#url_encoder"
+      get "html-formatter-beautifier", to: "calculators#html_formatter"
+      get "css-formatter-beautifier", to: "calculators#css_formatter"
+      get "javascript-formatter-beautifier", to: "calculators#js_formatter"
+      get "json-validator", to: "calculators#json_validator"
+      get "json-to-yaml-converter", to: "calculators#json_to_yaml"
+      get "curl-to-code-converter", to: "calculators#curl_to_code"
+      get "json-to-typescript-generator", to: "calculators#json_to_typescript"
+      get "html-to-jsx-converter", to: "calculators#html_to_jsx"
+      get "hex-ascii-converter", to: "calculators#hex_ascii"
+      get "http-status-code-reference", to: "calculators#http_status_reference"
+      get "robots-txt-generator", to: "calculators#robots_txt"
+      get "htaccess-generator", to: "calculators#htaccess_generator"
+      get "regex-explainer", to: "calculators#regex_explainer"
+      get "open-graph-preview", to: "calculators#og_preview"
+      get "svg-to-png-converter", to: "calculators#svg_to_png"
+    end
+  end
+
   # IT Tools
   get "information-technology", to: "it_tools#index", as: :it_tools
 
@@ -312,6 +335,7 @@ Rails.application.routes.draw do
     get "open-graph-preview", to: "calculators#og_preview", as: :og_preview
     get "svg-to-png-converter", to: "calculators#svg_to_png", as: :svg_to_png
     get "alarm-timer", to: "calculators#alarm_timer", as: :alarm_timer
+    get "alarm-clock", to: "calculators#alarm_clock", as: :alarm_clock
   end
 
   # Blog

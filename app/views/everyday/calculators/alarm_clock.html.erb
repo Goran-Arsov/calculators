@@ -1,0 +1,211 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Online Alarm Clock - Set Alarms with Sound Alert",
+  description: "Set an alarm for a specific time and day. Loud beeping sound and screen flash when your alarm goes off. Works in the browser with no app needed.",
+  canonical: everyday_alarm_clock_url,
+  og: {
+    title: "Online Alarm Clock - Set Alarms with Sound Alert | CalcWise",
+    description: "Set an alarm for a specific time and day. Loud beeping sound and screen flash when your alarm goes off. Works in the browser with no app needed.",
+    url: everyday_alarm_clock_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Alarm Clock", url: everyday_alarm_clock_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I set an alarm for a specific time?", answer: "Select the hour (0-23) and minute (0-59), choose a day from the dropdown (Today, Tomorrow, or a specific weekday), optionally enter a reason, and click Set Alarm. The alarm will trigger at exactly that time with a loud beeping sound and full-screen flash." },
+  { question: "Will the alarm sound if I switch to another browser tab?", answer: "Yes. The alarm uses the Web Audio API which plays sound even when the tab is in the background. You will also receive a browser notification if you have granted notification permission, and the page title updates to show the alarm is active." },
+  { question: "What happens when the alarm goes off?", answer: "The screen flashes red and white, a loud 880 Hz beeping sound plays continuously, and a full-screen overlay appears with a Stop Alarm button. If you entered a reason, it is displayed on the alarm screen. The alarm auto-stops after 20 seconds and then plays 4 reminder beeps every 30 seconds for up to 5 minutes." },
+  { question: "Can I set an alarm for a different day of the week?", answer: "Yes. The day selector lets you choose Today, Tomorrow, or any specific weekday (Monday through Sunday). When you select a weekday, the alarm is set for the next occurrence of that day. For example, if today is Tuesday and you select Friday, the alarm will be set for this coming Friday." },
+  { question: "Does this alarm clock work on mobile phones?", answer: "Yes. The online alarm clock works on all modern mobile browsers including Chrome, Safari, and Firefox on both Android and iOS. On iOS, sound may require an initial user interaction before audio can play. The visual flash and notification alerts work on all devices." }
+]) %>
+
+<%= calculator_schema(
+  name: "Online Alarm Clock",
+  description: "Set an alarm for a specific time and day with loud beeping sound and screen flash notification.",
+  url: everyday_alarm_clock_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Alarm Clock" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Online Alarm Clock</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Set an alarm for a specific time and day with loud sound alert and full-screen flash.</p>
+
+    <div data-controller="alarm-clock-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <%# Large live clock display %>
+      <div class="text-center mb-4">
+        <div data-alarm-clock-calculator-target="display" class="text-7xl md:text-8xl font-mono font-bold text-gray-900 dark:text-white tracking-wider select-none">00:00:00</div>
+        <p data-alarm-clock-calculator-target="status" class="mt-3 text-sm font-semibold text-gray-500 dark:text-gray-400">Ready</p>
+      </div>
+
+      <%# Alarm time info %>
+      <div class="text-center mb-6">
+        <p data-alarm-clock-calculator-target="alarmTimeDisplay" class="hidden text-base font-semibold text-green-600 dark:text-green-400"></p>
+      </div>
+
+      <%# Time inputs %>
+      <div class="grid grid-cols-2 gap-4 max-w-md mx-auto mb-4">
+        <div class="text-center">
+          <label for="alarm-clock-hour" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Hour (0-23)</label>
+          <input id="alarm-clock-hour" type="number" min="0" max="23" placeholder="0" data-alarm-clock-calculator-target="hour" class="w-full text-center text-2xl font-mono">
+        </div>
+        <div class="text-center">
+          <label for="alarm-clock-minute" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Minute (0-59)</label>
+          <input id="alarm-clock-minute" type="number" min="0" max="59" placeholder="0" data-alarm-clock-calculator-target="minute" class="w-full text-center text-2xl font-mono">
+        </div>
+      </div>
+
+      <%# Day selector %>
+      <div class="max-w-md mx-auto mb-4">
+        <label for="alarm-clock-day" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Day</label>
+        <select id="alarm-clock-day" data-alarm-clock-calculator-target="day" class="w-full text-sm">
+          <option value="today">Today</option>
+          <option value="tomorrow">Tomorrow</option>
+          <option value="monday">Monday</option>
+          <option value="tuesday">Tuesday</option>
+          <option value="wednesday">Wednesday</option>
+          <option value="thursday">Thursday</option>
+          <option value="friday">Friday</option>
+          <option value="saturday">Saturday</option>
+          <option value="sunday">Sunday</option>
+        </select>
+      </div>
+
+      <%# Reason input %>
+      <div class="max-w-md mx-auto mb-6">
+        <label for="alarm-clock-reason" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Alarm Reason (optional)</label>
+        <input id="alarm-clock-reason" type="text" data-alarm-clock-calculator-target="reason" placeholder="e.g., Wake up, Meeting starts, Lunch break" class="w-full text-sm">
+      </div>
+
+      <%# Control buttons %>
+      <div class="flex items-center justify-center gap-3 max-w-md mx-auto">
+        <button data-alarm-clock-calculator-target="startBtn" data-action="click->alarm-clock-calculator#setAlarm" class="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-semibold">Set Alarm</button>
+        <button data-alarm-clock-calculator-target="cancelBtn" data-action="click->alarm-clock-calculator#cancelAlarm" class="hidden flex-1 px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white rounded-xl shadow-sm shadow-yellow-500/20 hover:shadow-md hover:shadow-yellow-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 text-sm font-semibold">Cancel Alarm</button>
+        <button data-alarm-clock-calculator-target="stopAlarmBtn" data-action="click->alarm-clock-calculator#stopAlarm" class="hidden flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white rounded-xl shadow-sm shadow-red-500/20 hover:shadow-md hover:shadow-red-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-sm font-semibold">Stop Alarm</button>
+      </div>
+
+      <%# Alarm overlay (hidden by default) %>
+      <div data-alarm-clock-calculator-target="alarmOverlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center">
+        <p class="text-6xl md:text-8xl font-extrabold text-white mb-4 drop-shadow-lg">ALARM!</p>
+        <p data-alarm-clock-calculator-target="reasonDisplay" class="text-2xl md:text-3xl text-white mb-8 drop-shadow-md"></p>
+        <button data-action="click->alarm-clock-calculator#stopAlarm" class="px-8 py-4 bg-white text-red-600 rounded-2xl text-xl font-bold shadow-2xl hover:bg-gray-100 transition-colors duration-200">Stop Alarm</button>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "alarm-clock" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Online Alarm Clock</h2>
+      <p>
+        This free online alarm clock lets you set an alarm for any specific time and day of the week, right in your browser. Unlike a countdown timer that rings after a set duration, this alarm clock triggers at exactly the time you choose. Simply select the hour in 24-hour format (0 through 23), the minute (0 through 59), and the day you want the alarm to fire. Add an optional reason so you remember why the alarm was set, then click Set Alarm. The large live clock display shows the current time, updating every second, so you always know how close you are to your alarm.
+      </p>
+      <p>
+        When the alarm triggers, the entire screen flashes red and white, a loud beeping sound plays through your speakers or headphones, and a full-screen overlay appears with a Stop Alarm button. If you granted browser notification permission, a notification will also pop up even if you are in another tab or application. The alarm automatically quiets after 20 seconds and then plays four short reminder beeps every 30 seconds for up to five minutes, ensuring you do not miss it.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Common Use Cases for an Online Alarm Clock</h2>
+
+      <h3>Nap Alarms and Power Naps</h3>
+      <p>
+        A quick 20-minute power nap can dramatically improve alertness and performance. Set the alarm clock for 20 minutes from now by calculating the target time, choose "Today" from the day selector, and drift off knowing the loud alarm will wake you. Unlike phone alarms that you might accidentally silence while half asleep, a browser alarm with a full-screen flash is much harder to ignore, making it ideal for those who tend to oversleep their naps.
+      </p>
+
+      <h3>Meeting Reminders and Work Deadlines</h3>
+      <p>
+        If you work at a computer throughout the day, setting a browser-based alarm for an upcoming meeting is incredibly convenient. You do not need to pick up your phone or open a separate application. Set the alarm for five minutes before your meeting time, add the meeting name as the reason, and continue working. The alarm will grab your attention with both sound and visual alerts when it fires. This is especially useful for back-to-back meetings where you might lose track of time between tasks.
+      </p>
+
+      <h3>Cooking and Baking Schedules</h3>
+      <p>
+        When a recipe says to take the roast out of the oven at exactly 6:15 PM, an alarm clock set for that specific time is more intuitive than calculating a countdown duration. Enter 18 for the hour and 15 for the minute, select Today, and write "Check the roast" as your reason. The alarm ensures your dish comes out at the perfect moment, whether you are watching television, reading, or doing other tasks around the house.
+      </p>
+
+      <h2>How Browser Alarms Work</h2>
+      <p>
+        This alarm clock runs entirely in your browser using JavaScript. The live clock display uses a one-second interval that reads the current system time and updates the on-screen display. When you set an alarm, the controller stores the target date and time, then checks every second whether the current time matches the target. When a match occurs at the start of the target minute, the alarm fires. The sound is generated using the Web Audio API, which creates an 880 Hz square wave oscillator for the beeping sound. This approach works even when the browser tab is in the background, though some mobile browsers may throttle background timers slightly.
+      </p>
+
+      <h3>Comparison with Phone Alarms</h3>
+      <p>
+        Phone alarms are reliable and work even when the screen is off, but a browser-based alarm clock has its own advantages. You can set it from your computer without reaching for your phone, it provides a dramatic visual alert that covers your entire screen, and it does not require installing any application. The browser alarm is ideal for situations where you are already working at your computer and need a time-based reminder. For overnight alarms or critical wake-up calls, a dedicated phone alarm remains the better choice since it does not depend on keeping a browser tab open.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I set an alarm for a specific time?</h3>
+      <p>
+        Select the hour (0-23) and minute (0-59), choose a day from the dropdown (Today, Tomorrow, or a specific weekday), optionally enter a reason, and click Set Alarm. The alarm will trigger at exactly that time with a loud beeping sound and full-screen flash.
+      </p>
+
+      <h3>Will the alarm sound if I switch to another browser tab?</h3>
+      <p>
+        Yes. The alarm uses the Web Audio API which plays sound even when the tab is in the background. You will also receive a browser notification if you have granted notification permission, and the page title updates to show the alarm is active.
+      </p>
+
+      <h3>What happens when the alarm goes off?</h3>
+      <p>
+        The screen flashes red and white, a loud 880 Hz beeping sound plays continuously, and a full-screen overlay appears with a Stop Alarm button. If you entered a reason, it is displayed on the alarm screen. The alarm auto-stops after 20 seconds and then plays 4 reminder beeps every 30 seconds for up to 5 minutes.
+      </p>
+
+      <h3>Can I set an alarm for a different day of the week?</h3>
+      <p>
+        Yes. The day selector lets you choose Today, Tomorrow, or any specific weekday (Monday through Sunday). When you select a weekday, the alarm is set for the next occurrence of that day.
+      </p>
+
+      <h3>Does this alarm clock work on mobile phones?</h3>
+      <p>
+        Yes. The online alarm clock works on all modern mobile browsers including Chrome, Safari, and Firefox on both Android and iOS. On iOS, sound may require an initial user interaction before audio can play.
+      </p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Online Alarm Clock", url: everyday_alarm_clock_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Alarm Timer", description: "Set a countdown timer with loud alarm sound and screen flash when time expires.", path: everyday_alarm_timer_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Time Zone Converter", description: "Convert times between different time zones worldwide.", path: everyday_time_zone_converter_path, icon_path: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" },
+      { name: "Date Difference Calculator", description: "Calculate the exact difference between any two dates.", path: everyday_date_difference_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("alarm-clock") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

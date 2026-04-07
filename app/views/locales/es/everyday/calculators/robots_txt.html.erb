@@ -1,0 +1,221 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Generador y Probador de robots.txt - Herramienta Gratuita en Línea",
+  description: "Genere y pruebe archivos robots.txt en línea. Cree reglas para rastreadores, agregue sitemaps y pruebe si las URLs están permitidas o bloqueadas.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Generador y Probador de robots.txt - Herramienta Gratuita en Línea | CalcWise",
+    description: "Genere y pruebe archivos robots.txt en línea. Cree reglas para rastreadores, agregue sitemaps y pruebe si las URLs están permitidas o bloqueadas.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Inicio", url: root_url },
+  { name: "Uso Diario", url: category_url("everyday") },
+  { name: "Generador y Probador de robots.txt", url: everyday_robots_txt_url }
+]) %>
+
+<%= faq_schema([
+  { question: "¿Qué es un archivo robots.txt?", answer: "Un archivo robots.txt es un archivo de texto plano ubicado en la raíz de un sitio web que indica a los rastreadores web qué páginas o secciones del sitio tienen permitido o no acceder. Sigue el Protocolo de Exclusión de Robots, un estándar en uso desde 1994. Los rastreadores de motores de búsqueda como Googlebot, Bingbot y otros verifican este archivo antes de rastrear un sitio. El archivo usa directivas simples como User-agent, Disallow, Allow y Sitemap para comunicar reglas a los rastreadores." },
+  { question: "¿Dónde se coloca el archivo robots.txt?", answer: "El archivo robots.txt debe colocarse en el directorio raíz de su sitio web para que sea accesible en https://ejemplo.com/robots.txt. Debe servirse en la ruta exacta /robots.txt del dominio. Colocarlo en un subdirectorio o usar un nombre de archivo diferente no funcionará. El archivo debe ser un archivo de texto plano codificado en UTF-8 y servido con un tipo de contenido text/plain. Cada subdominio necesita su propio archivo robots.txt." },
+  { question: "¿Puede robots.txt bloquear todos los rastreadores?", answer: "Sí. Para bloquear todos los rastreadores de todas las páginas, use 'User-agent: *' seguido de 'Disallow: /' en su archivo robots.txt. Esto le dice a cada rastreador que ninguna página del sitio debe ser rastreada. Sin embargo, robots.txt es consultivo, no ejecutable. Los rastreadores bien comportados como Googlebot y Bingbot lo respetarán, pero los bots maliciosos pueden ignorarlo. Para una restricción de acceso real, use autenticación del lado del servidor o reglas de firewall. También tenga en cuenta que bloquear rastreadores no elimina páginas de los resultados de búsqueda si están enlazadas desde otros sitios." },
+  { question: "¿Google respeta robots.txt?", answer: "Sí, Google respeta las directivas de robots.txt. Googlebot verifica el archivo robots.txt antes de rastrear cualquier URL de un sitio. Si una página está bloqueada, Googlebot no la rastreará. Sin embargo, si otros sitios enlazan a una página bloqueada, Google aún puede indexar la URL (mostrándola en los resultados de búsqueda con una nota de que la descripción no está disponible) porque robots.txt previene el rastreo, no la indexación. Para prevenir la indexación, use una meta etiqueta noindex o un encabezado HTTP X-Robots-Tag en su lugar." },
+  { question: "¿Puedo bloquear páginas específicas con robots.txt?", answer: "Sí. Use una directiva Disallow específica con la ruta que desea bloquear. Por ejemplo, 'Disallow: /privado/' bloquea todas las URLs que comienzan con /privado/. 'Disallow: /pagina.html' bloquea esa página exacta. Puede usar el carácter comodín * para coincidir con patrones, como 'Disallow: /*.pdf$' para bloquear todos los archivos PDF. También puede usar directivas Allow para crear excepciones dentro de una regla Disallow más amplia, como bloquear /privado/ pero permitir /privado/pagina-publica." }
+]) %>
+
+<%= calculator_schema(
+  name: "Generador y Probador de robots.txt",
+  description: "Genere y pruebe archivos robots.txt en línea. Cree reglas para rastreadores, agregue sitemaps y pruebe si las URLs están permitidas o bloqueadas.",
+  url: everyday_robots_txt_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Inicio", url: root_path },
+  { name: "Uso Diario", url: category_path("everyday") },
+  { name: "Generador y Probador de robots.txt" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Generador y Probador de robots.txt</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Genere archivos robots.txt con reglas personalizadas para rastreadores y sitemaps, o pruebe un robots.txt existente para ver si URLs específicas están permitidas o bloqueadas.</p>
+
+    <div data-controller="robots-txt-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <%# Tab navigation %>
+      <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+        <button data-action="click->robots-txt-calculator#showGenerator"
+                data-robots-txt-calculator-target="tabGenerator"
+                class="px-4 py-2.5 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 dark:text-blue-400">Generador</button>
+        <button data-action="click->robots-txt-calculator#showTester"
+                data-robots-txt-calculator-target="tabTester"
+                class="px-4 py-2.5 text-sm font-semibold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">Probador</button>
+      </div>
+
+      <%# Generator section %>
+      <div data-robots-txt-calculator-target="generatorSection" class="space-y-5">
+        <div>
+          <label for="robots-user-agent" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">User-Agent</label>
+          <input id="robots-user-agent" type="text" data-robots-txt-calculator-target="userAgent"
+                 class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="* (todos los bots)" autocomplete="off">
+        </div>
+
+        <div>
+          <label for="robots-disallow" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rutas Bloqueadas <span class="font-normal text-gray-400">(una por línea)</span></label>
+          <textarea id="robots-disallow" data-robots-txt-calculator-target="disallowPaths"
+                    class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows="3" placeholder="/private
+/admin
+/tmp/"></textarea>
+        </div>
+
+        <div>
+          <label for="robots-allow" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rutas Permitidas <span class="font-normal text-gray-400">(una por línea)</span></label>
+          <textarea id="robots-allow" data-robots-txt-calculator-target="allowPaths"
+                    class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows="3" placeholder="/public
+/assets"></textarea>
+        </div>
+
+        <div>
+          <label for="robots-sitemap" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">URL del Sitemap</label>
+          <input id="robots-sitemap" type="text" data-robots-txt-calculator-target="sitemapUrl"
+                 class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="https://ejemplo.com/sitemap.xml" autocomplete="off">
+        </div>
+
+        <button data-action="click->robots-txt-calculator#generate"
+                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+          Generar robots.txt
+        </button>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="robots-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">robots.txt Generado</label>
+            <button data-action="click->robots-txt-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copiar</button>
+          </div>
+          <textarea id="robots-output" data-robots-txt-calculator-target="output" readonly
+                    class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+                    rows="8" placeholder="El robots.txt generado aparecerá aquí..."></textarea>
+        </div>
+      </div>
+
+      <%# Tester section %>
+      <div data-robots-txt-calculator-target="testerSection" class="hidden space-y-5">
+        <div>
+          <label for="robots-test-content" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Contenido de robots.txt</label>
+          <textarea id="robots-test-content" data-robots-txt-calculator-target="testRobots"
+                    class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows="6" placeholder="User-agent: *
+Disallow: /private/
+Allow: /public/
+Sitemap: https://ejemplo.com/sitemap.xml"></textarea>
+        </div>
+
+        <div>
+          <label for="robots-test-url" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">URL de Prueba</label>
+          <input id="robots-test-url" type="text" data-robots-txt-calculator-target="testUrl"
+                 class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="https://ejemplo.com/pagina" autocomplete="off">
+        </div>
+
+        <button data-action="click->robots-txt-calculator#test"
+                class="w-full px-4 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-sm shadow-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-semibold">
+          Probar URL
+        </button>
+
+        <div data-robots-txt-calculator-target="testResult"></div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "robots-txt" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Entendiendo robots.txt</h2>
+      <p>
+        El archivo robots.txt es el primer archivo que los rastreadores web bien comportados verifican al visitar un sitio. Reside en la raíz de su dominio y usa el Protocolo de Exclusión de Robots para comunicar qué partes de su sitio los rastreadores deben y no deben acceder. Aunque el estándar ha estado en uso desde 1994, Google formalizó su interpretación en una especificación detallada y publicó un analizador de código abierto en 2019. Todo sitio web que quiera controlar cómo los motores de búsqueda rastrean sus páginas necesita un archivo robots.txt correctamente configurado.
+      </p>
+      <p>
+        El archivo usa una sintaxis sencilla. Cada sección comienza con una directiva User-agent que especifica a qué rastreador aplican las reglas. Un asterisco coincide con todos los rastreadores. Las directivas Disallow listan las rutas que no deben ser rastreadas, mientras que las directivas Allow crean excepciones dentro de reglas de bloqueo más amplias. La directiva Sitemap apunta a los rastreadores hacia su sitemap XML, ayudándoles a descubrir todas las páginas de su sitio. Las líneas que comienzan con un carácter de almohadilla son comentarios y son ignoradas por los rastreadores.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Cómo los Rastreadores Web Usan robots.txt</h2>
+      <p>
+        Cuando un rastreador de motor de búsqueda visita su dominio por primera vez, solicita el archivo /robots.txt antes de rastrear cualquier otra página. Si el archivo existe y contiene reglas para el user agent de ese rastreador, el rastreador sigue esas reglas. Si el archivo no existe o devuelve un 404, el rastreador asume que todas las páginas están permitidas. Si el archivo devuelve un error 5xx del servidor, la mayoría de los rastreadores dejarán de rastrear el sitio temporalmente e intentarán de nuevo más tarde, tratando la imposibilidad de leer robots.txt como una precaución en lugar de un permiso. Google almacena en caché los archivos robots.txt y los actualiza al menos una vez al día.
+      </p>
+
+      <h3>Reglas Comunes de robots.txt</h3>
+      <p>
+        El caso de uso más común es bloquear rastreadores de áreas de administración, páginas de inicio de sesión, páginas de resultados de búsqueda y contenido duplicado. Por ejemplo, <code>Disallow: /admin/</code> evita que los rastreadores indexen su panel de administración. <code>Disallow: /search</code> evita que las páginas de resultados de búsqueda del motor aparezcan en los resultados de búsqueda, lo cual sería contenido delgado y duplicado. Bloquear archivos PDF, páginas para imprimir o entornos de staging son otras aplicaciones frecuentes. Es importante recordar que robots.txt controla el rastreo, no la indexación. Una página bloqueada por robots.txt aún puede aparecer en los resultados de búsqueda si otras páginas enlazan a ella.
+      </p>
+
+      <h3>Rastreo vs. Indexación</h3>
+      <p>
+        Un error común es pensar que robots.txt puede evitar que una página aparezca en los resultados de búsqueda. Bloquear una página en robots.txt impide que los rastreadores accedan a su contenido, pero la URL aún puede aparecer en los resultados de búsqueda si sitios externos enlazan a ella. Google mostrará la URL con una nota indicando que la descripción no está disponible porque la página está bloqueada del rastreo. Para realmente prevenir la indexación, use la meta etiqueta <code>noindex</code> o el encabezado HTTP <code>X-Robots-Tag</code> en su lugar. De forma crítica, la página debe ser rastreable para que Google vea la directiva noindex, así que no bloquee una página en robots.txt si quiere usar noindex en ella.
+      </p>
+
+      <h3>Probando Su robots.txt</h3>
+      <p>
+        Antes de implementar un archivo robots.txt, siempre pruébelo para asegurarse de que no bloquea accidentalmente páginas importantes. Google Search Console proporciona un probador de robots.txt que le muestra exactamente cómo Googlebot interpreta sus reglas. También puede usar la pestaña de probador en esta herramienta para pegar el contenido de su robots.txt y verificar si URLs específicas están permitidas o bloqueadas. Pruebe sus páginas más importantes, la URL de su sitemap y cualquier página que específicamente quiera bloquear para verificar que las reglas funcionen como se espera.
+      </p>
+
+      <h2>Preguntas Frecuentes</h2>
+
+      <h3>¿Qué es un archivo robots.txt?</h3>
+      <p>Un archivo de texto plano en la raíz de un sitio web que indica a los rastreadores qué páginas pueden o no acceder. Sigue el Protocolo de Exclusión de Robots usando directivas como User-agent, Disallow, Allow y Sitemap.</p>
+
+      <h3>¿Dónde se coloca el archivo robots.txt?</h3>
+      <p>Debe estar en la raíz del dominio en la ruta exacta /robots.txt. Cada subdominio necesita su propio archivo. Debe servirse como text/plain en codificación UTF-8.</p>
+
+      <h3>¿Puede robots.txt bloquear todos los rastreadores?</h3>
+      <p>Usando "User-agent: * / Disallow: /" se bloquean todos los rastreadores bien comportados. Sin embargo, los bots maliciosos pueden ignorarlo. Para una restricción de acceso real, use autenticación del lado del servidor.</p>
+
+      <h3>¿Google respeta robots.txt?</h3>
+      <p>Sí. Googlebot verifica robots.txt antes de rastrear cualquier URL. Sin embargo, las páginas bloqueadas aún pueden aparecer en los resultados de búsqueda si están enlazadas desde otros sitios. Use noindex para prevenir la indexación.</p>
+
+      <h3>¿Puedo bloquear páginas específicas con robots.txt?</h3>
+      <p>Sí. Use "Disallow: /ruta/" para directorios o "Disallow: /pagina.html" para páginas específicas. Los comodines como *.pdf$ pueden coincidir con patrones. Las directivas Allow crean excepciones.</p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Generador y Probador de robots.txt", url: everyday_robots_txt_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Generador de .htaccess", description: "Genere reglas .htaccess para servidores Apache con HTTPS, compresión, caché y seguridad.", path: everyday_htaccess_generator_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Generador de Configuración Nginx", description: "Genere configuraciones de bloques de servidor Nginx con SSL y proxy inverso.", path: everyday_nginx_config_generator_path, icon_path: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" },
+      { name: "Constructor de Encabezados CSP", description: "Construya encabezados Content-Security-Policy con una interfaz visual.", path: everyday_csp_builder_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("robots-txt") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

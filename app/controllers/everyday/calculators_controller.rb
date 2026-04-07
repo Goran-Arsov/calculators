@@ -123,5 +123,6 @@ module Everyday
     def og_preview; end
     def svg_to_png; end
     def alarm_timer; end
+    def alarm_clock; end
   end
 end
