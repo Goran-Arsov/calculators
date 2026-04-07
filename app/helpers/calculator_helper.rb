@@ -23,6 +23,13 @@ module CalculatorHelper
     css-box-shadow-generator css-flexbox-generator px-to-rem-converter
     meta-tag-generator favicon-generator
     schema-markup-generator keyword-density-checker
+    barcode-generator fake-data-generator image-resizer
+    byte-converter favicon-generator
+  ].freeze
+
+  # Tools from everyday that also display on the math category page
+  MATH_CROSSLIST_SLUGS = %w[
+    prime-number-checker random-number-generator roman-numeral-converter
   ].freeze
 
   FINANCE_CALCULATORS = [
@@ -82,7 +89,10 @@ module CalculatorHelper
     { name: "Mean Median Mode Calculator", slug: "mean-median-mode-calculator", path: :math_mean_median_mode_path, description: "Calculate mean, median, mode, range, and standard deviation from a data set.", icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
     { name: "Base Converter", slug: "base-converter", path: :math_base_converter_path, description: "Convert numbers between binary, octal, decimal, and hexadecimal.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
     { name: "Significant Figures Calculator", slug: "significant-figures-calculator", path: :math_sig_figs_path, description: "Count significant figures and round numbers to a specified number of sig figs.", icon_path: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14" },
-    { name: "Scientific Notation Calculator", slug: "scientific-notation-calculator", path: :math_scientific_notation_path, description: "Convert between standard form and scientific notation.", icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
+    { name: "Scientific Notation Calculator", slug: "scientific-notation-calculator", path: :math_scientific_notation_path, description: "Convert between standard form and scientific notation.", icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+    { name: "Prime Number Checker", slug: "prime-number-checker", path: :everyday_prime_checker_path, description: "Check if a number is prime, find its factors, and see nearest primes.", icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+    { name: "Random Number Generator", slug: "random-number-generator", path: :everyday_random_number_path, description: "Generate cryptographically secure random numbers with custom range and count.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+    { name: "Roman Numeral Converter", slug: "roman-numeral-converter", path: :everyday_roman_numeral_path, description: "Convert between Arabic numbers and Roman numerals bidirectionally.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" }
   ].freeze
 
   PHYSICS_CALCULATORS = [

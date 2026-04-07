@@ -11,11 +11,10 @@ class CategoriesController < ApplicationController
     end
 
     if @slug == "everyday"
-      @calculators = all_calcs.reject { |c| IT_TOOL_SLUGS.include?(c[:slug]) }
-      @it_tools = all_calcs.select { |c| IT_TOOL_SLUGS.include?(c[:slug]) }
+      hidden_slugs = IT_TOOL_SLUGS + MATH_CROSSLIST_SLUGS
+      @calculators = all_calcs.reject { |c| hidden_slugs.include?(c[:slug]) }
     else
       @calculators = all_calcs
-      @it_tools = []
     end
 
     @programmatic_calculators = ProgrammaticSeo::Registry.pages_for_category(@slug).map do |page|
