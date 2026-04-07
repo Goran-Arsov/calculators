@@ -143,6 +143,41 @@ export default class extends Controller {
       var notifBody = reasonText ? reasonText : "Your alarm timer has finished!"
       new Notification("Alarm Timer", { body: notifBody, icon: "/favicon.ico" })
     }
+
+    // Auto-stop after 20 seconds, then reminder beeps every 30 seconds
+    this.autoStopTimeout = setTimeout(() => {
+      this.stopAlarm()
+      this.startReminderBeeps()
+    }, 20000)
+  }
+
+  startReminderBeeps() {
+    this.reminderCount = 0
+    this.reminderInterval = setInterval(() => {
+      this.reminderCount++
+      this.playBeeps(4)
+      if (this.reminderCount >= 10) {
+        clearInterval(this.reminderInterval)
+        this.reminderInterval = null
+      }
+    }, 30000)
+  }
+
+  playBeeps(count) {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)()
+    for (var i = 0; i < count; i++) {
+      var osc = ctx.createOscillator()
+      var gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.frequency.value = 880
+      osc.type = "square"
+      gain.gain.value = 0.3
+      osc.start(ctx.currentTime + i * 0.3)
+      osc.stop(ctx.currentTime + i * 0.3 + 0.15)
+    }
+    // Close context after beeps finish
+    setTimeout(function() { ctx.close() }, count * 300 + 200)
   }
 
   playAlarmSound() {
@@ -153,15 +188,27 @@ export default class extends Controller {
       var gain = ctx.createGain()
       osc.connect(gain)
       gain.connect(ctx.destination)
-      osc.frequency.value = 880  // A5 note, loud and attention-getting
-      osc.type = "square"        // harsh, alarm-like tone
+      osc.frequency.value = 880
+      osc.type = "square"
       gain.gain.value = 0.3
       osc.start()
-      osc.stop(ctx.currentTime + 0.15) // short beep
-    }, 400)  // beep every 400ms
+      osc.stop(ctx.currentTime + 0.15)
+    }, 400)
   }
 
   stopAlarm() {
+    // Stop auto-stop timeout
+    if (this.autoStopTimeout) {
+      clearTimeout(this.autoStopTimeout)
+      this.autoStopTimeout = null
+    }
+
+    // Stop reminder beeps
+    if (this.reminderInterval) {
+      clearInterval(this.reminderInterval)
+      this.reminderInterval = null
+    }
+
     // Stop flashing
     if (this.flashInterval) {
       clearInterval(this.flashInterval)
