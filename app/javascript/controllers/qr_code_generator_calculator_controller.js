@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import qrcode from "qrcode-generator"
 
 export default class extends Controller {
   static targets = [
@@ -7,38 +8,112 @@ export default class extends Controller {
   ]
 
   generate() {
-    const text = this.textInputTarget.value
+    var text = this.textInputTarget.value
     if (!text || !text.trim()) {
       this.clearResults()
       return
     }
 
-    if (text.length > 2048) {
-      this.showError("Text exceeds maximum length of 2048 characters")
+    if (text.length > 500) {
+      this.showError("Text exceeds maximum length of 500 characters")
       return
     }
 
-    const charCount = text.length
-    const type = this.detectType(text.trim())
+    var charCount = text.length
+    var type = this.detectType(text.trim())
 
-    // Generate QR code using Google Charts API
-    const encoded = encodeURIComponent(text)
-    const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=${encoded}&choe=UTF-8`
+    try {
+      var qr = qrcode(0, "L")
+      qr.addData(text)
+      qr.make()
 
-    this.qrOutputTarget.innerHTML = `<img src="${qrUrl}" alt="QR Code for: ${this.escapeHtml(text.substring(0, 50))}" class="mx-auto rounded-lg" width="300" height="300">`
+      var moduleCount = qr.getModuleCount()
+      var scale = 8
+      var border = 4
+      var canvasSize = (moduleCount + border * 2) * scale
 
-    this.downloadAreaTarget.innerHTML = `
-      <div class="flex flex-wrap gap-2 justify-center">
-        <a href="${qrUrl}" download="qr-code.png" class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 transition-colors shadow-sm">Download PNG</a>
-        <button data-action="click->qr-code-generator-calculator#copyUrl" class="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-semibold rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy QR URL</button>
-      </div>
-    `
+      var canvas = document.createElement("canvas")
+      canvas.width = canvasSize
+      canvas.height = canvasSize
+      canvas.className = "mx-auto rounded-lg"
+      canvas.style.imageRendering = "pixelated"
+      canvas.style.maxWidth = "300px"
+      canvas.style.width = "100%"
 
-    this.resultStatusTarget.textContent = "Generated"
-    this.resultStatusTarget.classList.remove("text-red-500", "dark:text-red-400")
-    this.resultStatusTarget.classList.add("text-green-600", "dark:text-green-400")
-    this.resultCharCountTarget.textContent = charCount.toLocaleString()
-    this.resultTypeTarget.textContent = type.charAt(0).toUpperCase() + type.slice(1)
+      var ctx = canvas.getContext("2d")
+      ctx.fillStyle = "#ffffff"
+      ctx.fillRect(0, 0, canvasSize, canvasSize)
+      ctx.fillStyle = "#000000"
+
+      for (var y = 0; y < moduleCount; y++) {
+        for (var x = 0; x < moduleCount; x++) {
+          if (qr.isDark(y, x)) {
+            ctx.fillRect((x + border) * scale, (y + border) * scale, scale, scale)
+          }
+        }
+      }
+
+      this.qrOutputTarget.innerHTML = ""
+      this.qrOutputTarget.appendChild(canvas)
+      this.canvas = canvas
+      this.qr = qr
+      this.moduleCount = moduleCount
+
+      this.downloadAreaTarget.innerHTML =
+        '<div class="flex flex-wrap gap-2 justify-center">' +
+          '<button data-action="click->qr-code-generator-calculator#downloadPng" class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 transition-colors shadow-sm cursor-pointer">Download PNG</button>' +
+          '<button data-action="click->qr-code-generator-calculator#downloadSvg" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm cursor-pointer">Download SVG</button>' +
+        '</div>'
+
+      this.resultStatusTarget.textContent = "Generated"
+      this.resultStatusTarget.classList.remove("text-red-500", "dark:text-red-400")
+      this.resultStatusTarget.classList.add("text-green-600", "dark:text-green-400")
+      this.resultCharCountTarget.textContent = charCount.toLocaleString()
+      this.resultTypeTarget.textContent = type.charAt(0).toUpperCase() + type.slice(1)
+    } catch (e) {
+      this.showError("Failed to generate QR code: " + e.message)
+    }
+  }
+
+  downloadPng() {
+    if (!this.canvas) return
+    this.canvas.toBlob(function(blob) {
+      var url = URL.createObjectURL(blob)
+      var a = document.createElement("a")
+      a.href = url
+      a.download = "qr-code.png"
+      a.click()
+      URL.revokeObjectURL(url)
+    }, "image/png")
+  }
+
+  downloadSvg() {
+    if (!this.qr) return
+    var size = this.moduleCount
+    var border = 4
+    var totalSize = size + border * 2
+
+    var rects = ""
+    for (var y = 0; y < size; y++) {
+      for (var x = 0; x < size; x++) {
+        if (this.qr.isDark(y, x)) {
+          rects += '<rect x="' + (x + border) + '" y="' + (y + border) + '" width="1" height="1"/>'
+        }
+      }
+    }
+
+    var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + totalSize + ' ' + totalSize + '" width="300" height="300">' +
+      '<rect width="100%" height="100%" fill="#fff"/>' +
+      '<g fill="#000">' + rects + '</g></svg>'
+
+    var blob = new Blob([svg], { type: "image/svg+xml" })
+    var url = URL.createObjectURL(blob)
+    var a = document.createElement("a")
+    a.href = url
+    a.download = "qr-code.svg"
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   detectType(text) {
@@ -46,22 +121,6 @@ export default class extends Controller {
     if (/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(text)) return "email"
     if (/^\+?[\d\s\-().]{7,}$/.test(text)) return "phone"
     return "text"
-  }
-
-  copyUrl() {
-    const text = this.textInputTarget.value
-    if (!text) return
-    const encoded = encodeURIComponent(text)
-    const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=${encoded}&choe=UTF-8`
-
-    navigator.clipboard.writeText(qrUrl).then(() => {
-      const btn = this.downloadAreaTarget.querySelector("[data-action*='copyUrl']")
-      if (btn) {
-        const original = btn.textContent
-        btn.textContent = "Copied!"
-        setTimeout(() => { btn.textContent = original }, 1500)
-      }
-    })
   }
 
   showError(message) {
@@ -81,11 +140,5 @@ export default class extends Controller {
     this.resultStatusTarget.classList.remove("text-green-600", "dark:text-green-400", "text-red-500", "dark:text-red-400")
     this.resultCharCountTarget.textContent = "\u2014"
     this.resultTypeTarget.textContent = "\u2014"
-  }
-
-  escapeHtml(text) {
-    const div = document.createElement("div")
-    div.textContent = text
-    return div.innerHTML
   }
 }
