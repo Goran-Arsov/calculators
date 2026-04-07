@@ -189,14 +189,14 @@ export default class extends Controller {
     this.alarmOverlayTarget.style.backgroundColor = "rgba(220, 38, 38, 0)"
     this.alarmOverlayTarget.style.transition = "background-color 10s ease-in"
     void this.alarmOverlayTarget.offsetWidth
-    this.alarmOverlayTarget.style.backgroundColor = "#dc2626"
+    this.alarmOverlayTarget.style.backgroundColor = "rgba(220, 38, 38, 0.8)"
 
     this.colorTimeout = setTimeout(() => {
       this.alarmOverlayTarget.style.transition = "background-color 2s ease"
       this.colorToggle = true
       this.colorInterval = setInterval(() => {
         this.colorToggle = !this.colorToggle
-        this.alarmOverlayTarget.style.backgroundColor = this.colorToggle ? "#dc2626" : "#ea580c"
+        this.alarmOverlayTarget.style.backgroundColor = this.colorToggle ? "rgba(220, 38, 38, 0.8)" : "rgba(234, 88, 12, 0.8)"
       }, 10000)
     }, 10000)
 

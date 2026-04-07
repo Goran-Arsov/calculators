@@ -114,18 +114,35 @@ export default class extends Controller {
   }
 
   triggerAlarm() {
-    // Show overlay
+    // Show overlay with slow fade to red over 10s
     this.alarmOverlayTarget.classList.remove("hidden")
+    this.alarmOverlayTarget.style.backgroundColor = "rgba(220, 38, 38, 0)"
+    this.alarmOverlayTarget.style.transition = "background-color 10s ease-in"
+    void this.alarmOverlayTarget.offsetWidth
+    this.alarmOverlayTarget.style.backgroundColor = "rgba(220, 38, 38, 0.8)"
 
-    // Start flashing
-    var flashOn = true
-    this.flashInterval = setInterval(() => {
-      this.alarmOverlayTarget.style.backgroundColor = flashOn ? "#dc2626" : "#ffffff"
-      flashOn = !flashOn
-    }, 300)
+    // After 10s, alternate red/orange every 10s
+    this.colorTimeout = setTimeout(() => {
+      this.alarmOverlayTarget.style.transition = "background-color 2s ease"
+      this.colorToggle = true
+      this.colorInterval = setInterval(() => {
+        this.colorToggle = !this.colorToggle
+        this.alarmOverlayTarget.style.backgroundColor = this.colorToggle ? "rgba(220, 38, 38, 0.8)" : "rgba(234, 88, 12, 0.8)"
+      }, 10000)
+    }, 10000)
 
-    // Start alarm sound
-    this.playAlarmSound()
+    // Play 20 beeps initially, then 10 beeps every minute for 30 minutes
+    this.playBeeps(20)
+    this.reminderCount = 0
+    this.reminderInterval = setInterval(() => {
+      this.reminderCount++
+      if (this.reminderCount > 30) {
+        clearInterval(this.reminderInterval)
+        this.reminderInterval = null
+        return
+      }
+      this.playBeeps(10)
+    }, 60000)
 
     // Update status
     var reasonText = this.hasReasonTarget ? this.reasonTarget.value.trim() : ""
@@ -151,92 +168,48 @@ export default class extends Controller {
       var notifBody = reasonText ? reasonText : "Your alarm timer has finished!"
       new Notification("Alarm Timer", { body: notifBody, icon: "/favicon.ico" })
     }
-
-    // Auto-stop after 20 seconds, then reminder beeps every 30 seconds
-    this.autoStopTimeout = setTimeout(() => {
-      this.stopAlarm()
-      this.startReminderBeeps()
-    }, 20000)
-  }
-
-  startReminderBeeps() {
-    this.reminderCount = 0
-    this.reminderInterval = setInterval(() => {
-      this.reminderCount++
-      this.playBeeps(4)
-      if (this.reminderCount >= 10) {
-        clearInterval(this.reminderInterval)
-        this.reminderInterval = null
-      }
-    }, 30000)
   }
 
   playBeeps(count) {
-    var ctx = new (window.AudioContext || window.webkitAudioContext)()
+    var AudioCtx = window.AudioContext || window.webkitAudioContext
+    if (!this.audioContext) this.audioContext = new AudioCtx()
+    var ctx = this.audioContext
+    if (ctx.state === "suspended") ctx.resume()
     for (var i = 0; i < count; i++) {
-      var osc = ctx.createOscillator()
-      var gain = ctx.createGain()
-      osc.connect(gain)
-      gain.connect(ctx.destination)
-      osc.frequency.value = 880
-      osc.type = "square"
-      gain.gain.value = 0.3
-      osc.start(ctx.currentTime + i * 0.3)
-      osc.stop(ctx.currentTime + i * 0.3 + 0.15)
+      try {
+        var osc = ctx.createOscillator()
+        var gain = ctx.createGain()
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.frequency.value = 880
+        osc.type = "square"
+        gain.gain.value = 0.3
+        osc.start(ctx.currentTime + i * 0.4)
+        osc.stop(ctx.currentTime + i * 0.4 + 0.15)
+      } catch (e) {}
     }
-    // Close context after beeps finish
-    setTimeout(function() { ctx.close() }, count * 300 + 200)
-  }
-
-  playAlarmSound() {
-    var ctx = new (window.AudioContext || window.webkitAudioContext)()
-    this.audioContext = ctx
-    this.alarmSoundInterval = setInterval(function() {
-      var osc = ctx.createOscillator()
-      var gain = ctx.createGain()
-      osc.connect(gain)
-      gain.connect(ctx.destination)
-      osc.frequency.value = 880
-      osc.type = "square"
-      gain.gain.value = 0.3
-      osc.start()
-      osc.stop(ctx.currentTime + 0.15)
-    }, 400)
   }
 
   stopAlarm() {
-    // Stop auto-stop timeout
-    if (this.autoStopTimeout) {
-      clearTimeout(this.autoStopTimeout)
-      this.autoStopTimeout = null
-    }
-
     // Stop reminder beeps
     if (this.reminderInterval) {
       clearInterval(this.reminderInterval)
       this.reminderInterval = null
     }
 
-    // Stop flashing
-    if (this.flashInterval) {
-      clearInterval(this.flashInterval)
-      this.flashInterval = null
-    }
-
-    // Stop sound
-    if (this.alarmSoundInterval) {
-      clearInterval(this.alarmSoundInterval)
-      this.alarmSoundInterval = null
-    }
+    // Stop color transitions
+    if (this.colorTimeout) { clearTimeout(this.colorTimeout); this.colorTimeout = null }
+    if (this.colorInterval) { clearInterval(this.colorInterval); this.colorInterval = null }
 
     // Close AudioContext
     if (this.audioContext) {
-      this.audioContext.close()
+      try { this.audioContext.close() } catch (e) {}
       this.audioContext = null
     }
 
-    // Hide overlay
+    // Hide overlay and reset transition
     this.alarmOverlayTarget.classList.add("hidden")
+    this.alarmOverlayTarget.style.transition = ""
     this.alarmOverlayTarget.style.backgroundColor = ""
 
     // Clear reason display
