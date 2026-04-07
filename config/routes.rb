@@ -339,6 +339,7 @@ Rails.application.routes.draw do
     get "svg-to-png-converter", to: "calculators#svg_to_png", as: :svg_to_png
     get "alarm-timer", to: "calculators#alarm_timer", as: :alarm_timer
     get "alarm-clock", to: "calculators#alarm_clock", as: :alarm_clock
+    get "alarm-clock/active", to: "calculators#alarm_clock_active", as: :alarm_clock_active
   end
 
   # Blog

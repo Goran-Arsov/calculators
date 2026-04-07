@@ -124,5 +124,6 @@ module Everyday
     def svg_to_png; end
     def alarm_timer; end
     def alarm_clock; end
+    def alarm_clock_active; end
   end
 end
