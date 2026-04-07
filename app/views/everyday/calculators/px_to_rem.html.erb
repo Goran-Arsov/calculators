@@ -1,0 +1,191 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "PX to REM Converter - Free Online CSS Unit Tool",
+  description: "Convert pixels to REM, EM, PT, and percentage values instantly. Includes a quick reference table of common pixel sizes. Customizable base font size. Free online tool.",
+  canonical: everyday_px_to_rem_url,
+  og: {
+    title: "PX to REM Converter - Free Online CSS Unit Tool | CalcWise",
+    description: "Convert pixels to REM, EM, PT, and percentage values with custom base font size. Includes quick reference table for common sizes.",
+    url: everyday_px_to_rem_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "PX to REM Converter", url: everyday_px_to_rem_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the difference between PX and REM in CSS?", answer: "PX (pixels) is an absolute unit that stays the same size regardless of user settings. REM (root em) is a relative unit based on the root element's font size (typically 16px by default). Using REM allows your layout to scale when users change their browser's default font size, improving accessibility. If the root font size is 16px, then 1rem equals 16px." },
+  { question: "Why should I use REM instead of PX?", answer: "REM units respect user accessibility preferences. When a user increases their browser's default font size for readability, REM-based layouts scale proportionally while PX-based layouts stay fixed. This is especially important for users with low vision. Modern CSS best practice is to use REM for font sizes, padding, and margins, and PX only for borders and fine-detail elements." },
+  { question: "What is the default base font size in browsers?", answer: "All major browsers default to a base font size of 16px. This means 1rem equals 16px unless the root font size has been changed. Some developers set the root font size to 62.5% (10px) to make mental math easier: 1.6rem then equals 16px. However, this approach can cause issues with third-party components that assume the standard 16px base." },
+  { question: "What is the difference between REM and EM?", answer: "REM is relative to the root element's font size and stays consistent throughout the document. EM is relative to the parent element's font size, which means it compounds when nested. A 2em font inside another 2em container renders at 4x the root size. REM avoids this compounding issue, making it more predictable for layout and typography." },
+  { question: "How do I convert PX to REM?", answer: "Divide the pixel value by the base font size. With the default 16px base: 24px / 16 = 1.5rem. For a 10px base (62.5%): 24px / 10 = 2.4rem. This converter handles the math automatically and also shows EM, PT, and percentage equivalents for each pixel value." }
+]) %>
+
+<%= calculator_schema(
+  name: "PX to REM Converter",
+  description: "Convert pixel values to REM, EM, PT, and percentage with customizable base font size and a quick reference table.",
+  url: everyday_px_to_rem_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "PX to REM Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">PX to REM Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert pixel values to REM, EM, PT, and percentage units. Customize the base font size and use the quick reference table for common conversions.</p>
+
+    <div data-controller="px-to-rem-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+
+        <%# Input Fields %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pixel Value (px)</label>
+            <input type="number" step="any" value="16"
+              data-px-to-rem-calculator-target="pxInput"
+              data-action="input->px-to-rem-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="16">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Base Font Size (px)</label>
+            <input type="number" step="any" value="16" min="1"
+              data-px-to-rem-calculator-target="baseSize"
+              data-action="input->px-to-rem-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="16">
+          </div>
+        </div>
+
+        <%# Results %>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <% [
+            ["REM", "remResult", "copyRem"],
+            ["EM", "emResult", "copyEm"],
+            ["PT", "ptResult", "copyPt"],
+            ["%", "percentResult", "copyPercent"]
+          ].each do |label, target, copy_action| %>
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-semibold text-gray-500 dark:text-gray-400"><%= label %></span>
+                <button data-action="click->px-to-rem-calculator#<%= copy_action %>"
+                  class="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+              </div>
+              <div data-px-to-rem-calculator-target="<%= target %>" class="text-lg font-mono font-semibold text-gray-900 dark:text-white">&mdash;</div>
+            </div>
+          <% end %>
+        </div>
+
+        <%# Quick Reference Table %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Quick Reference Table</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="border-b-2 border-gray-200 dark:border-gray-700">
+                  <th class="py-2 px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Pixels</th>
+                  <th class="py-2 px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">REM</th>
+                  <th class="py-2 px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Points</th>
+                  <th class="py-2 px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"></th>
+                </tr>
+              </thead>
+              <tbody data-px-to-rem-calculator-target="referenceTable">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "px-to-rem-converter" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding CSS Units: PX, REM, EM, and PT</h2>
+      <p>
+        CSS offers multiple unit systems for specifying sizes, each with different behavior and use cases. Pixels (px) are the most familiar, representing a single dot on the screen. However, on high-density displays (Retina, HiDPI), a CSS pixel may correspond to multiple physical pixels. Despite this abstraction, px remains an absolute unit because its rendered size does not change based on user preferences or parent element sizes.
+      </p>
+      <p>
+        REM (root em) is a relative unit tied to the root element's font size, which browsers set to 16px by default. When a user changes their browser's default font size for accessibility, all REM-based values scale proportionally. This is critical for users with low vision who may set their base font to 20px or 24px. If your site uses REM for typography, padding, and margins, the entire layout adapts gracefully. If you use px, the text stays fixed and may become unreadable.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>REM vs EM: The Compounding Problem</h2>
+      <p>
+        While both REM and EM are relative units, they reference different things. REM always refers to the root element's font size, making it consistent everywhere in the document. EM refers to the font size of the current element's parent. This means EM values compound when nested. A paragraph set to 1.2em inside a div also set to 1.2em renders at 1.44x the root size (1.2 times 1.2). Add another nesting level and it becomes 1.728x. This compounding effect makes EM difficult to manage in deep component trees.
+      </p>
+      <p>
+        Modern CSS best practices recommend REM for most sizing needs because of its predictability. EM still has valid uses, particularly for components that should scale relative to their own font size, such as icon spacing within buttons or padding that should grow proportionally with text. The key is to choose intentionally: use REM when you want consistency with the root, and EM when you want proportionality with the local context.
+      </p>
+
+      <h3>Points and Print Design</h3>
+      <p>
+        Points (pt) originate from print typography, where 1 point equals 1/72 of an inch. In CSS, 1pt equals 1.333px (or equivalently, 1px equals 0.75pt). Points are primarily useful when creating print stylesheets or generating PDFs from HTML. For screen design, pixels and rems are more appropriate. However, understanding the pt conversion is valuable when translating designs from tools like Adobe InDesign that use point-based typography.
+      </p>
+
+      <h3>The 62.5% Base Font Trick</h3>
+      <p>
+        Some developers set <code>html { font-size: 62.5%; }</code> to make the root font size 10px, simplifying mental math: 1.6rem becomes 16px, 2.4rem becomes 24px. While this makes conversion trivial, it introduces problems. Third-party components that assume the standard 16px base may render too small. Screen readers may also misinterpret the intent. The safer approach is to keep the default 16px base and use this converter to find the correct REM values.
+      </p>
+
+      <h3>Accessibility and Responsive Typography</h3>
+      <p>
+        The Web Content Accessibility Guidelines (WCAG) Success Criterion 1.4.4 requires that text can be resized up to 200% without loss of content or functionality. Using REM units satisfies this requirement naturally because browser font-size settings scale REM values. Fixed pixel values for text fail this criterion because they prevent user scaling. Beyond compliance, responsive typography using REM creates a better reading experience across devices, from large desktop monitors to small phone screens.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the difference between PX and REM?</h3>
+      <p>PX is an absolute unit that stays fixed. REM is relative to the root font size (default 16px) and scales when users change browser settings, making it better for accessibility.</p>
+
+      <h3>Why use REM instead of PX?</h3>
+      <p>REM respects user accessibility preferences. When users increase their browser font size, REM layouts scale proportionally while PX layouts stay fixed.</p>
+
+      <h3>What is the default base font size?</h3>
+      <p>All major browsers default to 16px. This means 1rem = 16px unless the root font size is changed.</p>
+
+      <h3>What is the difference between REM and EM?</h3>
+      <p>REM references the root element's font size and is consistent everywhere. EM references the parent element's font size and compounds when nested.</p>
+
+      <h3>How do I convert PX to REM?</h3>
+      <p>Divide the pixel value by the base font size. With the default 16px base: 24px / 16 = 1.5rem.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "PX to REM Converter", url: everyday_px_to_rem_url %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "CSS Box Shadow Generator", description: "Generate CSS box-shadow code with live preview and multiple shadow support.", path: everyday_css_box_shadow_path, icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
+      { name: "CSS Flexbox Generator", description: "Build CSS Flexbox layouts visually with live preview and copy-ready code.", path: everyday_css_flexbox_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" },
+      { name: "Code Minifier/Beautifier", description: "Minify or beautify JSON, CSS, HTML, and JavaScript code with size comparison.", path: everyday_code_minifier_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("px-to-rem-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

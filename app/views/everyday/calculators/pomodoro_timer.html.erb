@@ -1,0 +1,195 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Online Pomodoro Timer - Free Focus Timer with Breaks",
+  description: "Free Pomodoro timer with customizable work and break intervals. Auto-transitions between focus sessions and breaks with sound alerts and visual progress tracking.",
+  canonical: everyday_pomodoro_timer_url,
+  og: {
+    title: "Online Pomodoro Timer - Free Focus Timer with Breaks | CalcWise",
+    description: "Free Pomodoro timer with customizable work and break intervals. Auto-transitions between phases with sound alerts.",
+    url: everyday_pomodoro_timer_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Pomodoro Timer", url: everyday_pomodoro_timer_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the Pomodoro Technique?", answer: "The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. It uses a timer to break work into intervals, traditionally 25 minutes in length, separated by short breaks of 5 minutes. After completing four work intervals, you take a longer break of 15 to 30 minutes. The technique is named after the tomato-shaped kitchen timer Cirillo used as a university student." },
+  { question: "How do I customize the timer settings?", answer: "Before starting the timer, adjust the four settings: Work Duration sets how long each focus session lasts (default 25 minutes), Short Break sets the rest period between sessions (default 5 minutes), Long Break sets the extended rest after completing all sessions (default 15 minutes), and Sessions Before Long Break controls how many work intervals you complete before the long break (default 4)." },
+  { question: "Does the timer automatically switch between work and break?", answer: "Yes. When a work session ends, the timer automatically begins the short break countdown. When the short break ends, the next work session starts. After completing all sessions in a cycle, the long break begins. A sound alert plays at each transition so you know when to switch modes." },
+  { question: "What do the colors mean?", answer: "The timer uses color coding to indicate the current phase at a glance. Red indicates a work session when you should be focused. Green indicates a short break for quick rest. Blue indicates a long break for extended recovery. The progress bar also changes color to match the current phase." },
+  { question: "Can I skip a break or work session?", answer: "Yes. Click the Skip button to immediately advance to the next phase. This is useful if you finish a task early during a work session or feel ready to resume working before a break ends. The timer will transition to the next phase in the cycle and reset the countdown accordingly." }
+]) %>
+
+<%= calculator_schema(
+  name: "Online Pomodoro Timer",
+  description: "Free Pomodoro timer with customizable work and break intervals, auto-transitions, sound alerts, and visual progress tracking.",
+  url: everyday_pomodoro_timer_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Pomodoro Timer" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Online Pomodoro Timer</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Focus timer with customizable work and break intervals. Auto-transitions between sessions with sound alerts and visual progress tracking.</p>
+
+    <div data-controller="pomodoro-timer-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <%# Progress bar (100 bars stacked vertically) %>
+      <div class="mb-4">
+        <div data-pomodoro-timer-calculator-target="progressContainer" class="flex flex-col-reverse gap-px w-full rounded-xl overflow-hidden"></div>
+        <p data-pomodoro-timer-calculator-target="progressLabel" class="text-base text-gray-900 dark:text-gray-100 mt-1.5 text-center font-semibold"></p>
+      </div>
+
+      <%# Phase and session info %>
+      <div class="text-center mb-2">
+        <span data-pomodoro-timer-calculator-target="phaseLabel" class="text-lg font-bold text-red-600 dark:text-red-400">Work</span>
+        <span class="text-gray-400 dark:text-gray-500 mx-2">|</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Session </span>
+        <span data-pomodoro-timer-calculator-target="sessionLabel" class="text-sm font-semibold text-gray-700 dark:text-gray-300">1 / 4</span>
+      </div>
+
+      <%# Countdown display %>
+      <div class="text-center mb-8">
+        <div data-pomodoro-timer-calculator-target="display" class="text-7xl md:text-8xl font-mono font-bold text-gray-900 dark:text-white tracking-wider select-none">25:00</div>
+      </div>
+
+      <%# Settings %>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-6">
+        <div class="text-center">
+          <label for="pomo-work" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Work (min)</label>
+          <input id="pomo-work" type="number" min="1" max="120" value="25" data-pomodoro-timer-calculator-target="workInput" class="w-full text-center text-xl font-mono">
+        </div>
+        <div class="text-center">
+          <label for="pomo-break" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Break (min)</label>
+          <input id="pomo-break" type="number" min="1" max="60" value="5" data-pomodoro-timer-calculator-target="breakInput" class="w-full text-center text-xl font-mono">
+        </div>
+        <div class="text-center">
+          <label for="pomo-long-break" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Long Break (min)</label>
+          <input id="pomo-long-break" type="number" min="1" max="120" value="15" data-pomodoro-timer-calculator-target="longBreakInput" class="w-full text-center text-xl font-mono">
+        </div>
+        <div class="text-center">
+          <label for="pomo-sessions" class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Sessions</label>
+          <input id="pomo-sessions" type="number" min="1" max="10" value="4" data-pomodoro-timer-calculator-target="sessionsInput" class="w-full text-center text-xl font-mono">
+        </div>
+      </div>
+
+      <%# Control buttons %>
+      <div class="flex items-center justify-center gap-3 max-w-lg mx-auto">
+        <button data-pomodoro-timer-calculator-target="startBtn" data-action="click->pomodoro-timer-calculator#start" class="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-semibold">Start</button>
+        <button data-pomodoro-timer-calculator-target="pauseBtn" data-action="click->pomodoro-timer-calculator#pause" class="hidden flex-1 px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white rounded-xl shadow-sm shadow-yellow-500/20 hover:shadow-md hover:shadow-yellow-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 text-sm font-semibold">Pause</button>
+        <button data-pomodoro-timer-calculator-target="skipBtn" data-action="click->pomodoro-timer-calculator#skip" class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">Skip</button>
+        <button data-pomodoro-timer-calculator-target="resetBtn" data-action="click->pomodoro-timer-calculator#reset" class="flex-1 px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white rounded-xl shadow-sm shadow-gray-500/20 hover:shadow-md hover:shadow-gray-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 text-sm font-semibold">Reset</button>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "pomodoro-timer" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Pomodoro Timer</h2>
+      <p>
+        Start by configuring your preferred intervals. The default settings follow the classic Pomodoro Technique: 25 minutes of focused work, 5-minute short breaks, a 15-minute long break, and 4 sessions per cycle. Adjust any of these values before clicking Start. Once the timer begins, the settings lock to prevent accidental changes. The large countdown display shows the remaining time for the current phase, and the phase label at the top tells you whether you are in a Work, Short Break, or Long Break period.
+      </p>
+      <p>
+        When a phase ends, a sound alert plays and the timer automatically transitions to the next phase. After completing all work sessions in a cycle, the long break begins. After the long break, the cycle restarts from session one. You can pause at any time and resume where you left off, or use the Skip button to jump to the next phase immediately. The Reset button stops the timer and restores all settings to their current values.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Science Behind the Pomodoro Technique</h2>
+      <p>
+        The Pomodoro Technique was developed by Francesco Cirillo in the late 1980s while he was a university student struggling to focus on his studies. He picked up a tomato-shaped kitchen timer, set it for 10 minutes, and challenged himself to concentrate without interruption for that period. The method evolved into the structured system of 25-minute work intervals separated by breaks that millions of people use today. Research in cognitive psychology supports the core principle: the human brain performs better with periodic rest than during sustained unbroken effort.
+      </p>
+      <p>
+        Studies on attention and vigilance show that performance on sustained tasks degrades over time, a phenomenon known as vigilance decrement. Regular breaks help reset your attentional resources. The 25-minute interval is long enough to achieve meaningful progress on a task but short enough to maintain high concentration throughout. The short breaks between sessions prevent cognitive fatigue, while the long break after four sessions provides deeper recovery for extended work periods.
+      </p>
+
+      <h3>Customizing Intervals for Different Tasks</h3>
+      <p>
+        While the traditional 25/5 split works well for many people, different types of work may benefit from adjusted intervals. Creative tasks like writing or design often flow better with longer work periods of 45 to 50 minutes because entering a creative flow state takes time. Technical tasks like coding or debugging may work better with standard 25-minute intervals since frequent breaks help prevent compounding errors. Administrative tasks like email processing might work well with shorter 15-minute intervals to maintain momentum through many small items.
+      </p>
+
+      <h3>Tracking Productivity Over Time</h3>
+      <p>
+        One of the hidden benefits of the Pomodoro Technique is the data it generates about your work habits. By counting how many complete pomodoros you finish in a day, you build an objective measure of productive time. Most people discover they complete fewer focused intervals than they expected, which itself is a valuable insight. Over weeks and months, you can track trends to see which days, times, and environments yield the most focused work.
+      </p>
+
+      <h3>Handling Interruptions</h3>
+      <p>
+        The Pomodoro Technique has specific strategies for dealing with interruptions. If an internal interruption occurs, such as remembering something you need to do, write it down and continue working. If an external interruption is unavoidable, stop the timer, handle the interruption, and restart the pomodoro. The discipline of protecting each 25-minute interval trains you to become more aware of interruption patterns and develop strategies to minimize them. Many practitioners find that simply telling colleagues they are in a pomodoro is enough to defer non-urgent requests.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the Pomodoro Technique?</h3>
+      <p>
+        The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. It uses a timer to break work into intervals, traditionally 25 minutes in length, separated by short breaks of 5 minutes. After completing four work intervals, you take a longer break of 15 to 30 minutes. The technique is named after the tomato-shaped kitchen timer Cirillo used as a university student.
+      </p>
+
+      <h3>How do I customize the timer settings?</h3>
+      <p>
+        Before starting the timer, adjust the four settings: Work Duration sets how long each focus session lasts (default 25 minutes), Short Break sets the rest period between sessions (default 5 minutes), Long Break sets the extended rest after completing all sessions (default 15 minutes), and Sessions Before Long Break controls how many work intervals you complete before the long break (default 4).
+      </p>
+
+      <h3>Does the timer automatically switch between work and break?</h3>
+      <p>
+        Yes. When a work session ends, the timer automatically begins the short break countdown. When the short break ends, the next work session starts. After completing all sessions in a cycle, the long break begins. A sound alert plays at each transition so you know when to switch modes.
+      </p>
+
+      <h3>What do the colors mean?</h3>
+      <p>
+        The timer uses color coding to indicate the current phase at a glance. Red indicates a work session when you should be focused. Green indicates a short break for quick rest. Blue indicates a long break for extended recovery. The progress bar also changes color to match the current phase.
+      </p>
+
+      <h3>Can I skip a break or work session?</h3>
+      <p>
+        Yes. Click the Skip button to immediately advance to the next phase. This is useful if you finish a task early during a work session or feel ready to resume working before a break ends. The timer will transition to the next phase in the cycle and reset the countdown accordingly.
+      </p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Online Pomodoro Timer", url: everyday_pomodoro_timer_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Alarm Timer", description: "Set a countdown alarm with sound alert and screen flash.", path: everyday_alarm_timer_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Stopwatch", description: "Precision stopwatch with millisecond accuracy and lap times.", path: everyday_stopwatch_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Alarm Clock", description: "Set an alarm for a specific time with sound alert.", path: everyday_alarm_clock_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("pomodoro-timer") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

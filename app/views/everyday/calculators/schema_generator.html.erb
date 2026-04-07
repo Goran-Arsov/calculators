@@ -1,0 +1,167 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Schema Markup Generator - Free JSON-LD Structured Data Tool",
+  description: "Generate valid JSON-LD schema markup for articles, products, FAQs, local businesses, events, and recipes. Free structured data generator with validation.",
+  canonical: everyday_schema_generator_url,
+  og: {
+    title: "Schema Markup Generator - Free JSON-LD Structured Data Tool | CalcWise",
+    description: "Generate valid JSON-LD schema markup for articles, products, FAQs, local businesses, events, and recipes. Free structured data generator with validation.",
+    url: everyday_schema_generator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Schema Markup Generator", url: everyday_schema_generator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is schema markup?", answer: "Schema markup is structured data vocabulary that you add to your HTML to help search engines understand the content on your pages. It uses the Schema.org vocabulary and is typically implemented as JSON-LD (JavaScript Object Notation for Linked Data) in a script tag in the page head. When search engines read schema markup, they can display rich results such as star ratings, FAQ dropdowns, recipe cards, event listings, and product information directly in search results." },
+  { question: "What is JSON-LD and why is it recommended?", answer: "JSON-LD (JavaScript Object Notation for Linked Data) is Google's recommended format for implementing structured data. Unlike Microdata or RDFa, JSON-LD is placed in a script tag separate from the HTML markup, making it easier to add, maintain, and update without modifying the page's visible content. It is also easier for developers to read and debug. Google, Bing, and other search engines all support JSON-LD for structured data." },
+  { question: "How does schema markup improve SEO?", answer: "Schema markup helps search engines understand your content more precisely, which can lead to rich results (also called rich snippets) in search results. Rich results take up more visual space, include additional information like ratings, prices, or dates, and typically have higher click-through rates than standard blue links. While schema markup is not a direct ranking factor, the improved CTR and better content understanding can indirectly boost your SEO performance." },
+  { question: "What types of schema markup are most commonly used?", answer: "The most commonly used schema types include Article (for blog posts and news articles), Product (for e-commerce product pages), FAQPage (for frequently asked questions), LocalBusiness (for local business listings), Event (for events and conferences), Recipe (for cooking recipes), HowTo (for step-by-step guides), and BreadcrumbList (for navigation breadcrumbs). Each type has specific required and recommended properties that should be included for the best results." },
+  { question: "How do I test my schema markup?", answer: "Google provides two tools for testing schema markup: the Rich Results Test (search.google.com/test/rich-results) checks whether your structured data is eligible for rich results, and the Schema Markup Validator (validator.schema.org) validates your markup against the Schema.org vocabulary. After adding schema to your page, test it with both tools to ensure there are no errors or warnings before deploying to production." }
+]) %>
+
+<%= calculator_schema(
+  name: "Schema Markup Generator",
+  description: "Generate valid JSON-LD schema markup for articles, products, FAQs, local businesses, events, and recipes.",
+  url: everyday_schema_generator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Schema Markup Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Schema Markup Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Generate valid JSON-LD structured data for articles, products, FAQs, local businesses, events, and recipes. Copy the output and paste it into your page's head section.</p>
+
+    <div data-controller="schema-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <%# Schema type selector %>
+        <div>
+          <label for="schema-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Schema Type</label>
+          <select id="schema-type" data-schema-generator-calculator-target="typeSelect" data-action="change->schema-generator-calculator#changeType"
+                  class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="article">Article</option>
+            <option value="product">Product</option>
+            <option value="faq">FAQ Page</option>
+            <option value="local_business">Local Business</option>
+            <option value="event">Event</option>
+            <option value="recipe">Recipe</option>
+          </select>
+        </div>
+
+        <%# Dynamic fields container %>
+        <div data-schema-generator-calculator-target="fieldsContainer"></div>
+
+        <%# Action buttons %>
+        <div class="flex gap-3">
+          <button data-action="click->schema-generator-calculator#generate"
+                  class="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+            Generate JSON-LD
+          </button>
+          <button data-action="click->schema-generator-calculator#validate"
+                  class="px-4 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl transition-colors text-sm font-semibold">
+            Validate
+          </button>
+        </div>
+
+        <%# Validation result %>
+        <div data-schema-generator-calculator-target="validationResult"></div>
+
+        <%# Output %>
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Generated JSON-LD</label>
+            <button data-action="click->schema-generator-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+          </div>
+          <textarea data-schema-generator-calculator-target="output" readonly
+                    class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+                    rows="12" placeholder="JSON-LD output will appear here..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "schema-markup-generator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>What Is Schema Markup?</h2>
+      <p>
+        Schema markup is a form of structured data that you add to your web pages to help search engines like Google, Bing, and Yahoo understand your content more precisely. Developed collaboratively by major search engines under the Schema.org project, this vocabulary provides a standardized way to describe entities such as articles, products, businesses, events, and recipes. When implemented correctly, schema markup can result in rich results, also known as rich snippets, which display additional visual information directly in search engine results pages. These enhanced listings typically achieve significantly higher click-through rates than standard search results.
+      </p>
+      <p>
+        The most widely recommended format for implementing schema markup is JSON-LD (JavaScript Object Notation for Linked Data). Unlike older formats such as Microdata or RDFa, which require embedding structured data directly within your HTML elements, JSON-LD is placed in a separate <code>&lt;script type="application/ld+json"&gt;</code> block, usually in the page's <code>&lt;head&gt;</code> section. This separation makes JSON-LD easier to implement, maintain, and debug without affecting your page's visual presentation or HTML structure.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Supported Schema Types</h2>
+      <p>
+        This generator supports six of the most commonly used schema types. <strong>Article</strong> markup is essential for blog posts, news articles, and editorial content, helping search engines display author information, publish dates, and article headlines in search results. <strong>Product</strong> markup enables rich product listings with prices, availability status, brand information, and review data. <strong>FAQPage</strong> markup creates expandable question-and-answer sections directly in search results, which can dramatically increase your listing's visual real estate. <strong>LocalBusiness</strong> markup helps local businesses appear in map packs and local search results with address, phone number, and opening hours. <strong>Event</strong> markup displays event information including dates, locations, and descriptions in dedicated event search features. <strong>Recipe</strong> markup creates visually rich recipe cards with cooking times, ingredients, and step-by-step instructions.
+      </p>
+
+      <h3>Best Practices for Implementation</h3>
+      <p>
+        Always include all required properties for your chosen schema type to avoid validation errors. Use absolute URLs for images and links rather than relative paths. Ensure the structured data accurately reflects the visible content on the page; search engines may penalize pages where schema markup contradicts the actual page content. Test your markup with Google's Rich Results Test before deploying to production. Monitor your structured data performance in Google Search Console's Enhancements section to identify any issues that may prevent rich results from appearing.
+      </p>
+
+      <h3>Common Implementation Mistakes</h3>
+      <p>
+        The most frequent schema markup errors include missing required properties, using incorrect data types for property values, adding markup for content that does not appear on the page, and using deprecated schema types. For product markup, ensure the price value is a number without currency symbols and that the currency is specified in a separate priceCurrency field using ISO 4217 format. For event markup, always use ISO 8601 date format. For FAQ markup, each question must have exactly one accepted answer. Regularly validate your markup and fix any errors promptly to maintain eligibility for rich results.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is schema markup?</h3>
+      <p>Schema markup is structured data added to HTML to help search engines understand page content. It uses the Schema.org vocabulary and is typically implemented as JSON-LD in a script tag, enabling rich results in search engine listings.</p>
+
+      <h3>What is JSON-LD and why is it recommended?</h3>
+      <p>JSON-LD is Google's recommended structured data format. It sits in a separate script tag rather than being embedded in HTML markup, making it easier to implement, maintain, and debug without affecting page layout.</p>
+
+      <h3>How does schema markup improve SEO?</h3>
+      <p>Schema markup enables rich results with additional visual information like ratings, prices, and dates. These enhanced listings typically have higher click-through rates, indirectly boosting SEO performance through improved engagement signals.</p>
+
+      <h3>What types of schema markup are most common?</h3>
+      <p>The most used types are Article, Product, FAQPage, LocalBusiness, Event, Recipe, HowTo, and BreadcrumbList. Each has specific required properties that must be included for validation and rich result eligibility.</p>
+
+      <h3>How do I test my schema markup?</h3>
+      <p>Use Google's Rich Results Test to check rich result eligibility and the Schema Markup Validator to validate against the Schema.org vocabulary. Always test before deploying to production.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "Schema Markup Generator", url: everyday_schema_generator_url %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "JSON Formatter", description: "Format and validate JSON data with syntax highlighting and error detection.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Open Graph Preview", description: "Preview how your page will look when shared on Facebook and Twitter.", path: everyday_og_preview_path, icon_path: "M15 12a3 3 0 11-6 0 3 3 0 016 0z" },
+      { name: "HTML Entity Encoder", description: "Encode and decode HTML entities for safe embedding.", path: everyday_html_entity_encoder_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("schema-markup-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

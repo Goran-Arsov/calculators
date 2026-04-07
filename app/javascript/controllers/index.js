@@ -206,6 +206,32 @@ import DocxToOdtCalculatorController from "controllers/docx_to_odt_calculator_co
 import AlarmTimerCalculatorController from "controllers/alarm_timer_calculator_controller"
 import AlarmClockCalculatorController from "controllers/alarm_clock_calculator_controller"
 import AlarmClockActiveCalculatorController from "controllers/alarm_clock_active_calculator_controller"
+import StopwatchCalculatorController from "controllers/stopwatch_calculator_controller"
+import PomodoroTimerCalculatorController from "controllers/pomodoro_timer_calculator_controller"
+import TextToSpeechCalculatorController from "controllers/text_to_speech_calculator_controller"
+
+import TemperatureConverterCalculatorController from "controllers/temperature_converter_calculator_controller"
+import LengthConverterCalculatorController from "controllers/length_converter_calculator_controller"
+import WeightConverterCalculatorController from "controllers/weight_converter_calculator_controller"
+import SpeedConverterCalculatorController from "controllers/speed_converter_calculator_controller"
+import ByteConverterCalculatorController from "controllers/byte_converter_calculator_controller"
+
+import CssBoxShadowCalculatorController from "controllers/css_box_shadow_calculator_controller"
+import CssFlexboxCalculatorController from "controllers/css_flexbox_calculator_controller"
+import PxToRemCalculatorController from "controllers/px_to_rem_calculator_controller"
+import MetaTagGeneratorCalculatorController from "controllers/meta_tag_generator_calculator_controller"
+import FaviconGeneratorCalculatorController from "controllers/favicon_generator_calculator_controller"
+
+import SchemaGeneratorCalculatorController from "controllers/schema_generator_calculator_controller"
+import KeywordDensityCalculatorController from "controllers/keyword_density_calculator_controller"
+import PrimeCheckerCalculatorController from "controllers/prime_checker_calculator_controller"
+import RandomNumberCalculatorController from "controllers/random_number_calculator_controller"
+import ImageResizerCalculatorController from "controllers/image_resizer_calculator_controller"
+
+import MorseCodeCalculatorController from "controllers/morse_code_calculator_controller"
+import RomanNumeralCalculatorController from "controllers/roman_numeral_calculator_controller"
+import FakeDataGeneratorCalculatorController from "controllers/fake_data_generator_calculator_controller"
+import BarcodeGeneratorCalculatorController from "controllers/barcode_generator_calculator_controller"
 
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
@@ -492,6 +518,32 @@ application.register("docx-to-odt-calculator", DocxToOdtCalculatorController)
 application.register("alarm-timer-calculator", AlarmTimerCalculatorController)
 application.register("alarm-clock-calculator", AlarmClockCalculatorController)
 application.register("alarm-clock-active-calculator", AlarmClockActiveCalculatorController)
+application.register("stopwatch-calculator", StopwatchCalculatorController)
+application.register("pomodoro-timer-calculator", PomodoroTimerCalculatorController)
+application.register("text-to-speech-calculator", TextToSpeechCalculatorController)
+
+application.register("temperature-converter-calculator", TemperatureConverterCalculatorController)
+application.register("length-converter-calculator", LengthConverterCalculatorController)
+application.register("weight-converter-calculator", WeightConverterCalculatorController)
+application.register("speed-converter-calculator", SpeedConverterCalculatorController)
+application.register("byte-converter-calculator", ByteConverterCalculatorController)
+
+application.register("css-box-shadow-calculator", CssBoxShadowCalculatorController)
+application.register("css-flexbox-calculator", CssFlexboxCalculatorController)
+application.register("px-to-rem-calculator", PxToRemCalculatorController)
+application.register("meta-tag-generator-calculator", MetaTagGeneratorCalculatorController)
+application.register("favicon-generator-calculator", FaviconGeneratorCalculatorController)
+
+application.register("schema-generator-calculator", SchemaGeneratorCalculatorController)
+application.register("keyword-density-calculator", KeywordDensityCalculatorController)
+application.register("prime-checker-calculator", PrimeCheckerCalculatorController)
+application.register("random-number-calculator", RandomNumberCalculatorController)
+application.register("image-resizer-calculator", ImageResizerCalculatorController)
+
+application.register("morse-code-calculator", MorseCodeCalculatorController)
+application.register("roman-numeral-calculator", RomanNumeralCalculatorController)
+application.register("fake-data-generator-calculator", FakeDataGeneratorCalculatorController)
+application.register("barcode-generator-calculator", BarcodeGeneratorCalculatorController)
 
 // Suites
 application.register("suite-stepper", SuiteStepperController)

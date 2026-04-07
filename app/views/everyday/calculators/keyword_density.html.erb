@@ -1,0 +1,218 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Keyword Density Checker - Free SEO Text Analysis Tool",
+  description: "Analyze keyword density, word frequency, bigrams, and trigrams in your text. Free SEO tool to optimize content for target keywords without stuffing.",
+  canonical: everyday_keyword_density_url,
+  og: {
+    title: "Keyword Density Checker - Free SEO Text Analysis Tool | CalcWise",
+    description: "Analyze keyword density, word frequency, bigrams, and trigrams in your text. Free SEO tool to optimize content for target keywords without stuffing.",
+    url: everyday_keyword_density_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Keyword Density Checker", url: everyday_keyword_density_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is keyword density?", answer: "Keyword density is the percentage of times a keyword or phrase appears in a piece of text relative to the total word count. It is calculated by dividing the number of times the keyword appears by the total number of words and multiplying by 100. For example, if the word 'SEO' appears 5 times in a 500-word article, the keyword density is 1%. Keyword density has been used as a metric in search engine optimization since the early days of SEO, though modern search engines use much more sophisticated algorithms." },
+  { question: "What is the ideal keyword density for SEO?", answer: "There is no universally agreed-upon ideal keyword density. Most SEO experts recommend keeping primary keyword density between 1% and 2% for the main target keyword. Going above 3% may risk being flagged as keyword stuffing, which can hurt your search rankings. Modern SEO focuses more on natural language, semantic relevance, and user intent rather than hitting exact keyword density targets. Write naturally for your audience first, then check that your target keywords appear at a reasonable frequency." },
+  { question: "What are stop words and why are they filtered?", answer: "Stop words are common words like 'the', 'is', 'at', 'which', 'and', 'on' that appear frequently in text but carry little semantic meaning. They are filtered from keyword density analysis because they would otherwise dominate the results and obscure the meaningful keywords in your content. By removing stop words, you can focus on the content words that actually matter for SEO and topic relevance. Most search engines also downweight or ignore stop words when indexing content." },
+  { question: "What are bigrams and trigrams?", answer: "Bigrams are pairs of consecutive words, and trigrams are groups of three consecutive words. Analyzing bigrams and trigrams helps you identify multi-word phrases and keyword combinations that appear frequently in your text. For SEO, multi-word phrases (also called long-tail keywords) are often more valuable than single words because they indicate more specific search intent. For example, 'content marketing' as a bigram or 'search engine optimization' as a trigram tells you more about topic coverage than individual words." },
+  { question: "What is keyword stuffing?", answer: "Keyword stuffing is the practice of unnaturally repeating keywords in content to manipulate search engine rankings. Modern search engines like Google can detect keyword stuffing and may penalize pages that use it. Signs of keyword stuffing include keyword density above 3-4%, the same keyword appearing in every sentence or paragraph, keywords inserted in ways that make the text difficult to read, and hidden text with keywords. Focus on writing natural, helpful content that addresses user intent rather than trying to hit a specific keyword count." }
+]) %>
+
+<%= calculator_schema(
+  name: "Keyword Density Checker",
+  description: "Analyze keyword density, word frequency, bigrams, and trigrams in your text. Free SEO tool to optimize content for target keywords.",
+  url: everyday_keyword_density_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Keyword Density Checker" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Keyword Density Checker</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste your text below to analyze word frequency, keyword density, bigrams, and trigrams. Stop words are automatically filtered for more meaningful results.</p>
+
+    <div data-controller="keyword-density-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <%# Text input %>
+        <div>
+          <label for="kd-text" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Your Text</label>
+          <textarea id="kd-text" data-keyword-density-calculator-target="textInput"
+                    class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows="8" placeholder="Paste your article, blog post, or any text here to analyze keyword density..."></textarea>
+        </div>
+
+        <%# Target keyword %>
+        <div>
+          <label for="kd-target" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target Keyword (optional)</label>
+          <input id="kd-target" type="text" data-keyword-density-calculator-target="targetKeyword"
+                 class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                 placeholder="e.g. content marketing" autocomplete="off">
+        </div>
+
+        <%# Analyze button %>
+        <button data-action="click->keyword-density-calculator#analyze"
+                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+          Analyze Text
+        </button>
+
+        <%# Stats grid %>
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Total Words</span>
+            <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-keyword-density-calculator-target="resultTotalWords">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Unique Words</span>
+            <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-keyword-density-calculator-target="resultUniqueWords">&mdash;</span>
+          </div>
+        </div>
+
+        <%# Target keyword result %>
+        <div data-keyword-density-calculator-target="targetKeywordResult"></div>
+
+        <%# Top single words table %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Top 20 Keywords (stop words excluded)</h3>
+          <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+            <table class="w-full text-left">
+              <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th class="p-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Word</th>
+                  <th class="p-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-center">Count</th>
+                  <th class="p-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-center">Density</th>
+                </tr>
+              </thead>
+              <tbody data-keyword-density-calculator-target="wordsTable">
+                <tr><td class="p-3 text-gray-400 dark:text-gray-500 text-center" colspan="3">Enter text and click Analyze</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <%# Bigrams table %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Top 10 Bigrams (two-word phrases)</h3>
+          <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+            <table class="w-full text-left">
+              <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th class="p-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Phrase</th>
+                  <th class="p-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-center">Count</th>
+                  <th class="p-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-center">Density</th>
+                </tr>
+              </thead>
+              <tbody data-keyword-density-calculator-target="bigramsTable">
+                <tr><td class="p-3 text-gray-400 dark:text-gray-500 text-center" colspan="3">No data yet</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <%# Trigrams table %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Top 10 Trigrams (three-word phrases)</h3>
+          <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+            <table class="w-full text-left">
+              <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th class="p-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Phrase</th>
+                  <th class="p-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-center">Count</th>
+                  <th class="p-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-center">Density</th>
+                </tr>
+              </thead>
+              <tbody data-keyword-density-calculator-target="trigramsTable">
+                <tr><td class="p-3 text-gray-400 dark:text-gray-500 text-center" colspan="3">No data yet</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "keyword-density-checker" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Keyword Density</h2>
+      <p>
+        Keyword density is one of the oldest metrics in search engine optimization. It measures how frequently a specific word or phrase appears in a piece of content relative to the total word count. The formula is straightforward: divide the number of times the keyword appears by the total number of words, then multiply by 100 to get a percentage. While search engine algorithms have evolved far beyond simple keyword counting, understanding keyword density remains valuable for ensuring your content naturally covers the topics you want to rank for without resorting to keyword stuffing.
+      </p>
+      <p>
+        Modern search engines use sophisticated natural language processing to understand content meaning and context. Google's algorithms, including BERT and MUM, analyze semantic relationships between words and understand synonyms, related concepts, and user intent. This means that writing naturally about a topic will typically include your target keywords at an appropriate density without conscious effort. However, keyword density analysis is still useful as a diagnostic tool to identify potential issues like accidental keyword stuffing or insufficient topic coverage.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How to Use Keyword Density Analysis</h2>
+      <p>
+        Start by writing your content naturally, focusing on providing value to your readers. After completing your first draft, paste the text into this tool to analyze the keyword distribution. Check that your primary target keyword appears at a density between 1% and 2%. If the density is below 0.5%, consider whether you have naturally addressed the topic enough. If the density exceeds 3%, review the text for repetitive phrasing and consider using synonyms or related terms to reduce keyword concentration while maintaining topical relevance.
+      </p>
+
+      <h3>Bigrams and Trigrams for Long-Tail Keywords</h3>
+      <p>
+        Single-word keyword analysis tells only part of the story. Multi-word phrases, known as bigrams (two words) and trigrams (three words), reveal how your content covers long-tail keywords and specific topic areas. Long-tail keywords like "content marketing strategy" or "search engine optimization tips" often have lower competition and higher conversion rates than single-word keywords. By analyzing bigrams and trigrams, you can identify whether your content effectively targets these valuable multi-word search queries and discover unintentional phrase repetitions that might appear unnatural to readers.
+      </p>
+
+      <h3>Stop Words and Semantic Analysis</h3>
+      <p>
+        This tool automatically filters common stop words such as "the," "is," "and," and "of" from the analysis results. These high-frequency words carry little semantic meaning and would otherwise dominate the keyword density results, obscuring the content words that matter for SEO. The remaining words give you a clearer picture of your content's topical focus and keyword distribution. Consider the top keywords as a topic fingerprint for your content; they should align with the search queries you want to rank for.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is keyword density?</h3>
+      <p>The percentage of times a keyword appears in text relative to total word count. Calculated as (keyword count / total words) x 100. A useful diagnostic metric for content optimization.</p>
+
+      <h3>What is the ideal keyword density?</h3>
+      <p>Most SEO experts recommend 1-2% for primary keywords. Above 3% risks keyword stuffing penalties. Focus on writing naturally rather than hitting exact density targets.</p>
+
+      <h3>What are stop words?</h3>
+      <p>Common words like "the," "is," and "and" that carry little semantic meaning. They are filtered from analysis to surface the meaningful content keywords that matter for SEO.</p>
+
+      <h3>What are bigrams and trigrams?</h3>
+      <p>Bigrams are two-word phrases; trigrams are three-word phrases. They help identify long-tail keyword coverage and multi-word phrase patterns in your content.</p>
+
+      <h3>What is keyword stuffing?</h3>
+      <p>Unnaturally repeating keywords to manipulate rankings. Modern search engines detect and penalize this. Write naturally and use synonyms for variety.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "Keyword Density Checker", url: everyday_keyword_density_url %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Word Counter", description: "Count words, characters, sentences, and paragraphs with reading time estimates.", path: everyday_word_counter_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "Character Counter", description: "Count characters with and without spaces for tweets, titles, and meta descriptions.", path: everyday_character_counter_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "Open Graph Preview", description: "Preview how your page will look when shared on social media.", path: everyday_og_preview_path, icon_path: "M15 12a3 3 0 11-6 0 3 3 0 016 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("keyword-density-checker") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

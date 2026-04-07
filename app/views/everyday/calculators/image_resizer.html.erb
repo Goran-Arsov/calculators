@@ -1,0 +1,208 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Image Resizer - Free Online Image Resize Tool",
+  description: "Resize images online for free. Change dimensions, maintain aspect ratio, adjust quality, and convert between PNG, JPEG, and WebP formats. No upload required.",
+  canonical: everyday_image_resizer_url,
+  og: {
+    title: "Image Resizer - Free Online Image Resize Tool | CalcWise",
+    description: "Resize images online for free. Change dimensions, maintain aspect ratio, adjust quality, and convert between PNG, JPEG, and WebP formats. No upload required.",
+    url: everyday_image_resizer_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Image Resizer", url: everyday_image_resizer_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Does this tool upload my images to a server?", answer: "No. This image resizer works entirely in your browser using the HTML5 Canvas API. Your images are never uploaded to any server, making it completely private and secure. The image data stays on your device throughout the entire process, from loading to resizing to downloading. This means you can safely resize sensitive or confidential images without worrying about data privacy." },
+  { question: "What image formats are supported?", answer: "You can upload images in any format supported by your browser, including JPEG, PNG, GIF, WebP, BMP, and SVG. For output, you can choose between three formats: PNG (lossless, larger files, supports transparency), JPEG (lossy compression with adjustable quality, smaller files, no transparency), and WebP (modern format with excellent compression, supports both lossy and lossless, supported by all major browsers). Choose PNG for graphics with text or transparency, JPEG for photographs, and WebP for the best size-to-quality ratio." },
+  { question: "How does the quality slider work?", answer: "The quality slider controls the compression level for JPEG and WebP output formats. A value of 100 means maximum quality with minimal compression, while lower values reduce file size at the cost of image quality. For JPEG, a quality of 80-85 is typically a good balance between quality and file size. For WebP, you can often go as low as 75 while maintaining excellent visual quality. The quality slider has no effect when PNG is selected as the output format because PNG uses lossless compression. The estimated file size updates when you resize, letting you see the impact of quality changes." },
+  { question: "What does 'maintain aspect ratio' mean?", answer: "Aspect ratio is the proportional relationship between an image's width and height. When 'Maintain Aspect Ratio' is checked, changing the width automatically calculates the corresponding height (and vice versa) to preserve the original proportions. This prevents the image from being stretched or squished. For example, if the original image is 1920x1080 (16:9 ratio) and you set the width to 960, the height will automatically be set to 540 to maintain the same 16:9 ratio." },
+  { question: "What is the maximum image size I can resize?", answer: "The maximum dimensions depend on your browser and device memory. Most modern browsers can handle canvas dimensions up to 16,384 x 16,384 pixels, though practical limits may be lower on mobile devices. For best performance, keep dimensions under 10,000 pixels on each side. The tool itself limits the target dimensions to 10,000 x 10,000 pixels. There is no file size limit for input images, but very large images (over 50 MB) may take a moment to load depending on your device's processing power." }
+]) %>
+
+<%= calculator_schema(
+  name: "Image Resizer",
+  description: "Resize images online for free. Change dimensions, maintain aspect ratio, adjust quality, and convert between PNG, JPEG, and WebP formats.",
+  url: everyday_image_resizer_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Image Resizer" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Image Resizer</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Resize images directly in your browser. Upload an image, set new dimensions, choose a format and quality level, then download the resized result. No server upload needed.</p>
+
+    <div data-controller="image-resizer-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <%# File upload %>
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Upload Image</label>
+          <input type="file" accept="image/*" data-image-resizer-calculator-target="fileInput"
+                 data-action="change->image-resizer-calculator#loadImage"
+                 class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-900/30 dark:file:text-blue-400 hover:file:bg-blue-100">
+        </div>
+
+        <%# Original preview %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Original Image</h3>
+          <div data-image-resizer-calculator-target="originalPreview"
+               class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 min-h-[8rem] flex items-center justify-center text-gray-400 dark:text-gray-500">
+            <span>Upload an image to see preview</span>
+          </div>
+          <div data-image-resizer-calculator-target="originalInfo" class="mt-2"></div>
+        </div>
+
+        <%# Dimension inputs %>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="img-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Width (px)</label>
+            <input id="img-width" type="number" min="1" max="10000" data-image-resizer-calculator-target="widthInput"
+                   data-action="input->image-resizer-calculator#updateWidth"
+                   class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                   placeholder="800" autocomplete="off">
+          </div>
+          <div>
+            <label for="img-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Height (px)</label>
+            <input id="img-height" type="number" min="1" max="10000" data-image-resizer-calculator-target="heightInput"
+                   data-action="input->image-resizer-calculator#updateHeight"
+                   class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                   placeholder="600" autocomplete="off">
+          </div>
+        </div>
+
+        <%# Aspect ratio checkbox %>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="img-aspect" data-image-resizer-calculator-target="aspectRatioCheckbox" checked
+                 class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 w-4 h-4">
+          <label for="img-aspect" class="text-sm font-semibold text-gray-600 dark:text-gray-400 cursor-pointer">Maintain aspect ratio</label>
+        </div>
+
+        <%# Quality slider and format %>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="img-quality" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Quality: <span data-image-resizer-calculator-target="qualityValue">85</span>%</label>
+            <input id="img-quality" type="range" min="1" max="100" value="85" data-image-resizer-calculator-target="qualitySlider"
+                   data-action="input->image-resizer-calculator#updateQualityDisplay"
+                   class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600">
+          </div>
+          <div>
+            <label for="img-format" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Output Format</label>
+            <select id="img-format" data-image-resizer-calculator-target="formatSelect"
+                    class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="png">PNG</option>
+              <option value="jpeg">JPEG</option>
+              <option value="webp">WebP</option>
+            </select>
+          </div>
+        </div>
+
+        <%# Resize button %>
+        <button data-action="click->image-resizer-calculator#resize"
+                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+          Resize Image
+        </button>
+
+        <%# Resized preview %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Resized Image</h3>
+          <div data-image-resizer-calculator-target="resizedPreview"
+               class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 min-h-[8rem] flex items-center justify-center text-gray-400 dark:text-gray-500">
+            <span>Resized image will appear here</span>
+          </div>
+          <div data-image-resizer-calculator-target="resizedInfo" class="mt-2"></div>
+        </div>
+
+        <%# Download button %>
+        <button data-action="click->image-resizer-calculator#download" data-image-resizer-calculator-target="downloadBtn"
+                class="hidden w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-sm transition-colors text-sm font-semibold">
+          Download Resized Image
+        </button>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "image-resizer" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>About This Image Resizer</h2>
+      <p>
+        This image resizer processes everything directly in your web browser using the HTML5 Canvas API. When you upload an image, it is read by your browser's FileReader API and rendered onto an invisible canvas element at your specified dimensions. The canvas then exports the resized image in your chosen format (PNG, JPEG, or WebP) with the selected quality level. Because all processing happens client-side, your images are never transmitted over the internet or stored on any external server. This makes the tool ideal for resizing confidential photos, private documents, or any images where data privacy is a concern.
+      </p>
+      <p>
+        The resizing algorithm uses the browser's built-in high-quality image smoothing, which applies bilinear or bicubic interpolation depending on the browser. This produces smooth, anti-aliased results even when significantly reducing image dimensions. For best results when downscaling, avoid reducing to less than 25% of the original size in a single step, as multi-step progressive downscaling can produce slightly better results for extreme reductions.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Choosing the Right Output Format</h2>
+      <p>
+        The three supported output formats serve different purposes. <strong>PNG</strong> (Portable Network Graphics) uses lossless compression, meaning no image quality is lost during the save process. It supports transparency (alpha channel) and is ideal for graphics with text, logos, screenshots, and images requiring sharp edges. The trade-off is larger file sizes compared to lossy formats. <strong>JPEG</strong> (Joint Photographic Experts Group) uses lossy compression, reducing file size by discarding some image data. It is the standard format for photographs and images with smooth gradients. Quality settings of 80-85 typically provide an excellent balance between visual quality and file size. JPEG does not support transparency. <strong>WebP</strong> is Google's modern image format that supports both lossy and lossless compression, transparency, and animation. It typically produces files 25-34% smaller than equivalent JPEG files at the same visual quality, making it the best choice for web use when browser compatibility is not a concern.
+      </p>
+
+      <h3>Understanding the Quality Slider</h3>
+      <p>
+        The quality slider affects JPEG and WebP output only. PNG always uses lossless compression regardless of the quality setting. For JPEG, quality values between 80 and 95 are recommended for most photographs. Values below 70 may show visible compression artifacts such as color banding and blocky edges. For WebP, the same quality range applies, but WebP's more efficient compression means you can often use a lower quality value while maintaining equivalent visual quality. The estimated file size shown after resizing reflects the impact of your quality choice, helping you find the right balance for your needs.
+      </p>
+
+      <h3>Common Image Sizes for Different Platforms</h3>
+      <p>
+        Different platforms and use cases have recommended image dimensions. Social media profile pictures typically use 400x400 pixels. Facebook shared images work best at 1200x630 pixels. Instagram feed posts are 1080x1080 pixels (square) or 1080x1350 pixels (portrait). Twitter shared images should be 1200x675 pixels. Website hero banners commonly use 1920x1080 or 2560x1440 pixels. Email headers are typically 600 pixels wide. Product thumbnails for e-commerce are commonly 300x300 or 500x500 pixels. Knowing the target dimensions for your use case helps you resize efficiently.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Does this tool upload my images to a server?</h3>
+      <p>No. Everything runs in your browser. Your images never leave your device, ensuring complete privacy and security.</p>
+
+      <h3>What image formats are supported?</h3>
+      <p>Input: any browser-supported format (JPEG, PNG, GIF, WebP, BMP, SVG). Output: PNG (lossless), JPEG (lossy with quality control), or WebP (modern, excellent compression).</p>
+
+      <h3>How does the quality slider work?</h3>
+      <p>It controls JPEG and WebP compression. Higher values mean better quality but larger files. 80-85 is ideal for most JPEG photos. Quality has no effect on PNG output.</p>
+
+      <h3>What does "maintain aspect ratio" mean?</h3>
+      <p>It preserves the proportional relationship between width and height. Changing one dimension automatically calculates the other, preventing image distortion.</p>
+
+      <h3>What is the maximum image size?</h3>
+      <p>Target dimensions are limited to 10,000 x 10,000 pixels. Actual canvas limits depend on your browser and device. Most modern browsers support up to 16,384 pixels per side.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "Image Resizer", url: everyday_image_resizer_url %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Base64 Image Encoder", description: "Encode images to Base64 data URIs for embedding in CSS and HTML.", path: everyday_base64_image_encoder_path, icon_path: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "QR Code Generator", description: "Generate QR codes from any text or URL with instant download.", path: everyday_qr_code_generator_path, icon_path: "M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" },
+      { name: "SVG to PNG Converter", description: "Convert SVG vector graphics to PNG raster images at any resolution.", path: everyday_svg_to_png_path, icon_path: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("image-resizer") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

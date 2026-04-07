@@ -1,0 +1,181 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Fake Data Generator - Free Online Test Data Creator",
+  description: "Generate realistic fake data for testing and development. Create names, emails, addresses, phone numbers, and more. Export as JSON or CSV. Free online fake data generator.",
+  canonical: everyday_fake_data_generator_url,
+  og: {
+    title: "Fake Data Generator - Free Online Test Data Creator | CalcWise",
+    description: "Generate realistic fake data for testing. Create names, emails, addresses, and 16+ field types. Export as JSON or CSV with one click.",
+    url: everyday_fake_data_generator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Fake Data Generator", url: everyday_fake_data_generator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is fake data and why do developers need it?", answer: "Fake data (also called mock data, test data, or synthetic data) is artificially generated information that mimics the structure and format of real data without containing actual personal information. Developers need fake data for testing applications before launch, populating development databases, creating demo environments, writing unit and integration tests, prototyping user interfaces, and generating sample datasets for documentation. Using fake data avoids privacy concerns, legal issues with data protection regulations like GDPR, and the risk of exposing real user information during development." },
+  { question: "Is the generated data truly random?", answer: "The data is pseudo-random, generated using JavaScript's Math.random() function on the client side and Ruby's built-in random number generator on the server side. Names, cities, countries, and companies are randomly selected from curated lists of realistic values. Emails and usernames are algorithmically constructed from name combinations with random separators and numbers. Phone numbers, IP addresses, and UUIDs follow their respective format rules with random digits. The data is random enough for testing purposes but should not be used for cryptographic applications." },
+  { question: "Can I use the generated data in my projects?", answer: "Yes, the generated data is entirely synthetic and can be freely used in any project. Since the data is randomly assembled from common names, cities, and other generic values, it does not represent real individuals or organizations. You can use it in development databases, automated tests, demo environments, documentation examples, and sample datasets. However, by random chance, a generated email or phone number might coincidentally match a real one, so avoid using generated data in any context where it could be mistaken for real contact information." },
+  { question: "What export formats are available?", answer: "The generator supports three export options. Copy as JSON produces a formatted JSON array of objects with field names as keys, ideal for API testing, database seeding, and JavaScript applications. Copy as CSV produces comma-separated values with a header row, suitable for spreadsheets, data import tools, and database bulk loading. Download CSV saves the same CSV content as a .csv file for offline use. All exports include every field selected in the generator and respect the specified record count." },
+  { question: "How many records can I generate at once?", answer: "You can generate between 1 and 100 records per batch. This limit is set to ensure fast browser-side generation and rendering without performance issues. For larger datasets, you can generate multiple batches and combine them. The 100-record limit covers most development and testing scenarios including unit tests, UI prototyping, demo databases, and small-scale load testing. For production-scale fake data generation exceeding hundreds of records, consider dedicated tools like Faker libraries available for Ruby, Python, JavaScript, and other languages." }
+]) %>
+
+<%= calculator_schema(
+  name: "Fake Data Generator",
+  description: "Generate realistic fake data records with customizable fields for testing and development.",
+  url: everyday_fake_data_generator_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Fake Data Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Fake Data Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Generate realistic fake data for testing and development. Choose from 16 field types and export up to 100 records as JSON or CSV.</p>
+
+    <div data-controller="fake-data-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="fake-data-count" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Records (1-100)</label>
+          <input type="number" id="fake-data-count" min="1" max="100" value="10"
+            data-fake-data-generator-calculator-target="countInput"
+            class="w-full max-w-xs rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div data-fake-data-generator-calculator-target="fieldCheckboxes">
+          <span class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Select Fields</span>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+            <% [
+              ["first_name", "First Name"], ["last_name", "Last Name"], ["full_name", "Full Name"],
+              ["email", "Email"], ["phone", "Phone"], ["address", "Address"],
+              ["city", "City"], ["country", "Country"], ["company", "Company"],
+              ["job_title", "Job Title"], ["username", "Username"], ["password", "Password"],
+              ["uuid", "UUID"], ["ip_address", "IP Address"], ["date", "Date"], ["url", "URL"]
+            ].each do |value, label| %>
+              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer bg-gray-50 dark:bg-gray-800 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <input type="checkbox" value="<%= value %>" <%= value.in?(%w[first_name last_name email]) ? "checked" : "" %>
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span><%= label %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <button data-action="click->fake-data-generator-calculator#generate"
+          class="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm">
+          Generate Data
+        </button>
+
+        <p class="text-sm font-medium" data-fake-data-generator-calculator-target="statusMessage">&nbsp;</p>
+
+        <div data-fake-data-generator-calculator-target="resultsArea" class="hidden">
+          <div data-fake-data-generator-calculator-target="resultsTable" class="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"></div>
+        </div>
+
+        <div data-fake-data-generator-calculator-target="copyArea" class="hidden flex flex-wrap gap-2 mt-4">
+          <button data-action="click->fake-data-generator-calculator#copyJson"
+            class="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-semibold rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+            Copy as JSON
+          </button>
+          <button data-action="click->fake-data-generator-calculator#copyCsv"
+            class="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-semibold rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+            Copy as CSV
+          </button>
+          <button data-action="click->fake-data-generator-calculator#downloadCsv"
+            class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 transition-colors shadow-sm">
+            Download CSV
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "fake-data-generator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Fake Data Generator</h2>
+      <p>
+        Select the number of records you want to generate (between 1 and 100) and check the boxes for each field type to include. The generator supports 16 different field types covering personal information, contact details, business data, and technical identifiers. Click "Generate Data" to produce your dataset, which appears in a scrollable table below. You can then export the data using three methods: copy as JSON for API testing and application development, copy as CSV for spreadsheet import and database seeding, or download the CSV file directly for offline use.
+      </p>
+      <p>
+        All data generation happens entirely in your browser. No information is sent to any server, and the generated data is not stored anywhere. Each time you click generate, a fresh set of random records is produced. Names are drawn from pools of 50 first names and 50 last names, combined with random email patterns, realistic phone number formats, and plausible street addresses. Technical fields like UUIDs follow proper format specifications, and IP addresses are generated within valid public ranges.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Fake Data Generation</h2>
+      <p>
+        Fake data generation (also known as synthetic data generation or data fabrication) is the process of creating artificial datasets that mimic the statistical properties, formats, and structure of real-world data without containing actual personal information. This practice is essential in modern software development, where privacy regulations like GDPR, CCPA, and HIPAA restrict the use of real personal data in testing environments. By generating realistic but fictitious records, development teams can build and test applications with confidence that no real user data is exposed.
+      </p>
+
+      <h3>Common Use Cases for Fake Data</h3>
+      <p>
+        Software testing is the primary use case for fake data generators. Unit tests, integration tests, and end-to-end tests all require representative data to validate application behavior. Populating development and staging databases with fake data allows developers to work with realistic volumes and patterns without accessing production databases. UI and UX designers use fake data to prototype interfaces with varied content lengths and formats. Documentation and tutorials benefit from example datasets that readers can relate to. Sales teams use fake data for product demos, avoiding the need to expose actual customer information during presentations.
+      </p>
+
+      <h3>Field Types Explained</h3>
+      <p>
+        The generator offers personal fields (first name, last name, full name), contact fields (email, phone, address, city, country), professional fields (company, job title), identity fields (username, password), and technical fields (UUID, IP address, date, URL). Email addresses are constructed by combining first and last names with random separators and domain names. Phone numbers follow the North American format with area codes and seven-digit numbers. UUIDs conform to the version 4 specification with the correct version and variant bits. IP addresses are generated within the valid public IPv4 range, excluding reserved and private blocks.
+      </p>
+
+      <h3>Best Practices for Using Test Data</h3>
+      <p>
+        When incorporating fake data into your workflow, keep several best practices in mind. Always clearly label test data to prevent confusion with production data. Use different datasets for different testing scenarios: small sets for unit tests, larger sets for performance testing. Verify that your application handles edge cases like long names, special characters in addresses, and maximum-length values. When testing with fake data, also consider testing with empty fields, null values, and boundary conditions that the generator does not produce. Never deploy applications to production with test data still in the database, and never use production data in development without proper anonymization.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is fake data and why do developers need it?</h3>
+      <p>Fake data is artificially generated information that mimics real data formats without containing actual personal information. Developers need it for testing, prototyping, populating development databases, and creating demos without risking exposure of real user data or violating privacy regulations.</p>
+
+      <h3>Is the generated data truly random?</h3>
+      <p>The data is pseudo-random, using JavaScript's Math.random() function. Names and locations are selected from curated lists. Emails and usernames are algorithmically constructed. The randomness is sufficient for testing but not suitable for cryptographic purposes.</p>
+
+      <h3>Can I use the generated data in my projects?</h3>
+      <p>Yes. The data is entirely synthetic and free to use in any project. Since it is randomly assembled from common values, it does not represent real individuals. However, avoid using it where it might be mistaken for real contact information.</p>
+
+      <h3>What export formats are available?</h3>
+      <p>Three options: Copy as JSON (formatted array of objects), Copy as CSV (comma-separated with headers), and Download CSV (saves a .csv file). All exports include every selected field and respect the specified record count.</p>
+
+      <h3>How many records can I generate at once?</h3>
+      <p>Between 1 and 100 records per batch. This limit ensures fast browser-side generation. For larger datasets, generate multiple batches or use dedicated libraries like Faker for Ruby, Python, or JavaScript.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "Fake Data Generator", url: everyday_fake_data_generator_url %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "UUID Generator", description: "Generate cryptographically secure UUID v4 identifiers for databases and APIs.", path: everyday_uuid_generator_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "Secure Random Generator", description: "Generate cryptographically secure random strings with custom length and character options.", path: everyday_secure_random_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "Password Generator", description: "Generate secure passwords and passphrases with customizable length and character types.", path: everyday_password_generator_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("fake-data-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

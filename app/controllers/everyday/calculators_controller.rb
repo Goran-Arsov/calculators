@@ -125,5 +125,27 @@ module Everyday
     def alarm_timer; end
     def alarm_clock; end
     def alarm_clock_active; end
+    def stopwatch; end
+    def pomodoro_timer; end
+    def text_to_speech; end
+    def temperature_converter; end
+    def length_converter; end
+    def weight_converter; end
+    def speed_converter; end
+    def byte_converter; end
+    def css_box_shadow; end
+    def css_flexbox; end
+    def px_to_rem; end
+    def meta_tag_generator; end
+    def favicon_generator; end
+    def morse_code; end
+    def roman_numeral; end
+    def fake_data_generator; end
+    def barcode_generator; end
+    def schema_generator; end
+    def keyword_density; end
+    def prime_checker; end
+    def random_number; end
+    def image_resizer; end
   end
 end

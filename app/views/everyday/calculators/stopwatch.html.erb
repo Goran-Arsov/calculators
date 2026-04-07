@@ -1,0 +1,172 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Online Stopwatch - Free Precision Timer with Lap Times",
+  description: "Free online stopwatch with millisecond precision, lap time recording, and split time tracking. Start, stop, reset, and record laps instantly in your browser.",
+  canonical: everyday_stopwatch_url,
+  og: {
+    title: "Online Stopwatch - Free Precision Timer with Lap Times | CalcWise",
+    description: "Free online stopwatch with millisecond precision and lap time recording. Track split times instantly in your browser.",
+    url: everyday_stopwatch_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Stopwatch", url: everyday_stopwatch_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How accurate is this online stopwatch?", answer: "This stopwatch uses the performance.now() browser API which provides sub-millisecond precision. The display updates continuously using requestAnimationFrame for smooth rendering, showing hours, minutes, seconds, and milliseconds in HH:MM:SS.mmm format." },
+  { question: "Can I record lap times with this stopwatch?", answer: "Yes. While the stopwatch is running, click the Lap button to record a split time. Each lap entry shows the lap number, the time for that individual lap segment, and the cumulative elapsed time. Laps are displayed in reverse chronological order with the most recent lap at the top." },
+  { question: "Will the stopwatch keep running if I switch browser tabs?", answer: "Yes. The stopwatch uses performance.now() which is based on a monotonic clock that continues to advance regardless of tab visibility. When you return to the tab, the display will immediately show the correct elapsed time without any drift or skipped time." },
+  { question: "Can I pause and resume the stopwatch?", answer: "Yes. Click Stop to pause the timer at any point. The elapsed time is preserved and clicking Resume will continue counting from exactly where you left off. The Reset button clears the timer and all recorded lap times back to zero." },
+  { question: "Is there a maximum time limit for the stopwatch?", answer: "There is no practical time limit. The stopwatch can run for days or even longer. The display format supports hours beyond 24, so it will correctly show values like 25:01:01.999 for extended timing sessions." }
+]) %>
+
+<%= calculator_schema(
+  name: "Online Stopwatch",
+  description: "Free online stopwatch with millisecond precision, lap time recording, and split time tracking.",
+  url: everyday_stopwatch_url,
+  category: "UtilitiesApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Stopwatch" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Online Stopwatch</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Precision stopwatch with millisecond accuracy and lap time recording. Track split times for sports, workouts, cooking, or any activity.</p>
+
+    <div data-controller="stopwatch-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <%# Stopwatch display %>
+      <div class="text-center mb-8">
+        <div data-stopwatch-calculator-target="display" class="text-7xl md:text-8xl font-mono font-bold text-gray-900 dark:text-white tracking-wider select-none">00:00:00.000</div>
+      </div>
+
+      <%# Control buttons %>
+      <div class="flex items-center justify-center gap-3 max-w-lg mx-auto mb-8">
+        <button data-stopwatch-calculator-target="startBtn" data-action="click->stopwatch-calculator#start" class="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-semibold">Start</button>
+        <button data-stopwatch-calculator-target="stopBtn" data-action="click->stopwatch-calculator#stop" class="hidden flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white rounded-xl shadow-sm shadow-red-500/20 hover:shadow-md hover:shadow-red-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-sm font-semibold">Stop</button>
+        <button data-stopwatch-calculator-target="lapBtn" data-action="click->stopwatch-calculator#lap" disabled class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed">Lap</button>
+        <button data-stopwatch-calculator-target="resetBtn" data-action="click->stopwatch-calculator#reset" class="flex-1 px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white rounded-xl shadow-sm shadow-gray-500/20 hover:shadow-md hover:shadow-gray-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 text-sm font-semibold">Reset</button>
+      </div>
+
+      <%# Lap times table %>
+      <div class="max-w-lg mx-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b-2 border-gray-200 dark:border-gray-700">
+              <th class="py-2 px-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Lap</th>
+              <th class="py-2 px-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Split Time</th>
+              <th class="py-2 px-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total Time</th>
+            </tr>
+          </thead>
+          <tbody data-stopwatch-calculator-target="lapList"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "stopwatch" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Online Stopwatch</h2>
+      <p>
+        Click the Start button to begin timing. The display updates continuously with millisecond precision, showing elapsed time in hours, minutes, seconds, and milliseconds format. When you need to pause, click Stop and the timer freezes at the exact moment you pressed the button. Click Resume to continue from where you left off, or Reset to clear everything and return to zero.
+      </p>
+      <p>
+        The Lap button is available whenever the stopwatch is running. Each time you press it, the stopwatch records a split time showing how long that particular lap took and the cumulative elapsed time. Laps appear in reverse chronological order at the top of the list so the most recent lap is always visible first. This is particularly useful for tracking multiple intervals during a single timing session.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Stopwatch Uses in Sports and Athletics</h2>
+      <p>
+        Athletes and coaches rely on stopwatches for everything from sprint timing to marathon pacing. In track and field, split times at each lap help runners understand their pacing strategy. A runner doing 400-meter repeats can use the lap feature to record each interval while keeping the overall workout time visible. Swimmers use stopwatches to track times across sets, recording rest intervals and swim times separately. The millisecond precision of this online stopwatch matches the accuracy needed for competitive training where fractions of a second matter.
+      </p>
+
+      <h3>Timing Workouts and Interval Training</h3>
+      <p>
+        High-intensity interval training, circuit training, and CrossFit-style workouts all benefit from precise timing. Use the stopwatch to time your entire workout while recording individual exercise intervals with the lap button. For example, during a circuit of pushups, squats, and burpees, press lap after each exercise to see how long each station took. The total time tracks your overall workout duration, while split times reveal which exercises slow you down.
+      </p>
+
+      <h3>Cooking and Laboratory Use</h3>
+      <p>
+        In professional kitchens and laboratories, timing is critical for reproducible results. Scientists timing chemical reactions, fermentation processes, or experimental procedures need reliable precision. Chefs timing multiple courses during service can use the lap function to track individual dishes. Unlike a countdown timer, a stopwatch lets you observe how long a process naturally takes, which is essential when developing new recipes or protocols.
+      </p>
+
+      <h3>Productivity and Time Studies</h3>
+      <p>
+        Time-and-motion studies use stopwatches to measure how long tasks take in manufacturing and service environments. If you want to understand where your time goes during a workday, start the stopwatch at the beginning and press lap each time you switch tasks. At the end of the day, you have a complete breakdown of time allocation across activities. This data drives informed decisions about process improvements, delegation, and scheduling.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How accurate is this online stopwatch?</h3>
+      <p>
+        This stopwatch uses the performance.now() browser API which provides sub-millisecond precision. The display updates continuously using requestAnimationFrame for smooth rendering, showing hours, minutes, seconds, and milliseconds in HH:MM:SS.mmm format.
+      </p>
+
+      <h3>Can I record lap times with this stopwatch?</h3>
+      <p>
+        Yes. While the stopwatch is running, click the Lap button to record a split time. Each lap entry shows the lap number, the time for that individual lap segment, and the cumulative elapsed time. Laps are displayed in reverse chronological order with the most recent lap at the top.
+      </p>
+
+      <h3>Will the stopwatch keep running if I switch browser tabs?</h3>
+      <p>
+        Yes. The stopwatch uses performance.now() which is based on a monotonic clock that continues to advance regardless of tab visibility. When you return to the tab, the display will immediately show the correct elapsed time without any drift or skipped time.
+      </p>
+
+      <h3>Can I pause and resume the stopwatch?</h3>
+      <p>
+        Yes. Click Stop to pause the timer at any point. The elapsed time is preserved and clicking Resume will continue counting from exactly where you left off. The Reset button clears the timer and all recorded lap times back to zero.
+      </p>
+
+      <h3>Is there a maximum time limit for the stopwatch?</h3>
+      <p>
+        There is no practical time limit. The stopwatch can run for days or even longer. The display format supports hours beyond 24, so it will correctly show values like 25:01:01.999 for extended timing sessions.
+      </p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Online Stopwatch", url: everyday_stopwatch_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Alarm Timer", description: "Set a countdown alarm with sound alert and screen flash.", path: everyday_alarm_timer_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Alarm Clock", description: "Set an alarm for a specific time with sound alert.", path: everyday_alarm_clock_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Date Difference Calculator", description: "Calculate the exact difference between any two dates.", path: everyday_date_difference_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("stopwatch") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

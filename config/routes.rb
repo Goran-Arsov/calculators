@@ -340,6 +340,28 @@ Rails.application.routes.draw do
     get "alarm-timer", to: "calculators#alarm_timer", as: :alarm_timer
     get "alarm-clock", to: "calculators#alarm_clock", as: :alarm_clock
     get "alarm-clock/active", to: "calculators#alarm_clock_active", as: :alarm_clock_active
+    get "stopwatch", to: "calculators#stopwatch", as: :stopwatch
+    get "pomodoro-timer", to: "calculators#pomodoro_timer", as: :pomodoro_timer
+    get "text-to-speech", to: "calculators#text_to_speech", as: :text_to_speech
+    get "temperature-converter", to: "calculators#temperature_converter", as: :temperature_converter
+    get "length-converter", to: "calculators#length_converter", as: :length_converter
+    get "weight-converter", to: "calculators#weight_converter", as: :weight_converter
+    get "speed-converter", to: "calculators#speed_converter", as: :speed_converter
+    get "byte-converter", to: "calculators#byte_converter", as: :byte_converter
+    get "css-box-shadow-generator", to: "calculators#css_box_shadow", as: :css_box_shadow
+    get "css-flexbox-generator", to: "calculators#css_flexbox", as: :css_flexbox
+    get "px-to-rem-converter", to: "calculators#px_to_rem", as: :px_to_rem
+    get "meta-tag-generator", to: "calculators#meta_tag_generator", as: :meta_tag_generator
+    get "favicon-generator", to: "calculators#favicon_generator", as: :favicon_generator
+    get "morse-code-translator", to: "calculators#morse_code", as: :morse_code
+    get "roman-numeral-converter", to: "calculators#roman_numeral", as: :roman_numeral
+    get "fake-data-generator", to: "calculators#fake_data_generator", as: :fake_data_generator
+    get "barcode-generator", to: "calculators#barcode_generator", as: :barcode_generator
+    get "schema-markup-generator", to: "calculators#schema_generator", as: :schema_generator
+    get "keyword-density-checker", to: "calculators#keyword_density", as: :keyword_density
+    get "prime-number-checker", to: "calculators#prime_checker", as: :prime_checker
+    get "random-number-generator", to: "calculators#random_number", as: :random_number
+    get "image-resizer", to: "calculators#image_resizer", as: :image_resizer
   end
 
   # Blog

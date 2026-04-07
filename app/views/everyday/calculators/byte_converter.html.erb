@@ -1,0 +1,225 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Byte Converter - Data Size Calculator (Binary & Decimal) | Free Online Tool",
+  description: "Convert data sizes between bytes, KB, MB, GB, TB, and PB. See both binary (KiB, MiB, GiB) and decimal (KB, MB, GB) values side by side. Real-time conversion.",
+  canonical: everyday_byte_converter_url,
+  og: {
+    title: "Byte Converter - Data Size Calculator | CalcWise",
+    description: "Convert data sizes between bytes, KB, MB, GB, TB, and PB with both binary and decimal values shown.",
+    url: everyday_byte_converter_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Byte/Data Size Converter", url: everyday_byte_converter_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the difference between KB and KiB?", answer: "KB (kilobyte) in the decimal system equals 1,000 bytes, while KiB (kibibyte) in the binary system equals 1,024 bytes. The IEC introduced the 'bi' prefixes (kibi, mebi, gibi) to eliminate ambiguity. Operating systems like Windows traditionally use binary values but label them with decimal prefixes, which is why a '1 TB' drive shows as about 931 GB." },
+  { question: "Why does my hard drive show less space than advertised?", answer: "Hard drive manufacturers use decimal (base-1000) units: 1 TB = 1,000,000,000,000 bytes. Operating systems like Windows use binary (base-1024) units: 1 TiB = 1,099,511,627,776 bytes. So a 1 TB drive contains 1,000,000,000,000 bytes, which equals approximately 931 GiB when displayed by the OS. No space is actually missing." },
+  { question: "How many MB are in a GB?", answer: "In the decimal system, 1 GB = 1,000 MB. In the binary system, 1 GiB = 1,024 MiB. Most people use 1 GB = 1,024 MB in practice because operating systems historically used binary calculations with decimal labels. This converter shows both to avoid confusion." },
+  { question: "What comes after petabytes?", answer: "After petabytes come exabytes (EB, 10^18 bytes), zettabytes (ZB, 10^21 bytes), and yottabytes (YB, 10^24 bytes). In binary equivalents: exbibytes (EiB), zebibytes (ZiB), and yobibytes (YiB). As of 2024, global data creation is measured in zettabytes per year." },
+  { question: "Should I use binary or decimal units for file sizes?", answer: "Use binary units (KiB, MiB, GiB) when discussing RAM, cache sizes, and operating system file sizes, as these are always measured in powers of 1024. Use decimal units (KB, MB, GB) for storage capacity, network speeds, and data transfer rates, as these industries use powers of 1000. This converter shows both to help you compare." }
+]) %>
+
+<%= calculator_schema(
+  name: "Byte/Data Size Converter",
+  description: "Convert data sizes between bytes, KB, MB, GB, TB, and PB with both binary (1024-based) and decimal (1000-based) values.",
+  url: everyday_byte_converter_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Byte/Data Size Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Byte / Data Size Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter a data size and see instant conversions in both binary (1024-based) and decimal (1000-based) units side by side.</p>
+
+    <div data-controller="byte-converter-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="byte-value" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Value</label>
+            <input id="byte-value" type="number" data-byte-converter-calculator-target="value" data-action="input->byte-converter-calculator#calculate" class="w-full" placeholder="1" step="any" min="0">
+          </div>
+          <div>
+            <label for="byte-unit" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">From Unit</label>
+            <select id="byte-unit" data-byte-converter-calculator-target="unit" data-action="change->byte-converter-calculator#calculate" class="w-full">
+              <option value="B">Bytes (B)</option>
+              <option value="KB">Kilobytes (KB)</option>
+              <option value="MB">Megabytes (MB)</option>
+              <option value="GB" selected>Gigabytes (GB)</option>
+              <option value="TB">Terabytes (TB)</option>
+              <option value="PB">Petabytes (PB)</option>
+            </select>
+          </div>
+        </div>
+
+        <div aria-live="polite" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <%# Binary column %>
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Binary (1024-based)</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Bytes (B)</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-byte-converter-calculator-target="resultB">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">KiB</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-byte-converter-calculator-target="resultKiB">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">MiB</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-byte-converter-calculator-target="resultMiB">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">GiB</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-byte-converter-calculator-target="resultGiB">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">TiB</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-byte-converter-calculator-target="resultTiB">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">PiB</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-byte-converter-calculator-target="resultPiB">--</span>
+              </div>
+            </div>
+          </div>
+
+          <%# Decimal column %>
+          <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Decimal (1000-based)</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Bytes (B)</span>
+                <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" data-byte-converter-calculator-target="resultDecB">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">KB</span>
+                <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" data-byte-converter-calculator-target="resultDecKB">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">MB</span>
+                <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" data-byte-converter-calculator-target="resultDecMB">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">GB</span>
+                <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" data-byte-converter-calculator-target="resultDecGB">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">TB</span>
+                <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" data-byte-converter-calculator-target="resultDecTB">--</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">PB</span>
+                <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" data-byte-converter-calculator-target="resultDecPB">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button data-action="click->byte-converter-calculator#copy" class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "byte-converter" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Byte / Data Size Converter</h2>
+      <p>
+        Enter a numeric value and select your input unit from the dropdown. The converter instantly shows the equivalent data size in all units, split into two columns: binary (1024-based, using KiB/MiB/GiB notation) and decimal (1000-based, using KB/MB/GB notation). Input units use binary (1024) interpretation, matching how most operating systems and software report file sizes.
+      </p>
+      <p>
+        This tool helps developers, system administrators, and anyone working with data storage or transfer understand the real differences between binary and decimal data size representations. It clarifies why a "1 TB" hard drive shows as only 931 GB in your operating system.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Binary vs. Decimal Data Units</h2>
+      <p>
+        Computer memory is organized in powers of 2 (binary), making 1,024 a natural boundary (2^10). Storage manufacturers and networking use powers of 10 (decimal), where 1 KB = 1,000 bytes. The IEC standardized binary prefixes in 1998: KiB (kibibyte, 1,024 bytes), MiB (mebibyte, 1,048,576 bytes), GiB (gibibyte, 1,073,741,824 bytes), and so on. Despite this standard, many operating systems still display binary values with decimal labels, leading to widespread confusion.
+      </p>
+
+      <h3>The Storage Discrepancy Explained</h3>
+      <p>
+        A hard drive sold as "1 TB" contains exactly 1,000,000,000,000 bytes (1 trillion bytes, using the decimal definition). When your operating system displays this using binary units, it shows approximately 931 GiB -- but labels it as "931 GB." The difference of about 7% per tier (KB vs KiB, MB vs MiB, etc.) compounds at larger sizes. A "1 PB" system shows as roughly 909 TiB. No storage is lost; it is purely a labeling convention difference.
+      </p>
+
+      <h3>Which System to Use</h3>
+      <p>
+        Use binary (KiB, MiB, GiB, TiB) when discussing RAM, CPU cache, swap space, and file system allocation -- these are always exact powers of 1024. Use decimal (KB, MB, GB, TB) when discussing hard drive capacity, SSD specifications, network bandwidth, and data transfer speeds -- these industries consistently use powers of 1000. This converter shows both simultaneously so you never have to guess.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the difference between KB and KiB?</h3>
+      <p>
+        KB (kilobyte) in the decimal system equals 1,000 bytes, while KiB (kibibyte) in the binary system equals 1,024 bytes. The IEC introduced the "bi" prefixes (kibi, mebi, gibi) to eliminate ambiguity. Operating systems like Windows traditionally use binary values but label them with decimal prefixes, which is why a "1 TB" drive shows as about 931 GB.
+      </p>
+
+      <h3>Why does my hard drive show less space than advertised?</h3>
+      <p>
+        Hard drive manufacturers use decimal (base-1000) units: 1 TB = 1,000,000,000,000 bytes. Operating systems like Windows use binary (base-1024) units: 1 TiB = 1,099,511,627,776 bytes. So a 1 TB drive contains 1,000,000,000,000 bytes, which equals approximately 931 GiB when displayed by the OS. No space is actually missing.
+      </p>
+
+      <h3>How many MB are in a GB?</h3>
+      <p>
+        In the decimal system, 1 GB = 1,000 MB. In the binary system, 1 GiB = 1,024 MiB. Most people use 1 GB = 1,024 MB in practice because operating systems historically used binary calculations with decimal labels. This converter shows both to avoid confusion.
+      </p>
+
+      <h3>What comes after petabytes?</h3>
+      <p>
+        After petabytes come exabytes (EB, 10^18 bytes), zettabytes (ZB, 10^21 bytes), and yottabytes (YB, 10^24 bytes). In binary equivalents: exbibytes (EiB), zebibytes (ZiB), and yobibytes (YiB). As of 2024, global data creation is measured in zettabytes per year.
+      </p>
+
+      <h3>Should I use binary or decimal units for file sizes?</h3>
+      <p>
+        Use binary units (KiB, MiB, GiB) when discussing RAM, cache sizes, and operating system file sizes, as these are always measured in powers of 1024. Use decimal units (KB, MB, GB) for storage capacity, network speeds, and data transfer rates, as these industries use powers of 1000. This converter shows both to help you compare.
+      </p>
+
+    <%= render "shared/print_button" %>
+
+    <%# Social sharing %>
+    <%= render "shared/social_share", title: "Byte / Data Size Converter", url: everyday_byte_converter_url %>
+
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Bandwidth Calculator", description: "Calculate file download time or required speed from file size and bandwidth.", path: everyday_bandwidth_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Screen Size Calculator", description: "Calculate screen width, height, and PPI from diagonal size and aspect ratio.", path: everyday_screen_size_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Speed Converter", description: "Convert between m/s, km/h, mph, knots, and ft/s.", path: everyday_speed_converter_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("byte-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
