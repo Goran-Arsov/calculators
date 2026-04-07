@@ -233,6 +233,22 @@ import RomanNumeralCalculatorController from "controllers/roman_numeral_calculat
 import FakeDataGeneratorCalculatorController from "controllers/fake_data_generator_calculator_controller"
 import BarcodeGeneratorCalculatorController from "controllers/barcode_generator_calculator_controller"
 
+// IT tools
+import HttpStatusReferenceCalculatorController from "controllers/http_status_reference_calculator_controller"
+import OgPreviewCalculatorController from "controllers/og_preview_calculator_controller"
+import CurlToCodeCalculatorController from "controllers/curl_to_code_calculator_controller"
+import JsonToYamlCalculatorController from "controllers/json_to_yaml_calculator_controller"
+import JsonToTypescriptCalculatorController from "controllers/json_to_typescript_calculator_controller"
+import HtmlFormatterCalculatorController from "controllers/html_formatter_calculator_controller"
+import CssFormatterCalculatorController from "controllers/css_formatter_calculator_controller"
+import JsFormatterCalculatorController from "controllers/js_formatter_calculator_controller"
+import HtmlToJsxCalculatorController from "controllers/html_to_jsx_calculator_controller"
+import RobotsTxtCalculatorController from "controllers/robots_txt_calculator_controller"
+import SvgToPngCalculatorController from "controllers/svg_to_png_calculator_controller"
+import Base64EncoderCalculatorController from "controllers/base64_encoder_calculator_controller"
+import UrlEncoderCalculatorController from "controllers/url_encoder_calculator_controller"
+import HexAsciiCalculatorController from "controllers/hex_ascii_calculator_controller"
+
 // Construction calculators
 import PaintCalculatorController from "controllers/paint_calculator_controller"
 import FlooringCalculatorController from "controllers/flooring_calculator_controller"
@@ -544,6 +560,22 @@ application.register("morse-code-calculator", MorseCodeCalculatorController)
 application.register("roman-numeral-calculator", RomanNumeralCalculatorController)
 application.register("fake-data-generator-calculator", FakeDataGeneratorCalculatorController)
 application.register("barcode-generator-calculator", BarcodeGeneratorCalculatorController)
+
+// IT tools
+application.register("http-status-reference-calculator", HttpStatusReferenceCalculatorController)
+application.register("og-preview-calculator", OgPreviewCalculatorController)
+application.register("curl-to-code-calculator", CurlToCodeCalculatorController)
+application.register("json-to-yaml-calculator", JsonToYamlCalculatorController)
+application.register("json-to-typescript-calculator", JsonToTypescriptCalculatorController)
+application.register("html-formatter-calculator", HtmlFormatterCalculatorController)
+application.register("css-formatter-calculator", CssFormatterCalculatorController)
+application.register("js-formatter-calculator", JsFormatterCalculatorController)
+application.register("html-to-jsx-calculator", HtmlToJsxCalculatorController)
+application.register("robots-txt-calculator", RobotsTxtCalculatorController)
+application.register("svg-to-png-calculator", SvgToPngCalculatorController)
+application.register("base64-encoder-calculator", Base64EncoderCalculatorController)
+application.register("url-encoder-calculator", UrlEncoderCalculatorController)
+application.register("hex-ascii-calculator", HexAsciiCalculatorController)
 
 // Suites
 application.register("suite-stepper", SuiteStepperController)
