@@ -264,8 +264,8 @@ export default class extends Controller {
     this.bars = []
     for (var i = 0; i < 100; i++) {
       var bar = document.createElement("div")
-      bar.className = "w-full rounded-sm transition-all duration-300"
-      bar.style.height = "4px"
+      bar.className = "w-full transition-colors duration-300"
+      bar.style.height = "3px"
       bar.style.backgroundColor = "#d1d5db"
       container.appendChild(bar)
       this.bars.push(bar)
@@ -276,26 +276,28 @@ export default class extends Controller {
     if (!this.bars || this.initialTotalSeconds <= 0) return
     var elapsed = this.initialTotalSeconds - this.totalSeconds
     var pct = Math.min(100, Math.floor((elapsed / this.initialTotalSeconds) * 100))
+    var remaining = 100 - pct
 
+    // bars[0] is at the bottom (flex-col-reverse), bars[99] is at the top
+    // We want bars to disappear from the top down
     for (var i = 0; i < 100; i++) {
-      if (i < 100 - pct) {
-        // Remaining — colored by position: green at top, yellow in middle, red near bottom
-        var ratio = i / 100
-        if (ratio < 0.5) {
+      if (i < remaining) {
+        // Still remaining — colored
+        if (remaining > 50) {
           this.bars[i].style.backgroundColor = "#22c55e"
-        } else if (ratio < 0.8) {
+        } else if (remaining > 20) {
           this.bars[i].style.backgroundColor = "#eab308"
         } else {
           this.bars[i].style.backgroundColor = "#ef4444"
         }
       } else {
-        // Elapsed — gray
-        this.bars[i].style.backgroundColor = "#e5e7eb"
+        // Elapsed — gone
+        this.bars[i].style.backgroundColor = "#f3f4f6"
       }
     }
 
     if (this.hasProgressLabelTarget) {
-      this.progressLabelTarget.textContent = (100 - pct) + "% remaining"
+      this.progressLabelTarget.textContent = remaining + "% remaining"
     }
   }
 
