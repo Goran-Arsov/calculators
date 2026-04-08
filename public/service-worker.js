@@ -44,7 +44,16 @@ self.addEventListener("fetch", (event) => {
           // Cache successful HTML responses for offline use
           if (response.ok) {
             const clone = response.clone()
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, clone)
+              // Limit HTML cache to 50 pages
+              cache.keys().then((keys) => {
+                const htmlKeys = keys.filter((k) => !k.url.match(/\.(js|css|png|jpg|svg|ico|woff2?|json)$/))
+                if (htmlKeys.length > 50) {
+                  htmlKeys.slice(0, htmlKeys.length - 50).forEach((k) => cache.delete(k))
+                }
+              })
+            })
           }
           return response
         })

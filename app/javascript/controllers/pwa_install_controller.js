@@ -8,6 +8,11 @@ export default class extends Controller {
   connect() {
     if (localStorage.getItem("calcwise_pwa_dismissed")) return
 
+    // Only show install prompt after 3+ page visits
+    const visits = parseInt(localStorage.getItem("calcwise_visit_count") || "0", 10) + 1
+    localStorage.setItem("calcwise_visit_count", visits.toString())
+    if (visits < 3) return
+
     this.handleBeforeInstall = (e) => {
       e.preventDefault()
       this.deferredPrompt = e

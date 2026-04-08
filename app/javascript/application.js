@@ -119,3 +119,12 @@ document.addEventListener("turbo:before-cache", () => {
     delete ad.dataset.adsbygoogleStatus
   })
 })
+
+// Turbo navigation loading indicator
+document.addEventListener("turbo:before-fetch-request", () => {
+  document.body.setAttribute("aria-busy", "true")
+})
+
+document.addEventListener("turbo:load", () => {
+  document.body.removeAttribute("aria-busy")
+})
