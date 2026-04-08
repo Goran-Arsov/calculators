@@ -104,6 +104,7 @@ Rails.application.routes.draw do
     get "overtime-calculator", to: "calculators#overtime", as: :overtime
     get "hourly-to-salary-calculator", to: "calculators#hourly_to_salary", as: :hourly_to_salary
     get "invoice-generator", to: "calculators#invoice_generator", as: :invoice_generator
+    get "detailed-invoice-generator", to: "calculators#detailed_invoice_generator", as: :detailed_invoice_generator
   end
 
   # Math calculators

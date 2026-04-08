@@ -62,5 +62,6 @@ module Finance
     def overtime; end
     def hourly_to_salary; end
     def invoice_generator; end
+    def detailed_invoice_generator; end
   end
 end
