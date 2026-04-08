@@ -1,0 +1,84 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "#{calculator_name} - Free Online Tool",
+  description: subtitle,
+  canonical: calculator_url,
+  og: {
+    title: "#{calculator_name} - Free Online Tool | CalcWise",
+    description: subtitle,
+    url: calculator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: category_name, url: category_url },
+  { name: calculator_name, url: calculator_url }
+]) %>
+
+<% if local_assigns[:faq_items]&.any? %>
+  <%= faq_schema(faq_items) %>
+<% end %>
+
+<%= calculator_schema(
+  name: calculator_name,
+  description: subtitle,
+  url: calculator_url,
+  category: schema_category
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: category_name, url: category_path(category) },
+  { name: calculator_name }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight"><%= calculator_name %></h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed"><%= subtitle %></p>
+
+    <%# Calculator UI - yielded from the calling view %>
+    <%= yield %>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: calculator_slug %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <% if content_for?(:article_content) %>
+      <article class="prose dark:prose-invert max-w-none">
+        <%= yield :article_content %>
+
+        <%= render "shared/print_button" %>
+        <%= render "shared/social_share", title: calculator_name, url: calculator_url %>
+        <%= render "shared/calculation_email_capture" %>
+        <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+      </article>
+    <% end %>
+
+    <%# Related calculators %>
+    <% if local_assigns[:related]&.any? %>
+      <%= render "shared/related_calculators", related: related %>
+    <% end %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: category %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts(calculator_slug) %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

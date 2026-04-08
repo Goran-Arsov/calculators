@@ -2,49 +2,49 @@ require "test_helper"
 
 class CalculatorRatingTest < ActiveSupport::TestCase
   test "valid rating saves" do
-    rating = CalculatorRating.new(calculator_slug: "mortgage-calculator", direction: "up", ip_hash: "abc123")
+    rating = CalculatorRating.new(calculator_slug: "mortgage-calculator", direction: "up", score: 4, ip_hash: "abc123")
     assert rating.valid?
     assert rating.save
   end
 
   test "requires calculator_slug" do
-    rating = CalculatorRating.new(direction: "up", ip_hash: "abc123")
+    rating = CalculatorRating.new(direction: "up", score: 4, ip_hash: "abc123")
     refute rating.valid?
     assert_includes rating.errors[:calculator_slug], "can't be blank"
   end
 
   test "requires direction" do
-    rating = CalculatorRating.new(calculator_slug: "bmi-calculator", ip_hash: "abc123")
+    rating = CalculatorRating.new(calculator_slug: "bmi-calculator", score: 4, ip_hash: "abc123")
     refute rating.valid?
   end
 
   test "direction must be up or down" do
-    rating = CalculatorRating.new(calculator_slug: "bmi-calculator", direction: "sideways", ip_hash: "abc123")
+    rating = CalculatorRating.new(calculator_slug: "bmi-calculator", direction: "sideways", score: 4, ip_hash: "abc123")
     refute rating.valid?
     assert_includes rating.errors[:direction], "is not included in the list"
   end
 
   test "requires ip_hash" do
-    rating = CalculatorRating.new(calculator_slug: "bmi-calculator", direction: "up")
+    rating = CalculatorRating.new(calculator_slug: "bmi-calculator", direction: "up", score: 4)
     refute rating.valid?
   end
 
   test "same IP cannot rate same calculator twice" do
-    CalculatorRating.create!(calculator_slug: "loan-calculator", direction: "up", ip_hash: "dup123")
-    duplicate = CalculatorRating.new(calculator_slug: "loan-calculator", direction: "down", ip_hash: "dup123")
+    CalculatorRating.create!(calculator_slug: "loan-calculator", direction: "up", score: 4, ip_hash: "dup123")
+    duplicate = CalculatorRating.new(calculator_slug: "loan-calculator", direction: "down", score: 2, ip_hash: "dup123")
     refute duplicate.valid?
   end
 
   test "same IP can rate different calculators" do
-    CalculatorRating.create!(calculator_slug: "calc-a", direction: "up", ip_hash: "shared_ip")
-    rating = CalculatorRating.new(calculator_slug: "calc-b", direction: "down", ip_hash: "shared_ip")
+    CalculatorRating.create!(calculator_slug: "calc-a", direction: "up", score: 5, ip_hash: "shared_ip")
+    rating = CalculatorRating.new(calculator_slug: "calc-b", direction: "down", score: 2, ip_hash: "shared_ip")
     assert rating.valid?
   end
 
   test "counts_for returns up and down counts" do
-    CalculatorRating.create!(calculator_slug: "test-calc", direction: "up", ip_hash: "ip1")
-    CalculatorRating.create!(calculator_slug: "test-calc", direction: "up", ip_hash: "ip2")
-    CalculatorRating.create!(calculator_slug: "test-calc", direction: "down", ip_hash: "ip3")
+    CalculatorRating.create!(calculator_slug: "test-calc", direction: "up", score: 4, ip_hash: "ip1")
+    CalculatorRating.create!(calculator_slug: "test-calc", direction: "up", score: 5, ip_hash: "ip2")
+    CalculatorRating.create!(calculator_slug: "test-calc", direction: "down", score: 1, ip_hash: "ip3")
 
     counts = CalculatorRating.counts_for("test-calc")
     assert_equal 2, counts[:up]
@@ -80,21 +80,34 @@ class CalculatorRatingTest < ActiveSupport::TestCase
     assert_in_delta 5.0, result[:rating_value], 0.1
   end
 
-  test "rating_for_schema ignores ratings without score" do
-    CalculatorRating.create!(calculator_slug: "mixed-calc", direction: "up", ip_hash: "m1")
-    CalculatorRating.create!(calculator_slug: "mixed-calc", direction: "up", score: 4, ip_hash: "m2")
+  test "requires score" do
+    rating = CalculatorRating.new(calculator_slug: "mixed-calc", direction: "up", ip_hash: "m1")
+    refute rating.valid?
+    assert_includes rating.errors[:score], "can't be blank"
+  end
 
-    result = CalculatorRating.rating_for_schema("mixed-calc")
-    assert_equal 1, result[:rating_count]
-    assert_in_delta 4.0, result[:rating_value], 0.1
+  test "score must be between 1 and 5" do
+    rating = CalculatorRating.new(calculator_slug: "range-calc", direction: "up", score: 0, ip_hash: "r1")
+    refute rating.valid?
+    assert_includes rating.errors[:score], "is not included in the list"
+
+    rating.score = 6
+    refute rating.valid?
+    assert_includes rating.errors[:score], "is not included in the list"
+
+    rating.score = 1
+    assert rating.valid?
+
+    rating.score = 5
+    assert rating.valid?
   end
 
   test "trending returns top calculators by thumbs_up count in last 30 days" do
-    3.times { |i| CalculatorRating.create!(calculator_slug: "popular-calc", direction: "up", ip_hash: "t#{i}") }
-    1.times { |i| CalculatorRating.create!(calculator_slug: "less-popular", direction: "up", ip_hash: "u#{i}") }
-    2.times { |i| CalculatorRating.create!(calculator_slug: "mid-calc", direction: "up", ip_hash: "v#{i}") }
+    3.times { |i| CalculatorRating.create!(calculator_slug: "popular-calc", direction: "up", score: 5, ip_hash: "t#{i}") }
+    1.times { |i| CalculatorRating.create!(calculator_slug: "less-popular", direction: "up", score: 4, ip_hash: "u#{i}") }
+    2.times { |i| CalculatorRating.create!(calculator_slug: "mid-calc", direction: "up", score: 4, ip_hash: "v#{i}") }
     # thumbs_down should not count
-    CalculatorRating.create!(calculator_slug: "popular-calc", direction: "down", ip_hash: "d1")
+    CalculatorRating.create!(calculator_slug: "popular-calc", direction: "down", score: 1, ip_hash: "d1")
 
     result = CalculatorRating.trending(3)
 
@@ -107,7 +120,7 @@ class CalculatorRatingTest < ActiveSupport::TestCase
 
   test "trending falls back to all-time when not enough recent ratings" do
     # Create an old rating outside the 30-day window
-    old = CalculatorRating.create!(calculator_slug: "old-fav", direction: "up", ip_hash: "old1")
+    old = CalculatorRating.create!(calculator_slug: "old-fav", direction: "up", score: 5, ip_hash: "old1")
     old.update_column(:created_at, 60.days.ago)
 
     result = CalculatorRating.trending(1)
@@ -122,9 +135,9 @@ class CalculatorRatingTest < ActiveSupport::TestCase
   end
 
   test "scopes filter correctly" do
-    CalculatorRating.create!(calculator_slug: "scope-calc", direction: "up", ip_hash: "sc1")
-    CalculatorRating.create!(calculator_slug: "scope-calc", direction: "down", ip_hash: "sc2")
-    CalculatorRating.create!(calculator_slug: "other-calc", direction: "up", ip_hash: "sc3")
+    CalculatorRating.create!(calculator_slug: "scope-calc", direction: "up", score: 5, ip_hash: "sc1")
+    CalculatorRating.create!(calculator_slug: "scope-calc", direction: "down", score: 1, ip_hash: "sc2")
+    CalculatorRating.create!(calculator_slug: "other-calc", direction: "up", score: 4, ip_hash: "sc3")
 
     assert_equal 2, CalculatorRating.for_calculator("scope-calc").count
     assert_equal 1, CalculatorRating.for_calculator("scope-calc").thumbs_up.count

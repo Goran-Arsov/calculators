@@ -63,4 +63,39 @@ class Api::RatingsControllerTest < ActionDispatch::IntegrationTest
     post "/api/ratings/calc-d", params: { score: 3 }, as: :json
     assert_response :success
   end
+
+  test "GET show returns cache headers" do
+    get "/api/ratings/mortgage-calculator", as: :json
+    assert_response :success
+    assert_match(/max-age=300/, response.headers["Cache-Control"])
+  end
+
+  test "POST create with score below 1 returns error" do
+    assert_no_difference "CalculatorRating.count" do
+      post "/api/ratings/mortgage-calculator", params: { score: 0 }, as: :json
+    end
+    assert_response :unprocessable_entity
+    data = JSON.parse(response.body)
+    assert_equal false, data["success"]
+    assert_equal "Score must be between 1 and 5", data["error"]
+  end
+
+  test "POST create with score above 5 returns error" do
+    assert_no_difference "CalculatorRating.count" do
+      post "/api/ratings/mortgage-calculator", params: { score: 6 }, as: :json
+    end
+    assert_response :unprocessable_entity
+    data = JSON.parse(response.body)
+    assert_equal false, data["success"]
+    assert_equal "Score must be between 1 and 5", data["error"]
+  end
+
+  test "POST create returns average and count on success" do
+    post "/api/ratings/stats-test", params: { score: 4 }, as: :json
+    assert_response :success
+    data = JSON.parse(response.body)
+    assert data["success"]
+    assert data["average"].is_a?(Numeric)
+    assert data["count"].is_a?(Integer)
+  end
 end

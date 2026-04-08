@@ -11,6 +11,9 @@ class ApplicationController < ActionController::Base
 
   helper_method :embed_mode?
 
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
+  rescue_from ActionController::RoutingError, with: :not_found
+
   def embed_mode?
     false
   end
@@ -42,6 +45,14 @@ class ApplicationController < ActionController::Base
         image: "#{domain}/og-image.png"
       }
     )
+  end
+
+  def not_found
+    respond_to do |format|
+      format.html { render file: Rails.root.join("public/404.html"), layout: false, status: :not_found }
+      format.json { render json: { error: "Not found" }, status: :not_found }
+      format.any  { head :not_found }
+    end
   end
 
   # Default HTTP caching for all pages. Override in subclasses for different TTLs.

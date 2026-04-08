@@ -20,8 +20,8 @@ module SeoHelper
     "#{default_domain}#{path}"
   end
 
-  def set_meta_tags_for_calculator(title:, description:, url:, category:)
-    set_meta_tags(
+  def set_meta_tags_for_calculator(title:, description:, url:, category:, updated_at: nil)
+    tags = {
       title: title,
       description: description,
       canonical: url,
@@ -39,7 +39,9 @@ module SeoHelper
         description: description,
         image: og_image_url(category)
       }
-    )
+    }
+    tags[:article] = { modified_time: updated_at.iso8601 } if updated_at
+    set_meta_tags(tags)
   end
 
   def set_meta_tags_for_category(title:, description:, url:, category: nil)
@@ -133,6 +135,19 @@ module SeoHelper
         },
         "query-input" => "required name=search_term_string"
       }
+    }
+    tag.script(schema.to_json.html_safe, type: "application/ld+json")
+  end
+
+  def organization_schema
+    schema = {
+      "@context" => "https://schema.org",
+      "@type" => "Organization",
+      "name" => "CalcWise",
+      "url" => default_domain,
+      "logo" => "#{default_domain}/icon.png",
+      "description" => "Free online calculators for finance, math, physics, health, construction, and everyday life.",
+      "sameAs" => []
     }
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end

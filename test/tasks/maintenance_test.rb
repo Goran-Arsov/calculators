@@ -12,12 +12,14 @@ class MaintenancePurgeOldRatingsTest < ActiveSupport::TestCase
     old_rating = CalculatorRating.create!(
       calculator_slug: "test-calc",
       direction: "up",
+      score: 4,
       ip_hash: "old_hash_001",
       created_at: 7.months.ago
     )
     recent_rating = CalculatorRating.create!(
       calculator_slug: "test-calc",
       direction: "down",
+      score: 2,
       ip_hash: "recent_hash_001",
       created_at: 1.month.ago
     )

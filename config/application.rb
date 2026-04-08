@@ -36,6 +36,9 @@ module CalcWise
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Enable gzip compression for responses
+    config.middleware.insert_after ActionDispatch::Static, Rack::Deflater
+
     # Autoload PORO calculators
     config.autoload_paths << Rails.root.join("app", "calculators")
   end

@@ -2,7 +2,7 @@ class CalculatorRating < ApplicationRecord
   validates :calculator_slug, presence: true
   validates :direction, presence: true, inclusion: { in: %w[up down] }
   validates :ip_hash, presence: true, uniqueness: { scope: :calculator_slug, message: "has already rated this calculator" }
-  validates :score, inclusion: { in: 0..5 }, allow_nil: true
+  validates :score, presence: true, inclusion: { in: 1..5 }
 
   scope :for_calculator, ->(slug) { where(calculator_slug: slug) }
   scope :thumbs_up, -> { where(direction: "up") }
