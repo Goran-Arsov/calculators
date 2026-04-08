@@ -4,7 +4,7 @@ class BrowseController < ApplicationController
   include CalculatorHelper
 
   def index
-    @categories = ALL_CATEGORIES.map do |slug, category|
+    @categories = CalculatorRegistry::ALL_CATEGORIES.map do |slug, category|
       calcs = category[:calculators].map do |calc|
         calc.merge(path: resolve_calculator_path(calc))
       end

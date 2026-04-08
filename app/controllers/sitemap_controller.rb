@@ -58,12 +58,12 @@ class SitemapController < ApplicationController
     @urls << { loc: root_url, changefreq: "weekly", priority: "1.0", lastmod: Date.current.to_s }
 
     # Category pages
-    ALL_CATEGORIES.each_key do |cat|
+    CalculatorRegistry::ALL_CATEGORIES.each_key do |cat|
       @urls << { loc: category_url(cat), changefreq: "weekly", priority: "0.9", lastmod: Date.current.to_s }
     end
 
     # All calculators from every category
-    ALL_CATEGORIES.each_value do |category|
+    CalculatorRegistry::ALL_CATEGORIES.each_value do |category|
       category[:calculators].each do |calc|
         url_helper = calc[:path].to_s.sub(/_path\z/, "_url")
         @urls << { loc: send(url_helper), changefreq: "monthly", priority: "0.8", lastmod: Date.current.beginning_of_month.to_s }
@@ -76,8 +76,8 @@ class SitemapController < ApplicationController
     end
 
     # Blog posts
-    BlogPost.published.recent.each do |post|
-      @urls << { loc: blog_post_url(post.slug), changefreq: "monthly", priority: "0.6", lastmod: post.updated_at.to_date.to_s }
+    BlogPost.published.recent.pluck(:slug, :updated_at).each do |slug, updated_at|
+      @urls << { loc: blog_post_url(slug), changefreq: "monthly", priority: "0.6", lastmod: updated_at.to_date.to_s }
     end
 
     # Static pages

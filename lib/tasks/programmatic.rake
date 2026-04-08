@@ -68,7 +68,7 @@ namespace :programmatic do
   desc "Check for slug collisions with existing routes"
   task check_collisions: :environment do
     collisions = []
-    all_categories = CalculatorHelper::ALL_CATEGORIES rescue {}
+    all_categories = CalculatorRegistry::ALL_CATEGORIES rescue {}
 
     ProgrammaticSeo::Registry.all_slugs.each do |slug|
       all_categories.each_value do |category|

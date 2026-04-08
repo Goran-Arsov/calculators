@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { formatCurrency } from "utils/formatting"
 
 export default class extends Controller {
   static targets = ["amount", "rate", "years", "monthlyPayment", "totalPaid", "totalInterest", "numPayments"]
@@ -27,9 +28,9 @@ export default class extends Controller {
     const totalPaid = monthlyPayment * numPayments
     const totalInterest = totalPaid - amount
 
-    this.monthlyPaymentTarget.textContent = this.formatCurrency(monthlyPayment)
-    this.totalPaidTarget.textContent = this.formatCurrency(totalPaid)
-    this.totalInterestTarget.textContent = this.formatCurrency(totalInterest)
+    this.monthlyPaymentTarget.textContent = formatCurrency(monthlyPayment)
+    this.totalPaidTarget.textContent = formatCurrency(totalPaid)
+    this.totalInterestTarget.textContent = formatCurrency(totalInterest)
     this.numPaymentsTarget.textContent = numPayments
   }
 
@@ -40,12 +41,13 @@ export default class extends Controller {
     this.numPaymentsTarget.textContent = "0"
   }
 
-  formatCurrency(value) {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value)
-  }
-
-  copy() {
+  copy(event) {
     const text = `Monthly Payment: ${this.monthlyPaymentTarget.textContent}\nTotal Paid: ${this.totalPaidTarget.textContent}\nTotal Interest: ${this.totalInterestTarget.textContent}`
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = event.currentTarget
+      const original = btn.textContent
+      btn.textContent = "Copied!"
+      setTimeout(() => { btn.textContent = original }, 2000)
+    })
   }
 }

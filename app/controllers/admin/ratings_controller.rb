@@ -4,7 +4,27 @@ module Admin
   class RatingsController < ApplicationController
     skip_before_action :set_http_cache
 
-    before_action :require_admin_token
+    before_action :authenticate_admin, except: [ :login, :submit_login ]
+    rate_limit to: 5, within: 1.minute, by: -> { request.remote_ip }, only: :submit_login,
+               with: -> { redirect_to admin_login_path, alert: "Too many attempts. Try again later." }
+
+    def login
+      redirect_to admin_ratings_path if admin_signed_in?
+    end
+
+    def submit_login
+      if params[:token].present? && ActiveSupport::SecurityUtils.secure_compare(params[:token], admin_token)
+        session[:admin_authenticated] = true
+        redirect_to admin_ratings_path, notice: "Logged in successfully."
+      else
+        redirect_to admin_login_path, alert: "Invalid token."
+      end
+    end
+
+    def logout
+      session.delete(:admin_authenticated)
+      redirect_to admin_login_path, notice: "Logged out."
+    end
 
     def index
       ratings_data = CalculatorRating
@@ -52,14 +72,16 @@ module Admin
 
     private
 
-    def require_admin_token
-      unless params[:token] == admin_token
-        render plain: "Unauthorized", status: :unauthorized
-      end
+    def authenticate_admin
+      redirect_to admin_login_path unless admin_signed_in?
+    end
+
+    def admin_signed_in?
+      session[:admin_authenticated] == true
     end
 
     def admin_token
-      ENV.fetch("ADMIN_TOKEN", "calchammer-admin-2026")
+      ENV.fetch("ADMIN_TOKEN") { raise "ADMIN_TOKEN environment variable is required" }
     end
   end
 end

@@ -21,7 +21,7 @@ class CalculatorHelperTest < ActionView::TestCase
   test "seasonal_calculators returns different calculators per month" do
     # Verify that the SEASONAL_FEATURES constant covers all 12 months
     (1..12).each do |month|
-      assert CalculatorHelper::SEASONAL_FEATURES.key?(month), "SEASONAL_FEATURES missing month #{month}"
+      assert CalculatorRegistry::SEASONAL_FEATURES.key?(month), "SEASONAL_FEATURES missing month #{month}"
     end
   end
 
@@ -53,8 +53,8 @@ class CalculatorHelperTest < ActionView::TestCase
   # --- CROSS_CATEGORY_LINKS constant ---
 
   test "CROSS_CATEGORY_LINKS values reference valid calculator slugs" do
-    all_slugs = ALL_CATEGORIES.values.flat_map { |cat| cat[:calculators].map { |c| c[:slug] } }
-    CalculatorHelper::CROSS_CATEGORY_LINKS.each do |source, targets|
+    all_slugs = CalculatorRegistry::ALL_CATEGORIES.values.flat_map { |cat| cat[:calculators].map { |c| c[:slug] } }
+    CalculatorRegistry::CROSS_CATEGORY_LINKS.each do |source, targets|
       targets.each do |target_slug|
         assert_includes all_slugs, target_slug,
           "CROSS_CATEGORY_LINKS['#{source}'] references '#{target_slug}' which is not a valid calculator slug"

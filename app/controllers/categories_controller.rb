@@ -3,7 +3,7 @@ class CategoriesController < ApplicationController
 
   def show
     @slug = params[:category]
-    @category = ALL_CATEGORIES[@slug]
+    @category = CalculatorRegistry::ALL_CATEGORIES[@slug]
     raise ActionController::RoutingError, "Not Found" unless @category
 
     all_calcs = @category[:calculators].map do |calc|
@@ -11,7 +11,7 @@ class CategoriesController < ApplicationController
     end
 
     if @slug == "everyday"
-      hidden_slugs = IT_TOOL_SLUGS + MATH_CROSSLIST_SLUGS
+      hidden_slugs = CalculatorRegistry::IT_TOOL_SLUGS + CalculatorRegistry::MATH_CROSSLIST_SLUGS
       @calculators = all_calcs.reject { |c| hidden_slugs.include?(c[:slug]) }
     else
       @calculators = all_calcs

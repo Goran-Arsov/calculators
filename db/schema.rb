@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_06_221130) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_08_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -25,6 +25,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_221130) do
     t.string "slug"
     t.string "title"
     t.datetime "updated_at", null: false
+    t.index ["published_at"], name: "index_blog_posts_on_published_at"
     t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
   end
 
@@ -48,6 +49,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_221130) do
     t.boolean "read", default: false
     t.string "subject"
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_contact_messages_on_email"
+    t.index ["read", "created_at"], name: "index_contact_messages_on_read_and_created_at"
   end
 
   create_table "newsletter_subscribers", force: :cascade do |t|
@@ -56,6 +59,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_221130) do
     t.string "email"
     t.string "ip_address"
     t.datetime "updated_at", null: false
+    t.index ["confirmed"], name: "index_newsletter_subscribers_on_confirmed"
     t.index ["email"], name: "index_newsletter_subscribers_on_email", unique: true
   end
 

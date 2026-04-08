@@ -4,9 +4,9 @@ class ItToolsController < ApplicationController
   include CalculatorHelper
 
   def index
-    everyday_calcs = ALL_CATEGORIES["everyday"][:calculators]
+    everyday_calcs = CalculatorRegistry::ALL_CATEGORIES["everyday"][:calculators]
     @tools = everyday_calcs
-      .select { |c| IT_TOOL_SLUGS.include?(c[:slug]) }
+      .select { |c| CalculatorRegistry::IT_TOOL_SLUGS.include?(c[:slug]) }
       .map { |c| c.merge(path: resolve_calculator_path(c)) }
 
     set_meta_tags(

@@ -25,7 +25,12 @@ export default class extends Controller {
   }
 
   connect() {
-    this.element.addEventListener("chart:update", (e) => this.render(e.detail))
+    this.handleChartUpdate = (e) => this.render(e.detail)
+    this.element.addEventListener("chart:update", this.handleChartUpdate)
+  }
+
+  disconnect() {
+    this.element.removeEventListener("chart:update", this.handleChartUpdate)
   }
 
   render(detail) {

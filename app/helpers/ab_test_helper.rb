@@ -34,6 +34,8 @@ module AbTestHelper
   # Call once per page, e.g., in the layout or calculator view.
   def ab_tracking_tag(experiment_name)
     variant = ab_variant(experiment_name)
-    tag.script("if(typeof gtag===\"function\"){gtag(\"event\",\"experiment_impression\",{experiment:\"#{experiment_name}\",variant:\"#{variant}\"})}".html_safe)
+    safe_name = ERB::Util.json_escape(experiment_name.to_s)
+    safe_variant = ERB::Util.json_escape(variant.to_s)
+    tag.script("if(typeof gtag===\"function\"){gtag(\"event\",\"experiment_impression\",{experiment:\"#{safe_name}\",variant:\"#{safe_variant}\"})}".html_safe)
   end
 end

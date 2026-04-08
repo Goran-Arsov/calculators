@@ -8,11 +8,18 @@ export default class extends Controller {
   connect() {
     if (localStorage.getItem("calcwise_pwa_dismissed")) return
 
-    window.addEventListener("beforeinstallprompt", (e) => {
+    this.handleBeforeInstall = (e) => {
       e.preventDefault()
       this.deferredPrompt = e
       this.element.classList.remove("hidden")
-    })
+    }
+    window.addEventListener("beforeinstallprompt", this.handleBeforeInstall)
+  }
+
+  disconnect() {
+    if (this.handleBeforeInstall) {
+      window.removeEventListener("beforeinstallprompt", this.handleBeforeInstall)
+    }
   }
 
   install() {

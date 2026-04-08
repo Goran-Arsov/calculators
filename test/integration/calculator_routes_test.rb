@@ -4,7 +4,7 @@ class CalculatorRoutesTest < ActionDispatch::IntegrationTest
   include CalculatorHelper
 
   test "all calculator routes return 200" do
-    ALL_CATEGORIES.each do |category_slug, category|
+    CalculatorRegistry::ALL_CATEGORIES.each do |category_slug, category|
       category[:calculators].each do |calc|
         path = send(calc[:path])
         get path
@@ -14,7 +14,7 @@ class CalculatorRoutesTest < ActionDispatch::IntegrationTest
   end
 
   test "all category pages return 200" do
-    ALL_CATEGORIES.each_key do |slug|
+    CalculatorRegistry::ALL_CATEGORIES.each_key do |slug|
       get category_path(slug)
       assert_response :success, "Failed for category: #{slug}"
     end

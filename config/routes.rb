@@ -32,6 +32,9 @@ Rails.application.routes.draw do
   get "information-technology", to: "it_tools#index", as: :it_tools
 
   # Admin
+  get "admin/login", to: "admin/ratings#login", as: :admin_login
+  post "admin/login", to: "admin/ratings#submit_login"
+  delete "admin/logout", to: "admin/ratings#logout", as: :admin_logout
   get "admin/ratings", to: "admin/ratings#index", as: :admin_ratings
 
   # API
