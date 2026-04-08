@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class CalculatorRegistry
-
   IT_TOOL_SLUGS = %w[
     secure-random-generator uuid-generator hash-generator hmac-generator
     jwt-decoder unix-timestamp-converter cron-expression-parser cron-job-generator
