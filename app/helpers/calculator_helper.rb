@@ -323,6 +323,23 @@ module CalculatorHelper
       .map { |c| c.merge(path: resolve_calculator_path(c)) }
   end
 
+  def trending_calculators(limit = 6)
+    all_calcs = ALL_CATEGORIES.values.flat_map { |cat| cat[:calculators] }
+    trending_data = CalculatorRating.trending(limit)
+
+    resolved = trending_data.filter_map do |entry|
+      calc = all_calcs.find { |c| c[:slug] == entry[:slug] }
+      next unless calc
+
+      calc.merge(path: resolve_calculator_path(calc))
+    end
+
+    return resolved if resolved.any?
+
+    # Fall back to first calculators from FINANCE_CALCULATORS if no ratings exist
+    FINANCE_CALCULATORS.first(limit).map { |c| c.merge(path: resolve_calculator_path(c)) }
+  end
+
   # Maps calculator slugs to relevant blog post slugs for cross-linking
   CALCULATOR_BLOG_MAP = {
     "mortgage-calculator" => %w[how-to-calculate-monthly-mortgage-payment 15-year-vs-30-year-mortgage how-much-house-can-i-afford],
@@ -377,8 +394,10 @@ module CalculatorHelper
       category[:calculators].map do |calc|
         {
           name: calc[:name],
+          slug: calc[:slug],
           description: calc[:description],
           category: category[:title],
+          icon_path: calc[:icon_path],
           path: resolve_calculator_path(calc)
         }
       end
@@ -412,18 +431,58 @@ module CalculatorHelper
 
   # Maps calculators to relevant calculators in OTHER categories
   CROSS_CATEGORY_LINKS = {
+    # Finance ↔ Construction/Health/Everyday
     "mortgage-calculator" => %w[home-affordability-calculator paint-calculator concrete-calculator],
-    "bmi-calculator" => %w[calorie-calculator tdee-calculator pace-calculator],
-    "calorie-calculator" => %w[bmi-calculator macro-calculator keto-calculator],
-    "tip-calculator" => %w[discount-calculator percentage-calculator],
-    "concrete-calculator" => %w[gravel-mulch-calculator deck-calculator lumber-calculator],
     "loan-calculator" => %w[mortgage-calculator auto-loan-calculator debt-payoff-calculator],
-    "percentage-calculator" => %w[discount-calculator tip-calculator profit-margin-calculator],
-    "velocity-calculator" => %w[force-calculator kinetic-energy-calculator projectile-motion-calculator],
-    "paint-calculator" => %w[wallpaper-calculator flooring-calculator tile-calculator],
     "compound-interest-calculator" => %w[investment-calculator savings-goal-calculator retirement-calculator],
     "retirement-calculator" => %w[401k-calculator compound-interest-calculator savings-goal-calculator],
-    "tdee-calculator" => %w[calorie-calculator macro-calculator keto-calculator]
+    "salary-calculator" => %w[tax-bracket-calculator paycheck-calculator inflation-calculator],
+    "profit-margin-calculator" => %w[roi-calculator break-even-calculator invoice-generator],
+    "invoice-generator" => %w[profit-margin-calculator tax-bracket-calculator roi-calculator],
+    "detailed-invoice-generator" => %w[invoice-generator profit-margin-calculator break-even-calculator],
+    "home-affordability-calculator" => %w[mortgage-calculator paint-calculator concrete-calculator],
+    "auto-loan-calculator" => %w[loan-calculator fuel-cost-calculator gas-mileage-calculator],
+    "student-loan-calculator" => %w[gpa-calculator salary-calculator paycheck-calculator],
+    # Health ↔ Everyday/Math
+    "bmi-calculator" => %w[calorie-calculator tdee-calculator ideal-weight-calculator],
+    "calorie-calculator" => %w[bmi-calculator macro-calculator cooking-converter],
+    "tdee-calculator" => %w[calorie-calculator macro-calculator pace-calculator],
+    "macro-calculator" => %w[calorie-calculator tdee-calculator keto-calculator],
+    "pace-calculator" => %w[calorie-calculator speed-converter length-converter],
+    "water-intake-calculator" => %w[calorie-calculator cup-converter weight-converter],
+    "pregnancy-due-date-calculator" => %w[date-difference-calculator age-calculator pregnancy-week-calculator],
+    "dog-food-calculator" => %w[dog-age-calculator weight-converter calorie-calculator],
+    # Math ↔ Finance/Everyday
+    "percentage-calculator" => %w[discount-calculator tip-calculator profit-margin-calculator],
+    "fraction-calculator" => %w[percentage-calculator gcd-lcm-calculator cooking-converter],
+    "area-calculator" => %w[flooring-calculator paint-calculator tile-calculator],
+    "standard-deviation-calculator" => %w[sample-size-calculator percentage-calculator gpa-calculator],
+    # Physics ↔ Everyday/Construction
+    "velocity-calculator" => %w[force-calculator speed-converter length-converter],
+    "force-calculator" => %w[velocity-calculator weight-converter kinetic-energy-calculator],
+    "electricity-cost-calculator" => %w[wire-gauge-calculator electricity-bill-calculator fuel-cost-calculator],
+    "unit-converter" => %w[length-converter weight-converter speed-converter],
+    # Construction ↔ Finance/Math
+    "concrete-calculator" => %w[gravel-mulch-calculator mortgage-calculator area-calculator],
+    "paint-calculator" => %w[wallpaper-calculator flooring-calculator area-calculator],
+    "flooring-calculator" => %w[area-calculator tile-calculator paint-calculator],
+    "deck-calculator" => %w[lumber-calculator mortgage-calculator concrete-calculator],
+    # Everyday ↔ cross-category
+    "tip-calculator" => %w[discount-calculator percentage-calculator cooking-converter],
+    "discount-calculator" => %w[percentage-calculator tip-calculator unit-price-calculator],
+    "fuel-cost-calculator" => %w[gas-mileage-calculator moving-cost-calculator auto-loan-calculator],
+    "cooking-converter" => %w[cup-converter weight-converter calorie-calculator],
+    "cup-converter" => %w[cooking-converter teaspoon-converter volume-converter],
+    "length-converter" => %w[area-calculator speed-converter weight-converter],
+    "weight-converter" => %w[length-converter cooking-converter bmi-calculator],
+    "temperature-converter" => %w[speed-converter length-converter weight-converter],
+    "speed-converter" => %w[velocity-calculator length-converter pace-calculator],
+    "volume-converter" => %w[cup-converter length-converter area-calculator],
+    "age-calculator" => %w[date-difference-calculator dog-age-calculator pregnancy-due-date-calculator],
+    "date-difference-calculator" => %w[age-calculator time-zone-converter pregnancy-due-date-calculator],
+    "gpa-calculator" => %w[grade-calculator percentage-calculator student-loan-calculator],
+    "electricity-bill-calculator" => %w[electricity-cost-calculator fuel-cost-calculator solar-savings-calculator],
+    "work-hours-calculator" => %w[salary-calculator paycheck-calculator date-difference-calculator]
   }.freeze
 
   def cross_category_calculators(calculator_slug, count: 3)

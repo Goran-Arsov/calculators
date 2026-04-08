@@ -89,6 +89,38 @@ class CalculatorRatingTest < ActiveSupport::TestCase
     assert_in_delta 4.0, result[:rating_value], 0.1
   end
 
+  test "trending returns top calculators by thumbs_up count in last 30 days" do
+    3.times { |i| CalculatorRating.create!(calculator_slug: "popular-calc", direction: "up", ip_hash: "t#{i}") }
+    1.times { |i| CalculatorRating.create!(calculator_slug: "less-popular", direction: "up", ip_hash: "u#{i}") }
+    2.times { |i| CalculatorRating.create!(calculator_slug: "mid-calc", direction: "up", ip_hash: "v#{i}") }
+    # thumbs_down should not count
+    CalculatorRating.create!(calculator_slug: "popular-calc", direction: "down", ip_hash: "d1")
+
+    result = CalculatorRating.trending(3)
+
+    assert_equal 3, result.size
+    assert_equal "popular-calc", result.first[:slug]
+    assert_equal 3, result.first[:count]
+    assert_equal "mid-calc", result.second[:slug]
+    assert_equal 2, result.second[:count]
+  end
+
+  test "trending falls back to all-time when not enough recent ratings" do
+    # Create an old rating outside the 30-day window
+    old = CalculatorRating.create!(calculator_slug: "old-fav", direction: "up", ip_hash: "old1")
+    old.update_column(:created_at, 60.days.ago)
+
+    result = CalculatorRating.trending(1)
+
+    assert_equal 1, result.size
+    assert_equal "old-fav", result.first[:slug]
+  end
+
+  test "trending returns empty array when no thumbs_up ratings exist" do
+    result = CalculatorRating.trending(6)
+    assert_equal [], result
+  end
+
   test "scopes filter correctly" do
     CalculatorRating.create!(calculator_slug: "scope-calc", direction: "up", ip_hash: "sc1")
     CalculatorRating.create!(calculator_slug: "scope-calc", direction: "down", ip_hash: "sc2")

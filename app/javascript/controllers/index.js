@@ -297,6 +297,8 @@ import AdEngagementController from "controllers/ad_engagement_controller"
 import CalculatorRatingController from "controllers/calculator_rating_controller"
 import ChartController from "controllers/chart_controller"
 import EmailCaptureController from "controllers/email_capture_controller"
+import TrackVisitController from "controllers/track_visit_controller"
+import RecentCalculatorsController from "controllers/recent_calculators_controller"
 
 // Finance
 application.register("mortgage-calculator", MortgageCalculatorController)
@@ -595,3 +597,5 @@ application.register("ad-engagement", AdEngagementController)
 application.register("calculator-rating", CalculatorRatingController)
 application.register("chart", ChartController)
 application.register("email-capture", EmailCaptureController)
+application.register("track-visit", TrackVisitController)
+application.register("recent-calculators", RecentCalculatorsController)

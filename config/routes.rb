@@ -388,7 +388,9 @@ Rails.application.routes.draw do
   get "embed/:category/:slug", to: "embeds#show", as: :calculator_embed
 
   # SEO
-  get "sitemap.xml", to: "sitemap#show", defaults: { format: :xml }
+  get "sitemap.xml", to: "sitemap#index", defaults: { format: :xml }
+  get "sitemap-main.xml", to: "sitemap#show", defaults: { format: :xml }, as: :sitemap_main
+  get "sitemap-:locale.xml", to: "sitemap#locale", defaults: { format: :xml }, constraints: { locale: /de|fr|es|pt/ }, as: :sitemap_locale
   get "robots.txt", to: "robots#show", defaults: { format: :text }
 
   # Calculator suites - guided multi-step workflows

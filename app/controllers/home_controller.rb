@@ -1,4 +1,6 @@
 class HomeController < ApplicationController
+  include CalculatorHelper
+
   def index
     set_meta_tags(
       title: "Free Online Calculators",
@@ -12,5 +14,9 @@ class HomeController < ApplicationController
         site_name: "CalcWise"
       }
     )
+
+    @trending_calculators = Rails.cache.fetch("trending_calculators", expires_in: 1.hour) do
+      trending_calculators
+    end
   end
 end

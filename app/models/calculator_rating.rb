@@ -23,6 +23,27 @@ class CalculatorRating < ApplicationRecord
     { average: average, count: count }
   end
 
+  def self.trending(limit = 6)
+    # Try last 30 days first
+    recent = thumbs_up
+      .where(created_at: 30.days.ago..)
+      .group(:calculator_slug)
+      .order(Arel.sql("COUNT(*) DESC"))
+      .limit(limit)
+      .count
+
+    # Fall back to all-time if not enough recent ratings
+    if recent.size < limit
+      recent = thumbs_up
+        .group(:calculator_slug)
+        .order(Arel.sql("COUNT(*) DESC"))
+        .limit(limit)
+        .count
+    end
+
+    recent.map { |slug, count| { slug: slug, count: count } }
+  end
+
   def self.rating_for_schema(slug)
     stats = star_stats_for(slug)
     return nil if stats[:count].zero?
