@@ -216,6 +216,8 @@ import LengthConverterCalculatorController from "controllers/length_converter_ca
 import WeightConverterCalculatorController from "controllers/weight_converter_calculator_controller"
 import SpeedConverterCalculatorController from "controllers/speed_converter_calculator_controller"
 import ByteConverterCalculatorController from "controllers/byte_converter_calculator_controller"
+import CupConverterCalculatorController from "controllers/cup_converter_calculator_controller"
+import VolumeConverterCalculatorController from "controllers/volume_converter_calculator_controller"
 
 import CssBoxShadowCalculatorController from "controllers/css_box_shadow_calculator_controller"
 import CssFlexboxCalculatorController from "controllers/css_flexbox_calculator_controller"
@@ -545,6 +547,8 @@ application.register("length-converter-calculator", LengthConverterCalculatorCon
 application.register("weight-converter-calculator", WeightConverterCalculatorController)
 application.register("speed-converter-calculator", SpeedConverterCalculatorController)
 application.register("byte-converter-calculator", ByteConverterCalculatorController)
+application.register("cup-converter-calculator", CupConverterCalculatorController)
+application.register("volume-converter-calculator", VolumeConverterCalculatorController)
 
 application.register("css-box-shadow-calculator", CssBoxShadowCalculatorController)
 application.register("css-flexbox-calculator", CssFlexboxCalculatorController)

@@ -349,6 +349,10 @@ Rails.application.routes.draw do
     get "weight-converter", to: "calculators#weight_converter", as: :weight_converter
     get "speed-converter", to: "calculators#speed_converter", as: :speed_converter
     get "byte-converter", to: "calculators#byte_converter", as: :byte_converter
+    get "cup-converter", to: "calculators#cup_converter", as: :cup_converter
+    get "teaspoon-converter", to: "calculators#teaspoon_converter", as: :teaspoon_converter
+    get "tablespoon-converter", to: "calculators#tablespoon_converter", as: :tablespoon_converter
+    get "volume-converter", to: "calculators#volume_converter", as: :volume_converter
     get "css-box-shadow-generator", to: "calculators#css_box_shadow", as: :css_box_shadow
     get "css-flexbox-generator", to: "calculators#css_flexbox", as: :css_flexbox
     get "px-to-rem-converter", to: "calculators#px_to_rem", as: :px_to_rem

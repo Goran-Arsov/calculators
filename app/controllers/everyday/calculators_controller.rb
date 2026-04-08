@@ -133,6 +133,10 @@ module Everyday
     def weight_converter; end
     def speed_converter; end
     def byte_converter; end
+    def cup_converter; end
+    def teaspoon_converter; end
+    def tablespoon_converter; end
+    def volume_converter; end
     def css_box_shadow; end
     def css_flexbox; end
     def px_to_rem; end
