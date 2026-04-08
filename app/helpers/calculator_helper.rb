@@ -92,4 +92,9 @@ module CalculatorHelper
     return nil unless url
     %(<iframe src="#{url}" width="#{width}" height="#{height}" frameborder="0" style="border:none;border-radius:12px;" loading="lazy" title="CalcWise Calculator"></iframe>)
   end
+
+  def embed_script_for(category_slug, calculator_slug)
+    domain = ENV.fetch("DOMAIN", "https://calcwise.com")
+    %(<script src="#{domain}/embed.js" data-calculator="#{calculator_slug}" data-category="#{category_slug}"></script>)
+  end
 end

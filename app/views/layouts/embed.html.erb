@@ -6,7 +6,12 @@
     <%= csrf_meta_tags %>
     <%= stylesheet_link_tag :app %>
     <%= javascript_importmap_tags %>
-    <style>body { padding: 16px; }</style>
+    <style>
+      body { padding: 16px; background: transparent; }
+    </style>
+    <% if params[:theme] == "dark" %>
+      <script>document.documentElement.classList.add("dark");</script>
+    <% end %>
   </head>
   <body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
     <%= yield %>
@@ -15,5 +20,34 @@
         Powered by CalcWise
       </a>
     </div>
+
+    <%# Report content height to parent for auto-resizing %>
+    <script>
+      (function() {
+        function reportHeight() {
+          var height = document.documentElement.scrollHeight;
+          if (window.parent !== window) {
+            window.parent.postMessage({ type: "calcwise:resize", height: height }, "*");
+          }
+        }
+
+        // Report on load and after any DOM change
+        reportHeight();
+        document.addEventListener("turbo:load", reportHeight);
+
+        // Observe DOM mutations (e.g., calculator results updating)
+        if (typeof MutationObserver !== "undefined") {
+          var observer = new MutationObserver(function() {
+            requestAnimationFrame(reportHeight);
+          });
+          observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+        }
+
+        // Also report on input events (calculator inputs changing results)
+        document.addEventListener("input", function() {
+          requestAnimationFrame(reportHeight);
+        });
+      })();
+    </script>
   </body>
 </html>

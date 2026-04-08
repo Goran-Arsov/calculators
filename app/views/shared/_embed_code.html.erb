@@ -1,4 +1,13 @@
 <%# Embed code snippet — allows users to embed this calculator on external sites %>
+<%
+  domain = ENV.fetch("DOMAIN", request.base_url)
+  # Derive category and slug from the embed URL
+  embed_parts = url.split("/embed/").last.split("/") rescue []
+  embed_category = embed_parts[0] || ""
+  embed_slug = embed_parts[1] || ""
+  script_src = "#{domain}/embed.js"
+%>
+
 <div class="mt-6 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800">
   <details class="group">
     <summary class="flex items-center gap-2 p-5 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
@@ -7,15 +16,56 @@
       <svg class="w-4 h-4 text-gray-400 ml-auto transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
     </summary>
     <div class="px-5 pb-5">
-      <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Add this calculator to your website for free. Copy the code below and paste it into your HTML.</p>
-      <div class="relative">
-        <code class="block bg-gray-100 dark:bg-gray-800 rounded-xl p-3 text-xs text-gray-600 dark:text-gray-400 font-mono break-all select-all" id="embed-code">&lt;iframe src="<%= url %>" width="100%" height="500" style="border:none;border-radius:12px;" title="<%= title %>"&gt;&lt;/iframe&gt;</code>
-        <button onclick="navigator.clipboard.writeText(document.getElementById('embed-code').textContent);this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)"
-                class="absolute top-2 right-2 px-3 py-1 text-xs font-medium bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
-          Copy
-        </button>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Add this calculator to your website for free. Copy the single line of code below and paste it into your HTML. The calculator auto-resizes to fit your page.</p>
+
+      <%# Script embed (recommended) %>
+      <div class="mb-4">
+        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Embed code</label>
+        <div class="relative">
+          <code class="block bg-gray-100 dark:bg-gray-800 rounded-xl p-3 pr-20 text-xs text-gray-600 dark:text-gray-400 font-mono break-all select-all" id="embed-script-code">&lt;script src="<%= script_src %>" data-calculator="<%= embed_slug %>" data-category="<%= embed_category %>"&gt;&lt;/script&gt;</code>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('embed-script-code').textContent);this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)"
+                  class="absolute top-2 right-2 px-3 py-1 text-xs font-medium bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+            Copy
+          </button>
+        </div>
       </div>
-      <%# Preview of the embedded calculator %>
+
+      <%# Customization options %>
+      <div class="mb-4">
+        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Options</label>
+        <div class="grid grid-cols-2 gap-2 text-xs text-gray-500 dark:text-gray-400">
+          <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
+            <span class="font-mono text-blue-600 dark:text-blue-400">data-theme</span>
+            <span class="block mt-0.5">"light", "dark", or "auto"</span>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
+            <span class="font-mono text-blue-600 dark:text-blue-400">data-values</span>
+            <span class="block mt-0.5">Pre-fill inputs, e.g. "amount=1000"</span>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
+            <span class="font-mono text-blue-600 dark:text-blue-400">data-max-width</span>
+            <span class="block mt-0.5">Max width, e.g. "600px"</span>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
+            <span class="font-mono text-blue-600 dark:text-blue-400">data-border</span>
+            <span class="block mt-0.5">"true" or "false"</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Fallback iframe option %>
+      <details class="text-xs">
+        <summary class="text-gray-400 dark:text-gray-500 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300">Or use an iframe instead</summary>
+        <div class="relative mt-2">
+          <code class="block bg-gray-100 dark:bg-gray-800 rounded-xl p-3 pr-20 text-xs text-gray-600 dark:text-gray-400 font-mono break-all select-all" id="embed-iframe-code">&lt;iframe src="<%= url %>" width="100%" height="500" style="border:none;border-radius:12px;" title="<%= title %>"&gt;&lt;/iframe&gt;</code>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('embed-iframe-code').textContent);this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)"
+                  class="absolute top-2 right-2 px-3 py-1 text-xs font-medium bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+            Copy
+          </button>
+        </div>
+      </details>
+
+      <%# Preview %>
       <div class="mt-4">
         <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Preview</p>
         <div class="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-800">
@@ -23,12 +73,12 @@
             <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
             <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
             <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
-            <span class="ml-2 text-xs text-gray-400 dark:text-gray-500 truncate"><%= url %></span>
+            <span class="ml-2 text-xs text-gray-400 dark:text-gray-500 truncate font-mono">yoursite.com/blog</span>
           </div>
           <div class="p-4 text-center">
             <div class="inline-flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-              <span><%= title %> will appear here</span>
+              <span><%= title %> auto-resizes here</span>
             </div>
           </div>
         </div>
