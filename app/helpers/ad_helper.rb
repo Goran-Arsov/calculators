@@ -13,8 +13,7 @@ module AdHelper
     "in_content"   => ENV.fetch("AD_SLOT_IN_CONTENT", ""),
     "sidebar"      => ENV.fetch("AD_SLOT_SIDEBAR", ""),
     "anchor"       => ENV.fetch("AD_SLOT_ANCHOR", ""),
-    "multiplex"    => ENV.fetch("AD_SLOT_MULTIPLEX", ""),
-    "after_intro"  => ENV.fetch("AD_SLOT_AFTER_INTRO", "")
+    "multiplex"    => ENV.fetch("AD_SLOT_MULTIPLEX", "")
   }.freeze
 
   def adsense_enabled?
