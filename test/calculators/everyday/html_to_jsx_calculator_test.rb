@@ -5,7 +5,7 @@ class Everyday::HtmlToJsxCalculatorTest < ActiveSupport::TestCase
     result = Everyday::HtmlToJsxCalculator.new(html: '<div class="container">Hello</div>').call
     assert result[:valid]
     assert_includes result[:jsx], "className"
-    assert_not_includes result[:jsx], ' class='
+    assert_not_includes result[:jsx], " class="
   end
 
   test "converts for to htmlFor" do

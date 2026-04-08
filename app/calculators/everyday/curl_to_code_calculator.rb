@@ -162,12 +162,12 @@ module Everyday
       lines << "http.use_ssl = true" if p[:url].start_with?("https")
       lines << ""
       klass = case p[:method]
-              when "POST" then "Post"
-              when "PUT" then "Put"
-              when "PATCH" then "Patch"
-              when "DELETE" then "Delete"
-              else "Get"
-              end
+      when "POST" then "Post"
+      when "PUT" then "Put"
+      when "PATCH" then "Patch"
+      when "DELETE" then "Delete"
+      else "Get"
+      end
       lines << "request = Net::HTTP::#{klass}.new(uri.request_uri)"
       p[:headers].each { |k, v| lines << "request['#{k}'] = '#{v}'" }
       lines << "request.body = '#{p[:data]}'" if p[:data]

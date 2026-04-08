@@ -23,6 +23,7 @@ class CalculatorInteractionTest < ApplicationSystemTestCase
 
   test "navigation links are accessible" do
     visit root_path
+    click_on "Categories"
     assert_link "Finance"
     assert_link "Math"
     assert_link "Physics"

@@ -1,0 +1,70 @@
+[Unit]
+Description=Calc Hammer Rails App
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=deploy
+Group=deploy
+WorkingDirectory=/home/deploy/calchammer
+
+# Ruby environment
+Environment="PATH=/home/deploy/.rbenv/shims:/home/deploy/.rbenv/bin:/usr/local/bin:/usr/bin:/bin"
+
+# Rails
+Environment="RAILS_ENV=production"
+Environment="RAILS_LOG_LEVEL=info"
+Environment="RAILS_MAX_THREADS=5"
+
+# Secrets — FILL THESE IN
+Environment="SECRET_KEY_BASE=GENERATE_WITH_bin_rails_secret"
+Environment="RAILS_MASTER_KEY=COPY_FROM_config_master_key"
+
+# Domain
+Environment="DOMAIN=https://calchammer.com"
+
+# Database
+Environment="DATABASE_URL=postgres://deploy@localhost:5432/calchammer_production"
+
+# Web server
+Environment="PORT=3000"
+Environment="WEB_CONCURRENCY=2"
+Environment="PIDFILE=/home/deploy/calchammer/tmp/pids/server.pid"
+
+# Admin
+Environment="ADMIN_TOKEN=calchammer-admin-2026"
+
+# AdSense (update after approval)
+Environment="ADSENSE_ENABLED=false"
+Environment="ADSENSE_PUB_ID=ca-pub-XXXXXXXXXXXXXXXX"
+Environment="AD_PROVIDER=adsense"
+
+# Content Security Policy
+Environment="CSP_ENFORCE=false"
+
+# Google Analytics (uncomment when ready)
+# Environment="GA_MEASUREMENT_ID=G-XXXXXXXXXX"
+
+# Google Search Console (uncomment when ready)
+# Environment="GOOGLE_SITE_VERIFICATION=your-code"
+
+# Sentry (uncomment when ready)
+# Environment="SENTRY_DSN=https://xxx@sentry.io/xxx"
+
+# Process management
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=calchammer
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Start Puma
+ExecStart=/home/deploy/.rbenv/shims/bundle exec puma -C config/puma.rb
+
+[Install]
+WantedBy=multi-user.target

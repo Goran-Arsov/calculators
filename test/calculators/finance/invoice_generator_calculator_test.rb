@@ -5,7 +5,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "single line item without tax or discount" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Widget", quantity: 5, unit_price: 10.0 }]
+      line_items: [ { description: "Widget", quantity: 5, unit_price: 10.0 } ]
     ).call
 
     assert result[:valid]
@@ -35,7 +35,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "with tax rate" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Service", quantity: 1, unit_price: 200.0 }],
+      line_items: [ { description: "Service", quantity: 1, unit_price: 200.0 } ],
       tax_rate: 10
     ).call
 
@@ -47,7 +47,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "with percent discount" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Product", quantity: 4, unit_price: 50.0 }],
+      line_items: [ { description: "Product", quantity: 4, unit_price: 50.0 } ],
       discount: 10,
       discount_type: "percent"
     ).call
@@ -60,7 +60,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "with flat discount" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Product", quantity: 4, unit_price: 50.0 }],
+      line_items: [ { description: "Product", quantity: 4, unit_price: 50.0 } ],
       discount: 30,
       discount_type: "flat"
     ).call
@@ -73,7 +73,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "with tax and percent discount" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Item", quantity: 10, unit_price: 20.0 }],
+      line_items: [ { description: "Item", quantity: 10, unit_price: 20.0 } ],
       tax_rate: 8.5,
       discount: 5,
       discount_type: "percent"
@@ -88,7 +88,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "zero tax rate" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Item", quantity: 1, unit_price: 100.0 }],
+      line_items: [ { description: "Item", quantity: 1, unit_price: 100.0 } ],
       tax_rate: 0
     ).call
 
@@ -99,7 +99,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "zero discount" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Item", quantity: 1, unit_price: 100.0 }],
+      line_items: [ { description: "Item", quantity: 1, unit_price: 100.0 } ],
       discount: 0
     ).call
 
@@ -118,7 +118,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "error when quantity is zero" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Item", quantity: 0, unit_price: 10.0 }]
+      line_items: [ { description: "Item", quantity: 0, unit_price: 10.0 } ]
     ).call
     refute result[:valid]
     assert_includes result[:errors], "Line item 1: quantity must be greater than 0"
@@ -126,7 +126,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "error when quantity is negative" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Item", quantity: -2, unit_price: 10.0 }]
+      line_items: [ { description: "Item", quantity: -2, unit_price: 10.0 } ]
     ).call
     refute result[:valid]
     assert_includes result[:errors], "Line item 1: quantity must be greater than 0"
@@ -134,7 +134,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "error when unit price is negative" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Item", quantity: 1, unit_price: -5.0 }]
+      line_items: [ { description: "Item", quantity: 1, unit_price: -5.0 } ]
     ).call
     refute result[:valid]
     assert_includes result[:errors], "Line item 1: unit price must be 0 or greater"
@@ -142,7 +142,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "allows zero unit price" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Free item", quantity: 1, unit_price: 0 }]
+      line_items: [ { description: "Free item", quantity: 1, unit_price: 0 } ]
     ).call
     assert result[:valid]
     assert_equal 0.0, result[:subtotal]
@@ -150,7 +150,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "error when tax rate exceeds 100" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Item", quantity: 1, unit_price: 50.0 }],
+      line_items: [ { description: "Item", quantity: 1, unit_price: 50.0 } ],
       tax_rate: 101
     ).call
     refute result[:valid]
@@ -159,7 +159,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "error when tax rate is negative" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Item", quantity: 1, unit_price: 50.0 }],
+      line_items: [ { description: "Item", quantity: 1, unit_price: 50.0 } ],
       tax_rate: -5
     ).call
     refute result[:valid]
@@ -168,7 +168,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "error when discount is negative" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Item", quantity: 1, unit_price: 50.0 }],
+      line_items: [ { description: "Item", quantity: 1, unit_price: 50.0 } ],
       discount: -10
     ).call
     refute result[:valid]
@@ -179,7 +179,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "very large numbers" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Big ticket", quantity: 1_000_000, unit_price: 999_999.99 }],
+      line_items: [ { description: "Big ticket", quantity: 1_000_000, unit_price: 999_999.99 } ],
       tax_rate: 20
     ).call
     assert result[:valid]
@@ -203,14 +203,14 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "errors accessor returns empty array before call" do
     calc = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Item", quantity: 1, unit_price: 10.0 }]
+      line_items: [ { description: "Item", quantity: 1, unit_price: 10.0 } ]
     )
     assert_equal [], calc.errors
   end
 
   test "decimal quantities" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Hours worked", quantity: 7.5, unit_price: 80.0 }]
+      line_items: [ { description: "Hours worked", quantity: 7.5, unit_price: 80.0 } ]
     ).call
     assert result[:valid]
     assert_equal 600.0, result[:subtotal]
@@ -218,7 +218,7 @@ class Finance::InvoiceGeneratorCalculatorTest < ActiveSupport::TestCase
 
   test "tax rate at boundary 100" do
     result = Finance::InvoiceGeneratorCalculator.new(
-      line_items: [{ description: "Item", quantity: 1, unit_price: 100.0 }],
+      line_items: [ { description: "Item", quantity: 1, unit_price: 100.0 } ],
       tax_rate: 100
     ).call
     assert result[:valid]

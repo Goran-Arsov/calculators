@@ -19,7 +19,7 @@ class Everyday::TextToSpeechCalculatorTest < ActiveSupport::TestCase
 
   test "estimates duration based on 150 wpm average" do
     # 150 words should take 60 seconds
-    text = (["word"] * 150).join(" ")
+    text = ([ "word" ] * 150).join(" ")
     result = Everyday::TextToSpeechCalculator.new(text: text).call
 
     assert result[:valid]
@@ -29,7 +29,7 @@ class Everyday::TextToSpeechCalculatorTest < ActiveSupport::TestCase
 
   test "estimates duration for short text" do
     # 30 words at 150 wpm = 12 seconds
-    text = (["hello"] * 30).join(" ")
+    text = ([ "hello" ] * 30).join(" ")
     result = Everyday::TextToSpeechCalculator.new(text: text).call
 
     assert result[:valid]
@@ -88,7 +88,7 @@ class Everyday::TextToSpeechCalculatorTest < ActiveSupport::TestCase
   end
 
   test "very long text" do
-    text = (["supercalifragilistic"] * 1000).join(" ")
+    text = ([ "supercalifragilistic" ] * 1000).join(" ")
     result = Everyday::TextToSpeechCalculator.new(text: text).call
 
     assert result[:valid]

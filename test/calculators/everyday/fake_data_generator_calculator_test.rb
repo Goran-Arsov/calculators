@@ -2,7 +2,7 @@ require "test_helper"
 
 class Everyday::FakeDataGeneratorCalculatorTest < ActiveSupport::TestCase
   test "generates records with specified count" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: ["first_name"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: [ "first_name" ]).call
     assert result[:valid]
     assert_equal 5, result[:count]
     assert_equal 5, result[:records].length
@@ -21,7 +21,7 @@ class Everyday::FakeDataGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "generates valid email format" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 10, fields: ["email"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 10, fields: [ "email" ]).call
     assert result[:valid]
     result[:records].each do |record|
       assert_match(/@/, record["email"])
@@ -30,7 +30,7 @@ class Everyday::FakeDataGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "generates valid phone format" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: ["phone"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: [ "phone" ]).call
     assert result[:valid]
     result[:records].each do |record|
       assert_match(/\+1-\d{3}-\d{3}-\d{4}/, record["phone"])
@@ -38,7 +38,7 @@ class Everyday::FakeDataGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "generates valid uuid format" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: ["uuid"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: [ "uuid" ]).call
     assert result[:valid]
     result[:records].each do |record|
       assert_match(/\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/, record["uuid"])
@@ -46,7 +46,7 @@ class Everyday::FakeDataGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "generates valid ip address format" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: ["ip_address"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: [ "ip_address" ]).call
     assert result[:valid]
     result[:records].each do |record|
       parts = record["ip_address"].split(".")
@@ -56,7 +56,7 @@ class Everyday::FakeDataGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "generates valid date format" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: ["date"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: [ "date" ]).call
     assert result[:valid]
     result[:records].each do |record|
       assert_match(/\A\d{4}-\d{2}-\d{2}\z/, record["date"])
@@ -64,7 +64,7 @@ class Everyday::FakeDataGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "generates valid url format" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: ["url"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: [ "url" ]).call
     assert result[:valid]
     result[:records].each do |record|
       assert record["url"].start_with?("https://")
@@ -80,7 +80,7 @@ class Everyday::FakeDataGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "generates password with 16 characters" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: ["password"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 5, fields: [ "password" ]).call
     assert result[:valid]
     result[:records].each do |record|
       assert_equal 16, record["password"].length
@@ -88,13 +88,13 @@ class Everyday::FakeDataGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "returns error for count below minimum" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 0, fields: ["first_name"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 0, fields: [ "first_name" ]).call
     assert_not result[:valid]
     assert result[:errors].any? { |e| e.include?("Count must be") }
   end
 
   test "returns error for count above maximum" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 101, fields: ["first_name"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 101, fields: [ "first_name" ]).call
     assert_not result[:valid]
     assert result[:errors].any? { |e| e.include?("Count must be") }
   end
@@ -108,11 +108,11 @@ class Everyday::FakeDataGeneratorCalculatorTest < ActiveSupport::TestCase
   test "ignores unsupported field types" do
     result = Everyday::FakeDataGeneratorCalculator.new(count: 1, fields: %w[first_name invalid_field]).call
     assert result[:valid]
-    assert_equal ["first_name"], result[:fields]
+    assert_equal [ "first_name" ], result[:fields]
   end
 
   test "returns error when all fields are unsupported" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 1, fields: ["nonexistent"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 1, fields: [ "nonexistent" ]).call
     assert_not result[:valid]
     assert result[:errors].any? { |e| e.include?("At least one field") }
   end
@@ -125,19 +125,19 @@ class Everyday::FakeDataGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "generates exactly one record" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 1, fields: ["first_name"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 1, fields: [ "first_name" ]).call
     assert result[:valid]
     assert_equal 1, result[:records].length
   end
 
   test "generates exactly 100 records" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 100, fields: ["first_name"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 100, fields: [ "first_name" ]).call
     assert result[:valid]
     assert_equal 100, result[:records].length
   end
 
   test "first names come from built-in list" do
-    result = Everyday::FakeDataGeneratorCalculator.new(count: 50, fields: ["first_name"]).call
+    result = Everyday::FakeDataGeneratorCalculator.new(count: 50, fields: [ "first_name" ]).call
     assert result[:valid]
     result[:records].each do |record|
       assert_includes Everyday::FakeDataGeneratorCalculator::FIRST_NAMES, record["first_name"]

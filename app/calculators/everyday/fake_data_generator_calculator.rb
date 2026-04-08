@@ -128,7 +128,7 @@ module Everyday
     end
 
     def generate_email(first, last)
-      separators = [".", "_", ""]
+      separators = [ ".", "_", "" ]
       sep = separators.sample
       num = rand(100) > 50 ? rand(1..999).to_s : ""
       "#{first.downcase}#{sep}#{last.downcase}#{num}@#{DOMAINS.sample}"
@@ -152,7 +152,7 @@ module Everyday
     end
 
     def generate_password
-      chars = [*("a".."z"), *("A".."Z"), *("0".."9"), *%w[! @ # $ % & *]]
+      chars = [ *("a".."z"), *("A".."Z"), *("0".."9"), *%w[! @ # $ % & *] ]
       (0...16).map { chars.sample }.join
     end
 

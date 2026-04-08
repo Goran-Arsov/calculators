@@ -48,7 +48,7 @@ module Everyday
     def validate!
       @errors << "Text cannot be empty" if @text.strip.empty?
       @errors << "Text exceeds maximum length of #{MAX_LENGTH} characters" if @text.length > MAX_LENGTH
-      unless [:to_morse, :from_morse].include?(@direction)
+      unless [ :to_morse, :from_morse ].include?(@direction)
         @errors << "Invalid direction: must be :to_morse or :from_morse"
       end
     end

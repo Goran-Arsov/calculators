@@ -10,7 +10,7 @@ class Everyday::FaviconGeneratorCalculatorTest < ActiveSupport::TestCase
     assert_equal "#3B82F6", result[:bg_color]
     assert_equal "#FFFFFF", result[:text_color]
     assert_equal 64, result[:font_size]
-    assert_equal [16, 32, 48, 180], result[:sizes]
+    assert_equal [ 16, 32, 48, 180 ], result[:sizes]
   end
 
   test "generates html link tags" do

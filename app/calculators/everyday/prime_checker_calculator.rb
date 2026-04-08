@@ -16,7 +16,7 @@ module Everyday
       return { valid: false, errors: @errors } if @errors.any?
 
       is_prime = prime?(@number)
-      factors = is_prime ? [@number] : factorize(@number)
+      factors = is_prime ? [ @number ] : factorize(@number)
 
       result = {
         valid: true,

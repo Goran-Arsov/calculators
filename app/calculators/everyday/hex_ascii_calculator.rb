@@ -56,9 +56,9 @@ module Everyday
 
       bytes = if clean.include?(" ")
                 clean.split(" ").map { |h| h.to_i(16) }
-              else
+      else
                 clean.scan(/../).map { |h| h.to_i(16) }
-              end
+      end
 
       decoded = bytes.pack("C*").force_encoding("UTF-8")
       unless decoded.valid_encoding?
