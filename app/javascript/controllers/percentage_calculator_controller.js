@@ -12,7 +12,7 @@ export default class extends Controller {
     switch (mode) {
       case "of":
         result = value * percentage / 100
-        this.resultTarget.textContent = `${percentage}% of ${value} = ${this.formatNumber(result)}`
+        this.resultTarget.textContent = `${value}% of ${percentage} = ${this.formatNumber(result)}`
         break
       case "is_what_percent":
         if (percentage === 0) { this.resultTarget.textContent = "Cannot divide by zero"; return }
