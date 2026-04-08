@@ -1,0 +1,90 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Calorie Tracker History - Daily Log Summary | Free Online Tool",
+  description: "View and manage your calorie tracking history. See daily totals, section breakdowns, and average intake across all logged days.",
+  canonical: everyday_calorie_tracker_summary_url,
+  og: {
+    title: "Calorie Tracker History - Daily Log Summary | CalcWise",
+    description: "View and manage your calorie tracking history with daily totals and section breakdowns.",
+    url: everyday_calorie_tracker_summary_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Calorie Tracker", url: everyday_calorie_tracker_url },
+  { name: "History", url: everyday_calorie_tracker_summary_url }
+]) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Calorie Tracker", url: everyday_calorie_tracker_path },
+  { name: "History" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div class="flex items-center justify-between mb-3">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">Calorie Tracker History</h1>
+      <%= link_to everyday_calorie_tracker_path, class: "inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Log Today
+      <% end %>
+    </div>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Browse all your logged days. Click any date to view or edit its entries.</p>
+
+    <div data-controller="calorie-tracker-summary" class="mb-8">
+
+      <%# Summary stats %>
+      <div class="grid grid-cols-2 gap-4 mb-8">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-5 text-center">
+          <div class="text-3xl font-bold text-blue-600 dark:text-blue-400" data-calorie-tracker-summary-target="totalDays">0</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Days Logged</div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-5 text-center">
+          <div class="text-3xl font-bold text-green-600 dark:text-green-400" data-calorie-tracker-summary-target="avgCalories">0</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Avg. Daily Calories</div>
+        </div>
+      </div>
+
+      <%# Empty state %>
+      <div data-calorie-tracker-summary-target="emptyState" class="text-center py-16 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800">
+        <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        <p class="text-gray-500 dark:text-gray-400 text-lg font-medium mb-2">No entries yet</p>
+        <p class="text-gray-400 dark:text-gray-500 text-sm mb-6">Start tracking your calories to see your history here.</p>
+        <%= link_to "Start Tracking", everyday_calorie_tracker_path, class: "inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm text-sm font-medium transition-all" %>
+      </div>
+
+      <%# Day list rendered by Stimulus %>
+      <div data-calorie-tracker-summary-target="dayList" class="space-y-4"></div>
+
+      <%# Clear all button %>
+      <div class="mt-8 text-center">
+        <button data-action="click->calorie-tracker-summary#clearAll" class="text-sm text-red-400 hover:text-red-600 transition-colors cursor-pointer">Clear all tracking data</button>
+      </div>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on age, weight, height, and activity.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure based on activity level.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Macro Calculator", description: "Calculate your daily protein, carb, and fat targets for your goals.", path: health_macro_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

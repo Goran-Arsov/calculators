@@ -151,5 +151,7 @@ module Everyday
     def prime_checker; end
     def random_number; end
     def image_resizer; end
+    def calorie_tracker; end
+    def calorie_tracker_summary; end
   end
 end

@@ -353,6 +353,8 @@ Rails.application.routes.draw do
     get "teaspoon-converter", to: "calculators#teaspoon_converter", as: :teaspoon_converter
     get "tablespoon-converter", to: "calculators#tablespoon_converter", as: :tablespoon_converter
     get "volume-converter", to: "calculators#volume_converter", as: :volume_converter
+    get "calorie-tracker", to: "calculators#calorie_tracker", as: :calorie_tracker
+    get "calorie-tracker/history", to: "calculators#calorie_tracker_summary", as: :calorie_tracker_summary
     get "css-box-shadow-generator", to: "calculators#css_box_shadow", as: :css_box_shadow
     get "css-flexbox-generator", to: "calculators#css_flexbox", as: :css_flexbox
     get "px-to-rem-converter", to: "calculators#px_to_rem", as: :px_to_rem

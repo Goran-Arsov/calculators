@@ -1,0 +1,176 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Daily Calorie Tracker - Log Meals by Time of Day | Free Online Tool",
+  description: "Track your daily calorie intake with entries organized by night, morning, afternoon, and evening. All data stored locally in your browser. No signup required.",
+  canonical: everyday_calorie_tracker_url,
+  og: {
+    title: "Daily Calorie Tracker - Log Meals by Time of Day | CalcWise",
+    description: "Track your daily calorie intake with entries organized by time of day. All data stored locally in your browser.",
+    url: everyday_calorie_tracker_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Calorie Tracker", url: everyday_calorie_tracker_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Where is my calorie tracking data stored?", answer: "All data is stored locally in your browser's localStorage. Nothing is sent to any server. Your data stays on your device and is available only in the browser you used to enter it. Clearing your browser data, using incognito/private mode, or switching browsers will not have access to previously saved entries." },
+  { question: "How do I track calories for a specific day?", answer: "Use the date picker at the top to navigate to any date. Each day is divided into four sections: Night (12 AM - 6 AM), Morning (6 AM - 12 PM), Afternoon (12 PM - 6 PM), and Evening (6 PM - 12 AM). Click 'Add entry' in the appropriate section, then enter the food description, amount, and calorie count." },
+  { question: "Can I edit or delete entries after saving them?", answer: "Yes, all entries are editable at any time. Simply click on any field (description, amount, or calories) to change its value. Changes are saved automatically. To delete an entry, click the X button on its row. To delete an entire day, visit the History page." },
+  { question: "How accurate are the calorie values?", answer: "You enter all calorie values yourself based on your own knowledge, food labels, or other sources. This tool does not look up calories automatically. The accuracy depends entirely on the values you provide. For best results, check nutrition labels or use a food database to find calorie counts before entering them." }
+]) %>
+
+<%= calculator_schema(
+  name: "Daily Calorie Tracker",
+  description: "Track daily calorie intake organized by time of day with entries for food description, amount, and calories.",
+  url: everyday_calorie_tracker_url,
+  category: "HealthApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Calorie Tracker" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Daily Calorie Tracker</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Log your meals and snacks by time of day. All data is stored locally in your browser — no account needed.</p>
+
+    <div data-controller="calorie-tracker" data-calorie-tracker-date-value="<%= params[:date] || Date.current.iso8601 %>" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <%# Date navigation %>
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-2">
+          <button data-action="click->calorie-tracker#prevDay" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer" title="Previous day">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <input type="date" data-calorie-tracker-target="datePicker" data-action="change->calorie-tracker#changeDate" class="text-sm font-medium">
+          <button data-action="click->calorie-tracker#nextDay" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer" title="Next day">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <button data-action="click->calorie-tracker#today" class="ml-2 px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors cursor-pointer">Today</button>
+        </div>
+        <div class="text-right">
+          <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" data-calorie-tracker-target="dailyTotal">0 kcal</div>
+          <div class="text-xs text-gray-400 dark:text-gray-500" data-calorie-tracker-target="dailyCount">0 entries</div>
+        </div>
+      </div>
+
+      <%# Sections rendered by Stimulus %>
+      <div data-calorie-tracker-target="sections"></div>
+
+      <%# View history link %>
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <%= link_to everyday_calorie_tracker_summary_path, class: "inline-flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          View all days &amp; history
+        <% end %>
+      </div>
+    </div>
+
+    <%# Data storage notice %>
+    <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-8">
+      <div class="flex gap-3">
+        <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+        <div>
+          <p class="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-1">Your data is stored locally in this browser</p>
+          <p class="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">Your calorie log is saved in your browser's localStorage and never sent to any server. Only the most recent <strong>365 days</strong> are kept — when you add a new day beyond this limit, the oldest day is automatically deleted to make room. Your data <strong>will also be lost</strong> if you:</p>
+          <ul class="text-xs text-amber-700 dark:text-amber-400 mt-1 ml-4 list-disc space-y-0.5">
+            <li>Clear your browser data or browsing history (including "Clear cookies and site data")</li>
+            <li>Use your browser's "Clear site data" for this website</li>
+            <li>Browse in incognito/private mode (data is deleted when the window closes)</li>
+            <li>Uninstall and reinstall your browser</li>
+            <li>Use a different browser or device (data does not sync between them)</li>
+            <li>Your browser runs low on storage and automatically evicts localStorage data</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "calorie-tracker" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Calorie Tracker</h2>
+      <p>
+        This tracker lets you log everything you eat and drink throughout the day, organized into four time-of-day sections. For each entry, you provide the food description, the amount consumed, and the calorie count. The tool calculates subtotals for each section and a daily grand total automatically.
+      </p>
+      <p>
+        Use the date picker to navigate between days. The tracker defaults to today but you can log entries for any past or future date. All entries are editable — click on any field to change it, and changes save automatically. Visit the history page to see all your logged days at a glance.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Tips for Accurate Calorie Tracking</h2>
+      <p>
+        Check nutrition labels for packaged foods — they list calories per serving, so make sure you account for how many servings you actually consumed. For home-cooked meals, estimate based on individual ingredients rather than guessing the total. Common cooking oils add about 120 calories per tablespoon, which is easy to overlook.
+      </p>
+
+      <h3>Reading Nutrition Labels</h3>
+      <p>
+        Pay attention to the "per serving" line. A bag of chips might list 150 calories per serving, but contain 3 servings per bag. If you eat the whole bag, that is 450 calories, not 150. This is the single most common source of tracking errors.
+      </p>
+
+      <h3>Estimating Portions</h3>
+      <p>
+        When you do not have a label, use simple references: a fist-sized portion of rice or pasta is roughly 200 calories, a palm-sized piece of meat is about 200-250 calories, and a thumb-sized amount of oil or butter is around 100 calories. These are rough estimates but far better than not tracking at all.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "after_intro" %></div>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Where is my calorie tracking data stored?</h3>
+      <p>
+        All data is stored locally in your browser's localStorage. Nothing is sent to any server. Your data stays on your device and is available only in the browser you used to enter it. Clearing your browser data, using incognito/private mode, or switching browsers will not have access to previously saved entries.
+      </p>
+
+      <h3>How do I track calories for a specific day?</h3>
+      <p>
+        Use the date picker at the top to navigate to any date. Each day is divided into four sections: Night (12 AM - 6 AM), Morning (6 AM - 12 PM), Afternoon (12 PM - 6 PM), and Evening (6 PM - 12 AM). Click "Add entry" in the appropriate section, then enter the food description, amount, and calorie count.
+      </p>
+
+      <h3>Can I edit or delete entries after saving them?</h3>
+      <p>
+        Yes, all entries are editable at any time. Simply click on any field (description, amount, or calories) to change its value. Changes are saved automatically. To delete an entry, click the X button on its row. To delete an entire day, visit the History page.
+      </p>
+
+      <h3>How accurate are the calorie values?</h3>
+      <p>
+        You enter all calorie values yourself based on your own knowledge, food labels, or other sources. This tool does not look up calories automatically. The accuracy depends entirely on the values you provide. For best results, check nutrition labels or use a food database to find calorie counts before entering them.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/social_share", title: "Daily Calorie Tracker", url: everyday_calorie_tracker_url %>
+    <%= render "shared/calculation_email_capture" %>
+
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on age, weight, height, and activity.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure based on activity level.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Macro Calculator", description: "Calculate your daily protein, carb, and fat targets for your goals.", path: health_macro_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("calorie-tracker") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

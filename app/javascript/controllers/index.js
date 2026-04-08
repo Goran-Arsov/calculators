@@ -219,6 +219,9 @@ import ByteConverterCalculatorController from "controllers/byte_converter_calcul
 import CupConverterCalculatorController from "controllers/cup_converter_calculator_controller"
 import VolumeConverterCalculatorController from "controllers/volume_converter_calculator_controller"
 
+import CalorieTrackerController from "controllers/calorie_tracker_controller"
+import CalorieTrackerSummaryController from "controllers/calorie_tracker_summary_controller"
+
 import CssBoxShadowCalculatorController from "controllers/css_box_shadow_calculator_controller"
 import CssFlexboxCalculatorController from "controllers/css_flexbox_calculator_controller"
 import PxToRemCalculatorController from "controllers/px_to_rem_calculator_controller"
@@ -551,6 +554,8 @@ application.register("speed-converter-calculator", SpeedConverterCalculatorContr
 application.register("byte-converter-calculator", ByteConverterCalculatorController)
 application.register("cup-converter-calculator", CupConverterCalculatorController)
 application.register("volume-converter-calculator", VolumeConverterCalculatorController)
+application.register("calorie-tracker", CalorieTrackerController)
+application.register("calorie-tracker-summary", CalorieTrackerSummaryController)
 
 application.register("css-box-shadow-calculator", CssBoxShadowCalculatorController)
 application.register("css-flexbox-calculator", CssFlexboxCalculatorController)
