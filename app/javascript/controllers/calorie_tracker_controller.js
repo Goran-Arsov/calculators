@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["datePicker", "sections", "dailyTotal", "dailyCount"]
+  static targets = ["datePicker", "sections", "dailyTotal", "dailyCount", "basalInput", "fatBalanceCard", "balanceCalc", "balanceResult"]
   static values = { date: String }
 
   connect() {
@@ -49,14 +49,14 @@ export default class extends Controller {
 
   loadDay(date) {
     const all = this.loadAll()
-    return all[date] || { night: [], morning: [], day: [], evening: [] }
+    return all[date] || { basal: 0, night: [], morning: [], day: [], evening: [] }
   }
 
   static MAX_DAYS = 365
 
   saveDay(date, dayData) {
     const all = this.loadAll()
-    const hasEntries = Object.values(dayData).some(arr => arr.length > 0)
+    const hasEntries = (dayData.basal > 0) || ["night", "morning", "day", "evening"].some(k => (dayData[k] || []).length > 0)
     if (hasEntries) {
       all[date] = dayData
     } else {
@@ -68,6 +68,13 @@ export default class extends Controller {
       delete all[dates.shift()]
     }
     localStorage.setItem("calcwise_calorie_log", JSON.stringify(all))
+  }
+
+  updateBasal() {
+    const dayData = this.loadDay(this.dateValue)
+    dayData.basal = parseFloat(this.basalInputTarget.value) || 0
+    this.saveDay(this.dateValue, dayData)
+    this.updateTotals()
   }
 
   // --- Entry management ---
@@ -122,6 +129,7 @@ export default class extends Controller {
     })
 
     this.sectionsTarget.innerHTML = html
+    this.basalInputTarget.value = dayData.basal || ""
     this.updateTotals()
   }
 
@@ -198,6 +206,7 @@ export default class extends Controller {
     let dailyCount = 0
 
     for (const [key, entries] of Object.entries(dayData)) {
+      if (!Array.isArray(entries)) continue
       const subtotal = entries.reduce((sum, e) => sum + (parseFloat(e.calories) || 0), 0)
       dailyTotal += subtotal
       dailyCount += entries.length
@@ -212,6 +221,32 @@ export default class extends Controller {
 
     this.dailyTotalTarget.textContent = `${Math.round(dailyTotal)} kcal`
     this.dailyCountTarget.textContent = `${dailyCount} ${dailyCount === 1 ? 'entry' : 'entries'}`
+
+    // Fat balance calculation: (basal - consumed) / 77 = grams of fat lost/gained
+    const basal = parseFloat(this.basalInputTarget.value) || 0
+    if (basal > 0) {
+      const difference = basal - dailyTotal
+      const fatGrams = Math.round(Math.abs(difference) / 7.7)
+
+      this.balanceCalcTarget.innerHTML = `${Math.round(basal)} kcal expenditure − ${Math.round(dailyTotal)} kcal consumed = <strong>${Math.round(Math.abs(difference))} kcal ${difference >= 0 ? "deficit" : "surplus"}</strong>`
+
+      if (difference > 0) {
+        this.balanceResultTarget.innerHTML = `You will lose approximately <strong>${fatGrams} g</strong> of body fat today`
+        this.balanceResultTarget.className = "text-lg font-bold text-green-600 dark:text-green-400"
+        this.fatBalanceCardTarget.className = "mb-8 p-5 rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20"
+      } else if (difference < 0) {
+        this.balanceResultTarget.innerHTML = `You will gain approximately <strong>${fatGrams} g</strong> of body fat today`
+        this.balanceResultTarget.className = "text-lg font-bold text-red-500 dark:text-red-400"
+        this.fatBalanceCardTarget.className = "mb-8 p-5 rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20"
+      } else {
+        this.balanceResultTarget.innerHTML = "Exact maintenance — no fat gained or lost"
+        this.balanceResultTarget.className = "text-lg font-bold text-gray-600 dark:text-gray-400"
+        this.fatBalanceCardTarget.className = "mb-8 p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+      }
+      this.fatBalanceCardTarget.classList.remove("hidden")
+    } else {
+      this.fatBalanceCardTarget.classList.add("hidden")
+    }
   }
 
   // --- Helpers ---
