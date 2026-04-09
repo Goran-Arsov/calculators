@@ -72,8 +72,17 @@ module CalculatorHelper
 
   def related_blog_posts(calculator_slug, limit: 3)
     slugs = CalculatorRegistry::CALCULATOR_BLOG_MAP[calculator_slug] || []
-    return [] if slugs.empty?
-    BlogPost.published.where(slug: slugs).limit(limit)
+    if slugs.any?
+      BlogPost.published.where(slug: slugs).limit(limit)
+    else
+      # Fallback: match blog posts by calculator's category
+      category = calc_category_from_slug(calculator_slug)
+      if category
+        BlogPost.published.by_category(category).recent.limit(limit)
+      else
+        BlogPost.published.recent.limit(limit)
+      end
+    end
   end
 
   def all_calculators_json
@@ -157,5 +166,13 @@ module CalculatorHelper
       score = (current_keywords & calc_keywords).size
       calc.merge(_relevance_score: score)
     }.sort_by { |c| [-c[:_relevance_score], c[:slug]] }
+  end
+
+  # Finds the category slug for a given calculator slug by searching ALL_CATEGORIES.
+  def calc_category_from_slug(slug)
+    CalculatorRegistry::ALL_CATEGORIES.each do |cat_slug, cat|
+      return cat_slug if cat[:calculators].any? { |c| c[:slug] == slug }
+    end
+    nil
   end
 end

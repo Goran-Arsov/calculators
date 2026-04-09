@@ -1,7 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
+import { prefillFromUrl } from "utils/url_prefill"
 
 export default class extends Controller {
   static targets = ["currentAge", "retirementAge", "currentSavings", "monthlyContribution", "rate", "projectedSavings", "monthlyIncome", "yearsToRetire"]
+
+  connect() {
+    if (prefillFromUrl(this, { age: "currentAge", retireAge: "retirementAge", savings: "currentSavings", monthly: "monthlyContribution", rate: "rate" })) {
+      this.calculate()
+    }
+  }
 
   calculate() {
     const currentAge = parseInt(this.currentAgeTarget.value) || 0

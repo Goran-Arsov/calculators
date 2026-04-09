@@ -36,6 +36,11 @@ module CalcWise
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Security headers (defense in depth — also set at nginx level)
+    config.action_dispatch.default_headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    config.action_dispatch.default_headers["X-Permitted-Cross-Domain-Policies"] = "none"
+    config.action_dispatch.default_headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=()"
+
     # Enable gzip compression for responses
     config.middleware.insert_after ActionDispatch::Static, Rack::Deflater
 

@@ -1,0 +1,92 @@
+<% ci = "finance.calculators.compound_interest" %>
+<%# SEO meta tags — German %>
+<% set_meta_tags(
+  title: t("#{ci}.title"),
+  description: t("#{ci}.description"),
+  canonical: locale_canonical_url,
+  og: { title: "#{t("#{ci}.title")} | CalcWise", description: t("#{ci}.description"), url: locale_canonical_url, type: "website", site_name: "CalcWise" }
+) %>
+<%= breadcrumb_schema([
+  { name: "Startseite", url: root_url },
+  { name: t("finance.category_name"), url: category_url("finance") },
+  { name: t("#{ci}.breadcrumb"), url: locale_canonical_url }
+]) %>
+<%= faq_schema((1..5).map { |i| { question: t("#{ci}.faq.q#{i}"), answer: t("#{ci}.faq.a#{i}") } }) %>
+<%= calculator_schema_with_ratings(name: t("#{ci}.breadcrumb"), description: t("#{ci}.description"), url: locale_canonical_url, category: "FinanceApplication", calculator_slug: "compound-interest") %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Startseite", url: root_path },
+  { name: t("finance.category_name"), url: category_path("finance") },
+  { name: t("#{ci}.breadcrumb") }
+] %>
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight"><%= t("#{ci}.h1") %></h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed"><%= t("#{ci}.intro") %></p>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+    <div data-controller="compound-interest-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="compound-interest-initial-principal" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><%= t("#{ci}.labels.initial_principal") %></label>
+            <input id="compound-interest-initial-principal" type="number" inputmode="decimal" data-compound-interest-calculator-target="principal" data-action="input->compound-interest-calculator#calculate" class="w-full" placeholder="10000" step="100" min="0">
+          </div>
+          <div>
+            <label for="compound-interest-annual-interest-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><%= t("#{ci}.labels.annual_interest_rate") %></label>
+            <input id="compound-interest-annual-interest-rate" type="number" inputmode="decimal" data-compound-interest-calculator-target="rate" data-action="input->compound-interest-calculator#calculate" class="w-full" placeholder="5" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="compound-interest-time-period" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><%= t("#{ci}.labels.time_period") %></label>
+            <input id="compound-interest-time-period" type="number" inputmode="decimal" data-compound-interest-calculator-target="years" data-action="input->compound-interest-calculator#calculate" class="w-full" placeholder="10" step="1" min="1" max="100">
+          </div>
+          <div>
+            <label for="compound-interest-compounding-frequency" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><%= t("#{ci}.labels.compounding_frequency") %></label>
+            <select id="compound-interest-compounding-frequency" data-compound-interest-calculator-target="frequency" data-action="change->compound-interest-calculator#calculate" class="w-full">
+              <option value="1"><%= t("#{ci}.labels.annually") %></option>
+              <option value="2"><%= t("#{ci}.labels.semi_annually") %></option>
+              <option value="4"><%= t("#{ci}.labels.quarterly") %></option>
+              <option value="12" selected><%= t("#{ci}.labels.monthly") %></option>
+              <option value="365"><%= t("#{ci}.labels.daily") %></option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5"><%= t("#{ci}.labels.results") %></h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><%= t("#{ci}.labels.future_value") %></span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-compound-interest-calculator-target="futureValue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><%= t("#{ci}.labels.total_interest_earned") %></span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-compound-interest-calculator-target="totalInterest">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><%= t("#{ci}.labels.initial_principal_display") %></span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-compound-interest-calculator-target="principalDisplay">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->compound-interest-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium"><%= t("#{ci}.labels.copy_results") %></button>
+        </div>
+      </div>
+    </div>
+    <%= render "shared/calculator_rating", slug: "compound-interest" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2><%= t("#{ci}.faq.q1") %></h2>
+      <p><%= t("#{ci}.faq.a1") %></p>
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+      <h2><%= t("#{ci}.faq.q2") %></h2>
+      <p><%= t("#{ci}.faq.a2") %></p>
+      <h2><%= t("#{ci}.faq.q3") %></h2>
+      <p><%= t("#{ci}.faq.a3") %></p>
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+  </div>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

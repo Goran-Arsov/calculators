@@ -1,0 +1,84 @@
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Submit a Calculator" }
+] %>
+
+<div class="max-w-2xl mx-auto">
+  <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Submit a Custom Calculator</h1>
+  <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Have a formula you'd like to share? Submit it and we'll review it for inclusion on CalcWise.</p>
+
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+    <%= form_with model: @formula, url: user_formulas_path, class: "space-y-6" do |f| %>
+      <% if @formula.errors.any? %>
+        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+          <h2 class="text-sm font-semibold text-red-800 dark:text-red-300 mb-2"><%= pluralize(@formula.errors.count, "error") %> prevented submission:</h2>
+          <ul class="list-disc list-inside text-sm text-red-700 dark:text-red-400">
+            <% @formula.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :title, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+        <%= f.text_field :title, placeholder: "e.g., Compound Annual Growth Rate (CAGR)", required: true, class: "w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40" %>
+      </div>
+
+      <div>
+        <%= f.label :description, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+        <%= f.text_area :description, rows: 3, placeholder: "Describe what this calculator does and when it's useful...", required: true, class: "w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40" %>
+      </div>
+
+      <div>
+        <%= f.label :category, class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+        <%= f.select :category, options_for_select([["Finance", "finance"], ["Math", "math"], ["Physics", "physics"], ["Health", "health"], ["Construction", "construction"], ["Everyday", "everyday"]], @formula.category), { prompt: "Select a category" }, class: "w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40", required: true %>
+      </div>
+
+      <div>
+        <%= f.label :formula_json, "Formula (as JSON)", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Define inputs, formula, and outputs in JSON format. <a href="#formula-help" class="text-blue-600 dark:text-blue-400 underline">See format guide below</a>.</p>
+        <%= f.text_area :formula_json, rows: 8, placeholder: '{"inputs": [{"name": "principal", "label": "Principal Amount", "type": "number"}], "formula": "principal * (rate/100) * years", "outputs": [{"name": "interest", "label": "Total Interest"}]}', required: true, class: "w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/40" %>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <%= f.label :author_name, "Your Name", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+          <%= f.text_field :author_name, placeholder: "John Doe", required: true, class: "w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40" %>
+        </div>
+        <div>
+          <%= f.label :author_email, "Your Email", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
+          <%= f.email_field :author_email, placeholder: "you@example.com", required: true, class: "w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40" %>
+        </div>
+      </div>
+
+      <%# Honeypot field for spam prevention %>
+      <div class="hidden" aria-hidden="true">
+        <label for="website">Website</label>
+        <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button type="submit" class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-sm font-semibold shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+        Submit for Review
+      </button>
+    <% end %>
+  </div>
+
+  <div id="formula-help" class="mt-8 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6">
+    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Formula JSON Format</h2>
+    <div class="prose dark:prose-invert prose-sm max-w-none">
+      <p>Define your calculator using this JSON structure:</p>
+      <pre><code>{
+  "inputs": [
+    { "name": "principal", "label": "Principal ($)", "type": "number", "default": 10000 },
+    { "name": "rate", "label": "Annual Rate (%)", "type": "number", "default": 5 },
+    { "name": "years", "label": "Years", "type": "number", "default": 10 }
+  ],
+  "formula": "principal * Math.pow(1 + rate/100, years)",
+  "outputs": [
+    { "name": "result", "label": "Future Value" }
+  ]
+}</code></pre>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
+import { prefillFromUrl } from "utils/url_prefill"
 
 export default class extends Controller {
   static targets = ["value", "percentage", "mode", "result"]
+
+  connect() {
+    if (prefillFromUrl(this, { value: "value", percentage: "percentage", mode: "mode" })) {
+      this.calculate()
+    }
+  }
 
   calculate() {
     const value = parseFloat(this.valueTarget.value) || 0

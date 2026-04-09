@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { prefillFromUrl } from "utils/url_prefill"
 
 export default class extends Controller {
   static targets = ["sex", "waist", "neck", "height", "hip", "unitSystem",
@@ -6,6 +7,7 @@ export default class extends Controller {
                      "waistLabel", "neckLabel", "heightLabel", "hipLabel"]
 
   connect() {
+    prefillFromUrl(this, { waist: "waist", neck: "neck", height: "height", hip: "hip", sex: "sex", unit: "unitSystem" })
     this.updateFields()
   }
 

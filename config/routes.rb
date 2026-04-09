@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Localized IT tool routes (de, fr, es, pt)
+  # Localized calculator routes (de, fr, es, pt)
   scope "/:locale", constraints: { locale: /de|fr|es|pt/ } do
     scope :everyday, module: :everyday, as: nil do
       get "base64-encoder-decoder", to: "calculators#base64_encoder"
@@ -22,6 +22,22 @@ Rails.application.routes.draw do
       get "regex-explainer", to: "calculators#regex_explainer"
       get "open-graph-preview", to: "calculators#og_preview"
       get "svg-to-png-converter", to: "calculators#svg_to_png"
+    end
+
+    scope :finance, module: :finance, as: nil do
+      get "mortgage-calculator", to: "calculators#mortgage"
+      get "compound-interest-calculator", to: "calculators#compound_interest"
+      get "loan-calculator", to: "calculators#loan"
+      get "investment-calculator", to: "calculators#investment"
+      get "retirement-calculator", to: "calculators#retirement"
+    end
+
+    scope :health, module: :health, as: nil do
+      get "bmi-calculator", to: "calculators#bmi"
+      get "calorie-calculator", to: "calculators#calorie"
+      get "body-fat-calculator", to: "calculators#body_fat"
+      get "tdee-calculator", to: "calculators#tdee"
+      get "macro-calculator", to: "calculators#macro"
     end
   end
 
@@ -50,6 +66,13 @@ Rails.application.routes.draw do
   draw(:health)
   draw(:construction)
   draw(:everyday)
+
+  # User-submitted calculator formulas
+  resources :user_formulas, only: [:new, :create], path: "submit-calculator" do
+    collection do
+      get "thank-you", action: :thank_you
+    end
+  end
 
   # Blog
   get "blog", to: "blog#index", as: :blog

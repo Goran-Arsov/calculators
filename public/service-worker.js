@@ -1,5 +1,6 @@
 // CalcWise Service Worker — offline calculator support
-const CACHE_NAME = "calcwise-v1"
+const CACHE_VERSION = "2"
+const CACHE_NAME = `calcwise-v${CACHE_VERSION}`
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
@@ -7,10 +8,27 @@ const STATIC_ASSETS = [
   "/icon.png"
 ]
 
-// Install — cache static assets
+const PRECACHE_PAGES = [
+  "/finance/mortgage-calculator",
+  "/health/bmi-calculator",
+  "/math/percentage-calculator",
+  "/everyday/tip-calculator",
+  "/finance/loan-calculator",
+  "/health/calorie-calculator",
+  "/finance/compound-interest-calculator",
+  "/finance/investment-calculator",
+  "/health/body-fat-calculator",
+  "/math/fraction-calculator"
+]
+
+// Install — cache static assets and popular pages
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await cache.addAll(STATIC_ASSETS)
+      // Pre-cache popular pages (non-blocking — don't fail install)
+      try { await cache.addAll(PRECACHE_PAGES) } catch (e) {}
+    })
   )
   self.skipWaiting()
 })
@@ -57,13 +75,16 @@ self.addEventListener("fetch", (event) => {
           }
           return response
         })
-        .catch(() => caches.match(request).then((cached) => cached || caches.match("/")))
+        .catch(() => caches.match(request).then((cached) => cached || new Response(
+          '<html><body style="font-family:system-ui;text-align:center;padding:4rem"><h1>Offline</h1><p>You are currently offline. Please check your connection and try again.</p><p><a href="/">Try Homepage</a></p></body></html>',
+          { headers: { "Content-Type": "text/html" } }
+        )))
     )
     return
   }
 
   // Static assets: cache-first
-  if (url.pathname.match(/\.(js|css|png|jpg|svg|ico|woff2?)$/)) {
+  if (url.pathname.match(/\.(js|css|png|jpg|svg|ico|woff2?|json)$/)) {
     event.respondWith(
       caches.match(request).then((cached) =>
         cached || fetch(request).then((response) => {

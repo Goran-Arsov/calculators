@@ -303,6 +303,8 @@ import EmailCaptureController from "controllers/email_capture_controller"
 import TrackVisitController from "controllers/track_visit_controller"
 import RecentCalculatorsController from "controllers/recent_calculators_controller"
 import FavoriteController from "controllers/favorite_controller"
+import CsvExportController from "controllers/csv_export_controller"
+import CalculationHistoryController from "controllers/calculation_history_controller"
 
 // Finance
 application.register("mortgage-calculator", MortgageCalculatorController)
@@ -606,3 +608,5 @@ application.register("email-capture", EmailCaptureController)
 application.register("track-visit", TrackVisitController)
 application.register("recent-calculators", RecentCalculatorsController)
 application.register("favorite", FavoriteController)
+application.register("csv-export", CsvExportController)
+application.register("calculation-history", CalculationHistoryController)

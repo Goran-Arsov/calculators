@@ -9,6 +9,28 @@ class Rack::Attack
     req.ip unless req.path.start_with?("/assets")
   end
 
+  # Throttle embed requests — third-party sites could inadvertently cause high traffic
+  throttle("embeds/ip", limit: 60, period: 1.minute) do |req|
+    req.ip if req.path.start_with?("/embed/")
+  end
+
+  # Throttle newsletter signups by email to prevent spam
+  throttle("newsletter/email", limit: 3, period: 1.day) do |req|
+    if req.path == "/newsletter" && req.post?
+      req.params.dig("newsletter_subscriber", "email")&.downcase&.strip
+    end
+  end
+
+  # Throttle newsletter signups by IP to prevent enumeration
+  throttle("newsletter/ip", limit: 5, period: 1.hour) do |req|
+    req.ip if req.path == "/newsletter" && req.post?
+  end
+
+  # Strict throttle on admin login to prevent brute force
+  throttle("admin/login", limit: 5, period: 1.minute) do |req|
+    req.ip if req.path == "/admin/login" && req.post?
+  end
+
   MALICIOUS_PATTERNS = [
     %r{/etc/passwd}i,
     %r{/proc/self}i,

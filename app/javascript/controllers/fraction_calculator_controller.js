@@ -1,7 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
+import { prefillFromUrl } from "utils/url_prefill"
 
 export default class extends Controller {
   static targets = ["num1", "den1", "num2", "den2", "operation", "resultFraction", "resultDecimal"]
+
+  connect() {
+    if (prefillFromUrl(this, { num1: "num1", den1: "den1", num2: "num2", den2: "den2", operation: "operation" })) {
+      this.calculate()
+    }
+  }
 
   calculate() {
     const num1 = parseInt(this.num1Target.value) || 0

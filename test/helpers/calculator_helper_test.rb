@@ -146,4 +146,57 @@ class CalculatorHelperTest < ActionView::TestCase
       end
     end
   end
+
+  # --- calc_category_from_slug (private) ---
+
+  test "calc_category_from_slug returns correct category for known slug" do
+    assert_equal "finance", send(:calc_category_from_slug, "mortgage-calculator")
+    assert_equal "health", send(:calc_category_from_slug, "bmi-calculator")
+    assert_equal "math", send(:calc_category_from_slug, "percentage-calculator")
+    assert_equal "construction", send(:calc_category_from_slug, "concrete-calculator")
+  end
+
+  test "calc_category_from_slug returns nil for unknown slug" do
+    assert_nil send(:calc_category_from_slug, "nonexistent-calculator")
+  end
+
+  # --- related_blog_posts ---
+
+  test "related_blog_posts returns blog posts for mapped calculator" do
+    # Create blog posts matching CALCULATOR_BLOG_MAP entries
+    mapped_slug = CalculatorRegistry::CALCULATOR_BLOG_MAP.keys.first
+    blog_slugs = CalculatorRegistry::CALCULATOR_BLOG_MAP[mapped_slug]
+    blog_slugs.each do |bs|
+      BlogPost.find_or_create_by!(slug: bs) do |post|
+        post.title = bs.titleize
+        post.body = "Test content for #{bs}"
+        post.excerpt = "Test excerpt for #{bs}"
+        post.published_at = 1.day.ago
+      end
+    end
+    result = related_blog_posts(mapped_slug)
+    assert result.any?, "Expected blog posts for mapped calculator '#{mapped_slug}'"
+  end
+
+  test "related_blog_posts falls back to category when no mapping exists" do
+    # inflation-calculator is in the finance category but not in CALCULATOR_BLOG_MAP
+    unmapped_slug = "inflation-calculator"
+    assert_not CalculatorRegistry::CALCULATOR_BLOG_MAP.key?(unmapped_slug),
+      "Expected '#{unmapped_slug}' to not be in CALCULATOR_BLOG_MAP for this test"
+    BlogPost.find_or_create_by!(slug: "test-finance-fallback-post") do |post|
+      post.title = "Finance Fallback Test Post"
+      post.body = "Test content"
+      post.excerpt = "Test excerpt"
+      post.category = "finance"
+      post.published_at = 1.day.ago
+    end
+    result = related_blog_posts(unmapped_slug)
+    assert_respond_to result, :to_a
+    assert result.to_a.any?, "Expected fallback to return category blog posts"
+  end
+
+  test "related_blog_posts returns a relation for unknown slug" do
+    result = related_blog_posts("totally-unknown-calculator")
+    assert_respond_to result, :to_a
+  end
 end

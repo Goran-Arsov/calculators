@@ -1,8 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 import { formatCurrency } from "utils/formatting"
+import { prefillFromUrl } from "utils/url_prefill"
 
 export default class extends Controller {
   static targets = ["amount", "rate", "years", "monthlyPayment", "totalPaid", "totalInterest", "numPayments"]
+
+  connect() {
+    if (prefillFromUrl(this, { amount: "amount", rate: "rate", term: "years" })) {
+      this.calculate()
+    }
+  }
 
   calculate() {
     const amount = parseFloat(this.amountTarget.value) || 0

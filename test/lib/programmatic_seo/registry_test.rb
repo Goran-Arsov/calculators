@@ -6,8 +6,8 @@ class ProgrammaticSeo::RegistryTest < ActiveSupport::TestCase
   end
 
   test "registry loads hand-written pages by default" do
-    # 11 hand-written bases with varying expansion counts (auto-generated disabled by default)
-    assert_equal 65, ProgrammaticSeo::Registry.all_slugs.count
+    # 10 hand-written bases with varying expansion counts (auto-generated disabled by default)
+    assert_equal 57, ProgrammaticSeo::Registry.all_slugs.count
   end
 
   test "every page has required keys" do

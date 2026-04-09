@@ -1,10 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
+import { prefillFromUrl } from "utils/url_prefill"
 
 export default class extends Controller {
   static targets = ["weight", "height", "unitSystem", "bmi", "category", "healthyMin", "healthyMax",
                      "weightLabel", "heightLabel"]
 
   connect() {
+    prefillFromUrl(this, { weight: "weight", height: "height", unit: "unitSystem" })
     this.updateLabels()
   }
 
