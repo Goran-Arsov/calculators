@@ -54,7 +54,7 @@ export default class extends Controller {
       </div>
       <div class="grid grid-cols-3 gap-2 mb-2">
         <div>
-          <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Unit</label>
+          <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Unit measure</label>
           <input type="text" placeholder="pcs" class="w-full text-sm" data-field="unit" data-action="input->${ctrl}#recalculate">
         </div>
         <div>
@@ -271,7 +271,7 @@ export default class extends Controller {
               <tr class="bg-gray-100 dark:bg-gray-800">
                 <th class="py-2 px-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Item</th>
                 <th class="py-2 px-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Code</th>
-                <th class="py-2 px-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Unit</th>
+                <th class="py-2 px-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Unit measure</th>
                 <th class="py-2 px-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Price</th>
                 <th class="py-2 px-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Qty</th>
                 <th class="py-2 px-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Tax</th>
@@ -361,7 +361,7 @@ export default class extends Controller {
 
     pdf.addSpacer(10)
 
-    const tableRows = [["Item", "Code", "Unit", "Price", "Qty", "Tax", "w/ Tax", "Disc.", "Total"]]
+    const tableRows = [["Item", "Code", "Unit measure", "Price", "Qty", "Tax", "w/ Tax", "Disc.", "Total"]]
     const rows = this.lineItemsTarget.querySelectorAll("[data-line-item]")
     let totalSubtotal = 0
     let totalTax = 0
