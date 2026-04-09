@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["menu", "categoryMenu", "categoriesButton", "menuButton"]
+  static targets = ["menu", "categoryMenu", "categoriesButton", "menuButton", "localeMenu", "localeButton"]
 
   connect() {
     this.handleClickOutside = this.clickOutside.bind(this)
@@ -40,11 +40,28 @@ export default class extends Controller {
     }
   }
 
+  toggleLocale(event) {
+    event.stopPropagation()
+    this.localeMenuTarget.classList.toggle("hidden")
+    const isOpen = !this.localeMenuTarget.classList.contains("hidden")
+
+    if (this.hasLocaleButtonTarget) {
+      this.localeButtonTarget.setAttribute("aria-expanded", isOpen.toString())
+    }
+  }
+
   clickOutside(event) {
     if (this.hasCategoryMenuTarget && !event.target.closest("[data-navbar-target='categoryDropdown']")) {
       this.categoryMenuTarget.classList.add("hidden")
       if (this.hasCategoriesButtonTarget) {
         this.categoriesButtonTarget.setAttribute("aria-expanded", "false")
+      }
+    }
+
+    if (this.hasLocaleMenuTarget && !event.target.closest("[data-navbar-target='localeDropdown']")) {
+      this.localeMenuTarget.classList.add("hidden")
+      if (this.hasLocaleButtonTarget) {
+        this.localeButtonTarget.setAttribute("aria-expanded", "false")
       }
     }
   }
@@ -56,6 +73,14 @@ export default class extends Controller {
         if (this.hasCategoriesButtonTarget) {
           this.categoriesButtonTarget.setAttribute("aria-expanded", "false")
           this.categoriesButtonTarget.focus()
+        }
+      }
+
+      if (this.hasLocaleMenuTarget && !this.localeMenuTarget.classList.contains("hidden")) {
+        this.localeMenuTarget.classList.add("hidden")
+        if (this.hasLocaleButtonTarget) {
+          this.localeButtonTarget.setAttribute("aria-expanded", "false")
+          this.localeButtonTarget.focus()
         }
       }
 
