@@ -125,20 +125,25 @@ module Everyday
       end
     end
 
+    def author_period(authors)
+      authors.end_with?(".") ? " " : ". "
+    end
+
     def generate_mla(author_list)
       authors = format_authors_mla(author_list)
+      sep = author_period(authors)
       case @source_type
       when "book"
-        "#{authors}. #{italicize(@title)}. #{@publisher}, #{@year}."
+        "#{authors}#{sep}#{italicize(@title)}. #{@publisher}, #{@year}."
       when "journal"
-        base = "#{authors}. \"#{@title}.\" #{italicize(@journal_name)}"
+        base = "#{authors}#{sep}\"#{@title}.\" #{italicize(@journal_name)}"
         base += ", vol. #{@volume}" unless @volume.empty?
         base += ", no. #{@issue}" unless @issue.empty?
         base += ", #{@year}"
         base += ", pp. #{@pages}" unless @pages.empty?
         base + "."
       when "website"
-        base = "#{authors}. \"#{@title}.\" #{italicize('Web')}, #{@year}"
+        base = "#{authors}#{sep}\"#{@title}.\" #{italicize('Web')}, #{@year}"
         base += ", #{@url}"
         base += ". Accessed #{@access_date}" unless @access_date.empty?
         base + "."
@@ -147,18 +152,19 @@ module Everyday
 
     def generate_chicago(author_list)
       authors = format_authors_chicago(author_list)
+      sep = author_period(authors)
       case @source_type
       when "book"
-        "#{authors}. #{italicize(@title)}. #{@publisher}, #{@year}."
+        "#{authors}#{sep}#{italicize(@title)}. #{@publisher}, #{@year}."
       when "journal"
-        base = "#{authors}. \"#{@title}.\" #{italicize(@journal_name)}"
+        base = "#{authors}#{sep}\"#{@title}.\" #{italicize(@journal_name)}"
         base += " #{@volume}" unless @volume.empty?
         base += ", no. #{@issue}" unless @issue.empty?
         base += " (#{@year})"
         base += ": #{@pages}" unless @pages.empty?
         base + "."
       when "website"
-        base = "#{authors}. \"#{@title}.\""
+        base = "#{authors}#{sep}\"#{@title}.\""
         base += " #{@year}."
         base += " #{@url}"
         base += ". Accessed #{@access_date}" unless @access_date.empty?

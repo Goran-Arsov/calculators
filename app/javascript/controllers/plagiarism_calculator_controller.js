@@ -8,12 +8,21 @@ export default class extends Controller {
     "similarityBar"
   ]
 
+  static MAX_WORDS = 10000
+
   calculate() {
     const text1 = this.text1Target.value
     const text2 = this.text2Target.value
 
     if (!text1.trim() || !text2.trim()) {
       this.clearResults()
+      return
+    }
+
+    const wordCount1 = text1.split(/\s+/).filter(w => w).length
+    const wordCount2 = text2.split(/\s+/).filter(w => w).length
+    if (wordCount1 > this.constructor.MAX_WORDS || wordCount2 > this.constructor.MAX_WORDS) {
+      this.resultSimilarityTarget.textContent = `Limit: ${this.constructor.MAX_WORDS.toLocaleString()} words per text`
       return
     }
 

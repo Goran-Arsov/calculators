@@ -4,6 +4,8 @@ module Everyday
   class PlagiarismCalculator
     attr_reader :errors
 
+    MAX_WORDS = 10_000
+
     def initialize(text1:, text2:)
       @text1 = text1.to_s
       @text2 = text2.to_s
@@ -39,6 +41,12 @@ module Everyday
     def validate!
       @errors << "Text 1 cannot be empty" if @text1.strip.empty?
       @errors << "Text 2 cannot be empty" if @text2.strip.empty?
+      @errors << "Text 1 exceeds #{MAX_WORDS} word limit" if word_count(@text1) > MAX_WORDS
+      @errors << "Text 2 exceeds #{MAX_WORDS} word limit" if word_count(@text2) > MAX_WORDS
+    end
+
+    def word_count(text)
+      text.split(/\s+/).reject(&:empty?).size
     end
 
     def normalize(text)
