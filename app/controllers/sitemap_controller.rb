@@ -24,6 +24,24 @@ class SitemapController < ApplicationController
     svg-to-png-converter
   ].freeze
 
+  # Localized finance calculator slugs available under /:locale/finance/:slug
+  LOCALIZED_FINANCE_SLUGS = %w[
+    mortgage-calculator
+    compound-interest-calculator
+    loan-calculator
+    investment-calculator
+    retirement-calculator
+  ].freeze
+
+  # Localized health calculator slugs available under /:locale/health/:slug
+  LOCALIZED_HEALTH_SLUGS = %w[
+    bmi-calculator
+    calorie-calculator
+    body-fat-calculator
+    tdee-calculator
+    macro-calculator
+  ].freeze
+
   # GET /sitemap.xml — sitemap index pointing to per-locale sitemaps
   def index
     expires_in 6.hours, public: true,
@@ -112,6 +130,24 @@ class SitemapController < ApplicationController
     LOCALIZED_CALCULATOR_SLUGS.each do |slug|
       @urls << {
         loc: "#{domain}/#{locale_param}/everyday/#{slug}",
+        changefreq: "monthly",
+        priority: "0.8",
+        lastmod: Date.current.beginning_of_month.to_s
+      }
+    end
+
+    LOCALIZED_FINANCE_SLUGS.each do |slug|
+      @urls << {
+        loc: "#{domain}/#{locale_param}/finance/#{slug}",
+        changefreq: "monthly",
+        priority: "0.8",
+        lastmod: Date.current.beginning_of_month.to_s
+      }
+    end
+
+    LOCALIZED_HEALTH_SLUGS.each do |slug|
+      @urls << {
+        loc: "#{domain}/#{locale_param}/health/#{slug}",
         changefreq: "monthly",
         priority: "0.8",
         lastmod: Date.current.beginning_of_month.to_s

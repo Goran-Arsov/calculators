@@ -255,8 +255,24 @@ module SeoHelper
     links
   end
 
+  TRANSLATABLE_CONTROLLER_PATHS = %w[everyday/calculators finance/calculators health/calculators].freeze
+
+  TRANSLATABLE_FINANCE_ACTIONS = %w[mortgage compound_interest loan investment retirement].freeze
+  TRANSLATABLE_HEALTH_ACTIONS = %w[bmi calorie body_fat tdee macro].freeze
+
   private def translatable_tool_page?
-    controller_path == "everyday/calculators" && params[:action].present?
+    return false unless params[:action].present?
+
+    case controller_path
+    when "everyday/calculators"
+      true
+    when "finance/calculators"
+      TRANSLATABLE_FINANCE_ACTIONS.include?(params[:action])
+    when "health/calculators"
+      TRANSLATABLE_HEALTH_ACTIONS.include?(params[:action])
+    else
+      false
+    end
   end
 
   public

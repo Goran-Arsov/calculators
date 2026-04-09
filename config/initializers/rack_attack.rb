@@ -48,4 +48,21 @@ class Rack::Attack
       MALICIOUS_PATTERNS.any? { |pattern| decoded.match?(pattern) }
     end
   end
+
+  # Persist blocked IPs to a file for review / external firewall ingestion
+  BLOCKED_IPS_FILE = Rails.root.join("log", "blocked_ips.txt")
+  BLOCKED_IPS_MUTEX = Mutex.new
+
+  ActiveSupport::Notifications.subscribe("blocklist.rack_attack") do |*, payload|
+    ip = payload[:request].ip
+
+    BLOCKED_IPS_MUTEX.synchronize do
+      existing = File.exist?(BLOCKED_IPS_FILE) ? File.read(BLOCKED_IPS_FILE).split(",").map(&:strip).reject(&:empty?) : []
+
+      unless existing.include?(ip)
+        existing << ip
+        File.write(BLOCKED_IPS_FILE, existing.join(","))
+      end
+    end
+  end
 end
