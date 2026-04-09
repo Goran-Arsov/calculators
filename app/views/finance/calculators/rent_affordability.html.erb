@@ -1,0 +1,171 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Rent Affordability Calculator - Free Tool",
+  description: "Find out how much rent you can afford based on your income, debts, and savings goals. Uses the 30% rule and 50/30/20 budget breakdown for accurate results.",
+  canonical: finance_rent_affordability_url,
+  og: {
+    title: "Rent Affordability Calculator - Free Tool | CalcWise",
+    description: "Find out how much rent you can afford based on your income, debts, and savings goals. Uses the 30% rule and 50/30/20 budget breakdown for accurate results.",
+    url: finance_rent_affordability_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Rent Affordability Calculator", url: finance_rent_affordability_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the 30% rule for rent?", answer: "The 30% rule is a widely-used guideline suggesting that you should spend no more than 30% of your gross monthly income on rent. For example, if you earn $5,000 per month, your maximum rent under this rule would be $1,500. This guideline originated from the United States National Housing Act and remains a popular benchmark for housing affordability." },
+  { question: "How does the 50/30/20 budget rule work?", answer: "The 50/30/20 rule divides your after-tax income into three categories: 50% for needs (rent, utilities, groceries, insurance), 30% for wants (dining out, entertainment, hobbies), and 20% for savings and debt repayment. This framework, popularized by Senator Elizabeth Warren, provides a simple structure for balanced budgeting." },
+  { question: "Should I spend exactly 30% of my income on rent?", answer: "The 30% rule is a guideline, not a strict rule. In high cost-of-living areas, many renters spend 40-50% of their income on housing. The key is to ensure your total expenses, including rent, leave enough room for savings, debt payments, and discretionary spending. Our adjusted calculation factors in your specific debts and savings goals for a more personalized recommendation." },
+  { question: "How do debts affect how much rent I can afford?", answer: "Existing debts like student loans, car payments, and credit card minimums reduce the amount you can safely allocate to rent. Lenders often look at your total debt-to-income ratio, and keeping housing plus debt payments below 43% of gross income is a common threshold. Our calculator subtracts your monthly debts from the available amount to give a realistic rent budget." },
+  { question: "What if my adjusted rent amount is lower than average rents in my area?", answer: "If your affordable rent is below market rates, consider options like finding a roommate, moving to a less expensive neighborhood, negotiating rent with landlords, increasing your income through side work, or reducing other debts and expenses to free up more money for housing. Living above your means on rent can create financial stress and prevent you from building savings." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Rent Affordability Calculator",
+  description: "Calculate how much rent you can afford based on your monthly income, existing debts, and savings goals using the 30% rule and 50/30/20 budget framework.",
+  url: finance_rent_affordability_url,
+  category: "FinanceApplication",
+  calculator_slug: "rent-affordability"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Rent Affordability Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Rent Affordability Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find out how much rent you can afford using the 30% rule and a personalized budget breakdown.</p>
+
+    <%# Ad: leaderboard — placed below content heading per AdSense best practices %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="rent-affordability-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="monthly-income" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Income ($)</label>
+            <input type="number" inputmode="decimal" id="monthly-income" min="0" step="100" value="5000" placeholder="e.g. 5000"
+              data-rent-affordability-calculator-target="monthlyIncome"
+              data-action="input->rent-affordability-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="monthly-debts" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Debts ($)</label>
+            <input type="number" inputmode="decimal" id="monthly-debts" min="0" step="50" value="500" placeholder="e.g. 500"
+              data-rent-affordability-calculator-target="monthlyDebts"
+              data-action="input->rent-affordability-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="savings-goal-percent" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Savings Goal (%)</label>
+            <input type="number" inputmode="decimal" id="savings-goal-percent" min="0" max="100" step="1" value="20" placeholder="e.g. 20"
+              data-rent-affordability-calculator-target="savingsGoalPercent"
+              data-action="input->rent-affordability-calculator#calculate"
+              class="w-full">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Max Rent (30% Rule)</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-rent-affordability-calculator-target="maxRent30Rule">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Max Rent (Adjusted)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-rent-affordability-calculator-target="maxRentAdjusted">$0.00</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Needs Budget (50%)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-rent-affordability-calculator-target="needsBudget">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Wants Budget (30%)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-rent-affordability-calculator-target="wantsBudget">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Savings Budget (20%)</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-rent-affordability-calculator-target="savingsBudget">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->rent-affordability-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "rent-affordability" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Rent Affordability Calculator</h2>
+      <p>Determining how much rent you can afford is one of the most important financial decisions you will make, and getting it wrong can lead to years of financial stress. Our rent affordability calculator uses two proven approaches to give you a clear picture of your budget: the traditional 30% rule and a personalized adjustment that accounts for your specific debts and savings goals.</p>
+
+      <p>Start by entering your gross monthly income. This is the total amount you earn before taxes and deductions. If your income varies, use your average monthly earnings over the past six to twelve months for the most accurate result. For freelancers or gig workers, use your net income after business expenses but before personal taxes.</p>
+
+      <p>Next, enter your total monthly debt payments. This includes student loan payments, car loans, credit card minimum payments, personal loans, and any other recurring debt obligations. Do not include expenses like groceries, utilities, or subscriptions here, as those are considered general living expenses rather than debt. Accurately capturing your debts is important because they directly reduce the amount available for rent.</p>
+
+      <p>The savings goal percentage represents how much of your income you want to set aside for savings and investments. The 50/30/20 budget framework suggests 20% as a minimum, but you may want to increase this if you have specific goals like building an emergency fund, saving for a home down payment, or investing for early retirement. The calculator subtracts your debts and savings target from your income to produce the adjusted maximum rent figure.</p>
+
+      <p>The 50/30/20 breakdown shows how your income would be allocated under this popular budgeting framework. Needs, which include rent, utilities, and groceries, should total no more than 50% of income. Wants like dining out and entertainment get 30%, while savings and extra debt payments get 20%. Comparing the 30% rule result with the adjusted amount gives you a realistic range for your rent budget.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Rent Affordability Formulas</h2>
+      <p>The 30% rule calculation is straightforward:</p>
+      <p><strong>Max Rent (30% Rule) = Monthly Income x 0.30</strong></p>
+      <p>The adjusted maximum rent takes your personal financial situation into account:</p>
+      <p><strong>Max Rent (Adjusted) = Monthly Income - Monthly Debts - (Monthly Income x Savings Goal %)</strong></p>
+      <p>The 50/30/20 budget breakdown allocates your income as follows: Needs = Income x 0.50, Wants = Income x 0.30, Savings = Income x 0.20. These figures give you a framework for managing all your expenses, not just rent.</p>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>What is the 30% rule for rent?</h3>
+      <p>The 30% rule is a widely-used guideline suggesting that you should spend no more than 30% of your gross monthly income on rent. For example, if you earn $5,000 per month, your maximum rent under this rule would be $1,500. This guideline originated from the United States National Housing Act and remains a popular benchmark for housing affordability.</p>
+
+      <h3>How does the 50/30/20 budget rule work?</h3>
+      <p>The 50/30/20 rule divides your after-tax income into three categories: 50% for needs (rent, utilities, groceries, insurance), 30% for wants (dining out, entertainment, hobbies), and 20% for savings and debt repayment. This framework, popularized by Senator Elizabeth Warren, provides a simple structure for balanced budgeting.</p>
+
+      <h3>Should I spend exactly 30% of my income on rent?</h3>
+      <p>The 30% rule is a guideline, not a strict rule. In high cost-of-living areas, many renters spend 40-50% of their income on housing. The key is to ensure your total expenses, including rent, leave enough room for savings, debt payments, and discretionary spending. Our adjusted calculation factors in your specific debts and savings goals for a more personalized recommendation.</p>
+
+      <h3>How do debts affect how much rent I can afford?</h3>
+      <p>Existing debts like student loans, car payments, and credit card minimums reduce the amount you can safely allocate to rent. Lenders often look at your total debt-to-income ratio, and keeping housing plus debt payments below 43% of gross income is a common threshold. Our calculator subtracts your monthly debts from the available amount to give a realistic rent budget.</p>
+
+      <h3>What if my adjusted rent amount is lower than average rents in my area?</h3>
+      <p>If your affordable rent is below market rates, consider options like finding a roommate, moving to a less expensive neighborhood, negotiating rent with landlords, increasing your income through side work, or reducing other debts and expenses to free up more money for housing. Living above your means on rent can create financial stress and prevent you from building savings.</p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment, total interest, and amortization schedule.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Down Payment Calculator", description: "Find out how long it takes to save for a home down payment.", path: finance_down_payment_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Savings Goal Calculator", description: "Figure out how much you need to save each month to reach your financial goal.", path: finance_savings_goal_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("rent-affordability-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

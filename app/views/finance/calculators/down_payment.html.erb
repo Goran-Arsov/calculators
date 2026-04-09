@@ -1,0 +1,186 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Down Payment Calculator - Home Savings Tool",
+  description: "Calculate your home down payment target and how long it takes to save. Includes savings gap analysis, monthly savings plan, and compound interest projections.",
+  canonical: finance_down_payment_url,
+  og: {
+    title: "Down Payment Calculator - Home Savings Tool | CalcWise",
+    description: "Calculate your home down payment target and how long it takes to save. Includes savings gap analysis, monthly savings plan, and compound interest projections.",
+    url: finance_down_payment_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Down Payment Calculator", url: finance_down_payment_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much should I put down on a house?", answer: "The traditional recommendation is 20% of the home price, which avoids private mortgage insurance (PMI) and gives you significant equity from day one. However, many loan programs allow lower down payments: FHA loans require as little as 3.5%, conventional loans can go as low as 3%, and VA loans may require 0% down for eligible veterans. The right amount depends on your financial situation, loan type, and local market conditions." },
+  { question: "What is PMI and how does it relate to down payments?", answer: "Private Mortgage Insurance (PMI) is required by most lenders when your down payment is less than 20% of the home price. PMI typically costs 0.5% to 1% of the loan amount annually and protects the lender if you default. Once your equity reaches 20%, you can usually request PMI removal, which can save you hundreds of dollars per month." },
+  { question: "Should I invest my down payment savings or keep them in a savings account?", answer: "For short-term savings goals of less than 2-3 years, a high-yield savings account or short-term CD is generally safer since you need the money at a specific time and cannot risk market losses. For longer time horizons of 3-5 or more years, a conservative investment mix might provide higher returns, but you accept the risk of market downturns reducing your balance. Our calculator allows you to set your expected return rate based on your chosen savings strategy." },
+  { question: "How long does it typically take to save for a down payment?", answer: "The time varies significantly based on the home price, down payment percentage, your savings rate, and local housing costs. Nationally, the average first-time homebuyer takes about 7-8 years to save a 20% down payment. However, by targeting a lower percentage like 10% or using first-time buyer programs, many people can buy a home in 3-5 years of focused saving." },
+  { question: "Are there first-time homebuyer programs that reduce the down payment needed?", answer: "Yes, many programs exist to help first-time buyers. FHA loans require only 3.5% down with a credit score of 580 or higher. Fannie Mae and Freddie Mac offer conventional loans with 3% down. Many states have their own down payment assistance programs offering grants or low-interest second loans. VA loans for veterans and USDA loans for rural areas may require no down payment at all." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Down Payment Calculator",
+  description: "Calculate your home down payment target, savings gap, and estimated time to save using current savings, monthly contributions, and expected investment returns.",
+  url: finance_down_payment_url,
+  category: "FinanceApplication",
+  calculator_slug: "down-payment"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Down Payment Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Down Payment Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your down payment target and find out how many months until you have saved enough to buy a home.</p>
+
+    <%# Ad: leaderboard — placed below content heading per AdSense best practices %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="down-payment-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="home-price" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Home Price ($)</label>
+            <input type="number" inputmode="decimal" id="home-price" min="0" step="5000" value="400000" placeholder="e.g. 400000"
+              data-down-payment-calculator-target="homePrice"
+              data-action="input->down-payment-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="down-payment-percent" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Down Payment (%)</label>
+            <input type="number" inputmode="decimal" id="down-payment-percent" min="1" max="100" step="1" value="20" placeholder="e.g. 20"
+              data-down-payment-calculator-target="downPaymentPercent"
+              data-action="input->down-payment-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="current-savings" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Savings ($)</label>
+            <input type="number" inputmode="decimal" id="current-savings" min="0" step="1000" value="20000" placeholder="e.g. 20000"
+              data-down-payment-calculator-target="currentSavings"
+              data-action="input->down-payment-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="monthly-savings" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Savings ($)</label>
+            <input type="number" inputmode="decimal" id="monthly-savings" min="0" step="100" value="2000" placeholder="e.g. 2000"
+              data-down-payment-calculator-target="monthlySavings"
+              data-action="input->down-payment-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="annual-return-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Return Rate (%)</label>
+            <input type="number" inputmode="decimal" id="annual-return-rate" min="0" max="20" step="0.1" value="4" placeholder="e.g. 4"
+              data-down-payment-calculator-target="annualReturnRate"
+              data-action="input->down-payment-calculator#calculate"
+              class="w-full">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Down Payment Target</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-down-payment-calculator-target="downPaymentTarget">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Savings Gap</span>
+              <span class="text-lg font-bold text-red-600 dark:text-red-400" data-down-payment-calculator-target="savingsGap">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Months to Save</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-down-payment-calculator-target="monthsToSave">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Years to Save</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-down-payment-calculator-target="yearsToSave">0.0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Total with Interest</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-down-payment-calculator-target="totalWithInterest">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->down-payment-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "down-payment" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Down Payment Calculator</h2>
+      <p>Saving for a home down payment is one of the biggest financial milestones most people face, and understanding exactly how much you need and how long it will take can turn an overwhelming goal into a concrete plan. Our down payment calculator gives you a clear picture of your target amount, current savings gap, and an estimated timeline to reach your goal.</p>
+
+      <p>Start by entering the home price you are targeting. If you are not sure, research median home prices in your desired area to get a realistic figure. Next, set your down payment percentage. The traditional benchmark is 20%, which avoids private mortgage insurance (PMI) and gives you significant equity from the start. However, many buyers choose lower amounts: 10% is common, FHA loans allow 3.5%, and some conventional loans go as low as 3%.</p>
+
+      <p>Enter your current savings, meaning the amount you have already set aside specifically for the down payment. Then input the amount you can save each month going forward. Be realistic here, as an overly optimistic estimate will give you an unreliable timeline. Consider your budget, existing expenses, and any upcoming major costs.</p>
+
+      <p>The annual return rate represents what you expect to earn on your savings. If you are keeping funds in a high-yield savings account, 4-5% is a reasonable estimate as of 2024. If you are investing more aggressively in a diversified portfolio, 6-8% might be appropriate, though you accept more risk. For very short time horizons of one to two years, a savings account or CD is generally safer since you cannot afford a market downturn right before your home purchase.</p>
+
+      <p>The calculator uses the future value of an annuity formula with monthly compounding to determine how many months of saving are needed to bridge the gap between your current savings and the down payment target. The total with interest shows the actual value your savings will reach by the time you hit your target, which will be at or slightly above the target amount because months are rounded up to whole numbers.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Down Payment Savings Formula</h2>
+      <p>The down payment target is simply:</p>
+      <p><strong>Target = Home Price x (Down Payment % / 100)</strong></p>
+      <p>The savings gap is:</p>
+      <p><strong>Gap = Target - Current Savings</strong></p>
+      <p>If the gap is positive, the months to save are calculated using the logarithmic form of the compound growth equation with monthly contributions:</p>
+      <p><strong>Months = ln((T + PMT/r) / (S + PMT/r)) / ln(1 + r)</strong></p>
+      <p>Where T is the target amount, S is current savings, PMT is monthly savings, and r is the monthly return rate (annual rate divided by 12). This formula accounts for both the growth of your existing savings and the compounding effect of your ongoing monthly contributions.</p>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>How much should I put down on a house?</h3>
+      <p>The traditional recommendation is 20% of the home price, which avoids private mortgage insurance (PMI) and gives you significant equity from day one. However, many loan programs allow lower down payments: FHA loans require as little as 3.5%, conventional loans can go as low as 3%, and VA loans may require 0% down for eligible veterans. The right amount depends on your financial situation, loan type, and local market conditions.</p>
+
+      <h3>What is PMI and how does it relate to down payments?</h3>
+      <p>Private Mortgage Insurance (PMI) is required by most lenders when your down payment is less than 20% of the home price. PMI typically costs 0.5% to 1% of the loan amount annually and protects the lender if you default. Once your equity reaches 20%, you can usually request PMI removal, which can save you hundreds of dollars per month.</p>
+
+      <h3>Should I invest my down payment savings or keep them in a savings account?</h3>
+      <p>For short-term savings goals of less than 2-3 years, a high-yield savings account or short-term CD is generally safer since you need the money at a specific time and cannot risk market losses. For longer time horizons of 3-5 or more years, a conservative investment mix might provide higher returns, but you accept the risk of market downturns reducing your balance.</p>
+
+      <h3>How long does it typically take to save for a down payment?</h3>
+      <p>The time varies significantly based on the home price, down payment percentage, your savings rate, and local housing costs. Nationally, the average first-time homebuyer takes about 7-8 years to save a 20% down payment. However, by targeting a lower percentage like 10% or using first-time buyer programs, many people can buy a home in 3-5 years of focused saving.</p>
+
+      <h3>Are there first-time homebuyer programs that reduce the down payment needed?</h3>
+      <p>Yes, many programs exist to help first-time buyers. FHA loans require only 3.5% down with a credit score of 580 or higher. Fannie Mae and Freddie Mac offer conventional loans with 3% down. Many states have their own down payment assistance programs offering grants or low-interest second loans. VA loans for veterans and USDA loans for rural areas may require no down payment at all.</p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment, total interest, and amortization schedule.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Rent Affordability Calculator", description: "Find out how much rent you can afford based on your income and debts.", path: finance_rent_affordability_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Savings Goal Calculator", description: "Figure out how much you need to save each month to reach your financial goal.", path: finance_savings_goal_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("down-payment-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

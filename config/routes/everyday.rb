@@ -154,4 +154,20 @@ namespace :everyday do
   get "prime-number-checker", to: "calculators#prime_checker", as: :prime_checker
   get "random-number-generator", to: "calculators#random_number", as: :random_number
   get "image-resizer", to: "calculators#image_resizer", as: :image_resizer
+  get "split-bill-calculator", to: "calculators#split_bill", as: :split_bill
+  get "wedding-budget-calculator", to: "calculators#wedding_budget", as: :wedding_budget
+  get "travel-budget-calculator", to: "calculators#travel_budget", as: :travel_budget
+  get "pet-cost-calculator", to: "calculators#pet_cost", as: :pet_cost
+  get "electricity-usage-calculator", to: "calculators#electricity_usage", as: :electricity_usage
+  get "subscription-cost-calculator", to: "calculators#subscription_cost", as: :subscription_cost
+  get "jwt-generator", to: "calculators#jwt_generator_tool", as: :jwt_generator_tool
+  get "api-response-time-calculator", to: "calculators#api_response_time", as: :api_response_time
+  get "database-size-estimator", to: "calculators#database_size", as: :database_size
+  get "text-encryptor", to: "calculators#text_encryptor", as: :text_encryptor
+  get "uptime-calculator", to: "calculators#uptime_calculator", as: :uptime_calculator
+  get "citation-generator", to: "calculators#citation_generator", as: :citation_generator
+  get "plagiarism-calculator", to: "calculators#plagiarism", as: :plagiarism
+  get "final-grade-calculator", to: "calculators#final_grade", as: :final_grade
+  get "student-budget-calculator", to: "calculators#student_budget", as: :student_budget
+  get "study-time-calculator", to: "calculators#study_time", as: :study_time
 end

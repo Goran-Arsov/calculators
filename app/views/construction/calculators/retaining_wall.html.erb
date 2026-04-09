@@ -1,0 +1,182 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Retaining Wall Calculator - Free Online Tool",
+  description: "Calculate blocks, cap stones, gravel, and backfill needed for a retaining wall. Enter wall dimensions and block size for an instant material estimate.",
+  canonical: construction_retaining_wall_url,
+  og: {
+    title: "Retaining Wall Calculator - Free Online Tool | CalcWise",
+    description: "Calculate blocks, gravel, and backfill needed for a retaining wall project. Instant material estimates.",
+    url: construction_retaining_wall_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Retaining Wall Calculator", url: construction_retaining_wall_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many blocks do I need for a retaining wall?", answer: "Calculate the number of rows by dividing the wall height (in inches) by the block height. Calculate blocks per row by dividing the wall length (in inches) by the block length. Multiply rows by blocks per row and add 10% for waste. Standard 6-inch-high by 16-inch-long blocks are the most common size for residential retaining walls." },
+  { question: "How much gravel do I need for a retaining wall base?", answer: "The gravel base should be 6 inches deep and 24 inches wide (wider than the blocks). Multiply 0.5 feet (depth) by 2 feet (width) by the wall length in feet, then divide by 27 to convert cubic feet to cubic yards. This compacted gravel base provides drainage and a level foundation for the first course." },
+  { question: "How much backfill do I need behind a retaining wall?", answer: "Backfill is typically 12 inches deep behind the wall for its full height. Multiply the wall height by 1 foot (depth) by the wall length, then divide by 27 for cubic yards. Use clean gravel for the bottom two-thirds of backfill and topsoil for the upper third to support plantings." },
+  { question: "Do I need a permit for a retaining wall?", answer: "Most jurisdictions require a building permit for retaining walls over 4 feet high (measured from the bottom of the footing to the top of the wall). Walls near property lines, public sidewalks, or supporting surcharges (driveways, structures) may require engineering regardless of height. Always check local building codes." },
+  { question: "How high can I build a retaining wall without engineering?", answer: "Most residential retaining walls up to 3-4 feet high can be built without professional engineering, depending on local codes. Walls over 4 feet typically require engineered plans, a building permit, and inspection. Gravity walls (without reinforcement) should generally not exceed 3 feet. Taller walls need geogrid reinforcement, proper drainage, and compacted backfill." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Retaining Wall Calculator",
+  description: "Calculate blocks, cap stones, gravel, and backfill needed for a retaining wall project.",
+  url: construction_retaining_wall_url,
+  category: "HomeApplication",
+  calculator_slug: "retaining_wall"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Retaining Wall Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Retaining Wall Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the number of blocks, cap stones, gravel base, and backfill needed for your retaining wall project.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="retaining-wall-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="rw-wall-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wall Length (ft)</label>
+            <input id="rw-wall-length" type="number" inputmode="decimal" data-retaining-wall-calculator-target="wallLength" data-action="input->retaining-wall-calculator#calculate" class="w-full" placeholder="20" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="rw-wall-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wall Height (ft)</label>
+            <input id="rw-wall-height" type="number" inputmode="decimal" data-retaining-wall-calculator-target="wallHeight" data-action="input->retaining-wall-calculator#calculate" class="w-full" placeholder="3" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="rw-block-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Block Height (inches)</label>
+            <input id="rw-block-height" type="number" inputmode="decimal" data-retaining-wall-calculator-target="blockHeight" data-action="input->retaining-wall-calculator#calculate" class="w-full" value="6" step="0.5" min="1">
+          </div>
+          <div>
+            <label for="rw-block-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Block Length (inches)</label>
+            <input id="rw-block-length" type="number" inputmode="decimal" data-retaining-wall-calculator-target="blockLength" data-action="input->retaining-wall-calculator#calculate" class="w-full" value="16" step="0.5" min="1">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Rows</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-retaining-wall-calculator-target="resultRows">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Blocks Per Row</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-retaining-wall-calculator-target="resultBlocksPerRow">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Blocks (+10%)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-retaining-wall-calculator-target="resultTotalBlocks">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cap Blocks</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-retaining-wall-calculator-target="resultCapBlocks">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Gravel Base</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-retaining-wall-calculator-target="resultGravelYards">0.00 yd&sup3;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Backfill</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-retaining-wall-calculator-target="resultBackfillYards">0.00 yd&sup3;</span>
+            </div>
+          </div>
+          <button data-action="click->retaining-wall-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "retaining_wall" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Retaining Wall Calculator</h2>
+      <p>
+        Building a retaining wall requires careful material planning to avoid costly trips back to the supply yard. Enter the total wall length and desired height in feet, along with the block dimensions in inches. The calculator determines the number of courses (rows), blocks per row, and total blocks needed including a 10% waste allowance for cuts and breakage. It also calculates the gravel base and backfill material in cubic yards, which is how landscape suppliers sell bulk materials.
+      </p>
+      <p>
+        Standard retaining wall blocks are 6 inches high and 16 inches long, but many manufacturers offer different sizes. The most common blocks weigh 25 to 50 pounds each and feature a built-in lip or pin system that automatically sets the wall batter (the slight backward lean that provides structural stability). Cap blocks are placed along the top row and are typically glued in place with landscape adhesive.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Building a Proper Retaining Wall Foundation</h2>
+      <p>
+        The gravel base is the most critical element of a retaining wall. Dig a trench 6 inches deep and approximately 24 inches wide, which is wider than the blocks to provide stability. Fill with compactable gravel (typically 3/4-inch minus or road base) and compact it in lifts using a plate compactor or hand tamper. The base must be perfectly level along its entire length. An uneven base will cause every subsequent course to be off, resulting in visible gaps and structural weakness.
+      </p>
+
+      <h3>Backfill and Drainage Tips</h3>
+      <p>
+        Proper drainage behind the wall prevents hydrostatic pressure, which is the number one cause of retaining wall failure. Place perforated drain pipe (4-inch corrugated or rigid PVC) at the base of the wall, behind the first course, with the perforations facing down. Cover the pipe with clean 3/4-inch gravel and continue the gravel backfill to within 6 inches of the top. Use landscape fabric between the gravel and native soil to prevent fine particles from clogging the drainage layer. The top 6 inches can be filled with topsoil for planting.
+      </p>
+
+      <h3>Construction Best Practices</h3>
+      <p>
+        Stagger the joints between courses, just like bricks in a wall, so that each block spans the joint of the course below. This interlock provides structural strength. Use landscape adhesive on the cap blocks and on any course where the built-in lip system is cut away. For walls over two feet tall, install geogrid reinforcement every two to three courses. The geogrid extends into the soil behind the wall and anchors it against the soil pressure. Compact the backfill every 6 to 8 inches as you build up to prevent settling. Check for level and alignment at every course before proceeding to the next.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many blocks do I need for a retaining wall?</h3>
+      <p>
+        Divide the wall height in inches by the block height for the number of rows. Divide the wall length in inches by the block length for blocks per row. Multiply rows by blocks per row and add 10% for waste. Standard blocks are 6 inches high by 16 inches long.
+      </p>
+
+      <h3>How much gravel do I need for the base?</h3>
+      <p>
+        The gravel base should be 6 inches deep and 24 inches wide. Multiply 0.5 feet by 2 feet by the wall length in feet, then divide by 27 to convert to cubic yards. This compacted gravel provides drainage and a level foundation.
+      </p>
+
+      <h3>How much backfill do I need?</h3>
+      <p>
+        Backfill is typically 12 inches deep behind the wall for its full height. Multiply the wall height by 1 foot by the wall length, then divide by 27 for cubic yards. Use clean gravel for the bottom two-thirds and topsoil for the upper third.
+      </p>
+
+      <h3>Do I need a permit for a retaining wall?</h3>
+      <p>
+        Most jurisdictions require a building permit for retaining walls over 4 feet high. Walls near property lines or supporting driveways and structures may require engineering regardless of height. Always check local building codes before starting.
+      </p>
+
+      <h3>How high can I build without engineering?</h3>
+      <p>
+        Most residential retaining walls up to 3-4 feet can be built without professional engineering. Walls over 4 feet typically require engineered plans, a permit, and inspection. Gravity walls without reinforcement should generally not exceed 3 feet. Taller walls need geogrid reinforcement and proper drainage.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Gravel & Mulch Calculator", description: "Calculate cubic yards and tons of gravel, mulch, or soil.", path: construction_gravel_mulch_path, icon_path: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" },
+      { name: "Fence Calculator", description: "Calculate posts, rails, and pickets for your fence project.", path: construction_fence_path, icon_path: "M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11m16-11v11" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("retaining-wall-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

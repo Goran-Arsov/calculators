@@ -1,0 +1,197 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Database Size Estimator - PostgreSQL Table Size Calculator",
+  description: "Estimate PostgreSQL table sizes based on column types, row counts, and index overhead. Calculate storage requirements for integer, varchar, text, UUID, and more.",
+  canonical: everyday_database_size_url,
+  og: {
+    title: "Database Size Estimator - PostgreSQL Table Size Calculator | CalcWise",
+    description: "Estimate PostgreSQL table storage requirements based on column definitions and row counts. Includes index overhead calculation.",
+    url: everyday_database_size_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Database Size Estimator", url: everyday_database_size_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does PostgreSQL store rows internally?", answer: "Each PostgreSQL row has a 23-byte header called HeapTupleHeaderData that stores transaction visibility information (xmin, xmax), command ID, and a pointer to the row data. After this header, the actual column data is stored. PostgreSQL also adds alignment padding between columns. The total row size is the sum of column data plus the 23-byte overhead plus any alignment padding." },
+  { question: "Why add 30% for index overhead?", answer: "B-tree indexes, which are the default in PostgreSQL, typically add 2-3x the size of the indexed columns. When you account for primary keys, foreign keys, and common query indexes, a 30% overhead estimate on top of raw table data is a reasonable starting point. Heavily indexed tables (like those with full-text search or GIN indexes) can have index sizes exceeding the table itself." },
+  { question: "How much space does a UUID column use?", answer: "A UUID in PostgreSQL uses exactly 16 bytes of storage. This is the binary representation of the 128-bit UUID value. While UUIDs appear as 36-character strings (like 550e8400-e29b-41d4-a716-446655440000), PostgreSQL stores them in a compact binary format. Compared to bigint (8 bytes), UUIDs use twice the storage per row, which adds up significantly at scale." },
+  { question: "What is the difference between varchar and text storage?", answer: "In PostgreSQL, varchar(n) and text have nearly identical storage characteristics. Both use TOAST (The Oversized-Attribute Storage Technique) for values larger than about 2KB, compressing and potentially storing them out-of-line. The only difference is that varchar(n) enforces a maximum length constraint. For size estimation, the average length of actual data stored matters more than the column type." },
+  { question: "How accurate is this estimation?", answer: "This tool provides a reasonable estimate for capacity planning. Actual PostgreSQL storage varies due to alignment padding (typically 8-byte alignment), TOAST compression for large text values, page fill factor (default 90%), dead rows from updates/deletes before vacuum, and WAL overhead. For production planning, add a 20-50% buffer above the estimate to account for these factors." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Database Size Estimator",
+  description: "Estimate PostgreSQL table sizes based on column types, row counts, and index overhead for capacity planning.",
+  url: everyday_database_size_url,
+  category: "UtilityApplication",
+  calculator_slug: "database-size-estimator"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Database Size Estimator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Database Size Estimator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate PostgreSQL table storage requirements based on column definitions and row count. Includes row overhead and index size estimates for capacity planning.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="database-size-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="db-num-rows" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Rows</label>
+          <input type="number" id="db-num-rows" data-database-size-calculator-target="numRows" data-action="input->database-size-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            value="1000000" min="1" placeholder="1000000">
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Columns</label>
+          <div data-database-size-calculator-target="columnsContainer">
+            <%# Dynamic column rows rendered by Stimulus controller %>
+          </div>
+          <button type="button" data-action="click->database-size-calculator#addColumn"
+            class="mt-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-sm font-medium">
+            + Add Column
+          </button>
+        </div>
+
+        <div data-database-size-calculator-target="resultsContainer" class="hidden space-y-4">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Bytes/Row</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-database-size-calculator-target="resultBytesPerRow">&mdash;</span>
+            </div>
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Columns</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-database-size-calculator-target="resultColumnCount">&mdash;</span>
+            </div>
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Raw Size (bytes)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-database-size-calculator-target="resultRawSize">&mdash;</span>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4">
+            <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 uppercase tracking-wide">Estimated Sizes</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="text-center">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Table Only</span>
+                <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400" data-database-size-calculator-target="resultFormattedRaw">&mdash;</span>
+              </div>
+              <div class="text-center">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">With Indexes (+30%)</span>
+                <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400" data-database-size-calculator-target="resultFormattedIndex">&mdash;</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-xs text-gray-500 dark:text-gray-400">
+            <span class="font-medium">With indexes (bytes):</span>
+            <span data-database-size-calculator-target="resultWithIndex">&mdash;</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Column Type Reference</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-gray-600 dark:text-gray-400">
+          <div><span class="font-mono font-medium">integer</span> — 4 B</div>
+          <div><span class="font-mono font-medium">bigint</span> — 8 B</div>
+          <div><span class="font-mono font-medium">boolean</span> — 1 B</div>
+          <div><span class="font-mono font-medium">timestamp</span> — 8 B</div>
+          <div><span class="font-mono font-medium">float</span> — 8 B</div>
+          <div><span class="font-mono font-medium">uuid</span> — 16 B</div>
+          <div><span class="font-mono font-medium">varchar</span> — variable</div>
+          <div><span class="font-mono font-medium">text</span> — variable</div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "database-size-estimator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>PostgreSQL Storage Internals</h2>
+      <p>
+        Understanding how PostgreSQL stores data helps you make informed decisions about schema design and capacity planning. Each row in a PostgreSQL table has a fixed overhead of 23 bytes for the HeapTupleHeaderData structure, which contains transaction visibility information (xmin, xmax, cmin, cmax), an infomask with status flags, and a pointer offset to the row data. This overhead exists regardless of how small your actual data is, which means tables with many narrow rows have a higher overhead ratio than tables with fewer, wider rows.
+      </p>
+      <p>
+        Beyond the row header, PostgreSQL stores column data according to each type's binary format. Fixed-size types like integer (4 bytes), bigint (8 bytes), and boolean (1 byte) always use the same amount of space. Variable-length types like varchar and text use a 1-byte or 4-byte length prefix followed by the actual data. PostgreSQL also applies alignment padding between columns to ensure proper memory alignment, typically rounding up to 4-byte or 8-byte boundaries.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Index Storage Considerations</h2>
+      <p>
+        This calculator adds 30% to the raw table size to estimate index overhead, which is a reasonable starting point for typical tables. In practice, index sizes vary widely depending on the number and type of indexes. A standard B-tree index on a bigint primary key adds approximately 8 bytes per row plus B-tree node overhead. A composite index on multiple columns stores all indexed column values plus the row pointer. GIN indexes for full-text search or JSONB containment queries can be several times larger than the source data.
+      </p>
+
+      <h3>TOAST and Large Values</h3>
+      <p>
+        PostgreSQL uses TOAST (The Oversized-Attribute Storage Technique) to handle values larger than approximately 2KB. When a row exceeds the page size limit of 8KB, PostgreSQL compresses large column values and may store them in a separate TOAST table. This means a text column with an average of 200 bytes will be stored inline, but a text column with an average of 5KB will be compressed and partially stored out-of-line. This calculator uses the average bytes you specify, which works well for inline storage but may overestimate for very large text values that TOAST would compress.
+      </p>
+
+      <h3>Capacity Planning Best Practices</h3>
+      <p>
+        For production capacity planning, take the estimate from this tool and add a safety buffer. Account for dead rows that accumulate between vacuum cycles (typically 10-20% of table size). Consider WAL (Write-Ahead Log) storage, which is separate from table data. Plan for temporary space needed during operations like <code>CREATE INDEX CONCURRENTLY</code>, <code>VACUUM FULL</code>, and <code>pg_dump</code>. A common rule of thumb is to provision 2-3x the estimated data size for total database storage, ensuring room for indexes, WAL, temporary files, and growth.
+      </p>
+
+      <h3>UUID vs Integer Primary Keys</h3>
+      <p>
+        The choice between UUID (16 bytes) and bigint (8 bytes) primary keys affects storage at scale. With 100 million rows, the primary key column alone uses 1.6 GB with UUIDs versus 0.8 GB with bigint. Each index that references the primary key also pays this cost. However, UUIDs enable distributed ID generation without coordination, which is essential for microservices. Consider using ordered UUIDs (UUIDv7) to maintain B-tree locality while keeping the distributed generation benefit.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does PostgreSQL store rows internally?</h3>
+      <p>Each row has a 23-byte header for transaction visibility, followed by column data with alignment padding. Fixed types use constant space; variable types use a length prefix plus the actual data.</p>
+
+      <h3>Why add 30% for index overhead?</h3>
+      <p>B-tree indexes on primary keys and foreign keys typically add 20-40% to the raw table size. This 30% estimate accounts for a primary key index and one or two secondary indexes.</p>
+
+      <h3>How much space does a UUID column use?</h3>
+      <p>PostgreSQL stores UUIDs as 16 bytes in compact binary format. This is twice the size of a bigint (8 bytes) and adds up at scale across the column and all referencing indexes.</p>
+
+      <h3>What is the difference between varchar and text storage?</h3>
+      <p>In PostgreSQL, varchar and text have identical storage mechanics. Both use TOAST for values over 2KB. The only difference is that varchar(n) enforces a maximum length. For estimation, the average actual data length is what matters.</p>
+
+      <h3>How accurate is this estimation?</h3>
+      <p>This provides a reasonable estimate for planning. Actual sizes vary due to alignment padding, TOAST compression, fill factor, dead rows, and WAL. Add a 20-50% buffer for production planning.</p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Byte Converter", description: "Convert between bytes, KB, MB, GB, and TB with precise calculations.", path: everyday_byte_converter_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
+      { name: "Bandwidth Calculator", description: "Calculate download times based on file size and connection speed.", path: everyday_bandwidth_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "JSON Formatter", description: "Format, prettify, minify, and validate JSON data instantly.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("database-size-estimator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

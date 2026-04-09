@@ -1,0 +1,169 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Emergency Fund Calculator - Free Online Tool",
+  description: "Calculate how much you need in your emergency fund based on monthly expenses and job stability. Track your progress and see how long it will take to reach your goal.",
+  canonical: finance_emergency_fund_url,
+  og: {
+    title: "Emergency Fund Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how much you need in your emergency fund based on monthly expenses and job stability. Track your savings progress.",
+    url: finance_emergency_fund_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Emergency Fund Calculator", url: finance_emergency_fund_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much should I save in my emergency fund?", answer: "Financial experts generally recommend saving 3 to 9 months of essential living expenses. If you have a stable job with predictable income, 3 months may be sufficient. If you are self-employed, work in a volatile industry, or have a single income household, 6 to 9 months provides a larger safety net. The right amount depends on your personal risk factors and comfort level." },
+  { question: "What counts as monthly expenses for an emergency fund?", answer: "Include all essential monthly expenses: rent or mortgage, utilities, groceries, insurance premiums, minimum debt payments, transportation costs, and any other bills you cannot avoid. Do not include discretionary spending like dining out or entertainment, since you would cut those in a true emergency." },
+  { question: "Where should I keep my emergency fund?", answer: "Keep your emergency fund in a high-yield savings account that is easily accessible but separate from your everyday checking account. This separation helps prevent accidental spending while keeping the money liquid for true emergencies. Money market accounts and short-term CDs are also good options, though CDs may have early withdrawal penalties." },
+  { question: "Should I invest my emergency fund?", answer: "No, your emergency fund should not be invested in stocks, bonds, or other volatile assets. The purpose of an emergency fund is immediate access to cash when unexpected expenses arise. Investments can lose value at the worst possible time, such as during a recession when job losses are more likely. A high-yield savings account provides modest returns while keeping your money safe and accessible." },
+  { question: "How do I build an emergency fund from scratch?", answer: "Start small by setting up automatic transfers from your checking account to a dedicated savings account. Even $50 or $100 per month adds up over time. Prioritize building at least one month of expenses as a starter emergency fund, then gradually increase to your target. Consider directing windfalls like tax refunds, bonuses, or cash gifts toward your fund to accelerate progress." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Emergency Fund Calculator",
+  description: "Calculate your emergency fund target based on monthly expenses and risk level, track savings progress, and estimate time to reach your goal.",
+  url: finance_emergency_fund_url,
+  category: "FinanceApplication",
+  calculator_slug: "emergency-fund"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Emergency Fund Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Emergency Fund Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find out how much you need in your emergency fund, track your progress, and see how long it will take to reach your savings goal.</p>
+
+    <%# Ad: leaderboard — placed below content heading per AdSense best practices %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="emergency-fund-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="emergency-fund-monthly-expenses" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Essential Expenses ($)</label>
+            <input id="emergency-fund-monthly-expenses" type="number" inputmode="decimal" data-emergency-fund-calculator-target="monthlyExpenses" data-action="input->emergency-fund-calculator#calculate" class="w-full" placeholder="3000" step="100" min="0">
+          </div>
+          <div>
+            <label for="emergency-fund-risk-level" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Employment Risk Level</label>
+            <select id="emergency-fund-risk-level" data-emergency-fund-calculator-target="riskLevel" data-action="change->emergency-fund-calculator#calculate" class="w-full">
+              <option value="stable">Stable (3 months)</option>
+              <option value="moderate" selected>Moderate (6 months)</option>
+              <option value="high_risk">High Risk (9 months)</option>
+            </select>
+          </div>
+          <div>
+            <label for="emergency-fund-current-savings" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Emergency Savings ($)</label>
+            <input id="emergency-fund-current-savings" type="number" inputmode="decimal" data-emergency-fund-calculator-target="currentSavings" data-action="input->emergency-fund-calculator#calculate" class="w-full" placeholder="5000" step="500" min="0">
+          </div>
+          <div>
+            <label for="emergency-fund-monthly-contribution" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Contribution ($)</label>
+            <input id="emergency-fund-monthly-contribution" type="number" inputmode="decimal" data-emergency-fund-calculator-target="monthlyContribution" data-action="input->emergency-fund-calculator#calculate" class="w-full" placeholder="500" step="50" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Target Fund</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-emergency-fund-calculator-target="targetFund">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Months Recommended</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-emergency-fund-calculator-target="monthsRecommended">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Savings Gap</span>
+              <span class="text-lg font-bold text-red-600 dark:text-red-400" data-emergency-fund-calculator-target="savingsGap">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Months to Goal</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-emergency-fund-calculator-target="monthsToGoal">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Percent Funded</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-emergency-fund-calculator-target="percentFunded">0.0%</span>
+            </div>
+          </div>
+          <button data-action="click->emergency-fund-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "emergency-fund" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Emergency Fund Calculator</h2>
+      <p>An emergency fund is the cornerstone of financial security. It protects you from unexpected expenses like medical bills, car repairs, job loss, or home maintenance emergencies that would otherwise force you into debt. This calculator helps you determine the right target amount and track your progress toward building that safety net.</p>
+
+      <p>Begin by entering your total monthly essential expenses. Focus on the costs you cannot eliminate: rent or mortgage, utilities, groceries, insurance, minimum debt payments, and transportation. Do not include discretionary spending like dining out, entertainment, or subscriptions you could temporarily cancel. The goal is to know how much you need to cover bare necessities during a financial emergency.</p>
+
+      <p>Next, select your employment risk level. If you have a stable government or corporate job with strong job security, three months of expenses may be adequate. If you work in a cyclical industry, are self-employed, or have variable income, six months is a safer target. If your income is highly unpredictable, you are the sole earner for your family, or you work in a volatile field, nine months provides the most robust protection. The calculator automatically adjusts your target based on this selection.</p>
+
+      <p>Enter your current emergency savings to see how far along you are, and your planned monthly contribution to estimate when you will reach your goal. The calculator shows your savings gap, the number of months needed to close that gap, and your current percent funded. If you cannot contribute monthly, the calculator will indicate that reaching the goal requires additional savings to get started.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why an Emergency Fund Matters</h2>
+      <p>Studies consistently show that a large percentage of Americans cannot cover an unexpected $400 expense without borrowing. Without an emergency fund, unexpected costs lead to credit card debt, payday loans, or retirement account withdrawals, all of which carry significant financial penalties. Building even a small emergency fund of one month of expenses dramatically reduces financial stress and prevents the debt spiral that catches many families off guard.</p>
+
+      <h3>Building Your Fund Step by Step</h3>
+      <p>If the target amount feels overwhelming, start with a mini emergency fund of $1,000 to cover minor surprises. Then work toward one month of expenses, then three months, and gradually build to your full target. Automate your contributions by setting up recurring transfers on payday. Treat your emergency fund contribution like a bill that must be paid. Consider directing any windfalls, such as tax refunds, bonuses, or rebates, straight into your emergency fund to accelerate your progress.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much should I save in my emergency fund?</h3>
+      <p>Financial experts recommend 3 to 9 months of essential living expenses depending on your job stability and personal situation. Stable employment may require only 3 months, while self-employment or volatile industries warrant 6 to 9 months.</p>
+
+      <h3>What counts as monthly expenses for an emergency fund?</h3>
+      <p>Include essential expenses: rent or mortgage, utilities, groceries, insurance, minimum debt payments, and transportation. Exclude discretionary spending since you would cut those in a true emergency.</p>
+
+      <h3>Where should I keep my emergency fund?</h3>
+      <p>A high-yield savings account that is easily accessible but separate from your everyday checking is ideal. This prevents accidental spending while keeping money liquid. Money market accounts are also a good option.</p>
+
+      <h3>Should I invest my emergency fund?</h3>
+      <p>No. The purpose of an emergency fund is immediate access to cash. Investments can lose value at the worst possible time, such as during a recession when job losses are more likely. Keep it in a safe, liquid account.</p>
+
+      <h3>How do I build an emergency fund from scratch?</h3>
+      <p>Start small with automatic transfers of even $50 or $100 per month. Build a starter fund of one month of expenses first, then gradually increase to your full target. Direct windfalls like tax refunds toward your fund to accelerate progress.</p>
+
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Savings Goal Calculator", description: "Calculate how much you need to save monthly to reach your financial goal.", path: finance_savings_goal_path, icon_path: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" },
+      { name: "Savings Interest Calculator", description: "See how your savings grow with interest and regular monthly deposits.", path: finance_savings_interest_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Debt Payoff Calculator", description: "Find out when you'll be debt-free and how much interest you'll pay.", path: finance_debt_payoff_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("emergency-fund-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

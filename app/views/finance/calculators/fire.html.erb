@@ -1,0 +1,181 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "FIRE Calculator - Financial Independence Tool",
+  description: "Calculate your FIRE number and years to financial independence. Plan early retirement with our free FIRE calculator using safe withdrawal rates and compound growth.",
+  canonical: finance_fire_url,
+  og: {
+    title: "FIRE Calculator - Financial Independence Tool | CalcWise",
+    description: "Calculate your FIRE number and years to financial independence. Plan early retirement with our free FIRE calculator using safe withdrawal rates and compound growth.",
+    url: finance_fire_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "FIRE Calculator", url: finance_fire_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the FIRE number?", answer: "Your FIRE number is the amount of money you need invested to live off your portfolio indefinitely. It is calculated by dividing your annual expenses by your safe withdrawal rate. For example, if you spend $40,000 per year and use a 4% withdrawal rate, your FIRE number is $1,000,000." },
+  { question: "What is the 4% safe withdrawal rate?", answer: "The 4% rule comes from the Trinity Study, which found that retirees who withdrew 4% of their portfolio in the first year and adjusted for inflation each year had a very high probability of not running out of money over a 30-year retirement. Some FIRE practitioners use a more conservative 3.5% or 3% rate for longer retirement horizons." },
+  { question: "How many years does it take to reach FIRE?", answer: "The number of years to FIRE depends on your savings rate, current portfolio size, and expected investment returns. Someone saving 50% of their income could reach FIRE in roughly 17 years, while saving 70% could cut that to around 8-9 years. The higher your savings rate relative to expenses, the faster you reach financial independence." },
+  { question: "What is the difference between FIRE and traditional retirement?", answer: "Traditional retirement typically happens around age 65 and relies on Social Security plus employer pensions or 401(k) savings. FIRE focuses on achieving financial independence much earlier, often in your 30s or 40s, by aggressively saving and investing 50-70% of income so that investment returns cover all living expenses." },
+  { question: "Can I adjust my safe withdrawal rate?", answer: "Yes. While 4% is the most commonly cited rate, you may want to adjust it based on your situation. A lower rate like 3% or 3.5% provides a larger safety margin for longer retirements or uncertain markets. A higher rate like 4.5% or 5% may work if you have other income sources, are flexible with spending, or plan a shorter retirement period." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "FIRE Calculator",
+  description: "Calculate your Financial Independence, Retire Early (FIRE) number, estimated years to FIRE, and monthly savings needed based on expenses, savings rate, portfolio size, and expected returns.",
+  url: finance_fire_url,
+  category: "FinanceApplication",
+  calculator_slug: "fire"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "FIRE Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">FIRE Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your Financial Independence, Retire Early number and find out how many years until you can retire.</p>
+
+    <%# Ad: leaderboard — placed below content heading per AdSense best practices %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="fire-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="annual-expenses" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Expenses ($)</label>
+            <input type="number" inputmode="decimal" id="annual-expenses" min="0" step="1000" value="40000" placeholder="e.g. 40000"
+              data-fire-calculator-target="annualExpenses"
+              data-action="input->fire-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="annual-savings" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Savings ($)</label>
+            <input type="number" inputmode="decimal" id="annual-savings" min="0" step="1000" value="30000" placeholder="e.g. 30000"
+              data-fire-calculator-target="annualSavings"
+              data-action="input->fire-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="current-portfolio" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Portfolio ($)</label>
+            <input type="number" inputmode="decimal" id="current-portfolio" min="0" step="5000" value="100000" placeholder="e.g. 100000"
+              data-fire-calculator-target="currentPortfolio"
+              data-action="input->fire-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="expected-return-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Expected Annual Return (%)</label>
+            <input type="number" inputmode="decimal" id="expected-return-rate" min="0" max="30" step="0.1" value="7" placeholder="e.g. 7"
+              data-fire-calculator-target="expectedReturnRate"
+              data-action="input->fire-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="safe-withdrawal-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Safe Withdrawal Rate (%)</label>
+            <input type="number" inputmode="decimal" id="safe-withdrawal-rate" min="0.1" max="10" step="0.1" value="4" placeholder="e.g. 4"
+              data-fire-calculator-target="safeWithdrawalRate"
+              data-action="input->fire-calculator#calculate"
+              class="w-full">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">FIRE Number</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-fire-calculator-target="fireNumber">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Years to FIRE</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-fire-calculator-target="yearsToFire">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Monthly Savings Needed</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-fire-calculator-target="monthlySavingsNeeded">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Projected Portfolio at FIRE</span>
+              <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400" data-fire-calculator-target="projectedPortfolio">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->fire-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "fire" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the FIRE Calculator</h2>
+      <p>The FIRE (Financial Independence, Retire Early) calculator helps you determine how much money you need to retire early and how many years it will take to get there. The core idea behind FIRE is simple: accumulate enough invested assets so that your portfolio's returns can cover your annual living expenses indefinitely, freeing you from the need to work for a paycheck.</p>
+
+      <p>Start by entering your annual expenses, which represent the total amount you spend each year on housing, food, transportation, insurance, entertainment, and everything else. This is the most critical number because it directly determines your FIRE number. Many aspiring FIRE practitioners focus on reducing expenses as the fastest way to accelerate their timeline, since lowering expenses both increases savings and decreases the target number simultaneously.</p>
+
+      <p>Next, enter your annual savings, which is the amount you invest toward financial independence each year. This includes contributions to brokerage accounts, retirement accounts, and any other investments. Then enter your current portfolio value, which is the total value of all your invested assets today. The expected annual return represents the average yearly growth rate you anticipate. A common assumption is 7% for a diversified stock portfolio, accounting for inflation.</p>
+
+      <p>The safe withdrawal rate determines how much you plan to withdraw each year in retirement. The widely-cited 4% rule is based on the Trinity Study, which showed that a 4% initial withdrawal rate, adjusted annually for inflation, has historically sustained portfolios for at least 30 years. If you plan to retire very early and need your money to last 40 or 50 years, consider using a more conservative rate of 3% to 3.5%.</p>
+
+      <p>The calculator uses the compound growth formula with annual contributions to determine how many years it takes for your current portfolio plus ongoing savings to reach your FIRE number. The monthly savings needed figure shows what you would need to save each month given the computed timeline. If your current portfolio already exceeds the FIRE number, you have already achieved financial independence.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>FIRE Number Formula</h2>
+      <p>Your FIRE number is calculated with a straightforward formula:</p>
+      <p><strong>FIRE Number = Annual Expenses / Safe Withdrawal Rate</strong></p>
+      <p>For example, with $40,000 in annual expenses and a 4% SWR: $40,000 / 0.04 = $1,000,000.</p>
+      <p>The years to FIRE are calculated using the logarithmic form of the compound growth equation:</p>
+      <p><strong>Years = ln((FN + S/r) / (P + S/r)) / ln(1 + r)</strong></p>
+      <p>Where FN is the FIRE number, S is annual savings, P is the current portfolio, and r is the expected annual return rate. This accounts for both the growth of your existing portfolio and the compounding effect of your ongoing contributions.</p>
+
+      <h2>Frequently Asked Questions</h2>
+      <h3>What is the FIRE number?</h3>
+      <p>Your FIRE number is the amount of money you need invested to live off your portfolio indefinitely. It is calculated by dividing your annual expenses by your safe withdrawal rate. For example, if you spend $40,000 per year and use a 4% withdrawal rate, your FIRE number is $1,000,000.</p>
+
+      <h3>What is the 4% safe withdrawal rate?</h3>
+      <p>The 4% rule comes from the Trinity Study, which found that retirees who withdrew 4% of their portfolio in the first year and adjusted for inflation each year had a very high probability of not running out of money over a 30-year retirement. Some FIRE practitioners use a more conservative 3.5% or 3% rate for longer retirement horizons.</p>
+
+      <h3>How many years does it take to reach FIRE?</h3>
+      <p>The number of years to FIRE depends on your savings rate, current portfolio size, and expected investment returns. Someone saving 50% of their income could reach FIRE in roughly 17 years, while saving 70% could cut that to around 8-9 years. The higher your savings rate relative to expenses, the faster you reach financial independence.</p>
+
+      <h3>What is the difference between FIRE and traditional retirement?</h3>
+      <p>Traditional retirement typically happens around age 65 and relies on Social Security plus employer pensions or 401(k) savings. FIRE focuses on achieving financial independence much earlier, often in your 30s or 40s, by aggressively saving and investing 50-70% of income so that investment returns cover all living expenses.</p>
+
+      <h3>Can I adjust my safe withdrawal rate?</h3>
+      <p>Yes. While 4% is the most commonly cited rate, you may want to adjust it based on your situation. A lower rate like 3% or 3.5% provides a larger safety margin for longer retirements or uncertain markets. A higher rate like 4.5% or 5% may work if you have other income sources, are flexible with spending, or plan a shorter retirement period.</p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Retirement Calculator", description: "Plan your retirement with projected savings and estimated monthly income.", path: finance_retirement_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Investment Calculator", description: "Calculate how your investments will grow over time with compound interest.", path: finance_investment_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Savings Goal Calculator", description: "Figure out how much you need to save each month to reach your financial goal.", path: finance_savings_goal_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("fire-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

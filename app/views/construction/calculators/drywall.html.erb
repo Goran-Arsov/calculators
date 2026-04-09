@@ -1,0 +1,189 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Drywall Calculator - Free Online Tool",
+  description: "Calculate how many drywall sheets, joint compound, and tape you need for any room. Enter room dimensions, doors, windows, and sheet size for an instant estimate.",
+  canonical: construction_drywall_url,
+  og: {
+    title: "Drywall Calculator - Free Online Tool | CalcWise",
+    description: "Calculate how many drywall sheets, joint compound, and tape you need for any room. Enter room dimensions for an instant estimate.",
+    url: construction_drywall_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Drywall Calculator", url: construction_drywall_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many sheets of drywall do I need?", answer: "Measure the perimeter of the room (2 x length + 2 x width) and multiply by the ceiling height to get total wall area. Subtract 21 sq ft per door and 15 sq ft per window. Divide the net area by the sheet size (32 sq ft for 4x8 or 48 sq ft for 4x12) and add 10% for waste." },
+  { question: "What size drywall sheets should I use?", answer: "Standard 4x8 sheets (32 sq ft) are the most common and easiest to handle. For rooms with 9-foot or higher ceilings, 4x12 sheets (48 sq ft) reduce the number of horizontal seams, resulting in less taping and a smoother finish." },
+  { question: "How much joint compound do I need?", answer: "Plan for approximately 1 gallon of joint compound per 100 square feet of drywall. This covers three coats of mud over joints and screw holes. For textured finishes, you may need additional compound." },
+  { question: "How many rolls of drywall tape do I need?", answer: "One standard roll of drywall tape (250 feet) covers approximately 50 square feet of drywall surface. This accounts for all butt joints, tapered edges, and corner joints in a typical installation." },
+  { question: "Should I add extra drywall for waste?", answer: "Yes. A 10% waste factor is standard for drywall projects. This accounts for cuts around outlets, corners, irregular walls, and any damaged pieces. Complex room layouts with many corners may require up to 15% waste allowance." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Drywall Calculator",
+  description: "Calculate how many drywall sheets, joint compound, and tape you need for any room.",
+  url: construction_drywall_url,
+  category: "HomeApplication",
+  calculator_slug: "drywall"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Drywall Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Drywall Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate drywall sheets, joint compound, and tape needed for your room based on dimensions, openings, and sheet size.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="drywall-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="drywall-room-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Room Length (ft)</label>
+            <input id="drywall-room-length" type="number" inputmode="decimal" data-drywall-calculator-target="roomLength" data-action="input->drywall-calculator#calculate" class="w-full" placeholder="12" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="drywall-room-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Room Width (ft)</label>
+            <input id="drywall-room-width" type="number" inputmode="decimal" data-drywall-calculator-target="roomWidth" data-action="input->drywall-calculator#calculate" class="w-full" placeholder="10" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="drywall-room-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Room Height (ft)</label>
+            <input id="drywall-room-height" type="number" inputmode="decimal" data-drywall-calculator-target="roomHeight" data-action="input->drywall-calculator#calculate" class="w-full" placeholder="8" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="drywall-num-doors" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Doors</label>
+            <input id="drywall-num-doors" type="number" inputmode="numeric" data-drywall-calculator-target="numDoors" data-action="input->drywall-calculator#calculate" class="w-full" value="1" step="1" min="0">
+          </div>
+          <div>
+            <label for="drywall-num-windows" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Windows</label>
+            <input id="drywall-num-windows" type="number" inputmode="numeric" data-drywall-calculator-target="numWindows" data-action="input->drywall-calculator#calculate" class="w-full" value="1" step="1" min="0">
+          </div>
+          <div>
+            <label for="drywall-sheet-size" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sheet Size</label>
+            <select id="drywall-sheet-size" data-drywall-calculator-target="sheetSize" data-action="change->drywall-calculator#calculate" class="w-full">
+              <option value="32">4 x 8 ft (32 sq ft)</option>
+              <option value="48">4 x 12 ft (48 sq ft)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Wall Area</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-drywall-calculator-target="resultTotalWallArea">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Area</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-drywall-calculator-target="resultNetArea">0 sq ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sheets Needed</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-drywall-calculator-target="resultSheetsNeeded">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Joint Compound (gal)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-drywall-calculator-target="resultJointCompound">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tape Rolls</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-drywall-calculator-target="resultTapeRolls">0</span>
+            </div>
+          </div>
+          <button data-action="click->drywall-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "drywall" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Drywall Calculator</h2>
+      <p>
+        Planning a drywall installation starts with accurate material estimates. Enter the room length, width, and ceiling height in feet. The calculator computes the total wall area by multiplying the perimeter (2 times the length plus 2 times the width) by the height. It then subtracts 21 square feet for each door and 15 square feet for each window to determine the net area that needs drywall coverage.
+      </p>
+      <p>
+        Choose your sheet size based on ceiling height and handling preferences. Standard 4x8-foot sheets (32 square feet) are the most common and manageable for DIY projects. For rooms with 9-foot or taller ceilings, 4x12-foot sheets (48 square feet) span the full height and eliminate horizontal seams, resulting in fewer joints to tape and finish. The calculator adds a 10% waste factor to account for cuts, mistakes, and fitting around outlets and corners.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Drywall Materials</h2>
+      <p>
+        Beyond the drywall sheets themselves, you need joint compound (also called mud) and paper or mesh tape to finish the seams. Joint compound is estimated at 1 gallon per 100 square feet of drywall, which covers three coats over all joints, corners, and screw indentations. Drywall tape is estimated at 1 roll per 50 square feet, ensuring you have enough to cover every seam and inside corner.
+      </p>
+
+      <h3>Choosing the Right Drywall Type</h3>
+      <p>
+        Standard half-inch drywall is suitable for most interior walls and ceilings. Use moisture-resistant (green board) drywall in bathrooms, kitchens, and laundry rooms where humidity is higher. Fire-rated (Type X) drywall is required for garage walls adjacent to living spaces and certain multi-family construction applications. For ceilings, consider lightweight or sag-resistant drywall that resists bowing between joists.
+      </p>
+
+      <h3>Tips for a Successful Drywall Installation</h3>
+      <p>
+        Hang ceiling sheets first, then walls, starting from the top and working down. Stagger the joints between rows so that vertical seams do not line up, which strengthens the wall and reduces visible cracking. Use drywall screws spaced every 12 inches along studs for walls and every 8 inches for ceilings. Pre-mark stud locations on the floor and ceiling before hanging sheets to speed up fastening. Allow joint compound to dry completely between coats, and sand lightly with fine-grit sandpaper before applying the next coat for a smooth, professional finish.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many sheets of drywall do I need?</h3>
+      <p>
+        Measure the perimeter of the room and multiply by the ceiling height to get total wall area. Subtract 21 sq ft per door and 15 sq ft per window. Divide the net area by the sheet size (32 sq ft for 4x8 or 48 sq ft for 4x12) and add 10% for waste.
+      </p>
+
+      <h3>What size drywall sheets should I use?</h3>
+      <p>
+        Standard 4x8 sheets are the most common and easiest to handle. For rooms with 9-foot or higher ceilings, 4x12 sheets reduce the number of horizontal seams, resulting in less taping and a smoother finish.
+      </p>
+
+      <h3>How much joint compound do I need?</h3>
+      <p>
+        Plan for approximately 1 gallon of joint compound per 100 square feet of drywall. This covers three coats of mud over joints and screw holes. For textured finishes, you may need additional compound.
+      </p>
+
+      <h3>How many rolls of drywall tape do I need?</h3>
+      <p>
+        One standard roll of drywall tape covers approximately 50 square feet of drywall surface. This accounts for all butt joints, tapered edges, and corner joints in a typical installation.
+      </p>
+
+      <h3>Should I add extra drywall for waste?</h3>
+      <p>
+        Yes. A 10% waste factor is standard for drywall projects. This accounts for cuts around outlets, corners, irregular walls, and any damaged pieces. Complex room layouts with many corners may require up to 15% waste allowance.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Paint Calculator", description: "Calculate how many gallons of paint you need for a room.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
+      { name: "Insulation Calculator", description: "Estimate insulation R-value, thickness, and material quantity.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Flooring Calculator", description: "Calculate how much flooring material you need with waste allowance.", path: construction_flooring_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("drywall-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

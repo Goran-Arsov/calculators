@@ -1,0 +1,198 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pregnancy Weight Gain Calculator - Free IOM Guidelines Tool",
+  description: "Calculate your recommended pregnancy weight gain based on IOM guidelines. Enter your pre-pregnancy weight, height, and current week to get personalized weight gain targets.",
+  canonical: health_pregnancy_weight_url,
+  og: {
+    title: "Pregnancy Weight Gain Calculator - Free IOM Guidelines Tool | CalcWise",
+    description: "Calculate recommended pregnancy weight gain based on your pre-pregnancy BMI and current gestational week using IOM guidelines.",
+    url: health_pregnancy_weight_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Pregnancy Weight Gain Calculator", url: health_pregnancy_weight_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much weight should I gain during pregnancy?", answer: "The recommended weight gain depends on your pre-pregnancy BMI. According to IOM guidelines, underweight women (BMI < 18.5) should gain 12.7-18.1 kg, normal weight women (BMI 18.5-24.9) should gain 11.3-15.9 kg, overweight women (BMI 25-29.9) should gain 6.8-11.3 kg, and obese women (BMI 30+) should gain 5.0-9.1 kg." },
+  { question: "How much weight gain is normal in the first trimester?", answer: "During the first trimester (weeks 1-13), most women gain between 0.5 and 2 kg total. Weight gain is typically slow during this period and may even be minimal due to morning sickness. The majority of pregnancy weight gain occurs during the second and third trimesters." },
+  { question: "What is the weekly weight gain rate during pregnancy?", answer: "Weekly weight gain in the second and third trimesters varies by pre-pregnancy BMI: underweight women average about 0.51 kg/week, normal weight women about 0.42 kg/week, overweight women about 0.28 kg/week, and obese women about 0.22 kg/week. These are averages and individual variation is normal." },
+  { question: "Is it dangerous to gain too much weight during pregnancy?", answer: "Excessive weight gain during pregnancy can increase the risk of gestational diabetes, preeclampsia, cesarean delivery, and postpartum weight retention. It may also increase the risk of the baby being large for gestational age. However, every pregnancy is different, so consult your healthcare provider for personalized guidance." },
+  { question: "What if I am not gaining enough weight during pregnancy?", answer: "Insufficient weight gain can be associated with premature birth and low birth weight. If you are struggling to gain weight, talk to your healthcare provider or a registered dietitian. They can help identify underlying causes and develop a nutrition plan that supports healthy weight gain for you and your baby." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Pregnancy Weight Gain Calculator",
+  description: "Calculate recommended pregnancy weight gain based on pre-pregnancy BMI and current gestational week using IOM guidelines.",
+  url: health_pregnancy_weight_url,
+  category: "HealthApplication",
+  calculator_slug: "pregnancy-weight"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Pregnancy Weight Gain Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pregnancy Weight Gain Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your recommended pregnancy weight gain based on IOM guidelines and your pre-pregnancy BMI.</p>
+
+    <%# Ad: leaderboard — placed below content heading per AdSense best practices %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="pregnancy-weight-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="pw-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pre-pregnancy Weight (kg)</label>
+            <input id="pw-weight" type="number" inputmode="decimal" data-pregnancy-weight-calculator-target="weight" data-action="input->pregnancy-weight-calculator#calculate" class="w-full" placeholder="65" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="pw-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Height (cm)</label>
+            <input id="pw-height" type="number" inputmode="decimal" data-pregnancy-weight-calculator-target="height" data-action="input->pregnancy-weight-calculator#calculate" class="w-full" placeholder="165" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="pw-week" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Week (1-42)</label>
+            <input id="pw-week" type="number" inputmode="numeric" data-pregnancy-weight-calculator-target="currentWeek" data-action="input->pregnancy-weight-calculator#calculate" class="w-full" placeholder="20" step="1" min="1" max="42">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Pre-pregnancy BMI</span>
+              <span class="text-xl font-bold text-pink-600 dark:text-pink-400" data-pregnancy-weight-calculator-target="bmi">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">BMI Category</span>
+              <span class="text-xl font-bold text-pink-600 dark:text-pink-400" data-pregnancy-weight-calculator-target="bmiCategory">—</span>
+            </div>
+            <div class="border-t border-pink-200 dark:border-pink-800 my-3"></div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Gain (min)</span>
+              <span class="font-bold text-pink-600 dark:text-pink-400" data-pregnancy-weight-calculator-target="totalGainMin">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Gain (max)</span>
+              <span class="font-bold text-pink-600 dark:text-pink-400" data-pregnancy-weight-calculator-target="totalGainMax">—</span>
+            </div>
+            <div class="border-t border-pink-200 dark:border-pink-800 my-3"></div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Current Gain (min)</span>
+              <span class="font-bold text-pink-600 dark:text-pink-400" data-pregnancy-weight-calculator-target="currentGainMin">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Current Gain (max)</span>
+              <span class="font-bold text-pink-600 dark:text-pink-400" data-pregnancy-weight-calculator-target="currentGainMax">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weekly Rate</span>
+              <span class="font-bold text-pink-600 dark:text-pink-400" data-pregnancy-weight-calculator-target="weeklyRate">—</span>
+            </div>
+          </div>
+          <button data-action="click->pregnancy-weight-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white rounded-xl shadow-sm shadow-pink-500/20 hover:shadow-md hover:shadow-pink-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+      <p class="mt-4 text-xs text-gray-400 dark:text-gray-500">This calculator is for informational purposes only. Always consult your healthcare provider for personalized pregnancy guidance.</p>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "pregnancy-weight" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Pregnancy Weight Gain Calculator</h2>
+      <p>
+        This pregnancy weight gain calculator helps you determine how much weight you should expect to gain during pregnancy based on the Institute of Medicine (IOM) guidelines. Simply enter your pre-pregnancy weight in kilograms, your height in centimeters, and your current gestational week. The calculator instantly computes your pre-pregnancy BMI, identifies your BMI category, and provides the recommended total weight gain range for your entire pregnancy as well as how much you should have gained by your current week.
+      </p>
+      <p>
+        Weight gain during pregnancy is a natural and essential part of supporting your growing baby. The amount of weight gain that is considered healthy varies significantly depending on your body composition before pregnancy. Women who start pregnancy underweight typically need to gain more, while those who start at a higher weight may need to gain less. Understanding these guidelines can help you and your healthcare provider monitor your pregnancy progress.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding IOM Weight Gain Guidelines</h2>
+      <p>
+        The Institute of Medicine (now the National Academy of Medicine) established evidence-based guidelines for pregnancy weight gain in 2009, which remain the standard used by healthcare providers worldwide. These guidelines are based on pre-pregnancy BMI and aim to optimize outcomes for both mother and baby. The guidelines account for the weight of the baby, placenta, amniotic fluid, increased blood volume, breast tissue growth, fat stores for breastfeeding, and uterine enlargement.
+      </p>
+
+      <h3>Weight Gain by BMI Category</h3>
+      <p>
+        For <strong>underweight women</strong> (BMI below 18.5), the recommended total gain is 12.7 to 18.1 kg, with a weekly rate of approximately 0.51 kg during the second and third trimesters. <strong>Normal weight women</strong> (BMI 18.5-24.9) should aim for 11.3 to 15.9 kg total, gaining about 0.42 kg per week. <strong>Overweight women</strong> (BMI 25-29.9) have a target of 6.8 to 11.3 kg total, at roughly 0.28 kg per week. <strong>Obese women</strong> (BMI 30 or above) are advised to gain 5.0 to 9.1 kg total, at approximately 0.22 kg per week in the later trimesters.
+      </p>
+
+      <h3>First Trimester Weight Gain</h3>
+      <p>
+        During the first trimester (weeks 1 through 13), weight gain is typically modest — between 0.5 and 2 kilograms total regardless of BMI category. Many women experience little weight change during this period, and some may even lose weight due to morning sickness. This is generally considered normal. The bulk of pregnancy weight gain occurs during the second and third trimesters when the baby is growing most rapidly.
+      </p>
+
+      <h3>When to Talk to Your Doctor</h3>
+      <p>
+        While this calculator provides general guidance based on IOM recommendations, every pregnancy is unique. You should consult your healthcare provider if you are gaining weight significantly faster or slower than the recommended rate, if you have a twin or multiple pregnancy (which has different guidelines), or if you have any pre-existing health conditions. Your doctor can provide personalized advice that takes your full medical history into account.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much weight should I gain during pregnancy?</h3>
+      <p>
+        The recommended weight gain depends on your pre-pregnancy BMI. According to IOM guidelines, underweight women (BMI below 18.5) should gain 12.7-18.1 kg, normal weight women (BMI 18.5-24.9) should gain 11.3-15.9 kg, overweight women (BMI 25-29.9) should gain 6.8-11.3 kg, and obese women (BMI 30+) should gain 5.0-9.1 kg.
+      </p>
+
+      <h3>How much weight gain is normal in the first trimester?</h3>
+      <p>
+        During the first trimester (weeks 1-13), most women gain between 0.5 and 2 kg total. Weight gain is typically slow during this period and may even be minimal due to morning sickness. The majority of pregnancy weight gain occurs during the second and third trimesters.
+      </p>
+
+      <h3>What is the weekly weight gain rate during pregnancy?</h3>
+      <p>
+        Weekly weight gain in the second and third trimesters varies by pre-pregnancy BMI: underweight women average about 0.51 kg/week, normal weight women about 0.42 kg/week, overweight women about 0.28 kg/week, and obese women about 0.22 kg/week. These are averages and individual variation is normal.
+      </p>
+
+      <h3>Is it dangerous to gain too much weight during pregnancy?</h3>
+      <p>
+        Excessive weight gain during pregnancy can increase the risk of gestational diabetes, preeclampsia, cesarean delivery, and postpartum weight retention. It may also increase the risk of the baby being large for gestational age. However, every pregnancy is different, so consult your healthcare provider for personalized guidance.
+      </p>
+
+      <h3>What if I am not gaining enough weight during pregnancy?</h3>
+      <p>
+        Insufficient weight gain can be associated with premature birth and low birth weight. If you are struggling to gain weight, talk to your healthcare provider or a registered dietitian. They can help identify underlying causes and develop a nutrition plan that supports healthy weight gain for you and your baby.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Pregnancy Due Date Calculator", description: "Calculate your estimated due date based on your last menstrual period.", path: health_pregnancy_due_date_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Pregnancy Week Calculator", description: "Track your pregnancy week by week with baby size, development milestones, and symptoms.", path: health_pregnancy_week_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("pregnancy-weight-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

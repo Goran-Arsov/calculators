@@ -1,0 +1,195 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "JWT Generator - Free Online JWT Token Creator",
+  description: "Generate JSON Web Tokens (JWT) with custom headers, payloads, and HMAC-SHA256 signatures. Free online JWT generator with real-time token creation.",
+  canonical: everyday_jwt_generator_tool_url,
+  og: {
+    title: "JWT Generator - Free Online JWT Token Creator | CalcWise",
+    description: "Create JWTs with custom payloads and HMAC-SHA256 signatures instantly. Free online tool for developers.",
+    url: everyday_jwt_generator_tool_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "JWT Generator", url: everyday_jwt_generator_tool_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a JWT Generator?", answer: "A JWT Generator creates JSON Web Tokens by encoding a header and payload as Base64URL strings and signing them with a secret key using HMAC-SHA256. The resulting token has three parts separated by dots: header.payload.signature. This tool lets you specify custom headers, payloads, and secret keys to generate valid JWTs for testing and development." },
+  { question: "How is a JWT signature created?", answer: "The JWT signature is created by Base64URL-encoding the header and payload separately, joining them with a dot, then computing an HMAC-SHA256 hash of that string using the secret key. The resulting hash is also Base64URL-encoded to form the third part of the token. This signature ensures the token has not been tampered with and was created by someone who knows the secret key." },
+  { question: "Can I use this JWT in production?", answer: "This tool is designed for development and testing purposes. While the tokens it generates are technically valid JWTs with proper HMAC-SHA256 signatures, production tokens should be generated server-side using established libraries like ruby-jwt, jsonwebtoken (Node.js), or PyJWT (Python) that handle edge cases, key rotation, and security best practices." },
+  { question: "What claims should I include in my JWT payload?", answer: "Common JWT claims include: sub (subject - user identifier), iss (issuer - your application), exp (expiration time as Unix timestamp), iat (issued at - current timestamp), aud (audience - intended recipient), and nbf (not before). You can also add custom claims like roles, permissions, or any application-specific data." },
+  { question: "What is the difference between JWT Generator and JWT Decoder?", answer: "A JWT Generator creates new tokens by encoding header and payload data and signing them with a secret key. A JWT Decoder takes an existing token and extracts its header and payload by Base64-decoding them. The generator creates tokens; the decoder reads them. Both are essential tools for working with JWT-based authentication." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "JWT Generator",
+  description: "Generate JSON Web Tokens with custom headers, payloads, and HMAC-SHA256 signatures for development and testing.",
+  url: everyday_jwt_generator_tool_url,
+  category: "UtilityApplication",
+  calculator_slug: "jwt-generator"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "JWT Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">JWT Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Create JSON Web Tokens with custom headers, payloads, and HMAC-SHA256 signatures. Enter your payload and secret key to generate a signed JWT instantly.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="jwt-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="jwt-gen-header" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Header JSON</label>
+          <textarea id="jwt-gen-header" data-jwt-generator-calculator-target="headerJson" data-action="input->jwt-generator-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="2">{"alg":"HS256","typ":"JWT"}</textarea>
+        </div>
+
+        <div>
+          <label for="jwt-gen-payload" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Payload JSON</label>
+          <textarea id="jwt-gen-payload" data-jwt-generator-calculator-target="payloadJson" data-action="input->jwt-generator-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="4" placeholder='{"sub":"1234567890","name":"John Doe","iat":1516239022}'></textarea>
+        </div>
+
+        <div>
+          <label for="jwt-gen-secret" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Secret Key</label>
+          <input type="text" id="jwt-gen-secret" data-jwt-generator-calculator-target="secretKey" data-action="input->jwt-generator-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="your-256-bit-secret">
+        </div>
+
+        <div data-jwt-generator-calculator-target="resultsContainer" class="hidden space-y-6">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Valid Token</span>
+              <span class="text-sm font-bold" data-jwt-generator-calculator-target="resultValid">&mdash;</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Generated JWT</label>
+              <button data-action="click->jwt-generator-calculator#copyToken" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+            </div>
+            <textarea readonly rows="4" data-jwt-generator-calculator-target="resultToken"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 break-all"
+              placeholder="JWT will appear here..."></textarea>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Decoded Header</label>
+              <button data-action="click->jwt-generator-calculator#copyHeader" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+            </div>
+            <pre data-jwt-generator-calculator-target="resultHeader"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono overflow-x-auto whitespace-pre-wrap"></pre>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="text-sm font-semibold text-gray-600 dark:text-gray-400">Decoded Payload</label>
+              <button data-action="click->jwt-generator-calculator#copyPayload" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Copy</button>
+            </div>
+            <pre data-jwt-generator-calculator-target="resultPayload"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono overflow-x-auto whitespace-pre-wrap"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "jwt-generator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How JWT Generation Works</h2>
+      <p>
+        JSON Web Token generation follows a precise three-step process defined in RFC 7519. First, the header is created as a JSON object specifying the signing algorithm and token type, then Base64URL-encoded. Second, the payload containing claims about the subject is also Base64URL-encoded. Third, the signature is computed by applying the chosen algorithm (typically HMAC-SHA256) to the concatenation of the encoded header and payload using a secret key. The final token joins all three parts with dots: <code>base64url(header).base64url(payload).base64url(signature)</code>.
+      </p>
+      <p>
+        This tool implements the HS256 algorithm, which uses HMAC with SHA-256. The signing input is the string formed by concatenating the Base64URL-encoded header, a dot, and the Base64URL-encoded payload. This string is then signed using the secret key you provide. The resulting binary signature is Base64URL-encoded to form the third part of the JWT.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>JWT Structure Deep Dive</h2>
+      <p>
+        The JWT header typically contains two fields. The <code>alg</code> field specifies the cryptographic algorithm used to sign the token. Common values include HS256 (HMAC-SHA256), RS256 (RSA-SHA256), and ES256 (ECDSA-SHA256). The <code>typ</code> field is set to "JWT" to indicate this is a JSON Web Token. While the header can contain additional fields like <code>kid</code> (key ID) for key rotation, the algorithm and type are the essential components.
+      </p>
+
+      <h3>Building JWT Payloads for Common Use Cases</h3>
+      <p>
+        For API authentication, a typical payload includes the user identifier (<code>sub</code>), issuer (<code>iss</code>), expiration (<code>exp</code>), and issued-at time (<code>iat</code>). A role-based access control payload might add custom claims like <code>"role": "admin"</code> or <code>"permissions": ["read", "write"]</code>. For microservice communication, include the calling service name as the issuer and the target service as the audience. Here is an example payload for an API authentication token:
+      </p>
+      <pre><code>{
+  "sub": "user-123",
+  "iss": "auth.example.com",
+  "aud": "api.example.com",
+  "exp": 1700000000,
+  "iat": 1699996400,
+  "role": "editor"
+}</code></pre>
+
+      <h3>Base64URL Encoding vs Standard Base64</h3>
+      <p>
+        JWTs use Base64URL encoding rather than standard Base64. The differences are subtle but important: the <code>+</code> character is replaced with <code>-</code>, the <code>/</code> character is replaced with <code>_</code>, and trailing <code>=</code> padding characters are removed. These changes make the token safe for use in URLs, HTTP headers, and query parameters without additional encoding. Standard Base64 characters like <code>+</code> and <code>/</code> have special meanings in URLs and would require percent-encoding, making the token longer and harder to work with.
+      </p>
+
+      <h3>HMAC-SHA256 Signing Process</h3>
+      <p>
+        The HMAC-SHA256 signing process begins with the signing input: the encoded header and payload joined by a dot. The secret key is used as the HMAC key, and the signing input is the message. HMAC processes the key through two rounds of SHA-256 hashing with different padding constants to produce a 256-bit (32-byte) signature. This signature guarantees that anyone who possesses the same secret key can verify the token was not modified and was created by a trusted party. Changing even a single character in the header or payload produces a completely different signature.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a JWT Generator?</h3>
+      <p>A JWT Generator creates tokens by Base64URL-encoding a header and payload, then signing them with HMAC-SHA256 using your secret key. The result is a three-part token: header.payload.signature.</p>
+
+      <h3>How is a JWT signature created?</h3>
+      <p>The signature is an HMAC-SHA256 hash of the encoded header and payload, computed with the secret key. It proves the token was created by someone who knows the key and has not been modified.</p>
+
+      <h3>Can I use this JWT in production?</h3>
+      <p>This tool is for development and testing. Production JWTs should be generated server-side using established libraries that handle key rotation and security edge cases.</p>
+
+      <h3>What claims should I include?</h3>
+      <p>Essential claims are sub (subject), iss (issuer), exp (expiration), and iat (issued at). Add aud (audience) for multi-service environments and custom claims like roles or permissions as needed.</p>
+
+      <h3>What is the difference between JWT Generator and JWT Decoder?</h3>
+      <p>A generator creates new signed tokens from header, payload, and secret. A decoder extracts and displays the header and payload from an existing token without requiring the secret key.</p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "JWT Decoder", description: "Decode existing JWTs to view header, payload, signature, and expiration status.", path: everyday_jwt_decoder_path, icon_path: "M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" },
+      { name: "HMAC Generator", description: "Generate HMAC signatures using SHA-256, SHA-384, and SHA-512 algorithms.", path: everyday_hmac_generator_path, icon_path: "M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" },
+      { name: "Hash Generator", description: "Generate MD5, SHA-256, SHA-384, and SHA-512 hashes from any text input.", path: everyday_hash_generator_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("jwt-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

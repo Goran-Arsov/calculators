@@ -1,0 +1,226 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Student Budget Calculator - Free College Budget Planner",
+  description: "Plan your college budget by entering tuition, room and board, books, transportation, and financial aid. Calculate your annual funding gap and monthly expenses.",
+  canonical: everyday_student_budget_url,
+  og: {
+    title: "Student Budget Calculator - Free College Budget Planner | CalcWise",
+    description: "Plan your college budget by calculating total costs, financial aid, and monthly funding gaps for 12-month and 9-month academic years.",
+    url: everyday_student_budget_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Student Budget Calculator", url: everyday_student_budget_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What costs should I include in a student budget?", answer: "A comprehensive student budget should include tuition and fees, room and board (housing and meals), textbooks and supplies, transportation costs (car, gas, public transit, parking), and personal expenses (clothing, entertainment, phone, toiletries). Do not forget health insurance if not covered by parents, and technology costs like a laptop or software subscriptions." },
+  { question: "What is the difference between a 12-month and 9-month budget?", answer: "A 12-month budget divides your annual funding gap by 12, giving the monthly amount you need to cover throughout the entire year. A 9-month budget divides by 9, representing the academic year (September through May). The 9-month figure is higher per month but only applies during the school year, assuming you earn or save during summer months." },
+  { question: "How can I reduce my college costs?", answer: "Apply for scholarships and grants early and often. Consider community college for general education credits before transferring. Buy used or rental textbooks, or use library reserves. Use student discounts for software, transportation, and entertainment. Cook meals instead of eating out. Share housing with roommates. Apply for work-study programs that fit your class schedule." },
+  { question: "What is a funding gap?", answer: "A funding gap is the difference between your total college costs and your total financial resources (financial aid, work income, and scholarships). A positive gap means you need additional funding through savings, loans, or additional income. A negative gap means your aid exceeds your costs, and the surplus may be refunded to you." },
+  { question: "How much should a college student budget monthly?", answer: "Monthly budgets vary widely by location and lifestyle. National averages suggest $1,000-$2,500 per month beyond tuition for living expenses. Students in expensive cities may need more. The key is to track your actual spending for the first month, then adjust your budget based on real data rather than estimates." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Student Budget Calculator",
+  description: "Calculate total college costs, financial aid coverage, and monthly funding gaps for academic year planning.",
+  url: everyday_student_budget_url,
+  category: "FinanceApplication",
+  calculator_slug: "student-budget"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Student Budget Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Student Budget Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Plan your college finances by comparing total costs against financial aid, work income, and scholarships.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="student-budget-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <%# Costs %>
+          <div>
+            <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">Expenses</h3>
+            <div class="space-y-3">
+              <div>
+                <label for="sb-tuition" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">Tuition & Fees ($)</label>
+                <input id="sb-tuition" type="number" inputmode="decimal" data-student-budget-calculator-target="tuition" data-action="input->student-budget-calculator#calculate" class="w-full" placeholder="12000" step="100" min="0">
+              </div>
+              <div>
+                <label for="sb-room" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">Room & Board ($)</label>
+                <input id="sb-room" type="number" inputmode="decimal" data-student-budget-calculator-target="roomAndBoard" data-action="input->student-budget-calculator#calculate" class="w-full" placeholder="10000" step="100" min="0">
+              </div>
+              <div>
+                <label for="sb-books" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">Books & Supplies ($)</label>
+                <input id="sb-books" type="number" inputmode="decimal" data-student-budget-calculator-target="booksSupplies" data-action="input->student-budget-calculator#calculate" class="w-full" placeholder="1200" step="50" min="0">
+              </div>
+              <div>
+                <label for="sb-transport" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">Transportation ($)</label>
+                <input id="sb-transport" type="number" inputmode="decimal" data-student-budget-calculator-target="transportation" data-action="input->student-budget-calculator#calculate" class="w-full" placeholder="1500" step="50" min="0">
+              </div>
+              <div>
+                <label for="sb-personal" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">Personal Expenses ($)</label>
+                <input id="sb-personal" type="number" inputmode="decimal" data-student-budget-calculator-target="personalExpenses" data-action="input->student-budget-calculator#calculate" class="w-full" placeholder="2000" step="50" min="0">
+              </div>
+            </div>
+          </div>
+
+          <%# Income %>
+          <div>
+            <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">Income & Aid</h3>
+            <div class="space-y-3">
+              <div>
+                <label for="sb-aid" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">Financial Aid ($)</label>
+                <input id="sb-aid" type="number" inputmode="decimal" data-student-budget-calculator-target="financialAid" data-action="input->student-budget-calculator#calculate" class="w-full" placeholder="8000" step="100" min="0">
+              </div>
+              <div>
+                <label for="sb-work" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">Work Income ($)</label>
+                <input id="sb-work" type="number" inputmode="decimal" data-student-budget-calculator-target="workIncome" data-action="input->student-budget-calculator#calculate" class="w-full" placeholder="5000" step="100" min="0">
+              </div>
+              <div>
+                <label for="sb-scholarships" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">Other Scholarships ($)</label>
+                <input id="sb-scholarships" type="number" inputmode="decimal" data-student-budget-calculator-target="otherScholarships" data-action="input->student-budget-calculator#calculate" class="w-full" placeholder="3000" step="100" min="0">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <%# Results %>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Budget Summary</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Cost</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-student-budget-calculator-target="resultTotalCost">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Aid</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-student-budget-calculator-target="resultTotalAid">$0.00</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Annual Gap</span>
+              <span class="text-xl font-bold text-red-600 dark:text-red-400" data-student-budget-calculator-target="resultAnnualGap">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly (12-month)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-student-budget-calculator-target="resultMonthly12">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly (9-month)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-student-budget-calculator-target="resultMonthly9">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->student-budget-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+
+        <%# Cost breakdown table %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Cost Breakdown</h3>
+          <table class="w-full text-left">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th class="py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Category</th>
+                <th class="py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-right">Amount</th>
+                <th class="py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-right">% of Total</th>
+              </tr>
+            </thead>
+            <tbody data-student-budget-calculator-target="breakdownBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "student-budget" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Student Budget Calculator</h2>
+      <p>
+        Enter your annual costs across five categories: tuition and fees, room and board, books and supplies, transportation, and personal expenses. Then enter your expected income from financial aid, work, and scholarships. The calculator instantly shows your total costs, total aid, annual funding gap, and the monthly amount you need to cover for both 12-month and 9-month budgets.
+      </p>
+      <p>
+        Creating a realistic budget before the school year begins is one of the most important financial steps you can take as a student. Knowing your funding gap early gives you time to apply for additional scholarships, find part-time work, or adjust your spending plan before you face unexpected shortfalls.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Building a Realistic College Budget</h2>
+      <p>
+        Start with the fixed costs you know: tuition, fees, and housing. These are typically listed on your school's website or financial aid award letter. For variable costs like books, transportation, and personal expenses, use your school's estimated cost of attendance as a starting point, then adjust based on your actual spending habits. Track your spending for the first month and refine your budget based on real data.
+      </p>
+
+      <h3>Closing the Funding Gap</h3>
+      <p>
+        If your budget shows a positive funding gap, you have several options. Apply for additional scholarships, especially niche and local scholarships that tend to have fewer applicants. Consider a part-time job or work-study position. Look into reduced-cost alternatives for textbooks, such as renting, buying used, or using open educational resources. Reduce housing costs by choosing a roommate or living off campus where rent may be lower. Every dollar you save reduces the amount you may need to borrow.
+      </p>
+
+      <h3>The True Cost of Student Loans</h3>
+      <p>
+        If you need to borrow to cover the gap, remember that loans accrue interest. A $10,000 loan at 5% interest over 10 years costs about $12,727 total. Minimizing borrowing now saves you thousands in interest payments after graduation. Use the funding gap from this calculator to determine exactly how much, if any, you need to borrow.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What costs should I include in a student budget?</h3>
+      <p>
+        Include tuition, room and board, textbooks, transportation, and personal expenses. Do not forget health insurance, technology costs, and any fees your school charges separately from tuition.
+      </p>
+
+      <h3>What is the difference between a 12-month and 9-month budget?</h3>
+      <p>
+        A 12-month budget divides costs evenly across the whole year. A 9-month budget covers just the academic year, resulting in higher monthly amounts but assuming summer income or savings fill the gap.
+      </p>
+
+      <h3>How can I reduce my college costs?</h3>
+      <p>
+        Apply for scholarships, use used textbooks, cook meals, share housing, take advantage of student discounts, and consider community college for general education credits.
+      </p>
+
+      <h3>What is a funding gap?</h3>
+      <p>
+        The difference between total costs and total financial resources. A positive gap means you need additional funding. A negative gap means your aid exceeds costs.
+      </p>
+
+      <h3>How much should a college student budget monthly?</h3>
+      <p>
+        Beyond tuition, national averages suggest $1,000-$2,500 per month for living expenses, varying by location and lifestyle. Track your actual spending and adjust accordingly.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tips and split bills for dining out.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "GPA Calculator", description: "Calculate your grade point average from course grades and credit hours.", path: everyday_gpa_path, icon_path: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer" %>
+
+    <% blog_posts = related_blog_posts("student-budget-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

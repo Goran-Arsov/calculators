@@ -1,0 +1,191 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Lease vs Buy Car Calculator - Free Online Tool",
+  description: "Compare the total cost of leasing versus buying a car. Factor in loan rates, down payments, lease terms, and resale value to find the cheaper option for your situation.",
+  canonical: finance_lease_vs_buy_url,
+  og: {
+    title: "Lease vs Buy Car Calculator - Free Online Tool | CalcWise",
+    description: "Compare the total cost of leasing versus buying a car. Factor in loan rates, down payments, and resale value.",
+    url: finance_lease_vs_buy_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Lease vs Buy Car Calculator", url: finance_lease_vs_buy_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Is it better to lease or buy a car?", answer: "It depends on your driving habits, financial situation, and preferences. Buying is generally cheaper in the long run because you build equity and can drive the car for years after the loan is paid off. Leasing offers lower monthly payments and lets you drive a new car every few years, but you never own the vehicle and may face mileage penalties. This calculator helps you compare the total cost of each option for your specific situation." },
+  { question: "How does resale value affect the lease vs buy comparison?", answer: "Resale value significantly impacts the buy scenario. When you buy a car, you can sell it or trade it in when you are done with it, offsetting a portion of the total cost. A car with strong resale value (like many Toyota or Honda models) makes buying more attractive. A car that depreciates rapidly (like many luxury vehicles) may make leasing the smarter financial choice since the lessor absorbs the depreciation risk." },
+  { question: "What are the hidden costs of leasing a car?", answer: "Leasing has several costs beyond the monthly payment: acquisition fees, disposition fees when returning the vehicle, excess mileage charges (typically $0.15 to $0.25 per mile over the limit), wear-and-tear charges for damage beyond normal use, and gap insurance. You also pay for maintenance on a car you will never own. These costs can add thousands to the total lease expense." },
+  { question: "How long should I keep a car to make buying worthwhile?", answer: "Generally, buying becomes more cost-effective when you keep the car for at least 5 to 7 years. After the loan is paid off (typically 5 to 6 years), you have no monthly payments while continuing to drive the car. The longer you keep it beyond the loan payoff, the lower your average monthly cost of ownership becomes. If you prefer driving a new car every 2 to 3 years, leasing may be more practical." },
+  { question: "What is the total cost of buying a car?", answer: "The total cost includes the down payment, all monthly loan payments (principal plus interest), insurance, maintenance, and repairs. To get the net cost, subtract the estimated resale value when you eventually sell or trade in the vehicle. This calculator computes the total loan cost including your down payment and interest, minus the resale value, for a clear comparison against leasing." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Lease vs Buy Car Calculator",
+  description: "Compare the total cost of leasing versus buying a car including loan payments, down payments, lease terms, and estimated resale value.",
+  url: finance_lease_vs_buy_url,
+  category: "FinanceApplication",
+  calculator_slug: "lease-vs-buy"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Lease vs Buy Car Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Lease vs Buy Car Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Compare the total cost of leasing versus buying a vehicle, factoring in financing, down payments, and estimated resale value to find the best deal.</p>
+
+    <%# Ad: leaderboard — placed below content heading per AdSense best practices %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="lease-vs-buy-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Buy Scenario</p>
+          <div>
+            <label for="lease-vs-buy-vehicle-price" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Vehicle Price ($)</label>
+            <input id="lease-vs-buy-vehicle-price" type="number" inputmode="decimal" data-lease-vs-buy-calculator-target="vehiclePrice" data-action="input->lease-vs-buy-calculator#calculate" class="w-full" placeholder="35000" step="1000" min="0">
+          </div>
+          <div>
+            <label for="lease-vs-buy-down-payment-buy" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Down Payment - Buy ($)</label>
+            <input id="lease-vs-buy-down-payment-buy" type="number" inputmode="decimal" data-lease-vs-buy-calculator-target="downPaymentBuy" data-action="input->lease-vs-buy-calculator#calculate" class="w-full" placeholder="5000" step="500" min="0">
+          </div>
+          <div>
+            <label for="lease-vs-buy-loan-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Interest Rate (%)</label>
+            <input id="lease-vs-buy-loan-rate" type="number" inputmode="decimal" data-lease-vs-buy-calculator-target="loanRate" data-action="input->lease-vs-buy-calculator#calculate" class="w-full" placeholder="5.5" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="lease-vs-buy-loan-term" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Term (Months)</label>
+            <input id="lease-vs-buy-loan-term" type="number" inputmode="decimal" data-lease-vs-buy-calculator-target="loanTermMonths" data-action="input->lease-vs-buy-calculator#calculate" class="w-full" placeholder="60" step="12" min="1">
+          </div>
+          <div>
+            <label for="lease-vs-buy-resale-value" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Estimated Resale Value ($)</label>
+            <input id="lease-vs-buy-resale-value" type="number" inputmode="decimal" data-lease-vs-buy-calculator-target="estimatedResaleValue" data-action="input->lease-vs-buy-calculator#calculate" class="w-full" placeholder="18000" step="1000" min="0">
+          </div>
+
+          <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider pt-2">Lease Scenario</p>
+          <div>
+            <label for="lease-vs-buy-lease-monthly" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Lease Monthly Payment ($)</label>
+            <input id="lease-vs-buy-lease-monthly" type="number" inputmode="decimal" data-lease-vs-buy-calculator-target="leaseMonthlyPayment" data-action="input->lease-vs-buy-calculator#calculate" class="w-full" placeholder="400" step="25" min="0">
+          </div>
+          <div>
+            <label for="lease-vs-buy-lease-term" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Lease Term (Months)</label>
+            <input id="lease-vs-buy-lease-term" type="number" inputmode="decimal" data-lease-vs-buy-calculator-target="leaseTermMonths" data-action="input->lease-vs-buy-calculator#calculate" class="w-full" placeholder="36" step="12" min="1">
+          </div>
+          <div>
+            <label for="lease-vs-buy-lease-down" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Lease Down Payment ($)</label>
+            <input id="lease-vs-buy-lease-down" type="number" inputmode="decimal" data-lease-vs-buy-calculator-target="leaseDownPayment" data-action="input->lease-vs-buy-calculator#calculate" class="w-full" placeholder="2000" step="500" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Buy</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Monthly Loan Payment</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-lease-vs-buy-calculator-target="buyMonthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Total Buy Cost</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-lease-vs-buy-calculator-target="totalBuyCost">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Net Buy Cost (minus resale)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-lease-vs-buy-calculator-target="totalBuyNet">$0.00</span>
+            </div>
+            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider pt-2">Lease</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Total Lease Cost</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-lease-vs-buy-calculator-target="totalLeaseCost">$0.00</span>
+            </div>
+            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider pt-2">Comparison</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">You Save</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-lease-vs-buy-calculator-target="savingsAmount">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Recommendation</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-lease-vs-buy-calculator-target="recommendation">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->lease-vs-buy-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "lease-vs-buy" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Lease vs Buy Car Calculator</h2>
+      <p>Deciding whether to lease or buy a car is one of the most common financial dilemmas drivers face. This calculator provides a clear, numbers-based comparison to help you make the right choice for your situation. By entering the key financial details of both scenarios, you can see the total cost of each option side by side.</p>
+
+      <p>For the buy scenario, enter the vehicle price, your planned down payment, the expected loan interest rate, and the loan term in months. Then estimate the resale value of the car at the end of the period. The calculator uses standard amortization to compute your monthly payment and the total amount you will spend, minus the value you recoup by selling or trading in the vehicle.</p>
+
+      <p>For the lease scenario, enter the monthly lease payment, lease term in months, and any down payment or drive-off fees required at signing. The total lease cost is simply the down payment plus all monthly payments over the lease term. Unlike buying, leasing provides no residual value to the lessee since you return the car at the end of the lease.</p>
+
+      <p>The calculator then compares the net buy cost (total payments minus resale value) against the total lease cost and recommends the cheaper option. Keep in mind that this comparison focuses on direct costs and does not account for factors like insurance differences, maintenance warranties on leased vehicles, or the opportunity cost of a larger down payment. For a complete picture, consider these additional factors alongside the calculator results.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Key Factors in the Lease vs Buy Decision</h2>
+      <p>Beyond the raw numbers, several lifestyle and financial factors should influence your decision. If you drive more than 12,000 to 15,000 miles per year, leasing can become expensive due to mileage overage charges. If you prefer driving a new car with the latest safety features and technology every few years, leasing provides that convenience. If you want to minimize long-term cost and are comfortable keeping a car for 7 to 10 years, buying almost always wins financially because you enjoy years of payment-free driving after the loan is paid off.</p>
+
+      <h3>The Role of Depreciation</h3>
+      <p>Depreciation is the single largest cost of car ownership. New cars typically lose 20-30% of their value in the first year and about 50-60% over five years. When you lease, the leasing company absorbs the depreciation risk. When you buy, that depreciation directly impacts your net cost through a lower resale value. Cars with strong resale values, like popular SUVs and trucks, tend to make buying more attractive, while rapidly depreciating luxury vehicles may be better candidates for leasing.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is it better to lease or buy a car?</h3>
+      <p>It depends on your driving habits, financial situation, and preferences. Buying is generally cheaper long-term because you build equity. Leasing offers lower monthly payments and newer cars every few years. This calculator helps you compare the total cost for your specific situation.</p>
+
+      <h3>How does resale value affect the lease vs buy comparison?</h3>
+      <p>Resale value significantly impacts the buy scenario. A car with strong resale value makes buying more attractive, while rapid depreciation may make leasing smarter since the lessor absorbs the depreciation risk.</p>
+
+      <h3>What are the hidden costs of leasing a car?</h3>
+      <p>Beyond monthly payments, leasing can include acquisition fees, disposition fees, excess mileage charges, wear-and-tear charges, and gap insurance. These costs can add thousands to the total lease expense.</p>
+
+      <h3>How long should I keep a car to make buying worthwhile?</h3>
+      <p>Buying generally becomes more cost-effective when you keep the car at least 5 to 7 years. After the loan is paid off, you have no monthly payments, dramatically lowering your average cost of ownership.</p>
+
+      <h3>What is the total cost of buying a car?</h3>
+      <p>The total cost includes the down payment plus all loan payments. The net cost subtracts the resale value. This calculator computes both figures for a clear comparison against leasing.</p>
+
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Auto Loan Calculator", description: "Calculate your monthly car payment, total interest, and total cost of an auto loan.", path: finance_auto_loan_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Savings Goal Calculator", description: "Calculate how much you need to save monthly to reach your financial goal.", path: finance_savings_goal_path, icon_path: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("lease-vs-buy-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

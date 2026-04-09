@@ -1,0 +1,184 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Electrical Load Calculator - Free Online Tool",
+  description: "Calculate total electrical load, amperage, and recommended panel size for your home. Enter square footage and appliances for an NEC-compliant estimate.",
+  canonical: construction_electrical_load_url,
+  og: {
+    title: "Electrical Load Calculator - Free Online Tool | CalcWise",
+    description: "Calculate total electrical load, amperage, and recommended panel size based on NEC standards.",
+    url: construction_electrical_load_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Electrical Load Calculator", url: construction_electrical_load_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate electrical load for my house?", answer: "Start with general lighting at 3 watts per square foot. Add 3,000W for small appliance circuits and 1,500W for laundry. Apply the NEC demand factor: first 3,000W at 100%, remainder at 35%. Then add major appliances: electric range (8,000W), dryer (5,000W), water heater (4,500W). Add the larger of AC or electric heat, not both. Divide total watts by 240V for amperage." },
+  { question: "What size electrical panel do I need?", answer: "Panel size is based on total calculated amperage at 240 volts. Up to 100 amps requires a 100A panel. 101-150 amps needs a 150A panel. 151-200 amps requires a 200A panel, which is the most common for modern homes. Over 200 amps requires a 400A panel or dual panels." },
+  { question: "Why do I use the larger of AC or heat, not both?", answer: "The National Electrical Code (NEC) recognizes that air conditioning and electric heating are never used simultaneously. Since they operate in different seasons, the load calculation uses only the larger of the two values. This prevents oversizing the panel and service entrance." },
+  { question: "What is the NEC demand factor?", answer: "The NEC demand factor accounts for the fact that not all lights and receptacles are used at the same time. The first 3,000 watts of general lighting and receptacle load is calculated at 100%, and everything above 3,000 watts is reduced to 35%. This gives a realistic estimate of actual peak demand." },
+  { question: "Is a 200-amp panel enough for most homes?", answer: "Yes. A 200-amp panel is sufficient for most single-family homes up to about 3,000 square feet with standard electric appliances and central AC up to 5 tons. Homes with all-electric heating and cooling in cold climates, or homes over 4,000 square feet, may need a 400-amp service." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Electrical Load Calculator",
+  description: "Calculate total electrical load, amperage, and recommended panel size per NEC standards.",
+  url: construction_electrical_load_url,
+  category: "HomeApplication",
+  calculator_slug: "electrical_load"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Electrical Load Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Electrical Load Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your home's total electrical load and recommended panel size based on NEC (National Electrical Code) standards.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="electrical-load-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="electrical-sqft" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Square Footage</label>
+            <input id="electrical-sqft" type="number" inputmode="decimal" data-electrical-load-calculator-target="squareFootage" data-action="input->electrical-load-calculator#calculate" class="w-full" placeholder="2000" step="1" min="0">
+          </div>
+          <div>
+            <label for="electrical-ac-tons" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">AC Size (tons, 0-5)</label>
+            <input id="electrical-ac-tons" type="number" inputmode="decimal" data-electrical-load-calculator-target="acTons" data-action="input->electrical-load-calculator#calculate" class="w-full" value="0" step="0.5" min="0" max="5">
+          </div>
+          <div class="space-y-3 pt-2">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" data-electrical-load-calculator-target="hasElectricRange" data-action="change->electrical-load-calculator#calculate" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+              <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Electric Range (8,000W)</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" data-electrical-load-calculator-target="hasElectricDryer" data-action="change->electrical-load-calculator#calculate" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+              <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Electric Dryer (5,000W)</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" data-electrical-load-calculator-target="hasElectricWaterHeater" data-action="change->electrical-load-calculator#calculate" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+              <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Electric Water Heater (4,500W)</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" data-electrical-load-calculator-target="hasElectricHeat" data-action="change->electrical-load-calculator#calculate" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+              <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Electric Heat (10W/sq ft)</span>
+            </label>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">General Lighting</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-electrical-load-calculator-target="resultGeneralLighting">0 W</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Load</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-electrical-load-calculator-target="resultTotalLoad">0 W</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Amps (240V)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-electrical-load-calculator-target="resultTotalAmps">0 A</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Recommended Panel</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-electrical-load-calculator-target="resultPanelSize">0 A</span>
+            </div>
+          </div>
+          <button data-action="click->electrical-load-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "electrical_load" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Electrical Load Calculator</h2>
+      <p>
+        Sizing your electrical service correctly is essential for safety and code compliance. This calculator follows the National Electrical Code (NEC) standard method for residential load calculations. Enter your home's total square footage, select your major appliances, and specify the air conditioning tonnage. The calculator applies NEC demand factors to produce a realistic estimate of your total electrical load and recommends the appropriate panel size.
+      </p>
+      <p>
+        General lighting is calculated at 3 watts per square foot, which covers all lighting and general-use receptacles. The NEC adds a fixed 3,000 watts for small appliance circuits (kitchen, dining room, and pantry) and 1,500 watts for the laundry circuit. A demand factor is applied to this general load: the first 3,000 watts at 100% and the remainder at 35%, reflecting the reality that not all lights and outlets are used simultaneously.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Major Appliance Loads</h2>
+      <p>
+        Electric ranges are rated at 8,000 watts, which is the NEC standard demand for a single household cooking appliance. Electric dryers draw approximately 5,000 watts. Electric water heaters are typically rated at 4,500 watts. These loads are added at full value because they represent dedicated high-draw circuits. For heating and cooling, the calculator uses the larger of air conditioning (3,517 watts per ton) or electric heat (10 watts per square foot), since these systems never operate at the same time.
+      </p>
+
+      <h3>Understanding Panel Sizing</h3>
+      <p>
+        The total load in watts is divided by 240 volts to determine the amperage. Panel sizes come in standard increments: 100A, 150A, 200A, and 400A. A 200-amp panel is the most common for modern homes and accommodates most configurations up to about 3,000 square feet with central AC and standard electric appliances. Homes that are all-electric (electric heat, range, dryer, and water heater) in cold climates often require a 200-amp panel even at moderate sizes. Very large homes or those with workshops, pools, or hot tubs may need 400-amp service.
+      </p>
+
+      <h3>Electrical Safety Tips</h3>
+      <p>
+        Always hire a licensed electrician for panel upgrades and major electrical work. Obtain the required permits before starting work, as unpermitted electrical modifications can void insurance and create safety hazards. When adding circuits, ensure the total load does not exceed 80% of the panel's rated capacity, which is the NEC continuous load requirement. Label every circuit breaker clearly and keep an up-to-date panel schedule. Install AFCI (Arc-Fault Circuit Interrupter) breakers on bedroom circuits and GFCI protection in kitchens, bathrooms, garages, and outdoor areas as required by current code.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate electrical load for my house?</h3>
+      <p>
+        Start with general lighting at 3 watts per square foot. Add 3,000W for small appliance circuits and 1,500W for laundry. Apply the NEC demand factor: first 3,000W at 100%, remainder at 35%. Then add major appliances and the larger of AC or electric heat. Divide total watts by 240V for amperage.
+      </p>
+
+      <h3>What size electrical panel do I need?</h3>
+      <p>
+        Panel size is based on total calculated amperage at 240 volts. Up to 100 amps requires a 100A panel. 101-150 amps needs a 150A panel. 151-200 amps requires a 200A panel. Over 200 amps requires a 400A panel or dual panels.
+      </p>
+
+      <h3>Why do I use the larger of AC or heat, not both?</h3>
+      <p>
+        The NEC recognizes that air conditioning and electric heating are never used simultaneously. Since they operate in different seasons, the load calculation uses only the larger of the two values. This prevents oversizing the panel and service entrance.
+      </p>
+
+      <h3>What is the NEC demand factor?</h3>
+      <p>
+        The NEC demand factor accounts for the fact that not all lights and receptacles are used at the same time. The first 3,000 watts is calculated at 100%, and everything above 3,000 watts is reduced to 35%. This gives a realistic estimate of actual peak demand.
+      </p>
+
+      <h3>Is a 200-amp panel enough for most homes?</h3>
+      <p>
+        Yes. A 200-amp panel is sufficient for most single-family homes up to about 3,000 square feet with standard electric appliances and central AC up to 5 tons. Homes with all-electric systems in cold climates or homes over 4,000 square feet may need 400-amp service.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Plumbing Calculator", description: "Calculate plumbing pipe size based on fixture units.", path: construction_plumbing_path, icon_path: "M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728M12 9v3m0 0v3m0-3h3m-3 0H9" },
+      { name: "Insulation Calculator", description: "Estimate insulation R-value, thickness, and material quantity.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "HVAC BTU Calculator", description: "Calculate the BTU and tonnage needed to heat or cool a room.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("electrical-load-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

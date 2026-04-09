@@ -1,0 +1,169 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Side Hustle Calculator - Free Online Tool",
+  description: "Calculate your side hustle take-home pay after self-employment tax and income tax. See your effective hourly rate, monthly and annual earnings from freelance or gig work.",
+  canonical: finance_side_hustle_url,
+  og: {
+    title: "Side Hustle Calculator - Free Online Tool | CalcWise",
+    description: "Calculate your side hustle take-home pay after self-employment tax and income tax. See your effective hourly rate and monthly earnings.",
+    url: finance_side_hustle_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Side Hustle Calculator", url: finance_side_hustle_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much self-employment tax do I owe on side hustle income?", answer: "Self-employment tax is 15.3% of 92.35% of your net self-employment income. This covers Social Security (12.4%) and Medicare (2.9%). Only 92.35% of net earnings are taxable because the IRS allows you to deduct the employer-equivalent portion. For example, if your net profit is $40,000, your SE tax would be approximately $40,000 x 0.9235 x 0.153 = $5,652." },
+  { question: "What business expenses can I deduct from my side hustle?", answer: "Common deductible expenses include home office costs, equipment and supplies, software subscriptions, internet and phone bills (business portion), vehicle mileage for business trips, advertising, professional services, and continuing education. Keep detailed records and receipts for all business expenses to substantiate your deductions." },
+  { question: "Do I need to pay quarterly estimated taxes on side hustle income?", answer: "If you expect to owe $1,000 or more in taxes for the year, the IRS requires quarterly estimated tax payments. These are due on April 15, June 15, September 15, and January 15 of the following year. Failing to make estimated payments can result in underpayment penalties." },
+  { question: "How do I calculate my effective hourly rate from a side hustle?", answer: "Divide your annual take-home pay (after all taxes) by the total hours you work per year. For example, if you take home $20,000 annually and work 15 hours per week, your effective rate is $20,000 / (15 x 52) = $25.64 per hour. This gives a realistic picture of what your time is actually worth after taxes and expenses." },
+  { question: "What is the difference between gross revenue and net profit for a side hustle?", answer: "Gross revenue is the total amount you earn before any deductions. Net profit is what remains after subtracting all business expenses from gross revenue. Net profit is the amount subject to self-employment tax and income tax. Maximizing legitimate business deductions reduces your taxable income and overall tax burden." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Side Hustle Calculator",
+  description: "Calculate side hustle take-home pay after self-employment tax and income tax, including effective hourly rate and monthly earnings.",
+  url: finance_side_hustle_url,
+  category: "FinanceApplication",
+  calculator_slug: "side-hustle"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Side Hustle Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Side Hustle Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your real take-home pay from freelance or side gig income after self-employment tax, income tax, and business expenses.</p>
+
+    <%# Ad: leaderboard — placed below content heading per AdSense best practices %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="side-hustle-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="side-hustle-gross-revenue" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Gross Revenue ($)</label>
+            <input id="side-hustle-gross-revenue" type="number" inputmode="decimal" data-side-hustle-calculator-target="grossRevenue" data-action="input->side-hustle-calculator#calculate" class="w-full" placeholder="50000" step="1000" min="0">
+          </div>
+          <div>
+            <label for="side-hustle-business-expenses" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Business Expenses ($)</label>
+            <input id="side-hustle-business-expenses" type="number" inputmode="decimal" data-side-hustle-calculator-target="businessExpenses" data-action="input->side-hustle-calculator#calculate" class="w-full" placeholder="10000" step="500" min="0">
+          </div>
+          <div>
+            <label for="side-hustle-tax-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Estimated Income Tax Rate (%)</label>
+            <input id="side-hustle-tax-rate" type="number" inputmode="decimal" data-side-hustle-calculator-target="taxRate" data-action="input->side-hustle-calculator#calculate" class="w-full" placeholder="22" step="1" min="0" max="100">
+          </div>
+          <div>
+            <label for="side-hustle-hours-per-week" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Hours Per Week</label>
+            <input id="side-hustle-hours-per-week" type="number" inputmode="decimal" data-side-hustle-calculator-target="hoursPerWeek" data-action="input->side-hustle-calculator#calculate" class="w-full" placeholder="20" step="1" min="1" max="168">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Net Profit</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-side-hustle-calculator-target="netProfit">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Self-Employment Tax</span>
+              <span class="text-lg font-bold text-red-600 dark:text-red-400" data-side-hustle-calculator-target="selfEmploymentTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Income Tax Estimate</span>
+              <span class="text-lg font-bold text-red-600 dark:text-red-400" data-side-hustle-calculator-target="incomeTaxEstimate">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Annual Take-Home</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-side-hustle-calculator-target="annualTakeHome">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Monthly Take-Home</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-side-hustle-calculator-target="monthlyTakeHome">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Effective Hourly Rate</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-side-hustle-calculator-target="effectiveHourlyRate">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->side-hustle-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "side-hustle" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Side Hustle Calculator</h2>
+      <p>Whether you are freelancing, driving for a rideshare service, selling products online, or doing consulting work on the side, understanding your actual take-home pay is essential for making informed financial decisions. This calculator breaks down the often-surprising tax implications of self-employment income so you can see exactly what you keep from every dollar earned.</p>
+
+      <p>Start by entering your total annual gross revenue from your side hustle. This is the full amount clients or customers pay you before any deductions. Next, enter your annual business expenses, which include everything from software subscriptions and supplies to home office costs and mileage. The difference between revenue and expenses is your net profit, which forms the basis for all tax calculations.</p>
+
+      <p>Enter your estimated marginal income tax rate. If you have a regular W-2 job, your side hustle income is taxed on top of that income, so use the tax bracket that applies to your combined income. Common rates are 12%, 22%, or 24% depending on your total income level and filing status. Finally, enter the average number of hours per week you spend on your side hustle to calculate your effective hourly rate.</p>
+
+      <p>The calculator computes self-employment tax using the IRS formula: 92.35% of your net profit multiplied by 15.3%. This covers both the employee and employer portions of Social Security (12.4%) and Medicare (2.9%) taxes. Unlike W-2 employees who split FICA with their employer, self-employed individuals pay the full amount. The calculator then estimates income tax on your net profit and subtracts both tax amounts to show your true take-home pay.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Self-Employment Tax</h2>
+      <p>The self-employment tax is often the biggest surprise for new freelancers and side hustlers. At 15.3% of 92.35% of net earnings, it adds a significant tax burden on top of regular income tax. The 92.35% factor exists because the IRS allows self-employed individuals to deduct the employer-equivalent portion of FICA, mirroring what W-2 employees receive. You can also deduct half of your self-employment tax when calculating your adjusted gross income, though this calculator uses the simplified approach for estimation purposes.</p>
+
+      <h3>Maximizing Your Side Hustle Income</h3>
+      <p>Track every legitimate business expense meticulously, as each deduction directly reduces both your income tax and self-employment tax. Consider setting up a dedicated business bank account and credit card to simplify record keeping. Set aside 25-30% of your gross revenue for taxes in a separate savings account so you are prepared for quarterly estimated payments. Evaluate whether your effective hourly rate justifies the time investment, and consider raising prices if it does not.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much self-employment tax do I owe on side hustle income?</h3>
+      <p>Self-employment tax is 15.3% of 92.35% of your net self-employment income, covering Social Security (12.4%) and Medicare (2.9%). For example, if your net profit is $40,000, your SE tax would be approximately $5,652.</p>
+
+      <h3>What business expenses can I deduct from my side hustle?</h3>
+      <p>Common deductible expenses include home office costs, equipment and supplies, software subscriptions, internet and phone bills (business portion), vehicle mileage, advertising, professional services, and continuing education.</p>
+
+      <h3>Do I need to pay quarterly estimated taxes on side hustle income?</h3>
+      <p>If you expect to owe $1,000 or more in taxes for the year, the IRS requires quarterly estimated tax payments. Failing to make estimated payments can result in underpayment penalties.</p>
+
+      <h3>How do I calculate my effective hourly rate from a side hustle?</h3>
+      <p>Divide your annual take-home pay (after all taxes) by the total hours you work per year. This gives a realistic picture of what your time is actually worth after taxes and expenses.</p>
+
+      <h3>What is the difference between gross revenue and net profit for a side hustle?</h3>
+      <p>Gross revenue is the total amount you earn before deductions. Net profit is what remains after subtracting all business expenses. Net profit is the amount subject to self-employment tax and income tax.</p>
+
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Paycheck Calculator", description: "Calculate your take-home pay after federal tax, state tax, FICA, and deductions.", path: finance_paycheck_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Tax Bracket Calculator", description: "Calculate your federal income tax based on your filing status and taxable income.", path: finance_tax_bracket_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Profit Margin Calculator", description: "Calculate gross and net profit margin from revenue and costs.", path: finance_profit_margin_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("side-hustle-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

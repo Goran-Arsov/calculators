@@ -1,0 +1,187 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "API Response Time Calculator - Percentiles, Mean, P99",
+  description: "Analyze API response times with percentile calculations (P50, P90, P95, P99), mean, median, standard deviation, and more. Free online tool for developers.",
+  canonical: everyday_api_response_time_url,
+  og: {
+    title: "API Response Time Calculator - Percentiles, Mean, P99 | CalcWise",
+    description: "Calculate P50, P90, P95, P99 percentiles and statistics from your API response time data. Free online tool for performance analysis.",
+    url: everyday_api_response_time_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "API Response Time Calculator", url: everyday_api_response_time_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are API response time percentiles?", answer: "Percentiles show the value below which a given percentage of observations fall. P50 (median) means 50% of requests are faster than this value. P90 means 90% are faster. P95 and P99 capture the tail latency that affects your slowest users. For example, if P99 is 500ms, then 99% of requests complete in under 500ms, and only 1% are slower." },
+  { question: "Why is P99 more important than average response time?", answer: "The average (mean) can hide problems because a few very fast responses can pull the average down even when many users experience slow responses. P99 tells you the worst-case experience for 99% of your users. If your average is 50ms but P99 is 2000ms, 1 in 100 users waits over 2 seconds. SLAs and SLOs are typically defined using percentiles, not averages." },
+  { question: "What is the nearest-rank method for percentiles?", answer: "The nearest-rank method calculates percentiles by sorting all values, then finding the value at the rank position: rank = ceil(percentile/100 * count). For example, with 100 values and P90, the rank is ceil(90/100 * 100) = 90, so P90 is the 90th value when sorted. This is the most common method used by monitoring tools like Prometheus, Datadog, and New Relic." },
+  { question: "What is a good P99 response time for an API?", answer: "Acceptable P99 values depend on your use case. For user-facing web APIs, under 200ms is excellent, under 500ms is good, and over 1000ms may cause noticeable delays. For internal microservice calls, under 50ms is typical. For real-time applications like gaming or trading, P99 should be under 10ms. Always set SLOs based on your specific user experience requirements." },
+  { question: "How does standard deviation help analyze response times?", answer: "Standard deviation measures how spread out your response times are from the mean. A low standard deviation means most requests have similar latency (consistent performance). A high standard deviation means response times vary widely, which often indicates intermittent issues like database connection pool exhaustion, garbage collection pauses, or downstream service variability." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "API Response Time Calculator",
+  description: "Calculate percentiles (P50, P90, P95, P99), mean, median, and standard deviation from API response time data.",
+  url: everyday_api_response_time_url,
+  category: "UtilityApplication",
+  calculator_slug: "api-response-time-calculator"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "API Response Time Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">API Response Time Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Paste comma-separated response times in milliseconds to calculate percentiles (P50, P90, P95, P99), mean, median, standard deviation, and other statistics.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="api-response-time-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="api-response-times" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Response Times (ms, comma-separated)</label>
+          <textarea id="api-response-times" data-api-response-time-calculator-target="responseTimes" data-action="input->api-response-time-calculator#calculate"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="4" placeholder="45, 52, 48, 120, 55, 49, 310, 47, 51, 53, 200, 46, 50, 48, 55, 47, 52, 280, 49, 51"></textarea>
+        </div>
+
+        <div data-api-response-time-calculator-target="resultsContainer" class="hidden space-y-4">
+          <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Count</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-api-response-time-calculator-target="resultCount">&mdash;</span>
+            </div>
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Mean</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-api-response-time-calculator-target="resultMean">&mdash;</span>
+            </div>
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Median</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-api-response-time-calculator-target="resultMedian">&mdash;</span>
+            </div>
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Min</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-api-response-time-calculator-target="resultMin">&mdash;</span>
+            </div>
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Max</span>
+              <span class="text-lg font-bold text-red-500 dark:text-red-400" data-api-response-time-calculator-target="resultMax">&mdash;</span>
+            </div>
+            <div class="text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Std Dev</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-api-response-time-calculator-target="resultStdDev">&mdash;</span>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4">
+            <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 uppercase tracking-wide">Percentiles</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="text-center">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">P50</span>
+                <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400" data-api-response-time-calculator-target="resultP50">&mdash;</span>
+              </div>
+              <div class="text-center">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">P90</span>
+                <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400" data-api-response-time-calculator-target="resultP90">&mdash;</span>
+              </div>
+              <div class="text-center">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">P95</span>
+                <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400" data-api-response-time-calculator-target="resultP95">&mdash;</span>
+              </div>
+              <div class="text-center">
+                <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">P99</span>
+                <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400" data-api-response-time-calculator-target="resultP99">&mdash;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "api-response-time-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding API Response Time Metrics</h2>
+      <p>
+        API response time analysis is fundamental to maintaining reliable services. While simple averages give a general sense of performance, they hide critical details about user experience. A service with a 50ms average might have a P99 of 2 seconds, meaning 1 in 100 requests takes 40 times longer than the average suggests. This is why modern observability platforms like Prometheus, Datadog, and New Relic emphasize percentile-based metrics over averages.
+      </p>
+      <p>
+        This calculator uses the nearest-rank method for percentile computation, which is the same method used by most monitoring systems. You sort all values, calculate the rank as <code>ceil(percentile / 100 * count)</code>, and take the value at that position. This approach is deterministic, easy to reason about, and matches what you see in production dashboards.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Percentiles Matter More Than Averages</h2>
+      <p>
+        Consider an API that serves 10,000 requests per minute. If the average response time is 100ms but P99 is 5 seconds, then 100 users per minute experience a 5-second wait. These tail-latency users often represent your most engaged or highest-value customers, as they tend to make more API calls. Jeff Dean at Google coined the phrase "the tail at scale" to describe how high percentile latencies compound in distributed systems. If a user request touches 100 microservices and each has a 1% chance of being slow, the probability that at least one is slow is over 63%.
+      </p>
+
+      <h3>Setting SLOs Based on Percentiles</h3>
+      <p>
+        Service Level Objectives should be defined using percentiles. A common pattern is to set separate SLOs for different percentile levels: P50 under 50ms (the typical experience), P95 under 200ms (most users), and P99 under 500ms (the tail). Google's SRE practices recommend using error budgets based on these SLOs. If your P99 exceeds the target, you pause feature work until performance is restored. This approach creates a clear, measurable link between engineering effort and user experience.
+      </p>
+
+      <h3>Interpreting Standard Deviation</h3>
+      <p>
+        Standard deviation measures the spread of response times around the mean. A low standard deviation (relative to the mean) indicates consistent performance, while a high standard deviation signals variable latency. For example, a mean of 50ms with a standard deviation of 5ms suggests a stable service. A mean of 50ms with a standard deviation of 200ms indicates severe inconsistency. Common causes of high variance include garbage collection pauses, database connection pool contention, cold starts in serverless environments, and cache misses.
+      </p>
+
+      <h3>Using This Data in Practice</h3>
+      <p>
+        Copy response times from your monitoring tool, load test results, or application logs and paste them here. Compare percentiles before and after optimization to quantify improvements. Use the P90/P95 ratio to identify whether you have a gradual degradation curve or a sharp cliff at the tail. If P90 is 100ms but P95 jumps to 1000ms, you likely have a bimodal distribution caused by cache hits vs. misses or similar patterns.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What are API response time percentiles?</h3>
+      <p>Percentiles show the value below which a percentage of observations fall. P99 at 500ms means 99% of requests complete within 500ms. They reveal tail latency that averages hide.</p>
+
+      <h3>Why is P99 more important than average?</h3>
+      <p>Averages can be misleading. A few fast responses pull the average down while many users experience slow responses. P99 captures the worst-case experience for all but 1% of users, which is why SLAs use percentiles.</p>
+
+      <h3>What is the nearest-rank method?</h3>
+      <p>Sort all values, compute rank = ceil(percentile/100 * count), and take the value at that rank. This is the standard method used by Prometheus, Datadog, New Relic, and most monitoring tools.</p>
+
+      <h3>What is a good P99 response time?</h3>
+      <p>For user-facing APIs: under 200ms is excellent, under 500ms is acceptable. For internal microservices: under 50ms is typical. Always define targets based on your specific user experience requirements.</p>
+
+      <h3>How does standard deviation help?</h3>
+      <p>Low standard deviation means consistent performance. High standard deviation indicates variable latency from issues like GC pauses, cache misses, or connection pool exhaustion.</p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Bandwidth Calculator", description: "Calculate download times based on file size and connection speed.", path: everyday_bandwidth_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Unix Timestamp Converter", description: "Convert between Unix timestamps and human-readable dates.", path: everyday_unix_timestamp_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "JSON Formatter", description: "Format, prettify, minify, and validate JSON data instantly.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("api-response-time-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

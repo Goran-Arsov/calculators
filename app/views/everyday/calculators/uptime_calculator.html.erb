@@ -1,0 +1,213 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Uptime Calculator - SLA Nines & Downtime Calculator",
+  description: "Calculate uptime percentage, nines classification (99.9%, 99.99%, 99.999%), and allowed downtime per month and year. Free SLA uptime calculator for DevOps.",
+  canonical: everyday_uptime_calculator_url,
+  og: {
+    title: "Uptime Calculator - SLA Nines & Downtime Calculator | CalcWise",
+    description: "Calculate uptime percentage and nines classification from downtime. See allowed downtime for any SLA level per month and year.",
+    url: everyday_uptime_calculator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Uptime Calculator", url: everyday_uptime_calculator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What does 'five nines' (99.999%) uptime mean?", answer: "Five nines (99.999%) uptime means a service can be unavailable for no more than 5 minutes and 15 seconds per year, or about 26.3 seconds per month. This is the gold standard for critical infrastructure like payment processing systems, emergency services, and core cloud platform components. Achieving five nines typically requires redundant systems across multiple geographic regions, automated failover, and extensive testing." },
+  { question: "How is uptime percentage calculated?", answer: "Uptime percentage = ((total period in minutes - downtime in minutes) / total period in minutes) * 100. For a 30-day month (43,200 minutes), if you had 43.2 minutes of downtime, your uptime would be ((43200 - 43.2) / 43200) * 100 = 99.9%. This calculation applies to any time period - you can measure weekly, monthly, quarterly, or annually." },
+  { question: "What is the difference between SLA and SLO?", answer: "An SLA (Service Level Agreement) is a contractual commitment between a service provider and customer, often with financial penalties for violations. An SLO (Service Level Objective) is an internal target that is typically stricter than the SLA to provide a safety margin. For example, a company might have a 99.9% SLA with customers but an internal SLO of 99.95%. If the SLO is breached, the team prioritizes reliability work before the SLA is violated." },
+  { question: "How much downtime does three nines (99.9%) allow?", answer: "Three nines (99.9%) allows approximately 43.8 minutes of downtime per month (based on a 30-day month) or 8.76 hours per year. This is a common SLA target for business-critical but not life-safety applications. It allows for brief maintenance windows, occasional incident response, and minor service disruptions while still providing reliable service for most business needs." },
+  { question: "Should I measure uptime monthly or annually?", answer: "Most SLAs are measured monthly because it provides faster feedback and prevents a single bad month from being hidden by good months. Monthly measurement means a 30-minute outage in January cannot be offset by perfect uptime in February. However, some SLAs use annual measurement for services with planned maintenance windows. Choose monthly for stricter accountability and annual when seasonal patterns affect availability." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Uptime Calculator",
+  description: "Calculate uptime percentage, nines classification, and allowed downtime for any SLA level per month and year.",
+  url: everyday_uptime_calculator_url,
+  category: "UtilityApplication",
+  calculator_slug: "uptime-calculator"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Uptime Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Uptime Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your service uptime percentage and nines classification from total period and downtime. See the SLA reference table for allowed downtime at each level.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="uptime-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="uptime-total-hours" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Period (hours)</label>
+            <input type="number" id="uptime-total-hours" data-uptime-calculator-target="totalHours" data-action="input->uptime-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value="720" min="1" step="any" placeholder="720 (30 days)">
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">720 = 30 days, 168 = 1 week, 8760 = 1 year</p>
+          </div>
+          <div>
+            <label for="uptime-downtime" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Downtime (minutes)</label>
+            <input type="number" id="uptime-downtime" data-uptime-calculator-target="downtimeMinutes" data-action="input->uptime-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              value="0" min="0" step="any" placeholder="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true">
+          <div data-uptime-calculator-target="resultsContainer" class="hidden">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+              <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600 dark:text-gray-400">Uptime</span>
+                  <span class="text-2xl font-bold text-blue-600 dark:text-blue-400" data-uptime-calculator-target="resultUptimePercent">&mdash;</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600 dark:text-gray-400">Classification</span>
+                  <span class="text-lg font-bold" data-uptime-calculator-target="resultNines">&mdash;</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600 dark:text-gray-400">Downtime</span>
+                  <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-uptime-calculator-target="resultDowntimeMinutes">&mdash;</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600 dark:text-gray-400">Uptime Minutes</span>
+                  <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-uptime-calculator-target="resultUptimeMinutes">&mdash;</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%# SLA Reference Table %>
+      <div class="mt-8">
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 uppercase tracking-wide">SLA Reference: Allowed Downtime</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b-2 border-gray-200 dark:border-gray-700">
+                <th class="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400">SLA Level</th>
+                <th class="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400">Per Month</th>
+                <th class="px-3 py-2 text-left font-semibold text-gray-600 dark:text-gray-400">Per Year</th>
+              </tr>
+            </thead>
+            <tbody data-uptime-calculator-target="slaTableBody">
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <td class="px-3 py-2 text-sm font-medium text-gray-900 dark:text-white">99%</td>
+                <td class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">7.20 hours</td>
+                <td class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">3.65 days</td>
+              </tr>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <td class="px-3 py-2 text-sm font-medium text-gray-900 dark:text-white">99.9%</td>
+                <td class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">43.20 min</td>
+                <td class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">8.76 hours</td>
+              </tr>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <td class="px-3 py-2 text-sm font-medium text-gray-900 dark:text-white">99.95%</td>
+                <td class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">21.60 min</td>
+                <td class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">4.38 hours</td>
+              </tr>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <td class="px-3 py-2 text-sm font-medium text-gray-900 dark:text-white">99.99%</td>
+                <td class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">4.32 min</td>
+                <td class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">52.56 min</td>
+              </tr>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <td class="px-3 py-2 text-sm font-medium text-gray-900 dark:text-white">99.999%</td>
+                <td class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">25.9s</td>
+                <td class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">5.26 min</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "uptime-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding the Nines of Availability</h2>
+      <p>
+        In the world of DevOps and site reliability engineering, availability is measured in "nines." Each additional nine represents a tenfold improvement in reliability and a tenfold reduction in allowed downtime. Moving from three nines (99.9%) to four nines (99.99%) means reducing allowed downtime from about 43 minutes per month to about 4.3 minutes. This exponential relationship is why each additional nine becomes dramatically more expensive and difficult to achieve.
+      </p>
+      <p>
+        The concept originated in telecommunications where five nines (99.999%) was the gold standard for phone networks. Today, cloud providers typically offer three to four nines in their SLAs: AWS EC2 offers 99.99%, Google Compute Engine offers 99.99%, and Azure Virtual Machines offers 99.95-99.99% depending on configuration. Achieving five nines requires multi-region redundancy, zero-downtime deployments, automated failover, and comprehensive monitoring — infrastructure that costs significantly more than a three-nines setup.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>SLAs, SLOs, and Error Budgets</h2>
+      <p>
+        Google's SRE (Site Reliability Engineering) practices popularized the concept of error budgets. An error budget is the inverse of your SLO: if your SLO is 99.9% uptime, you have a 0.1% error budget (about 43 minutes per month). This budget is "spent" on incidents, deployments, and experiments. When the budget is exhausted, the team freezes feature releases and focuses exclusively on reliability. This creates a data-driven balance between velocity and stability.
+      </p>
+
+      <h3>Composite Availability</h3>
+      <p>
+        Real-world services depend on multiple components, and the overall availability is the product of individual component availabilities. If your API server has 99.99% availability and your database has 99.99% availability, the composite availability is 99.99% times 99.99% = 99.98%. For a service with five dependencies each at 99.9%, the composite availability drops to 99.5%. This is why microservice architectures require higher individual service reliability — the "nines" multiply against you.
+      </p>
+
+      <h3>Measuring Uptime Correctly</h3>
+      <p>
+        Uptime measurement methodology matters as much as the number itself. Time-based availability counts minutes of total downtime, which is what this calculator computes. Request-based availability measures the percentage of successful requests out of total requests. A service could be "up" 100% of the time by the clock but still fail 5% of requests due to timeouts or errors. Modern SLOs often combine both: the service must be available 99.9% of the time AND serve 99.95% of requests successfully within the latency threshold.
+      </p>
+
+      <h3>Cost of Downtime</h3>
+      <p>
+        The financial impact of downtime varies enormously by industry. For an e-commerce site doing $10 million per month in revenue, each minute of downtime costs approximately $231. For Amazon, downtime reportedly costs over $200,000 per minute. Beyond direct revenue loss, downtime damages customer trust, triggers SLA penalty payments, and can cause cascading failures in dependent systems. Understanding the cost of downtime helps justify the engineering investment needed to move from three nines to four nines.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What does five nines (99.999%) uptime mean?</h3>
+      <p>Five nines allows no more than 5 minutes and 15 seconds of downtime per year, or about 26 seconds per month. It requires multi-region redundancy and automated failover.</p>
+
+      <h3>How is uptime percentage calculated?</h3>
+      <p>Uptime % = ((total minutes - downtime minutes) / total minutes) * 100. For a 30-day month (43,200 minutes) with 43.2 minutes down, uptime is 99.9%.</p>
+
+      <h3>What is the difference between SLA and SLO?</h3>
+      <p>An SLA is a contractual commitment with penalties. An SLO is an internal target, typically stricter than the SLA, providing a safety margin before contractual obligations are breached.</p>
+
+      <h3>How much downtime does three nines allow?</h3>
+      <p>Three nines (99.9%) allows approximately 43.8 minutes of downtime per month or 8.76 hours per year. This is the most common SLA target for business-critical applications.</p>
+
+      <h3>Should I measure uptime monthly or annually?</h3>
+      <p>Monthly measurement is preferred for stricter accountability. Annual measurement allows bad months to be offset by good ones, which can hide recurring issues.</p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Bandwidth Calculator", description: "Calculate download times based on file size and connection speed.", path: everyday_bandwidth_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Subnet Calculator", description: "Calculate subnet masks, network addresses, and host ranges for IPv4.", path: everyday_subnet_calculator_path, icon_path: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" },
+      { name: "Unix Timestamp Converter", description: "Convert between Unix timestamps and human-readable dates.", path: everyday_unix_timestamp_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("uptime-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,171 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Final Grade Calculator - Free Online Tool",
+  description: "Calculate the grade you need on your final exam to achieve your desired course grade. Enter your current grade, final exam weight, and target grade instantly.",
+  canonical: everyday_final_grade_url,
+  og: {
+    title: "Final Grade Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the grade you need on your final exam to achieve your desired course grade instantly.",
+    url: everyday_final_grade_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Final Grade Calculator", url: everyday_final_grade_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is the required final exam grade calculated?", answer: "The formula is: Required Final = (Desired Grade - Current Grade x (1 - Final Weight / 100)) / (Final Weight / 100). For example, if your current grade is 85%, the final is worth 30%, and you want a 90%, you need: (90 - 85 x 0.7) / 0.3 = (90 - 59.5) / 0.3 = 101.67%. This means you would need over 100% on the final, which is not achievable without extra credit." },
+  { question: "What if the required grade is over 100%?", answer: "If the calculator shows a required grade above 100%, it means your desired grade is not achievable through the final exam alone under normal scoring. You would need extra credit opportunities, grade curve adjustments, or to revise your target grade to a more realistic level." },
+  { question: "How much does the final exam usually count?", answer: "Final exam weights vary by course and institution. Common weights are 20-40% of the total grade. Some courses have finals worth as little as 10% or as much as 50%. Check your course syllabus for the exact weight, as this significantly affects the required grade calculation." },
+  { question: "What letter grade corresponds to each percentage?", answer: "In the standard scale: A is 90-100%, B is 80-89%, C is 70-79%, D is 60-69%, and F is below 60%. Some institutions use plus/minus grades (A-, B+, etc.) with different cutoffs. Check your school's grading policy for the exact scale used." },
+  { question: "Can I use this calculator for midterms too?", answer: "Yes. The formula works for any exam that has a known weight in your final grade. Enter your current grade (from all work completed so far), the exam weight percentage, and your target grade. The calculator will show what you need on that particular exam." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Final Grade Calculator",
+  description: "Calculate the grade needed on your final exam to achieve your desired course grade.",
+  url: everyday_final_grade_url,
+  category: "EducationalApplication",
+  calculator_slug: "final-grade"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Final Grade Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Final Grade Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find out what grade you need on your final exam to reach your desired course grade.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="final-grade-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="fg-current" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Grade (%)</label>
+            <input id="fg-current" type="number" inputmode="decimal" data-final-grade-calculator-target="currentGrade" data-action="input->final-grade-calculator#calculate" class="w-full" placeholder="85" step="0.1" min="0" max="100">
+          </div>
+          <div>
+            <label for="fg-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Final Exam Weight (%)</label>
+            <input id="fg-weight" type="number" inputmode="decimal" data-final-grade-calculator-target="finalWeight" data-action="input->final-grade-calculator#calculate" class="w-full" placeholder="30" step="1" min="1" max="100">
+          </div>
+          <div>
+            <label for="fg-desired" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Desired Grade (%)</label>
+            <input id="fg-desired" type="number" inputmode="decimal" data-final-grade-calculator-target="desiredGrade" data-action="input->final-grade-calculator#calculate" class="w-full" placeholder="90" step="0.1" min="0" max="100">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Required Final Grade</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-final-grade-calculator-target="resultRequiredGrade">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Achievable?</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-final-grade-calculator-target="resultAchievable">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Letter Grade Needed</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-final-grade-calculator-target="resultLetterNeeded">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Current Letter Grade</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-final-grade-calculator-target="resultCurrentLetter">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->final-grade-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "final-grade" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Final Grade Calculator</h2>
+      <p>
+        Enter your current grade percentage in the course (before the final exam), the weight of the final exam as a percentage of your total grade, and the grade you want to achieve in the course. The calculator instantly shows you the minimum score you need on the final exam and whether that target is achievable. Results update in real time as you adjust the inputs.
+      </p>
+      <p>
+        This tool is invaluable during finals week when you need to prioritize your study time across multiple courses. By knowing exactly what you need on each final, you can allocate more effort to courses where a strong final performance can make the biggest difference in your grade.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the Final Grade Formula</h2>
+      <p>
+        The formula used is: <strong>Required Final = (Desired - Current x (1 - Weight/100)) / (Weight/100)</strong>. This rearranges the weighted average formula to solve for the unknown final exam score. For example, if you currently have an 82% and the final is worth 25% of your grade, and you want a B (80%), you need: (80 - 82 x 0.75) / 0.25 = (80 - 61.5) / 0.25 = 74%. You would need at least a 74% on the final to maintain a B.
+      </p>
+
+      <h3>When the Target Is Not Achievable</h3>
+      <p>
+        If the required grade exceeds 100%, your desired grade cannot be reached through the final exam alone. In this case, consider whether your instructor offers extra credit, whether a grade curve is possible, or whether you should adjust your target grade. Knowing early that a target is unreachable helps you set realistic expectations and focus your energy productively.
+      </p>
+
+      <h3>Strategic Study Planning</h3>
+      <p>
+        Use this calculator for all your courses to create a study priority list. Courses where you need a high score on the final to maintain your grade deserve more study time. Courses where you already have a comfortable buffer can receive less. This data-driven approach to finals preparation is far more effective than studying all subjects equally, especially when time is limited.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is the required final exam grade calculated?</h3>
+      <p>
+        The formula is: Required Final = (Desired Grade - Current Grade x (1 - Final Weight / 100)) / (Final Weight / 100). It rearranges the weighted average formula to solve for the unknown final exam score.
+      </p>
+
+      <h3>What if the required grade is over 100%?</h3>
+      <p>
+        If the calculator shows a required grade above 100%, your desired grade is not achievable through the final exam alone. You would need extra credit or a grade curve, or you should adjust your target.
+      </p>
+
+      <h3>How much does the final exam usually count?</h3>
+      <p>
+        Final exam weights vary by course, commonly ranging from 20-40%. Check your course syllabus for the exact weight, as this significantly affects the calculation.
+      </p>
+
+      <h3>What letter grade corresponds to each percentage?</h3>
+      <p>
+        In the standard scale: A is 90-100%, B is 80-89%, C is 70-79%, D is 60-69%, and F is below 60%. Some institutions use plus/minus grades with different cutoffs.
+      </p>
+
+      <h3>Can I use this for midterms too?</h3>
+      <p>
+        Yes. The formula works for any exam with a known weight. Enter your current grade from all work completed so far, the exam weight, and your target grade.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Grade Calculator", description: "Calculate your grade based on assignment scores and weights.", path: everyday_grade_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "GPA Calculator", description: "Calculate your grade point average from course grades and credit hours.", path: everyday_gpa_path, icon_path: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" },
+      { name: "Percentage Calculator", description: "Calculate percentages, percentage change, and percentage of a number.", path: math_percentage_path, icon_path: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer" %>
+
+    <% blog_posts = related_blog_posts("final-grade-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

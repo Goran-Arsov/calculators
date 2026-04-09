@@ -1,0 +1,183 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "FFMI Calculator - Free Fat-Free Mass Index Tool",
+  description: "Calculate your Fat-Free Mass Index (FFMI) instantly with our free online calculator. Determine your lean mass, adjusted FFMI, and muscular development category.",
+  canonical: health_ffmi_url,
+  og: {
+    title: "FFMI Calculator - Free Fat-Free Mass Index Tool | CalcWise",
+    description: "Calculate your Fat-Free Mass Index (FFMI) instantly. Determine your lean mass, adjusted FFMI, and muscular development category.",
+    url: health_ffmi_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "FFMI Calculator", url: health_ffmi_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is FFMI and how is it calculated?", answer: "FFMI (Fat-Free Mass Index) measures the amount of lean muscle mass relative to your height. It is calculated by dividing your lean body mass in kilograms by the square of your height in meters. The adjusted FFMI normalizes the result to a standard height of 1.8 meters using the formula: Adjusted FFMI = FFMI + 6.1 x (1.8 - height in meters)." },
+  { question: "What is a good FFMI score?", answer: "For men, an FFMI of 18-20 is considered average, 20-22 is above average, 22-25 is excellent and typical of dedicated natural lifters, and above 25 is considered elite or suspicious of performance-enhancing substance use. Women typically score 2-3 points lower in each category." },
+  { question: "Why is adjusted FFMI more useful than regular FFMI?", answer: "Adjusted FFMI accounts for height differences by normalizing to a standard height of 1.8 meters. This makes it fairer to compare muscularity between individuals of different heights, since taller people naturally have a different lean mass to height ratio than shorter people." },
+  { question: "Can FFMI detect steroid use?", answer: "Research by Kouri et al. (1995) found that an adjusted FFMI above 25 is extremely rare in natural athletes. While a high FFMI alone does not prove steroid use, values consistently above 25 are considered suspicious and are rarely achieved without pharmacological assistance." },
+  { question: "How accurate is FFMI compared to BMI?", answer: "FFMI is more useful than BMI for people who exercise regularly because it accounts for body fat percentage and focuses on lean mass rather than total weight. BMI can misclassify muscular individuals as overweight, while FFMI provides a more meaningful assessment of muscular development." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "FFMI Calculator",
+  description: "Calculate your Fat-Free Mass Index (FFMI) and adjusted FFMI to assess your muscular development relative to your height.",
+  url: health_ffmi_url,
+  category: "HealthApplication",
+  calculator_slug: "ffmi"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "FFMI Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">FFMI Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your Fat-Free Mass Index to evaluate your muscular development relative to your height.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="ffmi-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="ffmi-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Weight (kg)</label>
+            <input id="ffmi-weight" type="number" inputmode="decimal" data-ffmi-calculator-target="weightKg" data-action="input->ffmi-calculator#calculate" class="w-full" placeholder="80" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="ffmi-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Height (cm)</label>
+            <input id="ffmi-height" type="number" inputmode="decimal" data-ffmi-calculator-target="heightCm" data-action="input->ffmi-calculator#calculate" class="w-full" placeholder="180" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="ffmi-body-fat" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Body Fat (%)</label>
+            <input id="ffmi-body-fat" type="number" inputmode="decimal" data-ffmi-calculator-target="bodyFatPercent" data-action="input->ffmi-calculator#calculate" class="w-full" placeholder="15" step="0.1" min="0" max="70">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Lean Mass</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400"><span data-ffmi-calculator-target="leanMassKg">—</span> kg</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Fat Mass</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400"><span data-ffmi-calculator-target="fatMassKg">—</span> kg</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">FFMI</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-ffmi-calculator-target="ffmi">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Adjusted FFMI</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-ffmi-calculator-target="adjustedFfmi">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Category</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-ffmi-calculator-target="category">—</span>
+            </div>
+          </div>
+          <button data-action="click->ffmi-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "ffmi" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the FFMI Calculator</h2>
+      <p>
+        Our free FFMI calculator helps you evaluate your muscular development relative to your height. Enter your weight in kilograms, your height in centimeters, and your body fat percentage. The calculator instantly computes your lean body mass, fat mass, raw FFMI, adjusted FFMI, and your muscularity category. Results update in real-time as you type, with no page reloads or buttons to press.
+      </p>
+      <p>
+        The Fat-Free Mass Index was developed as a more meaningful alternative to BMI for people who carry significant muscle mass. While BMI treats all weight equally, FFMI isolates your lean mass and compares it to your height, giving you a much clearer picture of how muscular you actually are. It is widely used in sports science, bodybuilding, and clinical nutrition research.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the FFMI Formula</h2>
+      <p>
+        FFMI is calculated in two steps. First, your lean body mass is determined by subtracting your fat mass from your total weight: <strong>Lean Mass = Weight x (1 - Body Fat % / 100)</strong>. Then, FFMI is calculated as <strong>FFMI = Lean Mass (kg) / Height (m)<sup>2</sup></strong>. This is similar to how BMI works, but uses lean mass instead of total weight.
+      </p>
+
+      <h3>The Adjusted FFMI</h3>
+      <p>
+        Because taller and shorter individuals are not perfectly comparable using raw FFMI alone, the adjusted FFMI normalizes results to a standard height of 1.8 meters (approximately 5 feet 11 inches). The formula is: <strong>Adjusted FFMI = FFMI + 6.1 x (1.8 - Height in meters)</strong>. This adjustment adds a small bonus for shorter people and a small penalty for taller people, making cross-height comparisons more fair and accurate.
+      </p>
+
+      <h3>FFMI Categories and What They Mean</h3>
+      <p>
+        An adjusted FFMI below 18 is considered <strong>below average</strong> and is typical of individuals who do not engage in resistance training. An FFMI of 18 to 20 is <strong>average</strong> for a healthy adult male. Scores from 20 to 22 are <strong>above average</strong> and typical of recreational weightlifters. An FFMI between 22 and 25 is considered <strong>excellent</strong> and reflects years of dedicated training. Values above 25 are classified as <strong>superior or elite</strong> and are extremely rare among natural athletes. Research published by Kouri et al. in the <em>Clinical Journal of Sport Medicine</em> found that a normalized FFMI of 25 represents a practical upper limit for drug-free male athletes.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is FFMI and how is it calculated?</h3>
+      <p>
+        FFMI (Fat-Free Mass Index) measures the amount of lean muscle mass relative to your height. It is calculated by dividing your lean body mass in kilograms by the square of your height in meters. The adjusted FFMI normalizes the result to a standard height of 1.8 meters using the formula: Adjusted FFMI = FFMI + 6.1 x (1.8 - height in meters).
+      </p>
+
+      <h3>What is a good FFMI score?</h3>
+      <p>
+        For men, an FFMI of 18-20 is considered average, 20-22 is above average, 22-25 is excellent and typical of dedicated natural lifters, and above 25 is considered elite or suspicious of performance-enhancing substance use. Women typically score 2-3 points lower in each category.
+      </p>
+
+      <h3>Why is adjusted FFMI more useful than regular FFMI?</h3>
+      <p>
+        Adjusted FFMI accounts for height differences by normalizing to a standard height of 1.8 meters. This makes it fairer to compare muscularity between individuals of different heights, since taller people naturally have a different lean mass to height ratio than shorter people.
+      </p>
+
+      <h3>Can FFMI detect steroid use?</h3>
+      <p>
+        Research by Kouri et al. (1995) found that an adjusted FFMI above 25 is extremely rare in natural athletes. While a high FFMI alone does not prove steroid use, values consistently above 25 are considered suspicious and are rarely achieved without pharmacological assistance.
+      </p>
+
+      <h3>How accurate is FFMI compared to BMI?</h3>
+      <p>
+        FFMI is more useful than BMI for people who exercise regularly because it accounts for body fat percentage and focuses on lean mass rather than total weight. BMI can misclassify muscular individuals as overweight, while FFMI provides a more meaningful assessment of muscular development.
+      </p>
+
+
+    <%= render "shared/print_button" %>
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Body Fat Calculator", description: "Estimate your body fat percentage using the U.S. Navy method.", path: health_body_fat_path, icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure based on activity level.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("ffmi-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

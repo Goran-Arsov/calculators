@@ -1,0 +1,190 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Insulation Calculator - Free Online Tool",
+  description: "Calculate insulation R-value, thickness, quantity, and cost for your project. Enter area, climate zone, location, and insulation type for an instant estimate.",
+  canonical: construction_insulation_url,
+  og: {
+    title: "Insulation Calculator - Free Online Tool | CalcWise",
+    description: "Calculate insulation R-value, thickness, quantity, and cost based on climate zone, location, and insulation type.",
+    url: construction_insulation_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Insulation Calculator", url: construction_insulation_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What R-value insulation do I need?", answer: "The required R-value depends on your climate zone and the location in your home. Attics in zones 4-5 need R-49, while walls need R-20. Southern zones 1-2 require R-30 for attics and R-13 for walls. Check the IRC (International Residential Code) requirements for your specific zone." },
+  { question: "What are the different types of insulation?", answer: "The three most common types are fiberglass batts (R-3.2 per inch, lowest cost), blown-in cellulose (R-3.7 per inch, good for retrofits), and spray foam (R-6.5 per inch, highest R-value per inch but most expensive). Each type has advantages depending on the application." },
+  { question: "How thick should my insulation be?", answer: "Thickness depends on the required R-value and the insulation type. For example, to achieve R-49 in an attic, you need about 15.3 inches of fiberglass, 13.2 inches of cellulose, or 7.5 inches of spray foam. Use the calculator to determine exact thickness for your situation." },
+  { question: "How much does insulation cost?", answer: "Material costs vary by type: fiberglass batts average $0.50 per square foot, blown cellulose about $0.80 per square foot, and spray foam around $1.50 per square foot. Labor costs typically add 50-100% to material costs for professional installation." },
+  { question: "What climate zone am I in?", answer: "The US is divided into 7 climate zones. Zones 1-2 cover the hot southern states (Florida, Texas coast). Zone 3 includes the moderate South. Zones 4-5 cover the mid-Atlantic and Midwest. Zones 6-7 cover the coldest northern states and Alaska. Check the DOE climate zone map for your exact location." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Insulation Calculator",
+  description: "Calculate insulation R-value, thickness, quantity, and cost based on climate zone and insulation type.",
+  url: construction_insulation_url,
+  category: "HomeApplication",
+  calculator_slug: "insulation"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Insulation Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Insulation Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate the R-value, insulation thickness, quantity, and cost based on your climate zone, location, and insulation type.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="insulation-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="insulation-area" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Area (sq ft)</label>
+            <input id="insulation-area" type="number" inputmode="decimal" data-insulation-calculator-target="areaSqft" data-action="input->insulation-calculator#calculate" class="w-full" placeholder="500" step="1" min="0">
+          </div>
+          <div>
+            <label for="insulation-climate-zone" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Climate Zone (1-7)</label>
+            <select id="insulation-climate-zone" data-insulation-calculator-target="climateZone" data-action="change->insulation-calculator#calculate" class="w-full">
+              <option value="1">Zone 1 (Hot - Southern FL, HI)</option>
+              <option value="2">Zone 2 (Hot - Gulf Coast, South TX)</option>
+              <option value="3">Zone 3 (Warm - Southeast, South CA)</option>
+              <option value="4" selected>Zone 4 (Mixed - Mid-Atlantic)</option>
+              <option value="5">Zone 5 (Cool - Midwest, Northeast)</option>
+              <option value="6">Zone 6 (Cold - Northern US)</option>
+              <option value="7">Zone 7 (Very Cold - Northern MN, AK)</option>
+            </select>
+          </div>
+          <div>
+            <label for="insulation-location" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Location</label>
+            <select id="insulation-location" data-insulation-calculator-target="location" data-action="change->insulation-calculator#calculate" class="w-full">
+              <option value="attic">Attic</option>
+              <option value="wall">Wall</option>
+              <option value="floor">Floor</option>
+            </select>
+          </div>
+          <div>
+            <label for="insulation-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Insulation Type</label>
+            <select id="insulation-type" data-insulation-calculator-target="insulationType" data-action="change->insulation-calculator#calculate" class="w-full">
+              <option value="fiberglass_batt">Fiberglass Batt (R-3.2/in)</option>
+              <option value="blown_cellulose">Blown Cellulose (R-3.7/in)</option>
+              <option value="spray_foam">Spray Foam (R-6.5/in)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Required R-Value</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-insulation-calculator-target="resultRValue">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Thickness</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-insulation-calculator-target="resultThickness">0 in</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Quantity Needed</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-insulation-calculator-target="resultQuantity">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Estimated Cost</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-insulation-calculator-target="resultCost">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->insulation-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "insulation" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Insulation Calculator</h2>
+      <p>
+        Proper insulation is one of the most cost-effective ways to improve energy efficiency and comfort in any building. Enter the total area in square feet that you plan to insulate, then select your climate zone, the location within the building (attic, wall, or floor), and the insulation type. The calculator uses IRC (International Residential Code) recommended R-values for each climate zone and location to determine the required insulation thickness and quantity.
+      </p>
+      <p>
+        The R-value represents thermal resistance. Higher R-values mean better insulating performance. Climate zones range from 1 (hottest, southern Florida and Hawaii) through 7 (coldest, northern Minnesota and Alaska). Attics always require the highest R-value because heat rises and escapes most readily through the roof. Walls and floors have lower requirements because they lose heat less rapidly.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Insulation Types Compared</h2>
+      <p>
+        Fiberglass batts are the most affordable and widely available option at approximately $0.50 per square foot. They come in pre-cut widths designed to fit between standard 16-inch or 24-inch on-center framing. Blown-in cellulose costs about $0.80 per square foot and is ideal for retrofitting existing walls and filling irregular cavities. It is made from recycled paper treated with fire retardant. Spray foam insulation at around $1.50 per square foot offers the highest R-value per inch (R-6.5) and provides an air seal in addition to thermal insulation, making it excellent for rim joists, cathedral ceilings, and hard-to-reach areas.
+      </p>
+
+      <h3>Tips for Effective Insulation</h3>
+      <p>
+        Always address air sealing before or during insulation installation. Gaps and cracks around pipes, wiring, outlets, and ductwork can reduce insulation effectiveness by 25-40%. In attics, seal around the tops of interior walls, light fixtures, and plumbing penetrations before laying insulation. Do not compress batt insulation, as this reduces its R-value. For blown-in insulation, verify that the installed depth meets the required R-value specification. Use baffles at the eaves to maintain proper ventilation in vented attics while preventing insulation from blocking soffit vents.
+      </p>
+
+      <h3>Cost-Saving Strategies</h3>
+      <p>
+        Attic insulation typically offers the best return on investment because it addresses the largest source of heat loss. Many utility companies offer rebates for insulation upgrades. Check with your local energy provider before starting work. For DIY projects, fiberglass batts are the easiest to install. Blown cellulose requires renting a blowing machine but covers irregularly shaped areas more effectively. Spray foam should be installed by certified professionals to ensure proper expansion and adhesion.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What R-value insulation do I need?</h3>
+      <p>
+        The required R-value depends on your climate zone and the location in your home. Attics in zones 4-5 need R-49, while walls need R-20. Southern zones 1-2 require R-30 for attics and R-13 for walls. Check the IRC requirements for your specific zone.
+      </p>
+
+      <h3>What are the different types of insulation?</h3>
+      <p>
+        The three most common types are fiberglass batts (R-3.2 per inch, lowest cost), blown-in cellulose (R-3.7 per inch, good for retrofits), and spray foam (R-6.5 per inch, highest R-value per inch but most expensive). Each type has advantages depending on the application.
+      </p>
+
+      <h3>How thick should my insulation be?</h3>
+      <p>
+        Thickness depends on the required R-value and the insulation type. For example, to achieve R-49 in an attic, you need about 15.3 inches of fiberglass, 13.2 inches of cellulose, or 7.5 inches of spray foam. Use the calculator to determine exact thickness for your situation.
+      </p>
+
+      <h3>How much does insulation cost?</h3>
+      <p>
+        Material costs vary by type: fiberglass batts average $0.50 per square foot, blown cellulose about $0.80 per square foot, and spray foam around $1.50 per square foot. Labor costs typically add 50-100% to material costs for professional installation.
+      </p>
+
+      <h3>What climate zone am I in?</h3>
+      <p>
+        The US is divided into 7 climate zones. Zones 1-2 cover the hot southern states. Zone 3 includes the moderate South. Zones 4-5 cover the mid-Atlantic and Midwest. Zones 6-7 cover the coldest northern states and Alaska. Check the DOE climate zone map for your exact location.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Drywall Calculator", description: "Calculate drywall sheets, joint compound, and tape needed.", path: construction_drywall_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "HVAC BTU Calculator", description: "Calculate the BTU and tonnage needed to heat or cool a room.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Electrical Load Calculator", description: "Calculate total electrical load and recommended panel size.", path: construction_electrical_load_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("insulation-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

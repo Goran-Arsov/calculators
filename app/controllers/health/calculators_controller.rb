@@ -33,5 +33,11 @@ module Health
     def protein_per_meal; end
     def calories_per_100g; end
     def steps_per_mile; end
+    def ffmi; end
+    def vo2_max; end
+    def protein_intake; end
+    def pregnancy_weight; end
+    def alcohol_burnoff; end
+    def biological_age; end
   end
 end

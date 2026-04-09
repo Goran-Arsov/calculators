@@ -1,0 +1,166 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Text Encryptor - AES-256-GCM Encryption/Decryption Tool",
+  description: "Encrypt and decrypt text using AES-256-GCM with PBKDF2 key derivation. Secure client-side encryption - your data never leaves the browser. Free online tool.",
+  canonical: everyday_text_encryptor_url,
+  og: {
+    title: "Text Encryptor - AES-256-GCM Encryption/Decryption Tool | CalcWise",
+    description: "Encrypt and decrypt text with AES-256-GCM and PBKDF2 key derivation. All processing happens in your browser for maximum security.",
+    url: everyday_text_encryptor_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Text Encryptor", url: everyday_text_encryptor_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What encryption algorithm does this tool use?", answer: "This tool uses AES-256-GCM (Advanced Encryption Standard with 256-bit keys in Galois/Counter Mode). AES-256 is approved by NIST and used by governments and military worldwide. GCM mode provides both confidentiality (encryption) and authenticity (tamper detection) in a single operation. The key is derived from your password using PBKDF2 with 100,000 iterations of SHA-256 and a random salt." },
+  { question: "Is my data sent to any server?", answer: "No. All encryption and decryption happens entirely in your browser using the Web Crypto API. Your plaintext, password, and encrypted output never leave your device. You can verify this by disconnecting from the internet and using the tool offline. The tool works because modern browsers include a built-in cryptographic library (SubtleCrypto) that performs all operations locally." },
+  { question: "What is PBKDF2 and why is it used?", answer: "PBKDF2 (Password-Based Key Derivation Function 2) converts a human-readable password into a cryptographic key suitable for AES-256. It applies SHA-256 hashing 100,000 times with a random salt, making brute-force attacks against weak passwords significantly more expensive. Each encryption uses a unique random salt, so encrypting the same text with the same password produces different output every time." },
+  { question: "What does the encrypted output contain?", answer: "The encrypted output is a Base64-encoded string containing four components separated by colons: the salt (16 bytes, used for key derivation), the IV/nonce (12 bytes, required by GCM mode), the ciphertext (the encrypted data), and the authentication tag (16 bytes, for tamper detection). All four components are needed for decryption." },
+  { question: "Can I decrypt this output with other tools?", answer: "Yes, as long as the tool implements the same parameters: PBKDF2 with SHA-256, 100,000 iterations, 16-byte salt, followed by AES-256-GCM with a 12-byte IV and 16-byte authentication tag. The format is Base64(Base64(salt):Base64(iv):Base64(ciphertext):Base64(tag)). You can implement decryption in any language with OpenSSL or equivalent crypto libraries using these parameters." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Text Encryptor",
+  description: "Encrypt and decrypt text using AES-256-GCM with PBKDF2 key derivation. Client-side processing for maximum security.",
+  url: everyday_text_encryptor_url,
+  category: "UtilityApplication",
+  calculator_slug: "text-encryptor"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Text Encryptor" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Text Encryptor</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Encrypt and decrypt text using AES-256-GCM with PBKDF2 key derivation. All processing happens in your browser — your data never leaves your device.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="text-encryptor-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="encrypt-mode" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Mode</label>
+            <select id="encrypt-mode" data-text-encryptor-calculator-target="mode" data-action="change->text-encryptor-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="encrypt" selected>Encrypt</option>
+              <option value="decrypt">Decrypt</option>
+            </select>
+          </div>
+          <div>
+            <label for="encrypt-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Input Text</label>
+            <textarea id="encrypt-input" data-text-encryptor-calculator-target="inputText" data-action="input->text-encryptor-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows="5" placeholder="Enter text to encrypt or paste encrypted text to decrypt..."></textarea>
+          </div>
+          <div>
+            <label for="encrypt-password" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Password</label>
+            <input type="password" id="encrypt-password" data-text-encryptor-calculator-target="password" data-action="input->text-encryptor-calculator#calculate"
+              class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter encryption password...">
+          </div>
+        </div>
+        <div>
+          <div data-text-encryptor-calculator-target="resultsContainer" class="hidden h-full">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 h-full flex flex-col" aria-live="polite" aria-atomic="true">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Result</h2>
+              <div class="mb-2">
+                <span class="text-sm font-medium" data-text-encryptor-calculator-target="resultStatus">&mdash;</span>
+              </div>
+              <textarea readonly rows="6" data-text-encryptor-calculator-target="resultText"
+                class="flex-1 w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 break-all"
+                placeholder="Result will appear here..."></textarea>
+              <button data-action="click->text-encryptor-calculator#copy" class="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "text-encryptor" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How AES-256-GCM Encryption Works</h2>
+      <p>
+        AES-256-GCM is an authenticated encryption algorithm that provides both confidentiality and integrity protection in a single operation. AES (Advanced Encryption Standard) with a 256-bit key is the strongest variant of AES, approved by NIST for top-secret government data. GCM (Galois/Counter Mode) combines the counter mode of encryption with Galois field multiplication for authentication, producing both ciphertext and an authentication tag that detects any tampering.
+      </p>
+      <p>
+        This tool derives the AES-256 key from your password using PBKDF2 (Password-Based Key Derivation Function 2) with 100,000 iterations of SHA-256. Each encryption generates a random 16-byte salt for key derivation and a random 12-byte initialization vector (IV) for AES-GCM. These random values ensure that encrypting the same text with the same password produces completely different output each time, preventing pattern analysis attacks.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Encryption Pipeline</h2>
+      <p>
+        When you encrypt text, the following steps occur entirely in your browser. First, a random 16-byte salt is generated using <code>crypto.getRandomValues()</code>. Second, your password and the salt are fed into PBKDF2 with 100,000 iterations of SHA-256 to derive a 256-bit encryption key. Third, a random 12-byte IV is generated. Fourth, the text is encrypted using AES-256-GCM with the derived key and IV, producing ciphertext and a 16-byte authentication tag. Finally, the salt, IV, ciphertext, and tag are combined and Base64-encoded for easy copying and sharing.
+      </p>
+
+      <h3>Why PBKDF2 Is Essential</h3>
+      <p>
+        Human-chosen passwords have far less entropy than the 256 bits needed for AES-256. A typical strong password might have 40-60 bits of entropy. PBKDF2 addresses this by making each password guess computationally expensive. With 100,000 iterations, an attacker trying 1 billion passwords per second on a GPU cluster would need significantly longer to crack the key. The random salt prevents precomputed rainbow table attacks and ensures that two users with the same password produce different encryption keys.
+      </p>
+
+      <h3>GCM Mode Authentication</h3>
+      <p>
+        The GCM authentication tag is a 16-byte value that acts as a cryptographic checksum of the ciphertext. If an attacker modifies even a single bit of the encrypted data, the authentication tag will not match during decryption, and the operation will fail with an error. This prevents chosen-ciphertext attacks where an attacker manipulates encrypted data to learn information about the plaintext. In this tool, a failed authentication check results in the message "Decryption failed: wrong password or corrupted data."
+      </p>
+
+      <h3>Security Considerations</h3>
+      <p>
+        The security of this encryption depends entirely on your password strength. Use a long, unique password with mixed character types. The tool itself uses industry-standard algorithms and parameters. All processing uses the browser's built-in Web Crypto API (SubtleCrypto), which is implemented in native code and resistant to timing attacks. Your data, password, and encryption keys exist only in browser memory and are never transmitted over the network.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What encryption algorithm does this tool use?</h3>
+      <p>AES-256-GCM with PBKDF2 key derivation (100,000 iterations of SHA-256). AES-256 is the strongest AES variant, and GCM provides both encryption and tamper detection.</p>
+
+      <h3>Is my data sent to any server?</h3>
+      <p>No. All operations use the browser's Web Crypto API. Your text, password, and results never leave your device. You can verify by using the tool offline.</p>
+
+      <h3>What is PBKDF2?</h3>
+      <p>PBKDF2 converts a password into a cryptographic key using 100,000 rounds of SHA-256 with a random salt. This makes brute-force attacks against weak passwords much more expensive.</p>
+
+      <h3>What does the encrypted output contain?</h3>
+      <p>The output is Base64-encoded and contains the salt (for key derivation), IV (for AES-GCM), ciphertext (encrypted data), and authentication tag (tamper detection). All four are needed for decryption.</p>
+
+      <h3>Can I decrypt with other tools?</h3>
+      <p>Yes, if they implement PBKDF2-SHA256 (100K iterations, 16-byte salt) followed by AES-256-GCM (12-byte IV, 16-byte tag). The format is Base64(Base64(salt):Base64(iv):Base64(ciphertext):Base64(tag)).</p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Hash Generator", description: "Generate SHA-256, SHA-512, and MD5 hashes from any text input.", path: everyday_hash_generator_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" },
+      { name: "Password Generator", description: "Generate strong random passwords with customizable length and character sets.", path: everyday_password_generator_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "Base64 Encoder", description: "Encode and decode text to and from Base64 format.", path: everyday_base64_encoder_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("text-encryptor") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

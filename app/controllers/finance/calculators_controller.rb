@@ -63,5 +63,13 @@ module Finance
     def hourly_to_salary; end
     def invoice_generator; end
     def detailed_invoice_generator; end
+    def fire; end
+    def rent_affordability; end
+    def capital_gains_tax; end
+    def down_payment; end
+    def inheritance_tax; end
+    def side_hustle; end
+    def emergency_fund; end
+    def lease_vs_buy; end
   end
 end

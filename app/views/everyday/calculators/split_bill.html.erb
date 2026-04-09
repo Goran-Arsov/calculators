@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Split Bill Calculator - Free Online Tool",
+  description: "Split the bill evenly among friends with tip and tax included. Calculate each person's share instantly — free and easy to use.",
+  canonical: everyday_split_bill_url,
+  og: {
+    title: "Split Bill Calculator - Free Online Tool | CalcWise",
+    description: "Split the bill evenly among friends with tip and tax included. Calculate each person's share instantly.",
+    url: everyday_split_bill_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Split Bill Calculator", url: everyday_split_bill_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do you split a bill evenly?", answer: "Add the subtotal, tip, and tax together to get the total. Then divide by the number of people. For example, a $100 bill with 18% tip ($18) and 8% tax ($8) totals $126. Split four ways, each person pays $31.50." },
+  { question: "Should tax be included before or after calculating the tip?", answer: "Standard etiquette is to calculate the tip on the pre-tax subtotal, not the after-tax amount. This calculator applies tip and tax separately to the subtotal, which is the most accurate and fair approach." },
+  { question: "What is a fair way to split a restaurant bill?", answer: "The most common approach is to split the total evenly. If orders vary significantly in price, each person can calculate their individual share. Our calculator handles the even-split method, which is the simplest and most popular option for group dining." },
+  { question: "How much tip should I include when splitting a bill?", answer: "In the US, 15-20% is standard for sit-down restaurants. When splitting, agree on the tip percentage first, then divide the total (subtotal + tip + tax) by the number of diners. This ensures the server receives a fair tip regardless of how the bill is divided." },
+  { question: "What if someone does not want to pay their share?", answer: "Discuss bill-splitting expectations before ordering. Some groups prefer to ask for separate checks. If splitting evenly, it is courteous for everyone to agree upfront. Apps and calculators like this one make the math transparent, reducing disputes." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Split Bill Calculator",
+  description: "Calculate each person's share of a bill including tip and tax. Split the check evenly among any number of people.",
+  url: everyday_split_bill_url,
+  category: "FinanceApplication",
+  calculator_slug: "split-bill"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Split Bill Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Split Bill Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate each person's share of a restaurant bill including tip and tax.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="split-bill-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="split-bill-subtotal" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Subtotal ($)</label>
+            <input id="split-bill-subtotal" type="number" inputmode="decimal" data-split-bill-calculator-target="subtotal" data-action="input->split-bill-calculator#calculate" class="w-full" placeholder="85.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="split-bill-tip" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tip (%)</label>
+            <input id="split-bill-tip" type="number" inputmode="decimal" data-split-bill-calculator-target="tipPercent" data-action="input->split-bill-calculator#calculate" class="w-full" value="18" step="1" min="0" max="100">
+          </div>
+          <div>
+            <label for="split-bill-tax" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tax (%)</label>
+            <input id="split-bill-tax" type="number" inputmode="decimal" data-split-bill-calculator-target="taxPercent" data-action="input->split-bill-calculator#calculate" class="w-full" value="8" step="0.1" min="0" max="100">
+          </div>
+          <div>
+            <label for="split-bill-people" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of People</label>
+            <input id="split-bill-people" type="number" inputmode="numeric" data-split-bill-calculator-target="numPeople" data-action="input->split-bill-calculator#calculate" class="w-full" value="2" step="1" min="1">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tip Amount</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-split-bill-calculator-target="resultTip">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Tax Amount</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-split-bill-calculator-target="resultTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-split-bill-calculator-target="resultTotal">$0.00</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 font-semibold">Per Person</span>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-split-bill-calculator-target="resultPerPerson">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->split-bill-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "split-bill" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Split Bill Calculator</h2>
+      <p>
+        Splitting the check at a restaurant can lead to awkward moments. This calculator removes the guesswork by computing each person's fair share, including tip and tax. Simply enter the subtotal from your bill, choose a tip percentage, enter your local tax rate, and specify how many people are splitting the bill. The results update in real time as you type.
+      </p>
+      <p>
+        The calculator adds the tip and tax to the subtotal separately, then divides the grand total evenly among all diners. This method ensures the tip is calculated on the food cost alone, not inflated by tax. The default tip of 18% and tax of 8% are common starting points, but adjust these to match your situation.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Split the Bill Evenly?</h2>
+      <p>
+        Even splitting is the fastest way to settle a group check. While individual itemization is an option, it slows down the process and can create tension. Studies show that groups who agree on even splitting before ordering tend to have a more enjoyable dining experience. Even splitting also ensures the tip is adequate, as individual calculations sometimes leave the server short.
+      </p>
+
+      <h3>When Uneven Splitting Makes Sense</h3>
+      <p>
+        Sometimes even splitting is not fair. If one person ordered only a salad while others had steak and cocktails, consider asking for separate checks or having each person calculate their individual portion. Many restaurants are happy to split checks by seat. If separate checks are not an option, have each person calculate their items, add the agreed tip percentage, and pay their share.
+      </p>
+
+      <h3>Tip Etiquette for Groups</h3>
+      <p>
+        When dining in a large group, many restaurants add an automatic gratuity of 18-20%. Check the bill before adding your own tip to avoid double-tipping. If no auto-gratuity is included, 18-20% is standard for groups of six or more. Agree on the tip percentage with the group before calculating each person's share to prevent any confusion at the end of the meal.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do you split a bill evenly?</h3>
+      <p>
+        Add the subtotal, tip, and tax together to get the total. Then divide by the number of people. For example, a $100 bill with 18% tip ($18) and 8% tax ($8) totals $126. Split four ways, each person pays $31.50.
+      </p>
+
+      <h3>Should tax be included before or after calculating the tip?</h3>
+      <p>
+        Standard etiquette is to calculate the tip on the pre-tax subtotal, not the after-tax amount. This calculator applies tip and tax separately to the subtotal, which is the most accurate and fair approach.
+      </p>
+
+      <h3>What is a fair way to split a restaurant bill?</h3>
+      <p>
+        The most common approach is to split the total evenly. If orders vary significantly in price, each person can calculate their individual share. Our calculator handles the even-split method, which is the simplest and most popular option for group dining.
+      </p>
+
+      <h3>How much tip should I include when splitting a bill?</h3>
+      <p>
+        In the US, 15-20% is standard for sit-down restaurants. When splitting, agree on the tip percentage first, then divide the total (subtotal + tip + tax) by the number of diners. This ensures the server receives a fair tip regardless of how the bill is divided.
+      </p>
+
+      <h3>What if someone does not want to pay their share?</h3>
+      <p>
+        Discuss bill-splitting expectations before ordering. Some groups prefer to ask for separate checks. If splitting evenly, it is courteous for everyone to agree upfront. Apps and calculators like this one make the math transparent, reducing disputes.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tip Calculator", description: "Calculate tips and split the bill at restaurants.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" },
+      { name: "Cost Per Person Calculator", description: "Calculate the cost per person for any shared expense.", path: everyday_cost_per_person_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer" %>
+
+    <% blog_posts = related_blog_posts("split-bill-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -62,4 +62,12 @@ namespace :finance do
   get "hourly-to-salary-calculator", to: "calculators#hourly_to_salary", as: :hourly_to_salary
   get "invoice-generator", to: "calculators#invoice_generator", as: :invoice_generator
   get "detailed-invoice-generator", to: "calculators#detailed_invoice_generator", as: :detailed_invoice_generator
+  get "fire-calculator", to: "calculators#fire", as: :fire
+  get "rent-affordability-calculator", to: "calculators#rent_affordability", as: :rent_affordability
+  get "capital-gains-tax-calculator", to: "calculators#capital_gains_tax", as: :capital_gains_tax
+  get "down-payment-calculator", to: "calculators#down_payment", as: :down_payment
+  get "inheritance-tax-calculator", to: "calculators#inheritance_tax", as: :inheritance_tax
+  get "side-hustle-calculator", to: "calculators#side_hustle", as: :side_hustle
+  get "emergency-fund-calculator", to: "calculators#emergency_fund", as: :emergency_fund
+  get "lease-vs-buy-calculator", to: "calculators#lease_vs_buy", as: :lease_vs_buy
 end

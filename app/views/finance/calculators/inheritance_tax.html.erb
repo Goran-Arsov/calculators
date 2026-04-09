@@ -1,0 +1,174 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Inheritance Tax Calculator - Free Online Tool",
+  description: "Estimate state inheritance tax for the 6 US states that levy it. Compare exemptions and rates by relationship type — spouse, child, sibling, or unrelated heir.",
+  canonical: finance_inheritance_tax_url,
+  og: {
+    title: "Inheritance Tax Calculator - Free Online Tool | CalcWise",
+    description: "Estimate state inheritance tax for the 6 US states that levy it. Compare exemptions and rates by relationship type.",
+    url: finance_inheritance_tax_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Inheritance Tax Calculator", url: finance_inheritance_tax_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is inheritance tax and how is it different from estate tax?", answer: "Inheritance tax is paid by the person who receives an inheritance, while estate tax is paid by the estate of the deceased before assets are distributed. Only 6 US states currently levy an inheritance tax: Iowa, Kentucky, Maryland, Nebraska, New Jersey, and Pennsylvania. Maryland is the only state that levies both an estate tax and an inheritance tax." },
+  { question: "Which US states have an inheritance tax?", answer: "As of 2024, six states levy an inheritance tax: Iowa (being phased out by 2025), Kentucky, Maryland, Nebraska, New Jersey, and Pennsylvania. Each state has different exemption amounts and tax rates that vary based on the relationship between the deceased and the beneficiary. Spouses are exempt in all six states." },
+  { question: "Are spouses exempt from inheritance tax?", answer: "Yes, surviving spouses are exempt from inheritance tax in all six states that levy it. In most states, children and direct descendants also receive full exemptions or very low rates. Siblings and unrelated beneficiaries typically face the highest inheritance tax rates." },
+  { question: "How are inheritance tax rates determined?", answer: "Inheritance tax rates depend on two primary factors: the state where the deceased resided and the relationship between the deceased and the beneficiary. Closer relatives such as children receive lower rates or full exemptions, while distant relatives and unrelated heirs face higher rates. Many states use graduated rate structures where larger inheritances are taxed at higher marginal rates." },
+  { question: "Can I avoid inheritance tax?", answer: "There are several legal strategies to minimize inheritance tax. These include gifting assets during your lifetime (within annual gift tax exclusion limits), establishing irrevocable trusts, purchasing life insurance to cover the tax burden, or relocating to a state without inheritance tax. Consulting an estate planning attorney is recommended for personalized strategies." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Inheritance Tax Calculator",
+  description: "Estimate state inheritance tax for the 6 US states that levy it based on estate value, state, and beneficiary relationship.",
+  url: finance_inheritance_tax_url,
+  category: "FinanceApplication",
+  calculator_slug: "inheritance-tax"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Inheritance Tax Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Inheritance Tax Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate the inheritance tax owed in the six US states that levy it, based on estate value, state, and your relationship to the deceased.</p>
+
+    <%# Ad: leaderboard — placed below content heading per AdSense best practices %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="inheritance-tax-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="inheritance-tax-estate-value" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Estate Value ($)</label>
+            <input id="inheritance-tax-estate-value" type="number" inputmode="decimal" data-inheritance-tax-calculator-target="estateValue" data-action="input->inheritance-tax-calculator#calculate" class="w-full" placeholder="500000" step="10000" min="0">
+          </div>
+          <div>
+            <label for="inheritance-tax-state" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">State</label>
+            <select id="inheritance-tax-state" data-inheritance-tax-calculator-target="state" data-action="change->inheritance-tax-calculator#calculate" class="w-full">
+              <option value="none" selected>No inheritance tax state</option>
+              <option value="iowa">Iowa</option>
+              <option value="kentucky">Kentucky</option>
+              <option value="maryland">Maryland</option>
+              <option value="nebraska">Nebraska</option>
+              <option value="new_jersey">New Jersey</option>
+              <option value="pennsylvania">Pennsylvania</option>
+            </select>
+          </div>
+          <div>
+            <label for="inheritance-tax-relationship" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Relationship to Deceased</label>
+            <select id="inheritance-tax-relationship" data-inheritance-tax-calculator-target="relationship" data-action="change->inheritance-tax-calculator#calculate" class="w-full">
+              <option value="spouse">Spouse</option>
+              <option value="child">Child / Direct Descendant</option>
+              <option value="sibling">Sibling</option>
+              <option value="other" selected>Other / Unrelated</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Exempt Amount</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-inheritance-tax-calculator-target="exemptAmount">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Taxable Amount</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-inheritance-tax-calculator-target="taxableAmount">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Top Tax Rate</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-inheritance-tax-calculator-target="taxRate">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Estimated Tax</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-inheritance-tax-calculator-target="estimatedTax">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Effective Rate</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-inheritance-tax-calculator-target="effectiveRate">0.00%</span>
+            </div>
+          </div>
+          <button data-action="click->inheritance-tax-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "inheritance-tax" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Inheritance Tax Calculator</h2>
+      <p>This calculator helps beneficiaries estimate how much inheritance tax they may owe based on three key factors: the value of the inherited estate, the state where the deceased resided, and the relationship between the deceased and the beneficiary. Start by entering the total value of the inheritance you expect to receive, then select the applicable state and your relationship to the deceased.</p>
+
+      <p>Inheritance tax differs from estate tax in a fundamental way. Estate tax is levied on the total value of a deceased person's estate before distribution, while inheritance tax is paid by each individual beneficiary based on what they receive. Only six US states currently impose an inheritance tax: Iowa, Kentucky, Maryland, Nebraska, New Jersey, and Pennsylvania. If the deceased lived in any other state, no inheritance tax applies, regardless of where the beneficiary resides.</p>
+
+      <p>The tax rates and exemptions vary significantly by state and by the beneficiary's relationship to the deceased. Spouses are universally exempt in all six states. Children and direct descendants receive either full exemptions or very low rates in most states, with Pennsylvania being the notable exception at 4.5%. Siblings typically face moderate rates ranging from 4% to 12%, while unrelated beneficiaries bear the highest rates, often between 10% and 16%.</p>
+
+      <p>Keep in mind that this calculator provides simplified estimates based on general rate tables. Actual inheritance tax calculations may involve additional deductions, credits, and specific exemptions not captured here. States occasionally update their tax rates and exemption thresholds, so it is important to verify current rates with a tax professional or the relevant state tax authority before making financial plans.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>State-by-State Inheritance Tax Overview</h2>
+      <p>Pennsylvania applies a flat rate based on relationship: 0% for spouses, 4.5% for children, 12% for siblings, and 15% for others. Maryland levies a flat 10% on all non-exempt beneficiaries. Kentucky and Iowa use graduated marginal rate structures that increase with the size of the inheritance, similar to income tax brackets. Nebraska provides exemptions that vary by relationship class, with a 1% rate for children, 11% for siblings, and 15% for others above their respective exemption amounts. New Jersey exempts spouses and children entirely, while taxing siblings at 11% and others at 15-16%.</p>
+
+      <h3>Planning to Minimize Inheritance Tax</h3>
+      <p>Several legal strategies can reduce inheritance tax exposure. Making gifts during your lifetime within the annual gift tax exclusion can transfer wealth without triggering inheritance tax. Establishing certain types of irrevocable trusts can remove assets from the taxable estate. Life insurance policies owned by an irrevocable trust can provide liquidity to pay any taxes due without depleting the inheritance. For significant estates, consulting an estate planning attorney in the relevant state is strongly recommended.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is inheritance tax and how is it different from estate tax?</h3>
+      <p>Inheritance tax is paid by the person who receives an inheritance, while estate tax is paid by the estate of the deceased before assets are distributed. Only 6 US states currently levy an inheritance tax. Maryland is unique in levying both an estate tax and an inheritance tax.</p>
+
+      <h3>Which US states have an inheritance tax?</h3>
+      <p>Six states levy an inheritance tax: Iowa (being phased out), Kentucky, Maryland, Nebraska, New Jersey, and Pennsylvania. Each state has different exemption amounts and tax rates that vary based on the relationship between the deceased and the beneficiary.</p>
+
+      <h3>Are spouses exempt from inheritance tax?</h3>
+      <p>Yes, surviving spouses are exempt from inheritance tax in all six states that levy it. In most states, children and direct descendants also receive full exemptions or very low rates.</p>
+
+      <h3>How are inheritance tax rates determined?</h3>
+      <p>Rates depend on the state where the deceased resided and the relationship between the deceased and the beneficiary. Closer relatives receive lower rates or full exemptions, while distant relatives and unrelated heirs face higher rates.</p>
+
+      <h3>Can I avoid inheritance tax?</h3>
+      <p>Legal strategies include gifting assets during your lifetime, establishing irrevocable trusts, purchasing life insurance, or relocating to a state without inheritance tax. Consulting an estate planning attorney is recommended.</p>
+
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Estate Tax Calculator", description: "Estimate federal estate tax based on estate value, exemptions, and filing status.", path: finance_estate_tax_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Retirement Calculator", description: "Plan your retirement savings and estimate your monthly retirement income.", path: finance_retirement_path, icon_path: "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" },
+      { name: "Net Worth Calculator", description: "Calculate your total net worth by adding up assets and subtracting liabilities.", path: finance_net_worth_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("inheritance-tax-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

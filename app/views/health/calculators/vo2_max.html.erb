@@ -1,0 +1,192 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "VO2 Max Calculator - Free Aerobic Fitness Estimator",
+  description: "Estimate your VO2 max using the Cooper 12-minute run test or the 1.5-mile run test. Get your fitness level, percentile ranking, and personalized assessment by age and gender.",
+  canonical: health_vo2_max_url,
+  og: {
+    title: "VO2 Max Calculator - Free Aerobic Fitness Estimator | CalcWise",
+    description: "Estimate your VO2 max using the Cooper test or 1.5-mile run. Get your fitness level and percentile ranking by age and gender.",
+    url: health_vo2_max_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "VO2 Max Calculator", url: health_vo2_max_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is VO2 max and why does it matter?", answer: "VO2 max (maximal oxygen uptake) is the maximum amount of oxygen your body can use during intense exercise, measured in milliliters per kilogram of body weight per minute (ml/kg/min). It is considered the gold standard for measuring cardiovascular fitness and is a strong predictor of overall health and longevity." },
+  { question: "How does the Cooper 12-minute run test work?", answer: "The Cooper test involves running as far as possible in exactly 12 minutes on a flat surface. Your VO2 max is then estimated using the formula: VO2 max = (distance in meters - 504.9) / 44.73. The test was developed by Dr. Kenneth Cooper in 1968 and remains one of the most widely used field tests for aerobic fitness." },
+  { question: "How does the 1.5-mile run test estimate VO2 max?", answer: "The 1.5-mile run test measures how quickly you can complete 1.5 miles (2.4 km). VO2 max is estimated using the formula: VO2 max = 483 / time in minutes + 3.5. Faster times indicate higher aerobic capacity. This test is commonly used by military organizations and law enforcement." },
+  { question: "What is a good VO2 max score?", answer: "A good VO2 max depends on your age and gender. For men aged 20-29, a score of 46-52 ml/kg/min is considered good, while for women the same age, 37-41 ml/kg/min is good. Elite endurance athletes can have VO2 max values exceeding 70-80 ml/kg/min." },
+  { question: "Can I improve my VO2 max with training?", answer: "Yes, VO2 max can be improved by 10-20% with consistent aerobic training. High-intensity interval training (HIIT) is particularly effective. Improvements are typically seen within 4-8 weeks of regular training. Genetics also play a significant role in your baseline and potential for improvement." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "VO2 Max Calculator",
+  description: "Estimate your VO2 max using the Cooper 12-minute run test or the 1.5-mile run test to assess your cardiovascular fitness level.",
+  url: health_vo2_max_url,
+  category: "HealthApplication",
+  calculator_slug: "vo2_max"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "VO2 Max Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">VO2 Max Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your maximal oxygen uptake and assess your cardiovascular fitness level based on age and gender.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="vo2-max-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="vo2-test-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Test Type</label>
+            <select id="vo2-test-type" data-vo2-max-calculator-target="testType" data-action="change->vo2-max-calculator#toggleFields" class="w-full" aria-label="Test Type">
+              <option value="cooper_12min">Cooper 12-Minute Run</option>
+              <option value="1_5_mile_run">1.5-Mile Run</option>
+            </select>
+          </div>
+          <div data-vo2-max-calculator-target="cooperFields">
+            <label for="vo2-distance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance Covered (meters)</label>
+            <input id="vo2-distance" type="number" inputmode="decimal" data-vo2-max-calculator-target="distanceMeters" data-action="input->vo2-max-calculator#calculate" class="w-full" placeholder="2400" step="1" min="0">
+          </div>
+          <div data-vo2-max-calculator-target="mileFields" class="hidden">
+            <label for="vo2-time" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Time to Complete 1.5 Miles (minutes)</label>
+            <input id="vo2-time" type="number" inputmode="decimal" data-vo2-max-calculator-target="timeMinutes" data-action="input->vo2-max-calculator#calculate" class="w-full" placeholder="12" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="vo2-age" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Age</label>
+            <input id="vo2-age" type="number" inputmode="numeric" data-vo2-max-calculator-target="age" data-action="input->vo2-max-calculator#calculate" class="w-full" placeholder="30" step="1" min="13" max="150">
+          </div>
+          <div>
+            <label for="vo2-gender" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gender</label>
+            <select id="vo2-gender" data-vo2-max-calculator-target="gender" data-action="change->vo2-max-calculator#calculate" class="w-full" aria-label="Gender">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">VO2 Max</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400"><span data-vo2-max-calculator-target="vo2Max">—</span> ml/kg/min</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Fitness Level</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-vo2-max-calculator-target="fitnessLevel">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Percentile</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-vo2-max-calculator-target="percentileEstimate">—</span>
+            </div>
+          </div>
+          <button data-action="click->vo2-max-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "vo2_max" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the VO2 Max Calculator</h2>
+      <p>
+        Our free VO2 max calculator estimates your maximal oxygen uptake using two popular field tests. Select either the Cooper 12-minute run test or the 1.5-mile run test. For the Cooper test, enter the total distance you covered in 12 minutes of running. For the 1.5-mile test, enter your completion time in minutes. Then provide your age and gender for an accurate fitness level assessment. Results appear instantly as you type.
+      </p>
+      <p>
+        VO2 max is considered the gold standard measurement of cardiovascular fitness. It represents the maximum volume of oxygen your body can transport and utilize during intense exercise, expressed in milliliters per kilogram of body weight per minute (ml/kg/min). Higher values indicate greater aerobic capacity and are associated with better endurance performance and reduced risk of cardiovascular disease.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the VO2 Max Formulas</h2>
+      <p>
+        The <strong>Cooper 12-minute run test</strong>, developed by Dr. Kenneth Cooper in 1968, uses the formula: <strong>VO2 max = (distance in meters - 504.9) / 44.73</strong>. This test is simple to perform and correlates well with laboratory measurements. You simply run as far as you can in exactly 12 minutes on a flat track or surface and measure the distance covered.
+      </p>
+      <p>
+        The <strong>1.5-mile run test</strong> uses the formula: <strong>VO2 max = 483 / time in minutes + 3.5</strong>. This test is commonly used by military and law enforcement organizations because it requires covering a fixed distance as quickly as possible. Faster completion times indicate a higher VO2 max.
+      </p>
+
+      <h3>Fitness Level Classification</h3>
+      <p>
+        Your VO2 max is compared against age- and gender-specific normative data to determine your fitness level. The classifications range from <strong>poor</strong> (bottom 20th percentile) through <strong>below average</strong>, <strong>average</strong>, <strong>above average</strong>, <strong>good</strong>, and <strong>excellent</strong> to <strong>superior</strong> (top 5%). These norms are based on large population studies and provide a reliable benchmark for comparing your fitness against peers.
+      </p>
+
+      <h3>Factors That Affect VO2 Max</h3>
+      <p>
+        Several factors influence your VO2 max. Genetics account for roughly 50% of the variation between individuals. Age plays a role, with VO2 max typically declining by about 10% per decade after age 30 without training. Regular aerobic exercise, particularly high-intensity interval training (HIIT), can improve VO2 max by 10-20% over several weeks. Altitude, body composition, and overall health status also affect your results. Elite endurance athletes such as cross-country skiers and distance runners can achieve VO2 max values exceeding 70-85 ml/kg/min.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is VO2 max and why does it matter?</h3>
+      <p>
+        VO2 max (maximal oxygen uptake) is the maximum amount of oxygen your body can use during intense exercise, measured in milliliters per kilogram of body weight per minute (ml/kg/min). It is considered the gold standard for measuring cardiovascular fitness and is a strong predictor of overall health and longevity.
+      </p>
+
+      <h3>How does the Cooper 12-minute run test work?</h3>
+      <p>
+        The Cooper test involves running as far as possible in exactly 12 minutes on a flat surface. Your VO2 max is then estimated using the formula: VO2 max = (distance in meters - 504.9) / 44.73. The test was developed by Dr. Kenneth Cooper in 1968 and remains one of the most widely used field tests for aerobic fitness.
+      </p>
+
+      <h3>How does the 1.5-mile run test estimate VO2 max?</h3>
+      <p>
+        The 1.5-mile run test measures how quickly you can complete 1.5 miles (2.4 km). VO2 max is estimated using the formula: VO2 max = 483 / time in minutes + 3.5. Faster times indicate higher aerobic capacity. This test is commonly used by military organizations and law enforcement.
+      </p>
+
+      <h3>What is a good VO2 max score?</h3>
+      <p>
+        A good VO2 max depends on your age and gender. For men aged 20-29, a score of 46-52 ml/kg/min is considered good, while for women the same age, 37-41 ml/kg/min is good. Elite endurance athletes can have VO2 max values exceeding 70-80 ml/kg/min.
+      </p>
+
+      <h3>Can I improve my VO2 max with training?</h3>
+      <p>
+        Yes, VO2 max can be improved by 10-20% with consistent aerobic training. High-intensity interval training (HIIT) is particularly effective. Improvements are typically seen within 4-8 weeks of regular training. Genetics also play a significant role in your baseline and potential for improvement.
+      </p>
+
+
+    <%= render "shared/print_button" %>
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Heart Rate Zone Calculator", description: "Calculate your heart rate training zones for optimal workout intensity.", path: health_heart_rate_zone_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("vo2-max-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

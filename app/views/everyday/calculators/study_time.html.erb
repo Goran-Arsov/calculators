@@ -1,0 +1,202 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Study Time Planner - Free Weekly Study Hours Calculator",
+  description: "Plan your weekly study schedule based on course credits and difficulty levels. Calculate in-class and study hours per course, daily averages, and total weekly commitment.",
+  canonical: everyday_study_time_url,
+  og: {
+    title: "Study Time Planner - Free Weekly Study Hours Calculator | CalcWise",
+    description: "Plan your weekly study schedule based on course credits and difficulty. Calculate total hours and daily averages instantly.",
+    url: everyday_study_time_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Study Time Planner", url: everyday_study_time_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many hours should I study per credit hour?", answer: "The general guideline is 2-3 hours of study per credit hour per week. For a 3-credit course, plan 6-9 hours of study time weekly. The actual amount depends on course difficulty, your familiarity with the subject, and your learning style. This calculator uses difficulty levels (1-5) to adjust the multiplier from 1x to 3x credits for study hours." },
+  { question: "How does course difficulty affect study time?", answer: "This calculator uses five difficulty levels with multipliers: Level 1 (Easy) multiplies credits by 1 for study hours, Level 2 (Moderate) by 1.5, Level 3 (Average) by 2, Level 4 (Hard) by 2.5, and Level 5 (Very Hard) by 3. A 3-credit easy course needs 3 study hours per week, while a 3-credit very hard course needs 9 hours." },
+  { question: "What counts as in-class time?", answer: "In-class time includes lectures, labs, recitations, and any scheduled class meetings. This calculator estimates 1 hour per credit per week for in-class time, which aligns with the standard US college credit hour definition. Some courses with labs may exceed this; adjust your course credits accordingly." },
+  { question: "Should I study on weekends?", answer: "The calculator shows both weekday-only and all-day averages. Spreading study time across all seven days reduces daily pressure and allows for better retention through spaced practice. However, many students prefer to keep weekends lighter for rest and social activities. Choose the schedule that you can sustain consistently." },
+  { question: "How do I manage a heavy course load?", answer: "If your weekly total exceeds 50-60 hours (including in-class time), consider dropping a course or reducing extracurricular commitments. Use time-blocking to schedule specific study sessions for each course. Prioritize difficult courses during your peak alertness hours. Take regular breaks using techniques like the Pomodoro method to maintain focus and prevent burnout." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Study Time Planner",
+  description: "Calculate weekly study hours based on course credits and difficulty levels with per-course breakdowns and daily averages.",
+  url: everyday_study_time_url,
+  category: "EducationalApplication",
+  calculator_slug: "study-time"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Study Time Planner" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Study Time Planner</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter your courses with credit hours and difficulty to plan your weekly study schedule and daily time commitment.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="study-time-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <%# Course rows header %>
+        <div class="grid grid-cols-12 gap-2">
+          <span class="col-span-5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Course Name</span>
+          <span class="col-span-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Credits</span>
+          <span class="col-span-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Difficulty</span>
+          <span class="col-span-1"></span>
+        </div>
+
+        <%# Dynamic course rows %>
+        <div data-study-time-calculator-target="courseRows" class="space-y-3">
+          <% 3.times do |i| %>
+            <div data-course-row class="grid grid-cols-12 gap-2 items-center">
+              <input type="text" data-field="name" placeholder="Course <%= i + 1 %>" class="col-span-5 text-sm" data-action="input->study-time-calculator#calculate">
+              <input type="number" data-field="credits" placeholder="Credits" class="col-span-3 text-sm" min="1" max="12" step="1" data-action="input->study-time-calculator#calculate">
+              <select data-field="difficulty" class="col-span-3 text-sm" data-action="change->study-time-calculator#calculate">
+                <option value="1">1 - Easy</option>
+                <option value="2">2 - Moderate</option>
+                <option value="3" selected>3 - Average</option>
+                <option value="4">4 - Hard</option>
+                <option value="5">5 - Very Hard</option>
+              </select>
+              <button type="button" data-action="click->study-time-calculator#removeRow" class="col-span-1 text-red-500 hover:text-red-700 text-sm font-medium text-center">&times;</button>
+            </div>
+          <% end %>
+        </div>
+
+        <button type="button" data-action="click->study-time-calculator#addRow" class="w-full px-4 py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-blue-400 hover:text-blue-500 transition-colors">+ Add Course (max 8)</button>
+
+        <%# Results %>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Weekly Summary</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Weekly Hours</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-study-time-calculator-target="resultWeeklyTotal">0.0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Daily Avg (Weekdays)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-study-time-calculator-target="resultDailyWeekdays">0.0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Daily Avg (All 7 Days)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-study-time-calculator-target="resultDailyAllDays">0.0</span>
+            </div>
+          </div>
+          <button data-action="click->study-time-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+
+        <%# Per-course breakdown table %>
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Per-Course Breakdown</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="border-b border-gray-200 dark:border-gray-700">
+                  <th class="py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Course</th>
+                  <th class="py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-right">Credits</th>
+                  <th class="py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-right">Difficulty</th>
+                  <th class="py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-right">In-Class</th>
+                  <th class="py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-right">Study</th>
+                  <th class="py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody data-study-time-calculator-target="breakdownBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "study-time" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Study Time Planner</h2>
+      <p>
+        Enter each of your courses with its name, credit hours, and difficulty level (1-5). The planner starts with three course slots and allows adding up to eight total. For each course, it calculates the recommended in-class hours (based on credit hours) and study hours (based on credits multiplied by a difficulty factor). The weekly summary shows your total time commitment and daily averages for both weekday-only and seven-day schedules.
+      </p>
+      <p>
+        Understanding your total weekly time commitment is essential for effective academic planning. Many students underestimate how much time their courses require outside of class, leading to poor time management, missed assignments, and unnecessary stress. This tool gives you a realistic picture of your weekly schedule so you can plan accordingly.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Credit Hour Study Rule</h2>
+      <p>
+        The traditional guideline suggests 2-3 hours of study for every credit hour per week. A 15-credit semester would mean 30-45 hours of study on top of 15 hours of class time, totaling 45-60 hours per week. This planner uses a difficulty-adjusted version of this rule, recognizing that not all courses demand equal effort. An easy elective needs less study time per credit than an advanced STEM course.
+      </p>
+
+      <h3>Difficulty Multipliers Explained</h3>
+      <p>
+        The difficulty scale adjusts how many study hours you need per credit: Level 1 (Easy) uses a 1x multiplier, meaning 1 study hour per credit per week. Level 2 (Moderate) uses 1.5x. Level 3 (Average) uses 2x, matching the traditional recommendation. Level 4 (Hard) uses 2.5x. Level 5 (Very Hard) uses 3x, appropriate for courses with heavy reading, complex problem sets, or demanding lab requirements. Rate courses honestly to get a realistic time estimate.
+      </p>
+
+      <h3>Time Management Strategies for Students</h3>
+      <p>
+        Once you know your weekly hours, use time-blocking to schedule specific study sessions in your calendar. Study your hardest subjects during your peak energy hours. Break study sessions into 25-50 minute focused blocks with short breaks. Review difficult material multiple times across different days rather than cramming. Leave buffer time for assignments that take longer than expected. If your total weekly hours exceed 55-60, consider whether your course load is sustainable.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many hours should I study per credit hour?</h3>
+      <p>
+        The general guideline is 2-3 hours per credit hour per week. This planner adjusts this based on difficulty, ranging from 1x (easy) to 3x (very hard) credits for study hours.
+      </p>
+
+      <h3>How does course difficulty affect study time?</h3>
+      <p>
+        Difficulty levels 1-5 apply multipliers of 1x, 1.5x, 2x, 2.5x, and 3x to your credit hours for calculating study time. A 3-credit easy course needs 3 study hours, while a 3-credit very hard course needs 9 hours.
+      </p>
+
+      <h3>What counts as in-class time?</h3>
+      <p>
+        In-class time includes lectures, labs, recitations, and scheduled meetings. This calculator estimates 1 hour per credit per week, matching the standard credit hour definition.
+      </p>
+
+      <h3>Should I study on weekends?</h3>
+      <p>
+        Spreading study across all seven days reduces daily pressure and improves retention through spaced practice. The calculator shows both options so you can choose what works for you.
+      </p>
+
+      <h3>How do I manage a heavy course load?</h3>
+      <p>
+        If weekly hours exceed 50-60, consider dropping a course. Use time-blocking, prioritize difficult courses during peak hours, and take regular breaks to prevent burnout.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "GPA Calculator", description: "Calculate your grade point average from course grades and credit hours.", path: everyday_gpa_path, icon_path: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" },
+      { name: "Grade Calculator", description: "Calculate your grade based on assignment scores and weights.", path: everyday_grade_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "Words Per Minute", description: "Measure your typing or reading speed in words per minute.", path: everyday_words_per_minute_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer" %>
+
+    <% blog_posts = related_blog_posts("study-time-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

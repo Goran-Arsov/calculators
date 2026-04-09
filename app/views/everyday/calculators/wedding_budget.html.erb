@@ -1,0 +1,187 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Wedding Budget Calculator - Free Online Tool",
+  description: "Plan your wedding budget with a detailed cost breakdown by category. See how much to allocate for venue, catering, photography, and more.",
+  canonical: everyday_wedding_budget_url,
+  og: {
+    title: "Wedding Budget Calculator - Free Online Tool | CalcWise",
+    description: "Plan your wedding budget with a detailed cost breakdown by category. See how much to allocate for venue, catering, photography, and more.",
+    url: everyday_wedding_budget_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Wedding Budget Calculator", url: everyday_wedding_budget_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much does an average wedding cost?", answer: "The average wedding in the United States costs between $28,000 and $34,000, depending on location, guest count, and choices. Costs can range from under $10,000 for intimate ceremonies to over $100,000 for luxury events. The biggest factor is guest count, as catering and venue costs scale directly with headcount." },
+  { question: "What percentage of a wedding budget goes to the venue?", answer: "Venue costs typically account for about 30% of the total wedding budget. This includes the ceremony and reception site rental, tables, chairs, and basic setup. In high-demand locations or peak wedding season, venue costs may be even higher." },
+  { question: "How much should I budget per guest for a wedding?", answer: "A typical per-guest cost ranges from $100 to $300 depending on your area and choices. In major metropolitan areas, expect $200-$400 per guest. Rural or off-peak weddings may cost $75-$150 per guest. Our calculator divides your total budget by guest count for a personalized estimate." },
+  { question: "What is the best way to save money on a wedding?", answer: "The most impactful ways to reduce costs are: choosing an off-peak date (weekday or winter), reducing the guest list, selecting an all-inclusive venue, using seasonal flowers, and prioritizing the elements that matter most to you while trimming others." },
+  { question: "How do I allocate my wedding budget across categories?", answer: "A commonly recommended breakdown is: venue 30%, catering 25%, photography 12%, flowers and decor 8%, music and entertainment 7%, attire 6%, stationery 3%, and other expenses 9%. These percentages are starting points — adjust based on your personal priorities." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Wedding Budget Calculator",
+  description: "Plan your wedding budget with detailed category breakdowns for venue, catering, photography, flowers, music, attire, stationery, and more.",
+  url: everyday_wedding_budget_url,
+  category: "FinanceApplication",
+  calculator_slug: "wedding-budget"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Wedding Budget Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Wedding Budget Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Plan your wedding spending with a detailed budget breakdown by category and per-guest cost estimate.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="wedding-budget-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="wedding-budget-total" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Budget ($)</label>
+            <input id="wedding-budget-total" type="number" inputmode="decimal" data-wedding-budget-calculator-target="totalBudget" data-action="input->wedding-budget-calculator#calculate" class="w-full" placeholder="30000" step="100" min="0">
+          </div>
+          <div>
+            <label for="wedding-budget-guests" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Guest Count</label>
+            <input id="wedding-budget-guests" type="number" inputmode="numeric" data-wedding-budget-calculator-target="guestCount" data-action="input->wedding-budget-calculator#calculate" class="w-full" placeholder="150" step="1" min="1">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Budget Breakdown</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 font-semibold">Per Guest Cost</span>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-wedding-budget-calculator-target="resultPerGuest">$0.00</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Venue (30%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-wedding-budget-calculator-target="resultVenue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Catering (25%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-wedding-budget-calculator-target="resultCatering">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Photography (12%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-wedding-budget-calculator-target="resultPhotography">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Flowers & Decor (8%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-wedding-budget-calculator-target="resultFlowers">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Music/Entertainment (7%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-wedding-budget-calculator-target="resultMusic">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Attire (6%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-wedding-budget-calculator-target="resultAttire">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Stationery (3%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-wedding-budget-calculator-target="resultStationery">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Other (9%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-wedding-budget-calculator-target="resultOther">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->wedding-budget-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "wedding-budget" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Wedding Budget Calculator</h2>
+      <p>
+        Planning a wedding budget is one of the most important steps in your wedding journey. Enter your total budget and expected guest count, and this calculator instantly breaks down how much you should allocate to each major category. The breakdown follows industry-standard percentages used by professional wedding planners, giving you a practical starting point.
+      </p>
+      <p>
+        The per-guest cost tells you roughly how much you are spending per attendee. This figure is useful when deciding whether to invite additional guests or when comparing your budget to regional averages. Remember, every guest adds cost across multiple categories — catering, favors, seating, and stationery.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the Budget Breakdown</h2>
+      <p>
+        The venue at 30% is typically the largest single expense. This includes the ceremony site, reception hall, and basic furnishings. Catering at 25% covers food, beverages, and service staff. Photography at 12% preserves your memories and is one area where quality matters most. Flowers and decor at 8% set the visual tone. Music and entertainment at 7% keep guests engaged. Attire at 6% covers the wedding dress, suit, and accessories. Stationery at 3% includes save-the-dates, invitations, and programs. The remaining 9% covers miscellaneous costs like transportation, favors, and a contingency fund.
+      </p>
+
+      <h3>Tips for Staying on Budget</h3>
+      <p>
+        Start by listing your absolute must-haves and allocate more budget there. Consider off-peak dates such as Fridays, Sundays, or winter months for significant venue savings. Get at least three quotes for every vendor. Build in a 5-10% contingency buffer for unexpected costs. Track every expense against your budget throughout the planning process.
+      </p>
+
+      <h3>Where to Splurge and Where to Save</h3>
+      <p>
+        Splurge on photography and catering — these are the two things guests remember most. Save on decorations by using seasonal flowers, choosing a naturally beautiful venue, and DIYing centerpieces. Stationery costs can be reduced significantly with digital invitations. Consider a talented DJ over a live band to save on entertainment without sacrificing the party atmosphere.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much does an average wedding cost?</h3>
+      <p>
+        The average wedding in the United States costs between $28,000 and $34,000, depending on location, guest count, and choices. Costs can range from under $10,000 for intimate ceremonies to over $100,000 for luxury events. The biggest factor is guest count, as catering and venue costs scale directly with headcount.
+      </p>
+
+      <h3>What percentage of a wedding budget goes to the venue?</h3>
+      <p>
+        Venue costs typically account for about 30% of the total wedding budget. This includes the ceremony and reception site rental, tables, chairs, and basic setup. In high-demand locations or peak wedding season, venue costs may be even higher.
+      </p>
+
+      <h3>How much should I budget per guest for a wedding?</h3>
+      <p>
+        A typical per-guest cost ranges from $100 to $300 depending on your area and choices. In major metropolitan areas, expect $200-$400 per guest. Rural or off-peak weddings may cost $75-$150 per guest. Our calculator divides your total budget by guest count for a personalized estimate.
+      </p>
+
+      <h3>What is the best way to save money on a wedding?</h3>
+      <p>
+        The most impactful ways to reduce costs are: choosing an off-peak date, reducing the guest list, selecting an all-inclusive venue, using seasonal flowers, and prioritizing the elements that matter most to you while trimming others.
+      </p>
+
+      <h3>How do I allocate my wedding budget across categories?</h3>
+      <p>
+        A commonly recommended breakdown is: venue 30%, catering 25%, photography 12%, flowers and decor 8%, music and entertainment 7%, attire 6%, stationery 3%, and other expenses 9%. These percentages are starting points — adjust based on your personal priorities.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Travel Budget Calculator", description: "Plan your trip expenses with daily and total budget breakdowns.", path: everyday_travel_budget_path, icon_path: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" },
+      { name: "Tip Calculator", description: "Calculate tips and split the bill at restaurants.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Subscription Cost Calculator", description: "Track all your subscriptions and see the total monthly and annual cost.", path: everyday_subscription_cost_path, icon_path: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer" %>
+
+    <% blog_posts = related_blog_posts("wedding-budget-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

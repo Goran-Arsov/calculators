@@ -32,4 +32,10 @@ namespace :health do
   get "protein-per-meal-calculator", to: "calculators#protein_per_meal", as: :protein_per_meal
   get "calories-per-100g-calculator", to: "calculators#calories_per_100g", as: :calories_per_100g
   get "steps-per-mile-calculator", to: "calculators#steps_per_mile", as: :steps_per_mile
+  get "ffmi-calculator", to: "calculators#ffmi", as: :ffmi
+  get "vo2-max-calculator", to: "calculators#vo2_max", as: :vo2_max
+  get "protein-intake-calculator", to: "calculators#protein_intake", as: :protein_intake
+  get "pregnancy-weight-calculator", to: "calculators#pregnancy_weight", as: :pregnancy_weight
+  get "alcohol-burnoff-calculator", to: "calculators#alcohol_burnoff", as: :alcohol_burnoff
+  get "biological-age-calculator", to: "calculators#biological_age", as: :biological_age
 end

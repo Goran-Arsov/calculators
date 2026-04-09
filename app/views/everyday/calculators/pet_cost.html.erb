@@ -1,0 +1,186 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pet Cost Calculator - Free Online Tool",
+  description: "Estimate the true cost of owning a dog or cat. See first-year, annual, and lifetime expenses including food, vet bills, and supplies.",
+  canonical: everyday_pet_cost_url,
+  og: {
+    title: "Pet Cost Calculator - Free Online Tool | CalcWise",
+    description: "Estimate the true cost of owning a dog or cat. See first-year, annual, and lifetime expenses including food, vet bills, and supplies.",
+    url: everyday_pet_cost_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Pet Cost Calculator", url: everyday_pet_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much does it cost to own a dog per year?", answer: "Annual dog ownership costs range from about $1,350 for a small dog to $2,100 for a large dog. This includes food, veterinary care, grooming, pet insurance, and supplies. The first year is more expensive due to adoption fees, initial vaccinations, spaying/neutering, and supplies, adding roughly $500 to the annual total." },
+  { question: "How much does it cost to own a cat per year?", answer: "Annual cat ownership costs average about $1,150, covering food ($300), veterinary care ($350), litter ($200), pet insurance ($200), and supplies ($100). The first year costs about $1,650 when you include adoption fees and initial setup. Cats are generally less expensive than dogs on an annual basis." },
+  { question: "What is the most expensive part of owning a pet?", answer: "Veterinary care is often the largest variable cost, especially as pets age. Routine vet visits cost $200-$600 per year, but emergency care can cost thousands. Food is the largest predictable recurring cost. Pet insurance helps manage unexpected veterinary expenses and typically costs $200-$300 per year." },
+  { question: "How much more does a large dog cost than a small dog?", answer: "A large dog costs roughly $750 more per year than a small dog, primarily due to higher food consumption, larger doses of flea and heartworm medication, bigger beds and crates, and potentially higher grooming costs. Over a 10-year lifespan, this difference can exceed $7,000." },
+  { question: "What first-year costs should I expect for a new pet?", answer: "First-year costs include adoption or purchase fees ($50-$500+), initial vaccinations ($100-$200), spay/neuter surgery ($150-$400), microchipping ($50), basic supplies like bed, bowls, collar, leash, and toys ($100-$300), plus all regular annual expenses. Budget an extra $500 on top of annual costs for the first year." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Pet Cost Calculator",
+  description: "Estimate the first-year, annual, and lifetime cost of owning a dog or cat based on pet type, size, and years of ownership.",
+  url: everyday_pet_cost_url,
+  category: "FinanceApplication",
+  calculator_slug: "pet-cost"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Pet Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pet Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate the true cost of pet ownership, from first-year expenses to lifetime totals for dogs and cats.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="pet-cost-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="pet-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pet Type</label>
+            <select id="pet-type" data-pet-cost-calculator-target="petType" data-action="change->pet-cost-calculator#toggleSize" class="w-full">
+              <option value="dog">Dog</option>
+              <option value="cat">Cat</option>
+            </select>
+          </div>
+          <div data-pet-cost-calculator-target="sizeGroup">
+            <label for="pet-size" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Dog Size</label>
+            <select id="pet-size" data-pet-cost-calculator-target="size" data-action="change->pet-cost-calculator#calculate" class="w-full">
+              <option value="small">Small (under 20 lbs)</option>
+              <option value="medium" selected>Medium (20-60 lbs)</option>
+              <option value="large">Large (over 60 lbs)</option>
+            </select>
+          </div>
+          <div>
+            <label for="pet-years" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Years of Ownership</label>
+            <input id="pet-years" type="number" inputmode="numeric" data-pet-cost-calculator-target="ownershipYears" data-action="input->pet-cost-calculator#calculate" class="w-full" value="10" step="1" min="1" max="25">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Cost Estimates</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">First Year Cost</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-pet-cost-calculator-target="resultFirstYear">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Annual Cost</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-pet-cost-calculator-target="resultAnnual">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 font-semibold">Lifetime Cost</span>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-pet-cost-calculator-target="resultLifetime">$0.00</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Food (Annual)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-pet-cost-calculator-target="resultFood">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Vet (Annual)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-pet-cost-calculator-target="resultVet">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Other (Annual)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-pet-cost-calculator-target="resultOther">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->pet-cost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "pet-cost" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Pet Cost Calculator</h2>
+      <p>
+        Owning a pet is a rewarding experience, but it comes with real financial commitments. Select whether you are considering a dog or cat, choose the size for dogs, and enter how many years you plan to own the pet. The calculator instantly shows you the first-year cost (which includes adoption and setup fees), recurring annual expenses, and the total lifetime cost of ownership.
+      </p>
+      <p>
+        The cost estimates are based on national averages for pet ownership in the United States. Your actual costs may be higher or lower depending on your location, the breed, your pet's health, and the quality of food and care you choose. Veterinary costs in urban areas tend to be higher than in rural areas.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Breaking Down Pet Ownership Costs</h2>
+      <p>
+        Food is a predictable recurring cost that varies by pet size. A small dog may eat $30 per month in quality food, while a large dog can consume $65 or more. Veterinary care includes annual checkups, vaccinations, and dental cleanings. Pet insurance helps offset unexpected medical bills and costs $200-$300 per year on average. Grooming costs depend on breed — long-haired breeds require professional grooming every 6-8 weeks.
+      </p>
+
+      <h3>First-Year Extra Costs</h3>
+      <p>
+        The first year of pet ownership costs roughly $500 more than subsequent years. This covers adoption or purchase fees, initial vaccinations, spaying or neutering, microchipping, and first-time supplies like a crate, bed, food bowls, collar, leash, and toys. These are one-time investments that set you up for years of companionship.
+      </p>
+
+      <h3>Hidden Costs to Consider</h3>
+      <p>
+        Beyond the basics, pet owners often face costs for boarding or pet sitting during vacations, emergency veterinary visits, pet deposits for rental housing, training classes, and replacing damaged furniture or belongings. As pets age, medical costs typically increase, with senior pets requiring more frequent vet visits and potential medications.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much does it cost to own a dog per year?</h3>
+      <p>
+        Annual dog ownership costs range from about $1,350 for a small dog to $2,100 for a large dog. This includes food, veterinary care, grooming, pet insurance, and supplies. The first year is more expensive due to adoption fees, initial vaccinations, spaying/neutering, and supplies, adding roughly $500 to the annual total.
+      </p>
+
+      <h3>How much does it cost to own a cat per year?</h3>
+      <p>
+        Annual cat ownership costs average about $1,150, covering food ($300), veterinary care ($350), litter ($200), pet insurance ($200), and supplies ($100). The first year costs about $1,650 when you include adoption fees and initial setup.
+      </p>
+
+      <h3>What is the most expensive part of owning a pet?</h3>
+      <p>
+        Veterinary care is often the largest variable cost, especially as pets age. Routine vet visits cost $200-$600 per year, but emergency care can cost thousands. Food is the largest predictable recurring cost. Pet insurance helps manage unexpected veterinary expenses.
+      </p>
+
+      <h3>How much more does a large dog cost than a small dog?</h3>
+      <p>
+        A large dog costs roughly $750 more per year than a small dog, primarily due to higher food consumption, larger doses of medication, bigger beds and crates, and potentially higher grooming costs. Over a 10-year lifespan, this difference can exceed $7,000.
+      </p>
+
+      <h3>What first-year costs should I expect for a new pet?</h3>
+      <p>
+        First-year costs include adoption fees ($50-$500+), initial vaccinations ($100-$200), spay/neuter surgery ($150-$400), microchipping ($50), basic supplies ($100-$300), plus all regular annual expenses. Budget an extra $500 on top of annual costs for the first year.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Electricity Usage Calculator", description: "Calculate your appliance energy costs and monthly electricity bill.", path: everyday_electricity_usage_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Subscription Cost Calculator", description: "Track all your subscriptions and see the total monthly and annual cost.", path: everyday_subscription_cost_path, icon_path: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" },
+      { name: "Tip Calculator", description: "Calculate tips and split the bill at restaurants.", path: everyday_tip_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer" %>
+
+    <% blog_posts = related_blog_posts("pet-cost-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

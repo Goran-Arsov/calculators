@@ -14,5 +14,10 @@ module Construction
     def hvac_btu; end
     def sqft_cost; end
     def price_per_sqm; end
+    def drywall; end
+    def insulation; end
+    def plumbing; end
+    def electrical_load; end
+    def retaining_wall; end
   end
 end

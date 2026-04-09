@@ -1,0 +1,193 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Protein Intake Calculator - Daily Protein Needs Tool",
+  description: "Calculate your optimal daily protein intake based on your weight, activity level, and fitness goal. Get personalized recommendations for muscle gain, fat loss, or maintenance.",
+  canonical: health_protein_intake_url,
+  og: {
+    title: "Protein Intake Calculator - Daily Protein Needs Tool | CalcWise",
+    description: "Calculate your optimal daily protein intake based on weight, activity level, and fitness goal. Personalized recommendations for any goal.",
+    url: health_protein_intake_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Protein Intake Calculator", url: health_protein_intake_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much protein do I need per day?", answer: "Daily protein needs depend on your weight, activity level, and fitness goals. Sedentary adults need approximately 0.8 g/kg of body weight. Lightly active individuals need about 1.0 g/kg, moderately active need 1.2 g/kg, very active need 1.6 g/kg, and competitive athletes may need up to 2.0 g/kg or more. Goals like muscle gain or fat loss increase these requirements further." },
+  { question: "Should I eat more protein for muscle gain?", answer: "Yes. Research consistently shows that increasing protein intake by about 0.4 g/kg above your baseline supports muscle protein synthesis and recovery. For someone who is moderately active and wants to build muscle, this means consuming about 1.6 g/kg of body weight per day. Spreading intake across 4 meals optimizes absorption." },
+  { question: "How much protein per meal should I eat?", answer: "Research suggests that distributing protein evenly across 4 meals per day is optimal for muscle protein synthesis. This calculator divides your daily target by 4 to give you a per-meal recommendation. For most people, this ranges from 20 to 50 grams per meal depending on body weight and goals." },
+  { question: "Does protein help with fat loss?", answer: "Yes, protein is the most satiating macronutrient and has a higher thermic effect than carbohydrates or fat, meaning your body burns more calories digesting it. Higher protein intake during a caloric deficit also helps preserve lean muscle mass. Adding 0.2 g/kg above your baseline is recommended during fat loss phases." },
+  { question: "What percentage of my calories should come from protein?", answer: "For a standard 2,000-calorie diet, protein should typically provide 10-35% of total calories according to dietary guidelines. Active individuals and those with specific fitness goals often aim for 20-35%. Each gram of protein provides 4 calories, so 100 grams of protein equals 400 calories or 20% of a 2,000-calorie diet." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Protein Intake Calculator",
+  description: "Calculate your optimal daily protein intake based on your weight, activity level, and fitness goals.",
+  url: health_protein_intake_url,
+  category: "HealthApplication",
+  calculator_slug: "protein_intake"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Protein Intake Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Protein Intake Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your optimal daily protein intake based on your weight, activity level, and fitness goal.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="protein-intake-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="protein-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Weight (kg)</label>
+            <input id="protein-weight" type="number" inputmode="decimal" data-protein-intake-calculator-target="weightKg" data-action="input->protein-intake-calculator#calculate" class="w-full" placeholder="70" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="protein-activity" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Activity Level</label>
+            <select id="protein-activity" data-protein-intake-calculator-target="activityLevel" data-action="change->protein-intake-calculator#calculate" class="w-full" aria-label="Activity Level">
+              <option value="sedentary">Sedentary (little or no exercise)</option>
+              <option value="lightly_active">Lightly Active (1-3 days/week)</option>
+              <option value="moderately_active">Moderately Active (3-5 days/week)</option>
+              <option value="very_active">Very Active (6-7 days/week)</option>
+              <option value="athlete">Athlete (2x daily training)</option>
+            </select>
+          </div>
+          <div>
+            <label for="protein-goal" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Goal</label>
+            <select id="protein-goal" data-protein-intake-calculator-target="goal" data-action="change->protein-intake-calculator#calculate" class="w-full" aria-label="Fitness Goal">
+              <option value="maintain">Maintain Weight</option>
+              <option value="muscle_gain">Muscle Gain</option>
+              <option value="fat_loss">Fat Loss</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Daily Protein</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400"><span data-protein-intake-calculator-target="dailyProteinGrams">—</span> g</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Protein per kg</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400"><span data-protein-intake-calculator-target="proteinPerKg">—</span> g/kg</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Per Meal (4 meals)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400"><span data-protein-intake-calculator-target="perMealGrams">—</span> g</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Protein Calories</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400"><span data-protein-intake-calculator-target="proteinCalories">—</span> kcal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">% of 2000 cal</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400"><span data-protein-intake-calculator-target="proteinPctOf2000cal">—</span>%</span>
+            </div>
+          </div>
+          <button data-action="click->protein-intake-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "protein_intake" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Protein Intake Calculator</h2>
+      <p>
+        Our free protein intake calculator makes it easy to determine exactly how much protein you need each day. Start by entering your body weight in kilograms. Then select your activity level, which ranges from sedentary (desk job with little exercise) to athlete (training twice daily). Finally, choose your fitness goal: maintain weight, build muscle, or lose fat. The calculator instantly displays your recommended daily protein in grams, the amount per kilogram of body weight, per-meal targets assuming four meals a day, total protein calories, and the percentage of a 2,000-calorie diet those calories represent.
+      </p>
+      <p>
+        Protein is the most important macronutrient for building and repairing muscle tissue, maintaining immune function, and producing enzymes and hormones. Getting the right amount is especially critical for anyone engaged in regular physical activity, recovering from injury, or pursuing specific body composition goals. This calculator uses evidence-based recommendations that align with current sports nutrition research.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Protein Requirements</h2>
+      <p>
+        The recommended daily allowance (RDA) for protein is 0.8 grams per kilogram of body weight for sedentary adults. However, this is the <strong>minimum</strong> to prevent deficiency, not the optimal amount for health and performance. Research published in the <em>Journal of the International Society of Sports Nutrition</em> shows that active individuals benefit from significantly more protein. Lightly active people should aim for about 1.0 g/kg, moderately active for 1.2 g/kg, very active for 1.6 g/kg, and competitive athletes for 2.0 g/kg or more.
+      </p>
+
+      <h3>Goal-Based Adjustments</h3>
+      <p>
+        Your fitness goal further modifies protein needs. For <strong>muscle gain</strong>, an additional 0.4 g/kg is recommended to maximize muscle protein synthesis and recovery. A meta-analysis by Morton et al. (2018) found that protein intakes of 1.6 g/kg or higher are optimal for muscle hypertrophy when combined with resistance training. For <strong>fat loss</strong>, an additional 0.2 g/kg helps preserve lean muscle mass during a caloric deficit. Protein's high thermic effect means your body uses 20-30% of protein calories for digestion alone, providing a small metabolic advantage.
+      </p>
+
+      <h3>Timing and Distribution</h3>
+      <p>
+        How you distribute your protein throughout the day matters. Research consistently shows that spreading protein intake across four meals is more effective for muscle protein synthesis than consuming most of it in one or two sittings. Each meal should contain 20 to 40 grams of protein, depending on your total daily target. The leucine threshold, the minimum amount of the amino acid leucine needed to stimulate muscle building, is typically reached at around 2.5 to 3 grams, which corresponds to approximately 25 to 30 grams of high-quality protein per meal.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much protein do I need per day?</h3>
+      <p>
+        Daily protein needs depend on your weight, activity level, and fitness goals. Sedentary adults need approximately 0.8 g/kg of body weight. Lightly active individuals need about 1.0 g/kg, moderately active need 1.2 g/kg, very active need 1.6 g/kg, and competitive athletes may need up to 2.0 g/kg or more. Goals like muscle gain or fat loss increase these requirements further.
+      </p>
+
+      <h3>Should I eat more protein for muscle gain?</h3>
+      <p>
+        Yes. Research consistently shows that increasing protein intake by about 0.4 g/kg above your baseline supports muscle protein synthesis and recovery. For someone who is moderately active and wants to build muscle, this means consuming about 1.6 g/kg of body weight per day. Spreading intake across 4 meals optimizes absorption.
+      </p>
+
+      <h3>How much protein per meal should I eat?</h3>
+      <p>
+        Research suggests that distributing protein evenly across 4 meals per day is optimal for muscle protein synthesis. This calculator divides your daily target by 4 to give you a per-meal recommendation. For most people, this ranges from 20 to 50 grams per meal depending on body weight and goals.
+      </p>
+
+      <h3>Does protein help with fat loss?</h3>
+      <p>
+        Yes, protein is the most satiating macronutrient and has a higher thermic effect than carbohydrates or fat, meaning your body burns more calories digesting it. Higher protein intake during a caloric deficit also helps preserve lean muscle mass. Adding 0.2 g/kg above your baseline is recommended during fat loss phases.
+      </p>
+
+      <h3>What percentage of my calories should come from protein?</h3>
+      <p>
+        For a standard 2,000-calorie diet, protein should typically provide 10-35% of total calories according to dietary guidelines. Active individuals and those with specific fitness goals often aim for 20-35%. Each gram of protein provides 4 calories, so 100 grams of protein equals 400 calories or 20% of a 2,000-calorie diet.
+      </p>
+
+
+    <%= render "shared/print_button" %>
+    <%# Email capture %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Macro Calculator", description: "Calculate your ideal macronutrient split for your diet and fitness goals.", path: health_macro_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure based on activity level.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("protein-intake-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

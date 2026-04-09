@@ -1,0 +1,220 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Subscription Cost Calculator - Free Online Tool",
+  description: "Track all your subscriptions in one place. See your total monthly and annual spend, identify the most expensive subscription, and find savings opportunities.",
+  canonical: everyday_subscription_cost_url,
+  og: {
+    title: "Subscription Cost Calculator - Free Online Tool | CalcWise",
+    description: "Track all your subscriptions in one place. See your total monthly and annual spend, identify the most expensive subscription, and find savings.",
+    url: everyday_subscription_cost_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Subscription Cost Calculator", url: everyday_subscription_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much does the average person spend on subscriptions?", answer: "Studies show the average American spends $200-$300 per month on subscriptions, though many people underestimate their actual spending by 2-3 times. Common subscriptions include streaming services ($10-$20 each), music ($10-$15), cloud storage ($1-$10), gym memberships ($20-$60), meal kits ($50-$100), and software tools ($5-$30)." },
+  { question: "How do I calculate the monthly cost of a yearly subscription?", answer: "Divide the annual cost by 12 to get the monthly equivalent. For example, a $120/year subscription costs $10/month. This calculator does this conversion automatically, also handling weekly subscriptions by multiplying by 4.33 (average weeks per month)." },
+  { question: "What subscriptions should I cancel to save money?", answer: "Start by listing every subscription and its monthly cost. Cancel any you have not used in the past 30 days. Look for duplicates — multiple streaming services, overlapping cloud storage, or similar fitness apps. Consider sharing family plans where allowed. Downgrade premium tiers you do not fully utilize." },
+  { question: "How often should I audit my subscriptions?", answer: "Review your subscriptions at least every three months. Many people sign up for free trials that convert to paid subscriptions without notice. Set calendar reminders for trial end dates. Check bank and credit card statements for recurring charges you may have forgotten about." },
+  { question: "Are annual subscriptions cheaper than monthly?", answer: "Annual plans typically offer 15-30% savings compared to monthly billing. However, only commit to annual plans for services you are certain to use for the full year. The savings are lost if you cancel early and the service does not offer prorated refunds." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Subscription Cost Calculator",
+  description: "Calculate the total monthly and annual cost of all your subscriptions. Normalize weekly, monthly, and yearly billing to see the true total.",
+  url: everyday_subscription_cost_url,
+  category: "FinanceApplication",
+  calculator_slug: "subscription-cost"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Subscription Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Subscription Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Add all your subscriptions to see the true total monthly and annual cost. Find out which subscription is eating your budget.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="subscription-cost-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <h2 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Your Subscriptions</h2>
+          <div class="grid grid-cols-12 gap-2 mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+            <span class="col-span-4">Name</span>
+            <span class="col-span-3">Cost ($)</span>
+            <span class="col-span-3">Frequency</span>
+            <span class="col-span-2"></span>
+          </div>
+          <div data-subscription-cost-calculator-target="subscriptionRows" class="space-y-2">
+            <div data-sub-row class="grid grid-cols-12 gap-2 items-center">
+              <input type="text" data-field="name" placeholder="Netflix" class="col-span-4 text-sm" data-action="input->subscription-cost-calculator#calculate">
+              <input type="number" data-field="cost" placeholder="15.49" class="col-span-3 text-sm" min="0" step="0.01" data-action="input->subscription-cost-calculator#calculate">
+              <select data-field="frequency" class="col-span-3 text-sm" data-action="change->subscription-cost-calculator#calculate">
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+                <option value="weekly">Weekly</option>
+              </select>
+              <span class="col-span-2"></span>
+            </div>
+            <div data-sub-row class="grid grid-cols-12 gap-2 items-center">
+              <input type="text" data-field="name" placeholder="Spotify" class="col-span-4 text-sm" data-action="input->subscription-cost-calculator#calculate">
+              <input type="number" data-field="cost" placeholder="10.99" class="col-span-3 text-sm" min="0" step="0.01" data-action="input->subscription-cost-calculator#calculate">
+              <select data-field="frequency" class="col-span-3 text-sm" data-action="change->subscription-cost-calculator#calculate">
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+                <option value="weekly">Weekly</option>
+              </select>
+              <button type="button" data-action="click->subscription-cost-calculator#removeRow" class="col-span-2 text-red-500 hover:text-red-700 text-sm font-medium text-center">&times;</button>
+            </div>
+            <div data-sub-row class="grid grid-cols-12 gap-2 items-center">
+              <input type="text" data-field="name" placeholder="Gym" class="col-span-4 text-sm" data-action="input->subscription-cost-calculator#calculate">
+              <input type="number" data-field="cost" placeholder="40.00" class="col-span-3 text-sm" min="0" step="0.01" data-action="input->subscription-cost-calculator#calculate">
+              <select data-field="frequency" class="col-span-3 text-sm" data-action="change->subscription-cost-calculator#calculate">
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+                <option value="weekly">Weekly</option>
+              </select>
+              <button type="button" data-action="click->subscription-cost-calculator#removeRow" class="col-span-2 text-red-500 hover:text-red-700 text-sm font-medium text-center">&times;</button>
+            </div>
+          </div>
+          <button type="button" data-action="click->subscription-cost-calculator#addRow" class="mt-3 px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">+ Add Subscription</button>
+        </div>
+
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Summary</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 font-semibold">Total Monthly</span>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-subscription-cost-calculator-target="resultTotalMonthly">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Annual</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-subscription-cost-calculator-target="resultTotalAnnual">$0.00</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Subscriptions</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-subscription-cost-calculator-target="resultCount">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Average Per Subscription</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-subscription-cost-calculator-target="resultAverage">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Most Expensive</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-subscription-cost-calculator-target="resultMostExpensive">N/A</span>
+            </div>
+          </div>
+
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mt-6 mb-3">Monthly Breakdown</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gray-200 dark:border-gray-700 text-left">
+                  <th class="py-2 text-gray-500 dark:text-gray-400 font-medium">Subscription</th>
+                  <th class="py-2 text-right text-gray-500 dark:text-gray-400 font-medium">Billed</th>
+                  <th class="py-2 text-right text-gray-500 dark:text-gray-400 font-medium">Monthly</th>
+                </tr>
+              </thead>
+              <tbody data-subscription-cost-calculator-target="breakdownBody">
+              </tbody>
+            </table>
+          </div>
+
+          <button data-action="click->subscription-cost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "subscription-cost" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Subscription Cost Calculator</h2>
+      <p>
+        Subscription creep is real — small monthly charges add up to surprisingly large annual totals. This calculator helps you see the full picture. Add each of your subscriptions with the cost and billing frequency (weekly, monthly, or yearly). The calculator normalizes everything to a monthly cost so you can compare apples to apples and see the true total impact on your budget.
+      </p>
+      <p>
+        Use the results to identify subscriptions you may have forgotten about, find the most expensive one, and decide which services provide enough value to keep. Many people discover they are spending 2-3 times more on subscriptions than they estimated before doing this exercise.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The True Cost of Subscription Stacking</h2>
+      <p>
+        The average household now subscribes to 4-6 streaming services alone, costing $50-$100 per month. Add music, cloud storage, software tools, gym memberships, meal kits, and other recurring charges, and the total often exceeds $200-$300 per month — that is $2,400-$3,600 per year. This calculator converts all billing frequencies to a monthly equivalent so you can see the real total at a glance.
+      </p>
+
+      <h3>How to Audit Your Subscriptions</h3>
+      <p>
+        Start by checking your bank and credit card statements for the past three months. List every recurring charge. For each subscription, ask: have I used this in the past 30 days? Does this provide value I cannot get for free or cheaper elsewhere? Can I share a family plan? Consider setting a quarterly reminder to repeat this audit.
+      </p>
+
+      <h3>Strategies to Reduce Subscription Costs</h3>
+      <p>
+        Rotate streaming services instead of subscribing to all at once — watch what you want on one service, then cancel and switch. Use free tiers where available. Look for student, military, or employer discounts. Bundle services when possible (many providers offer discounts for combining streaming, music, and cloud storage). Cancel before free trials end by setting phone reminders.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much does the average person spend on subscriptions?</h3>
+      <p>
+        Studies show the average American spends $200-$300 per month on subscriptions, though many people underestimate their actual spending by 2-3 times. Common subscriptions include streaming services, music, cloud storage, gym memberships, meal kits, and software tools.
+      </p>
+
+      <h3>How do I calculate the monthly cost of a yearly subscription?</h3>
+      <p>
+        Divide the annual cost by 12 to get the monthly equivalent. For example, a $120/year subscription costs $10/month. This calculator does this conversion automatically, also handling weekly subscriptions by multiplying by 4.33 (average weeks per month).
+      </p>
+
+      <h3>What subscriptions should I cancel to save money?</h3>
+      <p>
+        Cancel any you have not used in the past 30 days. Look for duplicates — multiple streaming services, overlapping cloud storage, or similar fitness apps. Consider sharing family plans where allowed. Downgrade premium tiers you do not fully utilize.
+      </p>
+
+      <h3>How often should I audit my subscriptions?</h3>
+      <p>
+        Review your subscriptions at least every three months. Many people sign up for free trials that convert to paid subscriptions without notice. Set calendar reminders for trial end dates. Check bank and credit card statements regularly.
+      </p>
+
+      <h3>Are annual subscriptions cheaper than monthly?</h3>
+      <p>
+        Annual plans typically offer 15-30% savings compared to monthly billing. However, only commit to annual plans for services you are certain to use for the full year. The savings are lost if you cancel early without prorated refunds.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Electricity Usage Calculator", description: "Calculate your appliance energy costs and monthly electricity bill.", path: everyday_electricity_usage_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Split Bill Calculator", description: "Split the bill evenly among friends with tip and tax included.", path: everyday_split_bill_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Discount Calculator", description: "Calculate sale prices, savings, and discount percentages instantly.", path: everyday_discount_path, icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer" %>
+
+    <% blog_posts = related_blog_posts("subscription-cost-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

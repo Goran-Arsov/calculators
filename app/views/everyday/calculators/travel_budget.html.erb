@@ -1,0 +1,179 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Travel Budget Calculator - Free Online Tool",
+  description: "Plan your trip budget with daily and total cost estimates. See breakdowns for accommodation, food, transport, and activities — free and easy to use.",
+  canonical: everyday_travel_budget_url,
+  og: {
+    title: "Travel Budget Calculator - Free Online Tool | CalcWise",
+    description: "Plan your trip budget with daily and total cost estimates. See breakdowns for accommodation, food, transport, and activities.",
+    url: everyday_travel_budget_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Travel Budget Calculator", url: everyday_travel_budget_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate a travel budget?", answer: "Start with an estimated daily budget per person, multiply by the number of travelers to get the daily group total, then multiply by the number of days to get the trip total. Break down the trip total into categories: accommodation (40%), food (25%), transportation (15%), and activities (20%)." },
+  { question: "How much should I budget per day for travel?", answer: "Daily budgets vary widely by destination. Budget travelers can spend $30-$60 per day in Southeast Asia, $50-$100 in Eastern Europe, and $100-$200 in Western Europe or North America. Mid-range travelers should plan for roughly double these amounts. Always add a 10-15% buffer for unexpected expenses." },
+  { question: "What percentage of travel budget goes to accommodation?", answer: "Accommodation typically takes about 40% of a travel budget. This can vary significantly — hostels and budget hotels may lower this to 25-30%, while luxury resorts can push it to 50-60%. Booking in advance and using comparison sites helps keep accommodation costs within budget." },
+  { question: "How can I save money while traveling?", answer: "Top strategies include: traveling during shoulder season, booking flights on Tuesdays, staying in apartments instead of hotels for longer trips, eating where locals eat, using public transportation, getting city passes for attractions, and setting a daily spending limit with a tracking app." },
+  { question: "Should I budget extra for emergencies while traveling?", answer: "Yes, always set aside 10-15% of your total travel budget as an emergency fund. This covers unexpected medical expenses, flight changes, lost items, or sudden price increases. Travel insurance is also strongly recommended and should be factored into your budget separately." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Travel Budget Calculator",
+  description: "Calculate your total trip budget with daily estimates and category breakdowns for accommodation, food, transport, and activities.",
+  url: everyday_travel_budget_url,
+  category: "FinanceApplication",
+  calculator_slug: "travel-budget"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Travel Budget Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Travel Budget Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your total trip cost with daily budgets, traveler count, and a category breakdown for smarter travel planning.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="travel-budget-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="travel-daily-budget" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Daily Budget Per Person ($)</label>
+            <input id="travel-daily-budget" type="number" inputmode="decimal" data-travel-budget-calculator-target="dailyBudget" data-action="input->travel-budget-calculator#calculate" class="w-full" placeholder="150" step="1" min="0">
+          </div>
+          <div>
+            <label for="travel-num-days" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Days</label>
+            <input id="travel-num-days" type="number" inputmode="numeric" data-travel-budget-calculator-target="numDays" data-action="input->travel-budget-calculator#calculate" class="w-full" placeholder="7" step="1" min="1">
+          </div>
+          <div>
+            <label for="travel-num-travelers" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Travelers</label>
+            <input id="travel-num-travelers" type="number" inputmode="numeric" data-travel-budget-calculator-target="numTravelers" data-action="input->travel-budget-calculator#calculate" class="w-full" placeholder="2" step="1" min="1">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Trip Budget</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Daily Total (all travelers)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-travel-budget-calculator-target="resultDailyTotal">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 font-semibold">Trip Total</span>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-travel-budget-calculator-target="resultTripTotal">$0.00</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Accommodation (40%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-travel-budget-calculator-target="resultAccommodation">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Food (25%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-travel-budget-calculator-target="resultFood">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Transport (15%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-travel-budget-calculator-target="resultTransport">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Activities (20%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-travel-budget-calculator-target="resultActivities">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->travel-budget-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "travel-budget" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Travel Budget Calculator</h2>
+      <p>
+        Planning a trip starts with knowing how much you can spend. Enter your estimated daily budget per person, the number of travel days, and how many people are going. The calculator instantly computes your daily group total and overall trip cost. It also breaks down the trip total into four major spending categories so you know where your money will go.
+      </p>
+      <p>
+        The default breakdown allocates 40% to accommodation, 25% to food, 15% to transportation, and 20% to activities and sightseeing. These are based on average travel spending patterns and serve as a reliable starting guide. Your actual spending will vary based on destination, travel style, and personal preferences.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Travel Budget Categories</h2>
+      <p>
+        Accommodation is the largest expense for most travelers, covering hotels, hostels, vacation rentals, or camping fees. Food includes restaurants, groceries, snacks, and beverages. Transport covers local transit, car rentals, taxis, and inter-city travel (but not flights, which are typically a separate budget item). Activities include tours, museum entries, excursions, and entertainment.
+      </p>
+
+      <h3>Budget Travel Tips</h3>
+      <p>
+        Travel in shoulder season for lower prices and fewer crowds. Book accommodation with kitchen access to save on meals. Use public transportation instead of taxis. Look for free walking tours and museum free days. Consider travel passes for popular destinations. Set a daily spending limit and track expenses with a simple app or notebook.
+      </p>
+
+      <h3>Adjusting for Different Destinations</h3>
+      <p>
+        Southeast Asia and parts of Central America are among the most budget-friendly destinations, with daily budgets of $30-$60 per person achievable. Western Europe, Australia, and Japan require $100-$200 per day for comfortable mid-range travel. Scandinavian countries and Switzerland are among the priciest, often requiring $200 or more per person daily.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate a travel budget?</h3>
+      <p>
+        Start with an estimated daily budget per person, multiply by the number of travelers to get the daily group total, then multiply by the number of days to get the trip total. Break down the trip total into categories: accommodation (40%), food (25%), transportation (15%), and activities (20%).
+      </p>
+
+      <h3>How much should I budget per day for travel?</h3>
+      <p>
+        Daily budgets vary widely by destination. Budget travelers can spend $30-$60 per day in Southeast Asia, $50-$100 in Eastern Europe, and $100-$200 in Western Europe or North America. Mid-range travelers should plan for roughly double these amounts. Always add a 10-15% buffer for unexpected expenses.
+      </p>
+
+      <h3>What percentage of travel budget goes to accommodation?</h3>
+      <p>
+        Accommodation typically takes about 40% of a travel budget. This can vary significantly — hostels and budget hotels may lower this to 25-30%, while luxury resorts can push it to 50-60%. Booking in advance and using comparison sites helps keep accommodation costs within budget.
+      </p>
+
+      <h3>How can I save money while traveling?</h3>
+      <p>
+        Top strategies include: traveling during shoulder season, booking flights on Tuesdays, staying in apartments for longer trips, eating where locals eat, using public transportation, getting city passes for attractions, and setting a daily spending limit.
+      </p>
+
+      <h3>Should I budget extra for emergencies while traveling?</h3>
+      <p>
+        Yes, always set aside 10-15% of your total travel budget as an emergency fund. This covers unexpected medical expenses, flight changes, lost items, or sudden price increases. Travel insurance is also strongly recommended and should be factored into your budget separately.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Wedding Budget Calculator", description: "Plan your wedding budget with detailed category breakdowns.", path: everyday_wedding_budget_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" },
+      { name: "Fuel Cost Calculator", description: "Calculate total fuel cost for a trip based on distance and fuel economy.", path: everyday_fuel_cost_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Subscription Cost Calculator", description: "Track all your subscriptions and see the total monthly and annual cost.", path: everyday_subscription_cost_path, icon_path: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer" %>
+
+    <% blog_posts = related_blog_posts("travel-budget-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
