@@ -32,6 +32,13 @@ class ProgrammaticControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "SoftwareApplication"
   end
 
+  test "page includes HowTo schema" do
+    slug = ProgrammaticSeo::Registry.all_slugs.first
+    get "/#{slug}"
+    assert_includes response.body, "HowTo"
+    assert_includes response.body, "HowToStep"
+  end
+
   test "page includes calculator form with stimulus controller" do
     slug = ProgrammaticSeo::Registry.all_slugs.first
     page = ProgrammaticSeo::Registry.find(slug)

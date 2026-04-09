@@ -1,3 +1,5 @@
+require "digest"
+
 module ProgrammaticSeo
   module ContentTemplates
     class << self
@@ -11,20 +13,25 @@ module ProgrammaticSeo
         slug = "#{base_key}-#{suffix}-calculator"
         full_name = "#{calc_name.split.map(&:capitalize).join(' ')} #{label}"
 
+        intro = build_intro(calc_name, label, context, category)
+        how_it_works = build_how_it_works(calc_name, label, context, category)
+        how_it_works_text = how_it_works[:paragraphs].join(" ")
+
         {
           slug: slug,
           route_name: "programmatic_#{slug.tr('-', '_')}",
           title: truncate_title("#{full_name} Calculator - Free Tool"),
           h1: "#{full_name} Calculator",
           meta_description: truncate_meta("Calculate #{calc_name} #{context}. Free instant results with no sign-up required. Enter your numbers and get accurate estimates immediately."),
-          intro: build_intro(calc_name, label, context, category),
-          how_it_works: build_how_it_works(calc_name, label, context, category),
+          intro: intro,
+          how_it_works: how_it_works,
           example: build_example(calc_name, label, context, category),
           tips: build_tips(calc_name, label, context, category),
           faq: build_faq(calc_name, label, context, category, base_key, pattern_key),
           related_slugs: [],  # filled in by Registry after all pages are built
           base_calculator_slug: "#{base_key}-calculator",
-          base_calculator_path: find_base_path(base_key, category)
+          base_calculator_path: find_base_path(base_key, category),
+          content_hash: Digest::MD5.hexdigest("#{slug}#{intro}#{how_it_works_text}")[0..7]
         }
       end
 
@@ -102,57 +109,76 @@ module ProgrammaticSeo
       end
 
       def build_example(noun, label, context, category)
+        specific = pattern_example_scenario(noun, label, context, category)
         {
           heading: "Example: #{noun.split.map(&:capitalize).join(' ')} #{label}",
-          scenario: "Here is a typical scenario for calculating #{noun} #{context}.",
-          steps: example_steps(noun, label, context, category)
+          scenario: specific[:scenario],
+          steps: specific[:steps]
         }
       end
 
-      def example_steps(noun, label, context, category)
+      def pattern_example_scenario(noun, label, context, category)
         case category
         when "finance"
-          [
-            "Enter the principal amount or total value into the first field",
-            "Set the rate, percentage, or time period in the corresponding fields",
-            "The calculator instantly shows your #{noun} #{context}",
-            "Adjust any input to compare different financial scenarios side by side"
-          ]
+          {
+            scenario: "Let's walk through a real example of calculating #{noun} #{context}. Suppose you have a $250,000 amount at 6% annual interest over 30 years.",
+            steps: [
+              "Enter $250,000 as the principal or total amount in the first field.",
+              "Set the interest rate to 6% and the time period to 30 years.",
+              "The calculator computes your #{noun} #{context} instantly, showing the result below the inputs.",
+              "Try changing the rate to 5.5% to see how a half-point decrease affects your #{noun} — the difference may surprise you."
+            ]
+          }
         when "health"
-          [
-            "Enter your basic measurements (weight, height, age) in the input fields",
-            "Select any applicable options (gender, activity level, goals) from the dropdowns",
-            "Review your personalized #{noun} result #{context}",
-            "Compare with standard reference ranges shown alongside your result"
-          ]
+          {
+            scenario: "Here's a practical example: a 30-year-old, 5'10\" (178 cm), 165 lb (75 kg) individual calculating #{noun} #{context}.",
+            steps: [
+              "Enter age (30), height (178 cm or 5'10\"), and weight (75 kg or 165 lbs).",
+              "Select the appropriate options from the dropdowns (gender, activity level).",
+              "Review your #{noun} result #{context} — the calculator shows your personalized estimate.",
+              "Compare with the reference ranges displayed alongside your result to see where you fall."
+            ]
+          }
         when "construction"
-          [
-            "Measure your project area and enter length, width, and depth or height",
-            "The calculator converts your measurements and applies coverage rates",
-            "Review the total #{noun} needed #{context}, including waste factor",
-            "Use the result to determine how many units, bags, or packages to order"
-          ]
+          {
+            scenario: "Consider a 12 ft x 14 ft room (168 square feet) where you need to calculate #{noun} #{context}.",
+            steps: [
+              "Enter the room dimensions: 12 feet length and 14 feet width (168 sq ft total area).",
+              "Add any relevant specifications like depth, height, or material type.",
+              "The calculator shows you need approximately the right amount of #{noun} #{context}, including a 10% waste factor.",
+              "Use this quantity to request quotes from suppliers or calculate your materials budget."
+            ]
+          }
         when "math"
-          [
-            "Enter your known values into the input fields",
-            "The calculator applies the formula and displays the result immediately",
-            "Check the formula shown below the result to verify the calculation method",
-            "Modify any input to explore how changes affect the outcome"
-          ]
+          {
+            scenario: "Here is a worked example: suppose you need to calculate #{noun} #{context} using the values 48 and 12.",
+            steps: [
+              "Enter 48 as the primary value in the first input field.",
+              "Enter 12 as the secondary value in the second field.",
+              "The calculator applies the formula and displays the result immediately — check the formula shown below to verify.",
+              "Modify either input to explore how changes affect the outcome, for example try 96 and 24."
+            ]
+          }
         when "physics"
-          [
-            "Enter your known measurements with the appropriate units",
-            "The calculator applies the relevant physics equation automatically",
-            "Read the result in your preferred unit system",
-            "Use the result for further calculations or unit comparisons"
-          ]
+          {
+            scenario: "Let's say you need to calculate #{noun} #{context} for an object with a mass of 5 kg and a velocity of 10 m/s.",
+            steps: [
+              "Enter 5 kg as the mass and 10 m/s as the velocity in the appropriate fields.",
+              "The calculator applies the relevant physics equation and displays the result with proper units.",
+              "Read the result in your preferred unit system — toggle between metric and imperial if available.",
+              "Use the result for further calculations or compare with a different set of measurements."
+            ]
+          }
         else
-          [
-            "Enter the relevant numbers into the input fields provided",
-            "Results appear instantly below the inputs — no button click needed",
-            "Review your #{noun} #{context}",
-            "Try different values to compare scenarios and find the best option"
-          ]
+          {
+            scenario: "Here is a practical scenario for calculating #{noun} #{context}.",
+            steps: [
+              "Enter your primary value into the first input field.",
+              "Fill in any secondary values (rates, quantities, or specifications).",
+              "Review your #{noun} #{context} — the result appears instantly.",
+              "Adjust inputs to compare different scenarios side by side."
+            ]
+          }
         end
       end
 
@@ -199,7 +225,7 @@ module ProgrammaticSeo
       end
 
       def build_faq(noun, label, context, category, base_key, pattern_key)
-        [
+        faqs = [
           {
             question: "How do I calculate #{noun} #{context}?",
             answer: "Enter your values into the calculator fields above and the result appears instantly. The calculator uses standard formulas to compute #{noun} #{context} accurately. All you need are the basic input values — the tool handles the math automatically and updates results as you type, so you can experiment with different numbers without reloading the page."
@@ -221,6 +247,55 @@ module ProgrammaticSeo
             answer: "Yes, this calculator is completely free with no sign-up, no account creation, and no usage limits. You can calculate #{noun} #{context} as many times as you need. The tool runs entirely in your browser — no data is sent to any server, and your inputs are not stored or tracked."
           }
         ]
+
+        # Add pattern-specific FAQs for content uniqueness
+        faqs.concat(pattern_specific_faqs(noun, label, context, pattern_key))
+        faqs
+      end
+
+      def pattern_specific_faqs(noun, label, context, pattern_key)
+        key = pattern_key.to_s
+
+        if key.start_with?("per_")
+          unit = key.sub("per_", "").tr("_", " ")
+          [
+            {
+              question: "How do I convert #{noun} to a per-#{unit} rate?",
+              answer: "Divide the total #{noun} by the number of #{unit}s to get the per-#{unit} rate. This calculator handles the conversion automatically — enter your total figures and the tool computes the per-#{unit} breakdown instantly."
+            },
+            {
+              question: "Why is per-#{unit} #{noun} useful to track?",
+              answer: "Tracking #{noun} per #{unit} lets you compare costs across different scenarios on an equal basis. It normalizes the data so you can make apples-to-apples comparisons regardless of different quantities or time periods."
+            }
+          ]
+        elsif key.start_with?("for_")
+          audience = key.sub("for_", "").tr("_", " ")
+          [
+            {
+              question: "Why is the #{noun} calculation different for #{audience}?",
+              answer: "#{audience.capitalize} have specific considerations that affect #{noun} calculations. Standard formulas may not account for #{audience}-specific factors, which is why this specialized calculator adjusts the computation #{context} to provide more relevant results."
+            },
+            {
+              question: "Can #{audience} use the standard #{noun} calculator instead?",
+              answer: "You can use the standard calculator as a starting point, but this #{audience}-specific version applies adjustments that make the results more applicable to your situation. The specialized calculation accounts for factors that the general calculator doesn't include."
+            }
+          ]
+        elsif key.include?("vs") || key.include?("comparison")
+          [
+            {
+              question: "What are the key differences being compared?",
+              answer: "This calculator compares the relevant metrics side by side so you can evaluate both options objectively. Enter the same base values for each scenario and the calculator highlights the differences in cost, duration, or outcome."
+            }
+          ]
+        else
+          # Default: add one pattern-specific FAQ
+          [
+            {
+              question: "When should I use the #{label.downcase} calculation specifically?",
+              answer: "Use this specific calculation when you need to #{context}. The #{label.downcase} variant focuses on this particular aspect of #{noun}, providing more targeted results than the general calculator."
+            }
+          ]
+        end
       end
     end
   end

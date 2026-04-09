@@ -37,6 +37,103 @@ module ProgrammaticSeo
         @pages = nil
       end
 
+      # Scores a page's content quality from 0–100.
+      # Used to flag thin/low-quality auto-generated pages for noindex.
+      def quality_score(page)
+        score = 0
+
+        # Word count: 0-30 points
+        word_count = [
+          page[:intro],
+          page.dig(:how_it_works, :paragraphs)&.join(" "),
+          page.dig(:example, :scenario),
+          page.dig(:example, :steps)&.join(" "),
+          page[:tips]&.join(" "),
+          page[:faq]&.map { |f| f[:answer] }&.join(" ")
+        ].compact.join(" ").split.size
+
+        if word_count >= 800
+          score += 30
+        elsif word_count >= 600
+          score += 25
+        elsif word_count >= 400
+          score += 15
+        end
+
+        # FAQ depth: 0-20 points
+        faq_count = page[:faq]&.size || 0
+        if faq_count >= 5
+          score += 20
+        elsif faq_count >= 3
+          score += 10
+        end
+
+        # Has form_partial (embedded calculator): 0-20 points
+        if page[:form_partial].present?
+          score += 20
+        else
+          score += 5
+        end
+
+        # Has specific example with numeric steps: 0-15 points
+        steps = page.dig(:example, :steps)
+        if steps.is_a?(Array) && steps.any? { |s| s.match?(/\d/) }
+          score += 15
+        end
+
+        # Has related_slugs: 0-15 points
+        related = page[:related_slugs]
+        if related.is_a?(Array)
+          if related.size >= 3
+            score += 15
+          elsif related.size >= 1
+            score += 10
+          end
+        end
+
+        score
+      end
+
+      # Returns true if the page meets the minimum quality threshold for indexing.
+      def indexable?(page)
+        quality_score(page) >= 60
+      end
+
+      # Returns the lastmod date string for a programmatic page.
+      # Hand-written pages use the content file's mtime; auto-generated pages use
+      # the ContentTemplates file mtime. Falls back to beginning of month.
+      def lastmod_for(slug)
+        page = find(slug)
+        return Date.current.to_s unless page
+
+        # Hand-written content: find the source file by matching base_key across
+        # all content definition files.
+        if page[:base_key]
+          content_dir = Rails.root.join("lib", "programmatic_seo", "content")
+          if content_dir.exist?
+            Dir[content_dir.join("*.rb")].each do |file|
+              module_name = File.basename(file, ".rb").split("_").map(&:capitalize).join
+              begin
+                defn = "ProgrammaticSeo::Content::#{module_name}::DEFINITION".constantize
+                if defn.is_a?(Hash) && defn[:base_key] == page[:base_key]
+                  return File.mtime(file).to_date.to_s
+                end
+              rescue NameError
+                next
+              end
+            end
+          end
+        end
+
+        # Auto-generated pages: use the ContentTemplates file mtime
+        template_file = Rails.root.join("lib", "programmatic_seo", "content_templates.rb")
+        if template_file.exist?
+          return File.mtime(template_file).to_date.to_s
+        end
+
+        Date.current.beginning_of_month.to_s
+      end
+
       private
 
       def build_pages_index
@@ -93,6 +190,12 @@ module ProgrammaticSeo
               .map { |p| p[:slug] }
             page[:related_slugs] = siblings
           end
+        end
+
+        # Step 4: Score each page's content quality and flag indexability
+        index.each_value do |page|
+          page[:quality_score] = quality_score(page)
+          page[:indexable] = page[:quality_score] >= 60
         end
 
         index.freeze

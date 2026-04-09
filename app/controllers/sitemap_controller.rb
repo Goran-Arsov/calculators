@@ -70,9 +70,10 @@ class SitemapController < ApplicationController
       end
     end
 
-    # Programmatic SEO pages
+    # Programmatic SEO pages (only indexable/high-quality pages)
     ProgrammaticSeo::Registry.all_pages.each do |page|
-      @urls << { loc: send("#{page[:route_name]}_url"), changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
+      next unless page[:indexable]
+      @urls << { loc: send("#{page[:route_name]}_url"), changefreq: "monthly", priority: "0.7", lastmod: ProgrammaticSeo::Registry.lastmod_for(page[:slug]) }
     end
 
     # Blog posts

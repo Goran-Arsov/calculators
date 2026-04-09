@@ -7,6 +7,14 @@
 
 <%= faq_schema(@page[:faq].map { |f| { question: f[:question], answer: f[:answer] } }) %>
 
+<%= howto_schema(
+  name: @page[:how_it_works][:heading],
+  description: @page[:meta_description],
+  steps: @page[:example][:steps].each_with_index.map { |step, i|
+    { name: "Step #{i + 1}", text: step }
+  }
+) %>
+
 <%= calculator_schema(
   name: @page[:h1],
   description: @page[:meta_description],
@@ -104,6 +112,25 @@
           <%= link_to "#{@page[:category].capitalize} Calculator", send(@page[:base_calculator_path]), class: "text-blue-600 dark:text-blue-400 font-semibold underline" %>.
         </p>
       </div>
+    <% end %>
+
+    <%# See also — other calculators in this category (improves internal linking) %>
+    <% see_also_pages = ProgrammaticSeo::Registry.pages_for_category(@page[:category])
+         .reject { |p| p[:slug] == @page[:slug] || (@page[:related_slugs] || []).include?(p[:slug]) }
+         .select { |p| p[:indexable] != false }
+         .sort_by { |p| p[:slug] }
+         .first(3) %>
+    <% if see_also_pages.any? %>
+      <section class="mt-8">
+        <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">See Also</h3>
+        <ul class="space-y-2">
+          <% see_also_pages.each do |sp| %>
+            <li>
+              <%= link_to sp[:h1], send("#{sp[:route_name]}_path"), class: "text-blue-600 dark:text-blue-400 hover:underline text-sm" %>
+            </li>
+          <% end %>
+        </ul>
+      </section>
     <% end %>
 
     <%# Calculator disclaimer %>
