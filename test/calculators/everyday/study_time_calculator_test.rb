@@ -4,7 +4,7 @@ class Everyday::StudyTimeCalculatorTest < ActiveSupport::TestCase
   # --- Happy path ---
 
   test "single easy course" do
-    courses = [{ name: "Intro to Art", credits: 3, difficulty: 1 }]
+    courses = [ { name: "Intro to Art", credits: 3, difficulty: 1 } ]
     result = Everyday::StudyTimeCalculator.new(courses: courses).call
     assert_equal true, result[:valid]
     # in_class = 3, study = 3 * 1 = 3, total = 6
@@ -15,7 +15,7 @@ class Everyday::StudyTimeCalculatorTest < ActiveSupport::TestCase
   end
 
   test "single very hard course" do
-    courses = [{ name: "Organic Chemistry", credits: 4, difficulty: 5 }]
+    courses = [ { name: "Organic Chemistry", credits: 4, difficulty: 5 } ]
     result = Everyday::StudyTimeCalculator.new(courses: courses).call
     assert_equal true, result[:valid]
     # in_class = 4, study = 4 * 3 = 12, total = 16
@@ -39,21 +39,21 @@ class Everyday::StudyTimeCalculatorTest < ActiveSupport::TestCase
   end
 
   test "daily average weekdays divides by 5" do
-    courses = [{ name: "Test", credits: 5, difficulty: 3 }]
+    courses = [ { name: "Test", credits: 5, difficulty: 3 } ]
     result = Everyday::StudyTimeCalculator.new(courses: courses).call
     # total = 5 + 5*2 = 15, daily weekdays = 15/5 = 3.0
     assert_equal 3.0, result[:daily_average_weekdays]
   end
 
   test "daily average all days divides by 7" do
-    courses = [{ name: "Test", credits: 7, difficulty: 1 }]
+    courses = [ { name: "Test", credits: 7, difficulty: 1 } ]
     result = Everyday::StudyTimeCalculator.new(courses: courses).call
     # total = 7 + 7*1 = 14, daily all = 14/7 = 2.0
     assert_equal 2.0, result[:daily_average_all_days]
   end
 
   test "per course breakdown contains all fields" do
-    courses = [{ name: "Biology", credits: 4, difficulty: 4 }]
+    courses = [ { name: "Biology", credits: 4, difficulty: 4 } ]
     result = Everyday::StudyTimeCalculator.new(courses: courses).call
     breakdown = result[:per_course_breakdown][0]
     assert_equal "Biology", breakdown[:name]
@@ -65,7 +65,7 @@ class Everyday::StudyTimeCalculatorTest < ActiveSupport::TestCase
   end
 
   test "unnamed course gets default name" do
-    courses = [{ name: "", credits: 3, difficulty: 3 }]
+    courses = [ { name: "", credits: 3, difficulty: 3 } ]
     result = Everyday::StudyTimeCalculator.new(courses: courses).call
     assert_equal true, result[:valid]
     assert_equal "Unnamed Course", result[:per_course_breakdown][0][:name]
@@ -94,28 +94,28 @@ class Everyday::StudyTimeCalculatorTest < ActiveSupport::TestCase
   end
 
   test "error when credits is zero" do
-    courses = [{ name: "Test", credits: 0, difficulty: 3 }]
+    courses = [ { name: "Test", credits: 0, difficulty: 3 } ]
     result = Everyday::StudyTimeCalculator.new(courses: courses).call
     assert_equal false, result[:valid]
     assert result[:errors].any? { |e| e.include?("credits must be greater than zero") }
   end
 
   test "error when difficulty is out of range" do
-    courses = [{ name: "Test", credits: 3, difficulty: 6 }]
+    courses = [ { name: "Test", credits: 3, difficulty: 6 } ]
     result = Everyday::StudyTimeCalculator.new(courses: courses).call
     assert_equal false, result[:valid]
     assert result[:errors].any? { |e| e.include?("difficulty must be between 1 and 5") }
   end
 
   test "error when difficulty is zero" do
-    courses = [{ name: "Test", credits: 3, difficulty: 0 }]
+    courses = [ { name: "Test", credits: 3, difficulty: 0 } ]
     result = Everyday::StudyTimeCalculator.new(courses: courses).call
     assert_equal false, result[:valid]
     assert result[:errors].any? { |e| e.include?("difficulty must be between 1 and 5") }
   end
 
   test "errors accessor returns empty array before call" do
-    calc = Everyday::StudyTimeCalculator.new(courses: [{ name: "Test", credits: 3, difficulty: 3 }])
+    calc = Everyday::StudyTimeCalculator.new(courses: [ { name: "Test", credits: 3, difficulty: 3 } ])
     assert_equal [], calc.errors
   end
 end

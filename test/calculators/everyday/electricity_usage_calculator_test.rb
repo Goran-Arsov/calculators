@@ -6,7 +6,7 @@ class Everyday::ElectricityUsageCalculatorTest < ActiveSupport::TestCase
   test "single appliance: 100W, 8 hrs, $0.12 → daily=0.8, monthly=24, cost=$2.88" do
     result = Everyday::ElectricityUsageCalculator.new(
       cost_per_kwh: 0.12,
-      appliances: [{ name: "Light", watts: 100, hours_per_day: 8 }]
+      appliances: [ { name: "Light", watts: 100, hours_per_day: 8 } ]
     ).call
     assert_equal true, result[:valid]
     assert_equal 0.8, result[:total_daily_kwh]
@@ -35,7 +35,7 @@ class Everyday::ElectricityUsageCalculatorTest < ActiveSupport::TestCase
   test "high wattage appliance" do
     result = Everyday::ElectricityUsageCalculator.new(
       cost_per_kwh: 0.15,
-      appliances: [{ name: "AC", watts: 3000, hours_per_day: 10 }]
+      appliances: [ { name: "AC", watts: 3000, hours_per_day: 10 } ]
     ).call
     assert_equal true, result[:valid]
     # 3000*10/1000 = 30 kWh/day, 900 kWh/month, $135/month
@@ -47,7 +47,7 @@ class Everyday::ElectricityUsageCalculatorTest < ActiveSupport::TestCase
   test "handles string inputs in appliances" do
     result = Everyday::ElectricityUsageCalculator.new(
       cost_per_kwh: "0.12",
-      appliances: [{ name: "Lamp", watts: "60", hours_per_day: "6" }]
+      appliances: [ { name: "Lamp", watts: "60", hours_per_day: "6" } ]
     ).call
     assert_equal true, result[:valid]
     assert_in_delta 0.36, result[:total_daily_kwh], 0.001
@@ -58,7 +58,7 @@ class Everyday::ElectricityUsageCalculatorTest < ActiveSupport::TestCase
   test "error when cost per kwh is zero" do
     result = Everyday::ElectricityUsageCalculator.new(
       cost_per_kwh: 0,
-      appliances: [{ name: "Light", watts: 100, hours_per_day: 8 }]
+      appliances: [ { name: "Light", watts: 100, hours_per_day: 8 } ]
     ).call
     assert_equal false, result[:valid]
     assert_includes result[:errors], "Cost per kWh must be greater than zero"
@@ -73,7 +73,7 @@ class Everyday::ElectricityUsageCalculatorTest < ActiveSupport::TestCase
   test "error when appliance watts is zero" do
     result = Everyday::ElectricityUsageCalculator.new(
       cost_per_kwh: 0.12,
-      appliances: [{ name: "Broken", watts: 0, hours_per_day: 8 }]
+      appliances: [ { name: "Broken", watts: 0, hours_per_day: 8 } ]
     ).call
     assert_equal false, result[:valid]
     assert_includes result[:errors], "Appliance 1 watts must be positive"
@@ -82,7 +82,7 @@ class Everyday::ElectricityUsageCalculatorTest < ActiveSupport::TestCase
   test "error when appliance hours is zero" do
     result = Everyday::ElectricityUsageCalculator.new(
       cost_per_kwh: 0.12,
-      appliances: [{ name: "Unused", watts: 100, hours_per_day: 0 }]
+      appliances: [ { name: "Unused", watts: 100, hours_per_day: 0 } ]
     ).call
     assert_equal false, result[:valid]
     assert_includes result[:errors], "Appliance 1 hours per day must be positive"
@@ -91,7 +91,7 @@ class Everyday::ElectricityUsageCalculatorTest < ActiveSupport::TestCase
   test "errors accessor returns empty array before call" do
     calc = Everyday::ElectricityUsageCalculator.new(
       cost_per_kwh: 0.12,
-      appliances: [{ name: "Light", watts: 100, hours_per_day: 8 }]
+      appliances: [ { name: "Light", watts: 100, hours_per_day: 8 } ]
     )
     assert_equal [], calc.errors
   end

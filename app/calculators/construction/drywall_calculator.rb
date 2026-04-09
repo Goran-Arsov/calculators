@@ -10,7 +10,7 @@ module Construction
     JOINT_COMPOUND_SQFT_PER_GALLON = 100
     TAPE_SQFT_PER_ROLL = 50
 
-    VALID_SHEET_SIZES = [32, 48].freeze
+    VALID_SHEET_SIZES = [ 32, 48 ].freeze
 
     def initialize(room_length_ft:, room_width_ft:, room_height_ft:, num_doors: 1, num_windows: 1, sheet_size: 32)
       @room_length_ft = room_length_ft.to_f
@@ -29,7 +29,7 @@ module Construction
       perimeter = 2 * (@room_length_ft + @room_width_ft)
       total_wall_area = perimeter * @room_height_ft
       openings = (@num_doors * DOOR_AREA_SQFT) + (@num_windows * WINDOW_AREA_SQFT)
-      net_area = [total_wall_area - openings, 0].max
+      net_area = [ total_wall_area - openings, 0 ].max
 
       sheets_needed = (net_area / @sheet_size.to_f * WASTE_FACTOR).ceil
       joint_compound_gallons = (net_area / JOINT_COMPOUND_SQFT_PER_GALLON.to_f).ceil

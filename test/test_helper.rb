@@ -11,5 +11,8 @@ module ActiveSupport
     fixtures :all
 
     # Add more helper methods to be used by all tests here...
+
+    # Ensure tests always run in English locale
+    setup { I18n.locale = :en }
   end
 end

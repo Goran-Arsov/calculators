@@ -26,7 +26,7 @@ class CategoriesController < ApplicationController
       }
     end
 
-    @blog_posts = Rails.cache.fetch(["category_blog_posts", @slug], expires_in: 1.hour) do
+    @blog_posts = Rails.cache.fetch([ "category_blog_posts", @slug ], expires_in: 1.hour) do
       BlogPost.published.by_category(@slug).recent.limit(3).to_a
     end
 

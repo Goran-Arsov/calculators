@@ -61,10 +61,10 @@ module Construction
       estimated_cost = (@area_sqft * cost_per_sqft).round(2)
 
       unit_label = case type_sym
-                   when :fiberglass_batt then "rolls"
-                   when :blown_cellulose then "bags"
-                   when :spray_foam then "units (board-foot coverage)"
-                   end
+      when :fiberglass_batt then "rolls"
+      when :blown_cellulose then "bags"
+      when :spray_foam then "units (board-foot coverage)"
+      end
 
       {
         valid: true,

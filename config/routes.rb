@@ -68,7 +68,7 @@ Rails.application.routes.draw do
   draw(:everyday)
 
   # User-submitted calculator formulas
-  resources :user_formulas, only: [:new, :create], path: "submit-calculator" do
+  resources :user_formulas, only: [ :new, :create ], path: "submit-calculator" do
     collection do
       get "thank-you", action: :thank_you
     end

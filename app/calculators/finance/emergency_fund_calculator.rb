@@ -24,17 +24,17 @@ module Finance
 
       months_recommended = RISK_MONTHS[@risk_level]
       target_fund = @monthly_expenses * months_recommended
-      savings_gap = [target_fund - @current_savings, 0].max
+      savings_gap = [ target_fund - @current_savings, 0 ].max
       percent_funded = target_fund > 0 ? (@current_savings / target_fund * 100) : 0.0
-      percent_funded = [percent_funded, 100.0].min if @current_savings >= target_fund
+      percent_funded = [ percent_funded, 100.0 ].min if @current_savings >= target_fund
 
       months_to_goal = if savings_gap <= 0
                          0.0
-                       elsif @monthly_contribution > 0
+      elsif @monthly_contribution > 0
                          (savings_gap / @monthly_contribution).ceil.to_f
-                       else
+      else
                          Float::INFINITY
-                       end
+      end
 
       {
         valid: true,

@@ -170,8 +170,8 @@ module Finance
           next
         end
 
-        taxable_start = [@annual_income, bracket_bottom].max
-        taxable_end = [bracket_top, @annual_income + remaining_gain].min
+        taxable_start = [ @annual_income, bracket_bottom ].max
+        taxable_end = [ bracket_top, @annual_income + remaining_gain ].min
         taxable_in_bracket = taxable_end - taxable_start
 
         if taxable_in_bracket > 0
@@ -193,7 +193,7 @@ module Finance
       if total_income > threshold
         # NIIT applies to the lesser of: net investment income or amount over threshold
         excess = total_income - threshold
-        niit_base = [capital_gain, excess].min
+        niit_base = [ capital_gain, excess ].min
         niit_base * NIIT_RATE
       else
         0.0

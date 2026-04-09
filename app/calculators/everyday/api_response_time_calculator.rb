@@ -73,8 +73,8 @@ module Everyday
       return sorted.first if sorted.length == 1
 
       rank = (pct / 100.0 * sorted.length).ceil
-      rank = [rank, 1].max
-      rank = [rank, sorted.length].min
+      rank = [ rank, 1 ].max
+      rank = [ rank, sorted.length ].min
       sorted[rank - 1]
     end
   end

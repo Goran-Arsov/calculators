@@ -4,7 +4,7 @@ class Everyday::DatabaseSizeCalculatorTest < ActiveSupport::TestCase
   test "calculates size for simple integer-only table" do
     result = Everyday::DatabaseSizeCalculator.new(
       num_rows: 1000,
-      columns: [{ type: "integer", avg_bytes: 0 }]
+      columns: [ { type: "integer", avg_bytes: 0 } ]
     ).call
 
     assert result[:valid]
@@ -36,7 +36,7 @@ class Everyday::DatabaseSizeCalculatorTest < ActiveSupport::TestCase
   test "includes PostgreSQL row overhead of 23 bytes" do
     result = Everyday::DatabaseSizeCalculator.new(
       num_rows: 1,
-      columns: [{ type: "integer", avg_bytes: 0 }]
+      columns: [ { type: "integer", avg_bytes: 0 } ]
     ).call
 
     assert result[:valid]
@@ -46,7 +46,7 @@ class Everyday::DatabaseSizeCalculatorTest < ActiveSupport::TestCase
   test "adds 30% for index overhead" do
     result = Everyday::DatabaseSizeCalculator.new(
       num_rows: 1000,
-      columns: [{ type: "integer", avg_bytes: 0 }]
+      columns: [ { type: "integer", avg_bytes: 0 } ]
     ).call
 
     assert result[:valid]
@@ -76,7 +76,7 @@ class Everyday::DatabaseSizeCalculatorTest < ActiveSupport::TestCase
   test "handles varchar with avg_bytes" do
     result = Everyday::DatabaseSizeCalculator.new(
       num_rows: 100,
-      columns: [{ type: "varchar", avg_bytes: 255 }]
+      columns: [ { type: "varchar", avg_bytes: 255 } ]
     ).call
 
     assert result[:valid]
@@ -86,7 +86,7 @@ class Everyday::DatabaseSizeCalculatorTest < ActiveSupport::TestCase
   test "handles text with avg_bytes" do
     result = Everyday::DatabaseSizeCalculator.new(
       num_rows: 100,
-      columns: [{ type: "text", avg_bytes: 1000 }]
+      columns: [ { type: "text", avg_bytes: 1000 } ]
     ).call
 
     assert result[:valid]
@@ -96,7 +96,7 @@ class Everyday::DatabaseSizeCalculatorTest < ActiveSupport::TestCase
   test "formats output as KB" do
     result = Everyday::DatabaseSizeCalculator.new(
       num_rows: 100,
-      columns: [{ type: "integer", avg_bytes: 0 }]
+      columns: [ { type: "integer", avg_bytes: 0 } ]
     ).call
 
     assert result[:valid]
@@ -120,7 +120,7 @@ class Everyday::DatabaseSizeCalculatorTest < ActiveSupport::TestCase
   test "returns error for zero rows" do
     result = Everyday::DatabaseSizeCalculator.new(
       num_rows: 0,
-      columns: [{ type: "integer", avg_bytes: 0 }]
+      columns: [ { type: "integer", avg_bytes: 0 } ]
     ).call
 
     assert_not result[:valid]
@@ -140,7 +140,7 @@ class Everyday::DatabaseSizeCalculatorTest < ActiveSupport::TestCase
   test "returns error for unknown column type" do
     result = Everyday::DatabaseSizeCalculator.new(
       num_rows: 1000,
-      columns: [{ type: "unknown_type", avg_bytes: 0 }]
+      columns: [ { type: "unknown_type", avg_bytes: 0 } ]
     ).call
 
     assert_not result[:valid]
@@ -150,7 +150,7 @@ class Everyday::DatabaseSizeCalculatorTest < ActiveSupport::TestCase
   test "returns error for varchar with zero avg_bytes" do
     result = Everyday::DatabaseSizeCalculator.new(
       num_rows: 1000,
-      columns: [{ type: "varchar", avg_bytes: 0 }]
+      columns: [ { type: "varchar", avg_bytes: 0 } ]
     ).call
 
     assert_not result[:valid]

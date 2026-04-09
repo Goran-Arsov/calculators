@@ -36,9 +36,9 @@ module Everyday
       first_year_cost = annual_cost + FIRST_YEAR_ADDON
       lifetime_cost = if @ownership_years >= 2
                         first_year_cost + (annual_cost * (@ownership_years - 1))
-                      else
+      else
                         first_year_cost
-                      end
+      end
 
       costs = ANNUAL_COSTS[key]
       food_annual = costs[:food].to_f

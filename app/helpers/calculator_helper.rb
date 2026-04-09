@@ -165,7 +165,7 @@ module CalculatorHelper
       calc_keywords = calculator_keywords(calc)
       score = (current_keywords & calc_keywords).size
       calc.merge(_relevance_score: score)
-    }.sort_by { |c| [-c[:_relevance_score], c[:slug]] }
+    }.sort_by { |c| [ -c[:_relevance_score], c[:slug] ] }
   end
 
   # Finds the category slug for a given calculator slug by searching ALL_CATEGORIES.

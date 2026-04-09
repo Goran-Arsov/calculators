@@ -5,7 +5,7 @@ class Everyday::SubscriptionCostCalculatorTest < ActiveSupport::TestCase
 
   test "single monthly subscription" do
     result = Everyday::SubscriptionCostCalculator.new(
-      subscriptions: [{ name: "Netflix", cost: 15.49, frequency: "monthly" }]
+      subscriptions: [ { name: "Netflix", cost: 15.49, frequency: "monthly" } ]
     ).call
     assert_equal true, result[:valid]
     assert_equal 15.49, result[:total_monthly]
@@ -17,7 +17,7 @@ class Everyday::SubscriptionCostCalculatorTest < ActiveSupport::TestCase
 
   test "yearly subscription normalized to monthly" do
     result = Everyday::SubscriptionCostCalculator.new(
-      subscriptions: [{ name: "Domain", cost: 120, frequency: "yearly" }]
+      subscriptions: [ { name: "Domain", cost: 120, frequency: "yearly" } ]
     ).call
     assert_equal true, result[:valid]
     assert_equal 10.0, result[:total_monthly]
@@ -26,7 +26,7 @@ class Everyday::SubscriptionCostCalculatorTest < ActiveSupport::TestCase
 
   test "weekly subscription normalized to monthly" do
     result = Everyday::SubscriptionCostCalculator.new(
-      subscriptions: [{ name: "Meal Kit", cost: 50, frequency: "weekly" }]
+      subscriptions: [ { name: "Meal Kit", cost: 50, frequency: "weekly" } ]
     ).call
     assert_equal true, result[:valid]
     # 50 * 4.33 = 216.50
@@ -60,7 +60,7 @@ class Everyday::SubscriptionCostCalculatorTest < ActiveSupport::TestCase
 
   test "handles string inputs" do
     result = Everyday::SubscriptionCostCalculator.new(
-      subscriptions: [{ name: "Spotify", cost: "10.99", frequency: "Monthly" }]
+      subscriptions: [ { name: "Spotify", cost: "10.99", frequency: "Monthly" } ]
     ).call
     assert_equal true, result[:valid]
     assert_equal 10.99, result[:total_monthly]
@@ -76,7 +76,7 @@ class Everyday::SubscriptionCostCalculatorTest < ActiveSupport::TestCase
 
   test "error when subscription cost is zero" do
     result = Everyday::SubscriptionCostCalculator.new(
-      subscriptions: [{ name: "Free", cost: 0, frequency: "monthly" }]
+      subscriptions: [ { name: "Free", cost: 0, frequency: "monthly" } ]
     ).call
     assert_equal false, result[:valid]
     assert_includes result[:errors], "Subscription 1 cost must be positive"
@@ -84,7 +84,7 @@ class Everyday::SubscriptionCostCalculatorTest < ActiveSupport::TestCase
 
   test "error when frequency is invalid" do
     result = Everyday::SubscriptionCostCalculator.new(
-      subscriptions: [{ name: "Bad", cost: 10, frequency: "daily" }]
+      subscriptions: [ { name: "Bad", cost: 10, frequency: "daily" } ]
     ).call
     assert_equal false, result[:valid]
     assert_includes result[:errors], "Subscription 1 frequency must be weekly, monthly, or yearly"
@@ -92,7 +92,7 @@ class Everyday::SubscriptionCostCalculatorTest < ActiveSupport::TestCase
 
   test "errors accessor returns empty array before call" do
     calc = Everyday::SubscriptionCostCalculator.new(
-      subscriptions: [{ name: "Test", cost: 10, frequency: "monthly" }]
+      subscriptions: [ { name: "Test", cost: 10, frequency: "monthly" } ]
     )
     assert_equal [], calc.errors
   end

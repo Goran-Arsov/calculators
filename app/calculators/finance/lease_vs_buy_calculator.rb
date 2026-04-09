@@ -25,10 +25,10 @@ module Finance
 
       buy_monthly_payment = if monthly_rate.zero?
                               @loan_term_months > 0 ? loan_amount / @loan_term_months : 0.0
-                            else
+      else
                               loan_amount * (monthly_rate * (1 + monthly_rate)**@loan_term_months) /
                                 ((1 + monthly_rate)**@loan_term_months - 1)
-                            end
+      end
 
       total_buy_cost = @down_payment_buy + (buy_monthly_payment * @loan_term_months)
       total_buy_net = total_buy_cost - @estimated_resale_value

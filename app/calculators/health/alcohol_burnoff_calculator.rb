@@ -32,7 +32,7 @@ module Health
 
       # Widmark formula: BAC = (alcohol_grams / (weight_grams × gender_factor)) × 100
       peak_bac = (alcohol_grams / (weight_grams * factor)) * 100.0
-      current_bac = [peak_bac - (ELIMINATION_RATE * @hours), 0.0].max
+      current_bac = [ peak_bac - (ELIMINATION_RATE * @hours), 0.0 ].max
       hours_until_sober = current_bac > 0 ? (current_bac / ELIMINATION_RATE) : 0.0
 
       {

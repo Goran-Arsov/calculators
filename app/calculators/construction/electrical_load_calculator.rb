@@ -50,7 +50,7 @@ module Construction
       ac_watts = @ac_tons * WATTS_PER_AC_TON
       heat_watts = @has_electric_heat ? @square_footage * WATTS_PER_SQFT_HEAT : 0
       # Use larger of AC or heat, not both
-      total_watts += [ac_watts, heat_watts].max
+      total_watts += [ ac_watts, heat_watts ].max
 
       total_amps = (total_watts / VOLTAGE.to_f).round(1)
       recommended_panel = determine_panel_size(total_amps)

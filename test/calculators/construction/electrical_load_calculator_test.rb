@@ -89,7 +89,7 @@ class Construction::ElectricalLoadCalculatorTest < ActiveSupport::TestCase
       square_footage: 2500, has_electric_range: true, has_electric_dryer: true,
       has_electric_water_heater: true, ac_tons: 3
     ).call
-    assert [150, 200].include?(result[:recommended_panel_amps])
+    assert [ 150, 200 ].include?(result[:recommended_panel_amps])
   end
 
   test "total amps calculated at 240V" do

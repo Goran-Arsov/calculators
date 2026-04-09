@@ -19,8 +19,8 @@ module Finance
 
       net_profit = @gross_revenue - @business_expenses
       se_taxable = net_profit * SE_TAX_FACTOR
-      self_employment_tax = [se_taxable * SE_TAX_RATE, 0].max
-      income_tax = [net_profit * (@tax_rate_percent / 100.0), 0].max
+      self_employment_tax = [ se_taxable * SE_TAX_RATE, 0 ].max
+      income_tax = [ net_profit * (@tax_rate_percent / 100.0), 0 ].max
       annual_take_home = net_profit - self_employment_tax - income_tax
       monthly_take_home = annual_take_home / 12.0
       annual_hours = @hours_per_week * 52

@@ -125,7 +125,7 @@ class ProgrammaticSeo::RegistryTest < ActiveSupport::TestCase
   test "every page has quality_score and indexable keys" do
     ProgrammaticSeo::Registry.all_pages.each do |page|
       assert page.key?(:quality_score), "Page '#{page[:slug]}' is missing :quality_score"
-      assert [true, false].include?(page[:indexable]), "Page '#{page[:slug]}' has invalid :indexable value"
+      assert [ true, false ].include?(page[:indexable]), "Page '#{page[:slug]}' has invalid :indexable value"
     end
   end
 
@@ -198,8 +198,8 @@ class ProgrammaticSeo::RegistryTest < ActiveSupport::TestCase
   test "quality_score awards numeric example steps points" do
     base = { intro: "", how_it_works: { paragraphs: [] }, tips: [], faq: [], related_slugs: [] }
 
-    with_numbers = base.merge(example: { steps: ["Enter $350,000 as the loan amount"] })
-    without_numbers = base.merge(example: { steps: ["Enter the loan amount"] })
+    with_numbers = base.merge(example: { steps: [ "Enter $350,000 as the loan amount" ] })
+    without_numbers = base.merge(example: { steps: [ "Enter the loan amount" ] })
 
     score_with = ProgrammaticSeo::Registry.quality_score(with_numbers)
     score_without = ProgrammaticSeo::Registry.quality_score(without_numbers)

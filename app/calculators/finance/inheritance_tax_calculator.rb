@@ -14,42 +14,42 @@ module Finance
       "iowa" => {
         spouse:  { exemption: Float::INFINITY, rates: [] },
         child:   { exemption: Float::INFINITY, rates: [] }, # Exempt since 2021 phase-out; fully repealed 2025
-        sibling: { exemption: 0, rates: [[12_500, 0.05], [12_500, 0.06], [25_000, 0.07], [Float::INFINITY, 0.08]] },
-        other:   { exemption: 0, rates: [[12_500, 0.10], [12_500, 0.12], [25_000, 0.14], [Float::INFINITY, 0.15]] }
+        sibling: { exemption: 0, rates: [ [ 12_500, 0.05 ], [ 12_500, 0.06 ], [ 25_000, 0.07 ], [ Float::INFINITY, 0.08 ] ] },
+        other:   { exemption: 0, rates: [ [ 12_500, 0.10 ], [ 12_500, 0.12 ], [ 25_000, 0.14 ], [ Float::INFINITY, 0.15 ] ] }
       },
       "kentucky" => {
         spouse:  { exemption: Float::INFINITY, rates: [] },
         child:   { exemption: Float::INFINITY, rates: [] },
-        sibling: { exemption: 1_000, rates: [[10_000, 0.04], [10_000, 0.05], [10_000, 0.06], [10_000, 0.07], [Float::INFINITY, 0.08]] },
-        other:   { exemption: 500, rates: [[10_000, 0.06], [10_000, 0.08], [10_000, 0.10], [10_000, 0.12], [10_000, 0.14], [Float::INFINITY, 0.16]] }
+        sibling: { exemption: 1_000, rates: [ [ 10_000, 0.04 ], [ 10_000, 0.05 ], [ 10_000, 0.06 ], [ 10_000, 0.07 ], [ Float::INFINITY, 0.08 ] ] },
+        other:   { exemption: 500, rates: [ [ 10_000, 0.06 ], [ 10_000, 0.08 ], [ 10_000, 0.10 ], [ 10_000, 0.12 ], [ 10_000, 0.14 ], [ Float::INFINITY, 0.16 ] ] }
       },
       "maryland" => {
         spouse:  { exemption: Float::INFINITY, rates: [] },
         child:   { exemption: Float::INFINITY, rates: [] },
-        sibling: { exemption: 0, rates: [[Float::INFINITY, 0.10]] },
-        other:   { exemption: 0, rates: [[Float::INFINITY, 0.10]] }
+        sibling: { exemption: 0, rates: [ [ Float::INFINITY, 0.10 ] ] },
+        other:   { exemption: 0, rates: [ [ Float::INFINITY, 0.10 ] ] }
       },
       "nebraska" => {
         spouse:  { exemption: Float::INFINITY, rates: [] },
-        child:   { exemption: 100_000, rates: [[Float::INFINITY, 0.01]] },
-        sibling: { exemption: 40_000, rates: [[Float::INFINITY, 0.11]] },
-        other:   { exemption: 25_000, rates: [[Float::INFINITY, 0.15]] }
+        child:   { exemption: 100_000, rates: [ [ Float::INFINITY, 0.01 ] ] },
+        sibling: { exemption: 40_000, rates: [ [ Float::INFINITY, 0.11 ] ] },
+        other:   { exemption: 25_000, rates: [ [ Float::INFINITY, 0.15 ] ] }
       },
       "new_jersey" => {
         spouse:  { exemption: Float::INFINITY, rates: [] },
         child:   { exemption: Float::INFINITY, rates: [] },
-        sibling: { exemption: 25_000, rates: [[Float::INFINITY, 0.11]] },
-        other:   { exemption: 0, rates: [[700_000, 0.15], [Float::INFINITY, 0.16]] }
+        sibling: { exemption: 25_000, rates: [ [ Float::INFINITY, 0.11 ] ] },
+        other:   { exemption: 0, rates: [ [ 700_000, 0.15 ], [ Float::INFINITY, 0.16 ] ] }
       },
       "pennsylvania" => {
         spouse:  { exemption: Float::INFINITY, rates: [] },
-        child:   { exemption: 0, rates: [[Float::INFINITY, 0.045]] },
-        sibling: { exemption: 0, rates: [[Float::INFINITY, 0.12]] },
-        other:   { exemption: 0, rates: [[Float::INFINITY, 0.15]] }
+        child:   { exemption: 0, rates: [ [ Float::INFINITY, 0.045 ] ] },
+        sibling: { exemption: 0, rates: [ [ Float::INFINITY, 0.12 ] ] },
+        other:   { exemption: 0, rates: [ [ Float::INFINITY, 0.15 ] ] }
       }
     }.freeze
 
-    VALID_STATES = (STATE_TABLES.keys + ["none"]).freeze
+    VALID_STATES = (STATE_TABLES.keys + [ "none" ]).freeze
     VALID_RELATIONSHIPS = %w[spouse child sibling other].freeze
 
     def initialize(estate_value:, state: "none", relationship: "other")
@@ -94,7 +94,7 @@ module Finance
         }
       end
 
-      taxable = [@estate_value - exemption, 0].max
+      taxable = [ @estate_value - exemption, 0 ].max
       tax = calculate_marginal_tax(taxable, table[:rates])
       effective_rate = @estate_value > 0 ? (tax / @estate_value * 100) : 0.0
       top_rate = table[:rates].any? ? (table[:rates].last[1] * 100) : 0.0
@@ -102,7 +102,7 @@ module Finance
       {
         valid: true,
         estate_value: @estate_value.round(2),
-        exempt_amount: [exemption, @estate_value].min.round(2),
+        exempt_amount: [ exemption, @estate_value ].min.round(2),
         taxable_amount: taxable.round(2),
         tax_rate: top_rate.round(2),
         estimated_tax: tax.round(2),
@@ -128,7 +128,7 @@ module Finance
 
       rates.each do |threshold, rate|
         break if remaining <= 0
-        bracket_width = [threshold, remaining].min
+        bracket_width = [ threshold, remaining ].min
         total_tax += bracket_width * rate
         remaining -= bracket_width
       end

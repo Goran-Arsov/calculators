@@ -27,9 +27,9 @@ module Finance
 
       monthly_savings_needed = if years_to_fire.zero?
                                   0.0
-                                else
+      else
                                   calculate_monthly_savings_needed(fire_number, years_to_fire)
-                                end
+      end
 
       {
         valid: true,

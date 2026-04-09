@@ -168,6 +168,6 @@ class Everyday::JwtGeneratorCalculatorTest < ActiveSupport::TestCase
 
     assert result[:valid]
     assert_equal 1, result[:decoded_payload]["user"]["id"]
-    assert_equal ["read", "write"], result[:decoded_payload]["permissions"]
+    assert_equal [ "read", "write" ], result[:decoded_payload]["permissions"]
   end
 end
