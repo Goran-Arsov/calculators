@@ -30,16 +30,18 @@ class CategoriesController < ApplicationController
       BlogPost.published.by_category(@slug).recent.limit(3).to_a
     end
 
+    domain = ENV.fetch("DOMAIN", request.base_url)
     set_meta_tags(
       title: @category[:title],
       description: @category[:description],
       canonical: category_url(@slug),
       og: {
-        title: "#{@category[:title]} | CalcWise",
+        title: "#{@category[:title]} | Calc Hammer",
         description: @category[:description],
         url: category_url(@slug),
         type: "website",
-        site_name: "CalcWise"
+        site_name: "Calc Hammer",
+        image: "#{domain}/og-#{@slug}.png"
       }
     )
   end

@@ -37,11 +37,11 @@ class ApplicationController < ActionController::Base
     set_meta_tags(
       og: {
         image: "#{domain}/og-image.png",
-        site_name: "CalcWise"
+        site_name: "Calc Hammer"
       },
       twitter: {
         card: "summary_large_image",
-        site: "@calcwise",
+        site: "@calchammer",
         image: "#{domain}/og-image.png"
       }
     )
