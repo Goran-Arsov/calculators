@@ -33,11 +33,12 @@
     <%# Resource hints for faster subsequent navigations %>
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
 
-    <%= preload_link_tag(path_to_stylesheet("application.css"), as: "style") rescue nil %>
+    <%= preload_link_tag(path_to_stylesheet("application.css"), as: "style", fetchpriority: "high") rescue nil %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "print", media: "print" %>
     <%= javascript_importmap_tags %>
 
-    <script>
+    <script nonce="<%= content_security_policy_nonce %>">
       if (localStorage.getItem("darkMode") === "true" ||
           (!localStorage.getItem("darkMode") && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
         document.documentElement.classList.add("dark");
@@ -45,7 +46,7 @@
     </script>
 
     <%# Google Consent Mode v2 — must load BEFORE AdSense and Analytics scripts %>
-    <script>
+    <script nonce="<%= content_security_policy_nonce %>">
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
 
@@ -78,7 +79,7 @@
     <% if ENV["GA_MEASUREMENT_ID"].present? %>
       <%# Google Analytics 4 — also respects Consent Mode %>
       <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV["GA_MEASUREMENT_ID"] %>"></script>
-      <script>
+      <script nonce="<%= content_security_policy_nonce %>">
         gtag('js', new Date());
         gtag('config', '<%= ENV["GA_MEASUREMENT_ID"] %>');
       </script>
@@ -108,7 +109,7 @@
         for duplicate sticky ads. %>
 
     <%# Register service worker for offline calculator support %>
-    <script>
+    <script nonce="<%= content_security_policy_nonce %>">
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/service-worker.js").catch(function() {});
       }

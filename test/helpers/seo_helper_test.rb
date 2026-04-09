@@ -175,4 +175,67 @@ class SeoHelperTest < ActionView::TestCase
     assert_match %r{/icon\.png}, parsed["logo"]
     assert_kind_of Array, parsed["sameAs"]
   end
+
+  test "article_schema returns valid JSON-LD with author field" do
+    published = Time.utc(2026, 3, 15, 10, 0, 0)
+    result = article_schema(
+      title: "How to Calculate Mortgage Payments",
+      description: "A guide to mortgage calculations",
+      url: "https://calcwise.com/blog/mortgage-guide",
+      published_at: published
+    )
+    assert_match %r{application/ld\+json}, result
+    parsed = JSON.parse(result.match(/>(.+)</m)[1])
+    assert_equal "https://schema.org", parsed["@context"]
+    assert_equal "Article", parsed["@type"]
+    assert_equal "How to Calculate Mortgage Payments", parsed["headline"]
+    assert_equal "A guide to mortgage calculations", parsed["description"]
+    assert_equal "2026-03-15T10:00:00Z", parsed["datePublished"]
+    assert_equal "Person", parsed["author"]["@type"]
+    assert_equal "CalcWise Team", parsed["author"]["name"]
+    assert_equal "Organization", parsed["publisher"]["@type"]
+    assert_equal "CalcWise", parsed["publisher"]["name"]
+    assert_nil parsed["dateModified"]
+    assert_nil parsed["image"]
+  end
+
+  test "article_schema includes dateModified when updated_at is present" do
+    published = Time.utc(2026, 3, 15, 10, 0, 0)
+    updated = Time.utc(2026, 4, 1, 14, 30, 0)
+    result = article_schema(
+      title: "Test Article",
+      description: "Test description",
+      url: "https://calcwise.com/blog/test",
+      published_at: published,
+      updated_at: updated
+    )
+    parsed = JSON.parse(result.match(/>(.+)</m)[1])
+    assert_equal "2026-04-01T14:30:00Z", parsed["dateModified"]
+  end
+
+  test "article_schema omits dateModified when updated_at is nil" do
+    published = Time.utc(2026, 3, 15, 10, 0, 0)
+    result = article_schema(
+      title: "Test Article",
+      description: "Test description",
+      url: "https://calcwise.com/blog/test",
+      published_at: published,
+      updated_at: nil
+    )
+    parsed = JSON.parse(result.match(/>(.+)</m)[1])
+    assert_nil parsed["dateModified"]
+  end
+
+  test "article_schema includes image when provided" do
+    published = Time.utc(2026, 3, 15, 10, 0, 0)
+    result = article_schema(
+      title: "Test Article",
+      description: "Test description",
+      url: "https://calcwise.com/blog/test",
+      published_at: published,
+      image: "https://calcwise.com/images/blog/test.png"
+    )
+    parsed = JSON.parse(result.match(/>(.+)</m)[1])
+    assert_equal "https://calcwise.com/images/blog/test.png", parsed["image"]
+  end
 end

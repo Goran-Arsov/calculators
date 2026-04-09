@@ -152,7 +152,7 @@ module SeoHelper
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end
 
-  def article_schema(title:, description:, url:, published_at:, image: nil)
+  def article_schema(title:, description:, url:, published_at:, image: nil, updated_at: nil)
     schema = {
       "@context" => "https://schema.org",
       "@type" => "Article",
@@ -160,6 +160,10 @@ module SeoHelper
       "description" => description,
       "url" => url,
       "datePublished" => published_at.iso8601,
+      "author" => {
+        "@type" => "Person",
+        "name" => "CalcWise Team"
+      },
       "publisher" => {
         "@type" => "Organization",
         "name" => "CalcWise",
@@ -170,6 +174,7 @@ module SeoHelper
         "@id" => url
       }
     }
+    schema["dateModified"] = updated_at.iso8601 if updated_at
     schema["image"] = image if image
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end

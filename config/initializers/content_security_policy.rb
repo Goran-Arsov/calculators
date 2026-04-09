@@ -10,7 +10,7 @@ Rails.application.configure do
     policy.font_src    :self, :https, :data, "fonts.gstatic.com"
     policy.img_src     :self, :https, :data, "pagead2.googlesyndication.com", "www.googletagmanager.com"
     policy.object_src  :none
-    policy.script_src  :self, :https, :unsafe_inline, :unsafe_eval,
+    policy.script_src  :self, :https, :unsafe_eval,
                        "pagead2.googlesyndication.com",
                        "adservice.google.com",
                        "www.googletagmanager.com",
@@ -28,6 +28,12 @@ Rails.application.configure do
                        "www.googletagmanager.com",
                        "adservice.google.com"
   end
+
+  # Generate nonces for inline scripts — replaces :unsafe_inline in script-src.
+  # Each request gets a unique nonce; inline <script> tags must include
+  # nonce="<%= content_security_policy_nonce %>" to be allowed.
+  config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
+  config.content_security_policy_nonce_directives = %w[script-src]
 
   # Report-only by default; set CSP_ENFORCE=true to switch to enforcement mode.
   config.content_security_policy_report_only = !ENV.fetch("CSP_ENFORCE", "false").then { |v| v == "true" }

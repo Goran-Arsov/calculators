@@ -7,11 +7,50 @@ module CalculatorHelper
     CalculatorRegistry.calculators_for_category(category_slug)
   end
 
+  RELATED_STOP_WORDS = %w[a an the and or for of to in is it on with from by your how what are can do].to_set.freeze
+
   def related_calculators(current_slug, category_slug, count: 6)
-    calculators_for_category(category_slug)
+    current_calc = CalculatorRegistry.find_by_slug(current_slug)
+    current_keywords = calculator_keywords(current_calc) if current_calc
+
+    # Score same-category calculators by keyword overlap
+    same_category = calculators_for_category(category_slug)
       .reject { |c| c[:slug] == current_slug }
-      .sample(count)
-      .map { |c| c.merge(path: resolve_calculator_path(c)) }
+
+    scored_same = score_calculators(same_category, current_keywords)
+
+    # Include cross-category calculators to fill remaining slots
+    cross_slugs = CalculatorRegistry::CROSS_CATEGORY_LINKS[current_slug] || []
+    all_slugs_used = scored_same.map { |c| c[:slug] }.to_set
+    all_slugs_used << current_slug
+
+    cross_category = CalculatorRegistry.all_calculators
+      .select { |c| cross_slugs.include?(c[:slug]) && !all_slugs_used.include?(c[:slug]) }
+
+    scored_cross = score_calculators(cross_category, current_keywords)
+
+    # Also find keyword-matched calculators from other categories
+    if current_keywords&.any?
+      other_category = CalculatorRegistry.all_calculators
+        .reject { |c| c[:slug] == current_slug || all_slugs_used.include?(c[:slug]) || cross_slugs.include?(c[:slug]) }
+        .reject { |c| same_category.any? { |sc| sc[:slug] == c[:slug] } }
+
+      scored_other = score_calculators(other_category, current_keywords)
+        .select { |c| c[:_relevance_score] > 1 } # Require at least 2 keyword matches for cross-category
+    else
+      scored_other = []
+    end
+
+    # Merge: prioritize same-category, then explicit cross-category links, then keyword-matched others
+    results = []
+    results.concat(scored_same.first(count))
+    results.concat(scored_cross) if results.size < count
+    results.concat(scored_other) if results.size < count
+
+    results
+      .uniq { |c| c[:slug] }
+      .first(count)
+      .map { |c| c.except(:_relevance_score).merge(path: resolve_calculator_path(c)) }
   end
 
   def trending_calculators(limit = 6)
@@ -96,5 +135,27 @@ module CalculatorHelper
   def embed_script_for(category_slug, calculator_slug)
     domain = ENV.fetch("DOMAIN", "https://calcwise.com")
     %(<script src="#{domain}/embed.js" data-calculator="#{calculator_slug}" data-category="#{category_slug}"></script>)
+  end
+
+  private
+
+  # Extracts meaningful keywords from a calculator's name and description,
+  # filtering out stop words and very short tokens.
+  def calculator_keywords(calc)
+    text = "#{calc[:name]} #{calc[:description]}"
+    text.downcase.scan(/[a-z]+/).reject { |w| RELATED_STOP_WORDS.include?(w) || w.length < 3 }.to_set
+  end
+
+  # Scores and sorts calculators by keyword overlap with the current calculator.
+  # Returns a deterministic ordering: highest score first, then alphabetical by slug.
+  # Attaches a temporary :_relevance_score key for downstream filtering.
+  def score_calculators(calculators, current_keywords)
+    return calculators.sort_by { |c| c[:slug] } unless current_keywords&.any?
+
+    calculators.map { |calc|
+      calc_keywords = calculator_keywords(calc)
+      score = (current_keywords & calc_keywords).size
+      calc.merge(_relevance_score: score)
+    }.sort_by { |c| [-c[:_relevance_score], c[:slug]] }
   end
 end

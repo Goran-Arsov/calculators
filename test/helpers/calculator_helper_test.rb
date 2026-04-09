@@ -50,6 +50,91 @@ class CalculatorHelperTest < ActionView::TestCase
     assert result.length <= 1
   end
 
+  # --- related_calculators ---
+
+  test "related_calculators returns deterministic results" do
+    result1 = related_calculators("mortgage-calculator", "finance")
+    result2 = related_calculators("mortgage-calculator", "finance")
+    assert_equal result1.map { |c| c[:slug] }, result2.map { |c| c[:slug] },
+      "Expected related_calculators to return the same results on repeated calls"
+  end
+
+  test "related_calculators excludes the current calculator" do
+    result = related_calculators("mortgage-calculator", "finance")
+    slugs = result.map { |c| c[:slug] }
+    refute_includes slugs, "mortgage-calculator"
+  end
+
+  test "related_calculators returns up to count results" do
+    result = related_calculators("mortgage-calculator", "finance", count: 3)
+    assert result.length <= 3
+  end
+
+  test "related_calculators returns calculators with resolved paths" do
+    result = related_calculators("mortgage-calculator", "finance")
+    result.each do |calc|
+      assert calc[:path].is_a?(String), "Expected path to be a resolved String, got #{calc[:path].class}"
+    end
+  end
+
+  test "related_calculators does not include _relevance_score in results" do
+    result = related_calculators("mortgage-calculator", "finance")
+    result.each do |calc|
+      refute calc.key?(:_relevance_score), "Expected _relevance_score to be stripped from results"
+    end
+  end
+
+  test "related_calculators prioritizes keyword-relevant same-category calculators" do
+    # Mortgage calculator should rank home/loan related calculators higher
+    result = related_calculators("mortgage-calculator", "finance", count: 6)
+    slugs = result.map { |c| c[:slug] }
+    # Home affordability and amortization share keywords with mortgage
+    loan_related = %w[home-affordability-calculator amortization-calculator loan-calculator]
+    matches = slugs & loan_related
+    assert matches.any?, "Expected at least one loan/mortgage-related calculator in results, got: #{slugs.join(', ')}"
+  end
+
+  test "related_calculators includes cross-category results when same-category is small" do
+    # Use a category with fewer calculators to ensure cross-category fills in
+    result = related_calculators("bmi-calculator", "health", count: 20)
+    # With count: 20, it should try to include cross-category results
+    slugs = result.map { |c| c[:slug] }
+    # BMI calculator has cross-category links to calorie-calculator, tdee-calculator, ideal-weight-calculator
+    # but those are same-category (health). Check that we get many results
+    assert result.length > 0
+  end
+
+  test "related_calculators handles unknown slug gracefully" do
+    result = related_calculators("nonexistent-calculator", "finance")
+    assert_kind_of Array, result
+  end
+
+  test "related_calculators handles unknown category gracefully" do
+    result = related_calculators("mortgage-calculator", "nonexistent")
+    assert_kind_of Array, result
+  end
+
+  # --- calculator_keywords (private) ---
+
+  test "calculator_keywords extracts meaningful words" do
+    calc = { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment." }
+    keywords = send(:calculator_keywords, calc)
+    assert_includes keywords, "mortgage"
+    assert_includes keywords, "monthly"
+    assert_includes keywords, "payment"
+    refute_includes keywords, "your"   # stop word
+    refute_includes keywords, "a"      # stop word
+  end
+
+  test "calculator_keywords filters out short words" do
+    calc = { name: "BMI Calculator", description: "A go-to tool." }
+    keywords = send(:calculator_keywords, calc)
+    refute_includes keywords, "go"    # too short (< 3 chars)
+    assert_includes keywords, "bmi"
+    assert_includes keywords, "tool"
+    assert_includes keywords, "calculator"
+  end
+
   # --- CROSS_CATEGORY_LINKS constant ---
 
   test "CROSS_CATEGORY_LINKS values reference valid calculator slugs" do

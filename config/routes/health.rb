@@ -1,0 +1,35 @@
+namespace :health do
+  get "bmi-calculator", to: "calculators#bmi", as: :bmi
+  get "calorie-calculator", to: "calculators#calorie", as: :calorie
+  get "body-fat-calculator", to: "calculators#body_fat", as: :body_fat
+  get "pregnancy-due-date-calculator", to: "calculators#pregnancy_due_date", as: :pregnancy_due_date
+  get "tdee-calculator", to: "calculators#tdee", as: :tdee
+  get "macro-calculator", to: "calculators#macro", as: :macro
+  get "pace-calculator", to: "calculators#pace", as: :pace
+  get "water-intake-calculator", to: "calculators#water_intake", as: :water_intake
+  get "sleep-calculator", to: "calculators#sleep", as: :sleep
+  get "one-rep-max-calculator", to: "calculators#one_rep_max", as: :one_rep_max
+  get "dog-age-calculator", to: "calculators#dog_age", as: :dog_age
+  get "pregnancy-week-calculator", to: "calculators#pregnancy_week", as: :pregnancy_week
+  get "dog-food-calculator", to: "calculators#dog_food", as: :dog_food
+  get "ideal-weight-calculator", to: "calculators#ideal_weight", as: :ideal_weight
+  get "bac-calculator", to: "calculators#bac", as: :bac
+  get "conception-calculator", to: "calculators#conception", as: :conception
+  get "heart-rate-zone-calculator", to: "calculators#heart_rate_zone", as: :heart_rate_zone
+  get "keto-calculator", to: "calculators#keto", as: :keto
+  get "intermittent-fasting-calculator", to: "calculators#intermittent_fasting", as: :intermittent_fasting
+  get "ovulation-calculator", to: "calculators#ovulation", as: :ovulation
+  get "blood-pressure-calculator", to: "calculators#blood_pressure", as: :blood_pressure
+  get "lean-body-mass-calculator", to: "calculators#lean_body_mass", as: :lean_body_mass
+  get "bmi-calculator-women", to: "calculators#bmi_women", as: :bmi_women
+  get "bmi-calculator-men", to: "calculators#bmi_men", as: :bmi_men
+  get "bmi-calculator-kids", to: "calculators#bmi_kids", as: :bmi_kids
+  get "calorie-deficit-calculator", to: "calculators#calorie_deficit", as: :calorie_deficit
+  get "weight-loss-calorie-calculator", to: "calculators#weight_loss_calories", as: :weight_loss_calories
+  get "pregnancy-calorie-calculator", to: "calculators#pregnancy_calories", as: :pregnancy_calories
+  get "bulking-calorie-calculator", to: "calculators#bulking_calories", as: :bulking_calories
+  get "calories-per-serving-calculator", to: "calculators#calories_per_serving", as: :calories_per_serving
+  get "protein-per-meal-calculator", to: "calculators#protein_per_meal", as: :protein_per_meal
+  get "calories-per-100g-calculator", to: "calculators#calories_per_100g", as: :calories_per_100g
+  get "steps-per-mile-calculator", to: "calculators#steps_per_mile", as: :steps_per_mile
+end
