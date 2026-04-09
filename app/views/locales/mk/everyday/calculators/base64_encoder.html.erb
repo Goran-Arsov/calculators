@@ -1,0 +1,176 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Base64 енкодер и декодер - Бесплатна онлајн алатка",
+  description: "Енкодирајте и декодирајте текст во Base64 онлајн. Поддршка за стандардно и URL-safe Base64 енкодирање со моментални резултати и анализа на големината во бајти.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Base64 енкодер и декодер - Бесплатна онлајн алатка | CalcWise",
+    description: "Енкодирајте и декодирајте текст во Base64 онлајн. Поддршка за стандардно и URL-safe Base64 енкодирање со моментални резултати и анализа на големината во бајти.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Почетна", url: root_url },
+  { name: "Секојдневни", url: category_url("everyday") },
+  { name: "Base64 енкодер и декодер", url: everyday_base64_encoder_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Што е Base64 енкодирање?", answer: "Base64 е шема за енкодирање од бинарно во текст која претставува бинарни податоци користејќи 64 ASCII знаци (A-Z, a-z, 0-9, +, /). Вообичаено се користи за вградување бинарни податоци во текстуални формати како JSON, XML, HTML и е-пошта." },
+  { question: "Зошто Base64 ја зголемува големината на податоците?", answer: "Base64 користи 4 знаци за претставување на секои 3 бајти влезни податоци, што резултира со зголемување на големината од приближно 33%. Овој компромис е прифатлив бидејќи енкодираниот текст може безбедно да се пренесува преку текстуални канали кои би можеле да ги оштетат суровите бинарни податоци." },
+  { question: "Што е URL-safe Base64?", answer: "URL-safe Base64 ги заменува знаците + и / со - и _ соодветно, правејќи ја енкодираната низа употреблива во URL адреси и имиња на датотеки без дополнително процентно енкодирање. Знакот за пополнување = исто така може да се изостави." },
+  { question: "Кога треба да користам Base64 енкодирање?", answer: "Вообичаени употреби вклучуваат вградување слики во CSS или HTML како data URI, пренесување бинарни податоци преку JSON API, енкодирање на автентикациски акредитиви во HTTP заглавја и складирање бинарни податоци во текстуални бази на податоци или конфигурациски датотеки." },
+  { question: "Може ли Base64 да се користи за шифрирање?", answer: "Не. Base64 е шема за енкодирање, а не шифрирање. Тоа е тривијално реверзибилно и не обезбедува никаква безбедност. Секој може да декодира Base64 текст без клуч. За безбедност, користете алгоритми за шифрирање како AES, а потоа евентуално енкодирајте го шифрираниот излез во Base64 за текстуален пренос." }
+]) %>
+
+<%= calculator_schema(
+  name: "Base64 енкодер и декодер",
+  description: "Енкодирајте и декодирајте текст во Base64 со моментални резултати и анализа на големината во бајти.",
+  url: everyday_base64_encoder_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Почетна", url: root_path },
+  { name: "Секојдневни", url: category_path("everyday") },
+  { name: "Base64 енкодер и декодер" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Base64 енкодер и декодер</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Енкодирајте или декодирајте текст од и во Base64 формат. Моментално прегледајте ги должините на знаците и големините во бајти на влезот и излезот.</p>
+
+    <%# Ad: leaderboard — placed below content heading per AdSense best practices %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="base64-encoder-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="base64-encoder-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Влезен текст</label>
+          <textarea id="base64-encoder-input" data-base64-encoder-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="6" placeholder="Внесете текст за енкодирање или декодирање..."></textarea>
+        </div>
+
+        <div class="flex gap-4">
+          <button data-action="click->base64-encoder-calculator#encode"
+            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Енкодирај</button>
+          <button data-action="click->base64-encoder-calculator#decode"
+            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-sm shadow-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Декодирај</button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Должина на влез</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-base64-encoder-calculator-target="resultInputLength">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Должина на излез</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-base64-encoder-calculator-target="resultOutputLength">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Големина на влез</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-base64-encoder-calculator-target="resultInputBytes">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Големина на излез</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-base64-encoder-calculator-target="resultOutputBytes">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="base64-encoder-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Излез</label>
+            <button data-action="click->base64-encoder-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Копирај</button>
+          </div>
+          <textarea id="base64-encoder-output" data-base64-encoder-calculator-target="output" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="6" placeholder="Енкодираниот или декодираниот текст ќе се појави тука..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "base64-encoder" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Како да го користите Base64 енкодерот и декодерот</h2>
+      <p>
+        Залепете го вашиот текст во полето за внесување и кликнете Енкодирај за да го конвертирате во Base64 формат, или залепете Base64 енкодиран текст и кликнете Декодирај за да ја вратите оригиналната содржина. Алатката го обработува вашиот текст моментално и го прикажува резултатот во излезното поле. Мрежата со статистики ги прикажува должините на знаците и големините во бајти за влезот и излезот, што овозможува лесно да се види вишокот на големина воведен со енкодирањето. Користете го копчето Копирај за да го копирате излезот во вашиот клипборд со еден клик.
+      </p>
+      <p>
+        Оваа алатка е идеална за развивачи кои треба брзо да енкодираат низи за API барања, да декодираат Base64 токени за дебагирање или да потврдат дека енкодираните податоци правилно минуваат низ целиот процес. Таа транспарентно ракува со UTF-8 текст, така што повеќебајтните знаци како акцентираните букви, емотиконите и CJK идеограмите се енкодираат и декодираат без оштетување.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Што е Base64 енкодирање и како функционира?</h2>
+      <p>
+        Base64 е шема за енкодирање од бинарно во текст која претставува произволни бинарни податоци користејќи збир од 64 печатливи ASCII знаци: големите букви A до Z, малите букви a до z, цифрите 0 до 9 и двата симболи + и /. Знак за пополнување = се користи кога должината на влезот не е множител од три бајти. Процесот на енкодирање зема секоја група од три влезни бајти (24 бита) и ги дели во четири групи од шест бита, при што секоја одговара на еден од 64-те знаци. Ова произведува четири излезни знаци за секои три влезни бајти.
+      </p>
+      <p>
+        Оваа шема првично беше дефинирана за MIME енкодирање на е-пошта и сега е специфицирана во RFC 4648. Тоа е една од најшироко користените шеми за енкодирање на Веб бидејќи ги трансформира сите бинарни содржини во низа која може безбедно да се вклучи во текстуални протоколи и формати.
+      </p>
+
+      <h3>Вообичаени случаи на употреба</h3>
+      <p>
+        Base64 енкодирањето е присутно низ целиот модерен веб развој. Data URI користат Base64 за вградување слики, фонтови и други бинарни ресурси директно во HTML и CSS, елиминирајќи дополнителни HTTP барања. HTTP Basic автентикацијата го енкодира парот корисничко име и лозинка во Base64 низа во Authorization заглавјето. JSON Web Tokens (JWT) користат Base64url енкодирање за сегментите на заглавјето и содржината. Прилозите на е-пошта се енкодираат во Base64 преку MIME стандардот. API содржините кои треба да пренесуваат бинарни податоци, како прикачувања на датотеки испратени во JSON, се потпираат на Base64 за серијализирање на содржината на датотеките во текстуално компатибилна низа.
+      </p>
+
+      <h3>Стандардно наспроти URL-safe Base64</h3>
+      <p>
+        Стандардното Base64 ги користи + и / како 63-ти и 64-ти знак, но овие знаци имаат специјално значење во URL адреси и имиња на датотеки. URL-safe Base64 (исто така наречен Base64url, дефиниран во секцијата 5 од RFC 4648) го заменува + со - и / со _ за да се избегнат конфликти. Знакот за пополнување = исто така може да се изостави во URL-safe варијантите бидејќи оригиналната должина може да се изведе од енкодираната должина. JWT токените, на пример, користат Base64url без пополнување. Кога работите со веб API, секогаш проверете дали крајната точка очекува стандардно или URL-safe енкодирање.
+      </p>
+
+      <h3>Објаснување на вишокот на големина</h3>
+      <p>
+        Бидејќи Base64 ги пресликува секои 3 влезни бајти во 4 излезни знаци, енкодираните податоци секогаш се приближно 33% поголеми од оригиналот. За датотека од 1 KB, Base64 претставата е приближно 1,37 KB. За слика од 1 MB вградена како data URI, енкодираната низа е приближно 1,33 MB. Овој вишок е компромисот за текстуално компатибилна претстава. Кога пропусниот опсег или складирањето се проблем, размислете дали Base64 е навистина неопходен или дали бинарен транспорт како multipart податоци би бил поефикасен.
+      </p>
+
+      <h2>Често поставувани прашања</h2>
+
+      <h3>Што е Base64 енкодирање?</h3>
+      <p>Base64 е шема од бинарно во текст која користи 64 ASCII знаци (A-Z, a-z, 0-9, +, /). Безбедно ги вградува бинарните податоци во текстуални формати како JSON, XML, HTML и е-пошта.</p>
+
+      <h3>Зошто Base64 ја зголемува големината на податоците?</h3>
+      <p>Користи 4 знаци за секои 3 влезни бајти, предизвикувајќи зголемување од приближно 33%. Овој компромис е прифатлив бидејќи излезот е компатибилен со канали кои работат само со текст.</p>
+
+      <h3>Што е URL-safe Base64?</h3>
+      <p>URL-safe Base64 го заменува + со - и / со _, правејќи ги енкодираните низи употребливи во URL адреси и имиња на датотеки без процентно енкодирање. Пополнувањето исто така може да се изостави.</p>
+
+      <h3>Кога треба да користам Base64 енкодирање?</h3>
+      <p>За data URI, бинарни содржини на JSON API, заглавја за HTTP Basic автентикација, JWT токени, прилози на е-пошта и складирање бинарни податоци во текстуални конфигурациски датотеки.</p>
+
+      <h3>Може ли Base64 да се користи за шифрирање?</h3>
+      <p>Не. Base64 е шема за енкодирање, а не шифрирање. Тоа е тривијално реверзибилно без клуч. Прво користете соодветно шифрирање како AES, а потоа евентуално енкодирајте го шифрираниот текст во Base64.</p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Енкодер/Декодер на низи", description: "Енкодирајте и декодирајте текст со Base64, URL енкодирање и HTML ентитети.", path: everyday_string_encoder_path, icon_path: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" },
+      { name: "URL енкодер/декодер", description: "Енкодирајте и декодирајте URL адреси со процентно енкодирање за безбедна употреба во веб адреси.", path: everyday_url_encoder_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" },
+      { name: "Генератор на хеш", description: "Генерирајте MD5, SHA-1, SHA-256 и SHA-512 хешови од текст.", path: everyday_hash_generator_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("base64-encoder") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

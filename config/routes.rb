@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Localized calculator routes (de, fr, es, pt)
-  scope "/:locale", constraints: { locale: /de|fr|es|pt/ } do
+  scope "/:locale", constraints: { locale: /de|fr|es|pt|mk/ } do
     scope :everyday, module: :everyday, as: nil do
       get "base64-encoder-decoder", to: "calculators#base64_encoder"
       get "url-encoder-decoder", to: "calculators#url_encoder"
@@ -30,6 +30,8 @@ Rails.application.routes.draw do
       get "loan-calculator", to: "calculators#loan"
       get "investment-calculator", to: "calculators#investment"
       get "retirement-calculator", to: "calculators#retirement"
+      get "invoice-generator", to: "calculators#invoice_generator"
+      get "detailed-invoice-generator", to: "calculators#detailed_invoice_generator"
     end
 
     scope :health, module: :health, as: nil do
@@ -95,7 +97,7 @@ Rails.application.routes.draw do
   # SEO
   get "sitemap.xml", to: "sitemap#index", defaults: { format: :xml }
   get "sitemap-main.xml", to: "sitemap#show", defaults: { format: :xml }, as: :sitemap_main
-  get "sitemap-:locale.xml", to: "sitemap#locale", defaults: { format: :xml }, constraints: { locale: /de|fr|es|pt/ }, as: :sitemap_locale
+  get "sitemap-:locale.xml", to: "sitemap#locale", defaults: { format: :xml }, constraints: { locale: /de|fr|es|pt|mk/ }, as: :sitemap_locale
   get "robots.txt", to: "robots#show", defaults: { format: :text }
 
   # Calculator suites - guided multi-step workflows

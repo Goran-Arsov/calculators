@@ -219,13 +219,13 @@ module SeoHelper
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end
 
-  LOCALE_NAMES = { "de" => "Deutsch", "fr" => "Fran\u00e7ais", "es" => "Espa\u00f1ol", "pt" => "Portugu\u00eas" }.freeze
-  SUPPORTED_LOCALES = %w[de fr es pt].freeze
+  LOCALE_NAMES = { "de" => "Deutsch", "fr" => "Fran\u00e7ais", "es" => "Espa\u00f1ol", "pt" => "Portugu\u00eas", "mk" => "Македонски" }.freeze
+  SUPPORTED_LOCALES = %w[de fr es pt mk].freeze
 
   def hreflang_tags
     return "" unless translatable_tool_page?
 
-    base_path = request.path.sub(%r{\A/(de|fr|es|pt)/}, "/")
+    base_path = request.path.sub(%r{\A/(de|fr|es|pt|mk)/}, "/")
     base_url = "#{request.protocol}#{request.host_with_port}"
 
     tags = []
@@ -244,7 +244,7 @@ module SeoHelper
   def language_switcher
     return "" unless translatable_tool_page?
 
-    base_path = request.path.sub(%r{\A/(de|fr|es|pt)/}, "/")
+    base_path = request.path.sub(%r{\A/(de|fr|es|pt|mk)/}, "/")
     current = params[:locale] || "en"
 
     links = []
@@ -257,7 +257,7 @@ module SeoHelper
 
   TRANSLATABLE_CONTROLLER_PATHS = %w[everyday/calculators finance/calculators health/calculators].freeze
 
-  TRANSLATABLE_FINANCE_ACTIONS = %w[mortgage compound_interest loan investment retirement].freeze
+  TRANSLATABLE_FINANCE_ACTIONS = %w[mortgage compound_interest loan investment retirement invoice_generator detailed_invoice_generator].freeze
   TRANSLATABLE_HEALTH_ACTIONS = %w[bmi calorie body_fat tdee macro].freeze
 
   private def translatable_tool_page?

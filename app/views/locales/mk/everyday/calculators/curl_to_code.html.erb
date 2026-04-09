@@ -1,0 +1,225 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Конвертор cURL во код - Python, JS, Ruby и PHP",
+  description: "Конвертирајте cURL команди во Python, JavaScript, Ruby и PHP код. Залепете ја вашата cURL команда и добијте чист код готов за употреба.",
+  canonical: locale_canonical_url,
+  og: {
+    title: "Конвертор cURL во код - Python, JS, Ruby и PHP | CalcWise",
+    description: "Конвертирајте cURL команди во Python, JavaScript, Ruby и PHP код. Залепете ја вашата cURL команда и добијте чист код готов за употреба.",
+    url: locale_canonical_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Почетна", url: root_url },
+  { name: "Секојдневни", url: category_url("everyday") },
+  { name: "Конвертор cURL во код", url: everyday_curl_to_code_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Што е cURL?", answer: "cURL (Client URL) е алатка за командна линија за пренос на податоци користејќи различни мрежни протоколи, најчесто HTTP и HTTPS. Е прединсталиран на повеќето оперативни системи, вклучувајќи Linux, macOS и Windows 10+. Програмерите користат cURL за тестирање на API, преземање датотеки и дебагирање на мрежни барања. Алатките за развој на прелистувачите често нудат опција 'Копирај како cURL' за мрежни барања." },
+  { question: "Како да прочитам cURL команда?", answer: "cURL командата започнува со 'curl' проследена со URL. Вообичаените знаменца вклучуваат -X за дефинирање на HTTP методот, -H за додавање заглавија, -d за испраќање податоци во телото на барањето, -u за автентикација, -o за зачувување на излезот во датотека и -v за детален излез. На пример, 'curl -X POST -H \"Content-Type: application/json\" -d '{\"key\":\"value\"}' https://api.example.com' испраќа JSON POST барање." },
+  { question: "Кои HTTP методи ги поддржува cURL?", answer: "cURL ги поддржува сите HTTP методи, вклучувајќи GET, POST, PUT, PATCH, DELETE, HEAD и OPTIONS. Методот се специфицира со знаменцето -X (на пример, -X POST). Ако не е специфициран метод, GET е стандардниот метод. Кога -d се користи без -X, cURL автоматски користи POST." },
+  { question: "Можам ли да конвертирам cURL со автентикација?", answer: "Да, оваа алатка работи со cURL команди со различни методи на автентикација. Конвертира -u username:password (Basic auth), -H 'Authorization: Bearer token' (автентикација со Bearer токен) и други модели на автентикација базирани на заглавија во еквивалентен код за секој целен јазик користејќи ги нивните нативни HTTP библиотеки." },
+  { question: "Дали оваа алатка ги обработува multipart податоците?", answer: "Да, конверторот ги обработува cURL командите со знаменцата -F за multipart податоци од формулари. Ги преведува полињата на формуларот и прикачувањата на датотеки во соодветната синтакса за multipart барања за секој целен јазик. Генерираниот код ја користи стандардната библиотека на секој јазик за конструирање на multipart барања." }
+]) %>
+
+<%= calculator_schema(
+  name: "Конвертор cURL во код",
+  description: "Конвертирајте cURL команди во Python, JavaScript, Ruby и PHP код со анализа на методот, заглавијата и телото.",
+  url: everyday_curl_to_code_url,
+  category: "UtilityApplication"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Почетна", url: root_path },
+  { name: "Секојдневни", url: category_path("everyday") },
+  { name: "Конвертор cURL во код" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <%= hreflang_tags %>
+  <div class="lg:col-span-2">
+    <%= render "shared/language_switcher" %>
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Конвертор cURL во код</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Конвертирајте cURL команди во Python, JavaScript, Ruby и PHP код. Залепете ја вашата cURL команда и добијте чист код готов за употреба.</p>
+
+    <%# Ad: leaderboard — placed below content heading per AdSense best practices %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="curl-to-code-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-6">
+        <div>
+          <label for="curl-to-code-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">cURL команда</label>
+          <textarea id="curl-to-code-input" data-curl-to-code-calculator-target="input"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="6" placeholder="curl https://api.example.com -H 'Authorization: Bearer token'"></textarea>
+        </div>
+
+        <div>
+          <label for="curl-to-code-language" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Целен јазик</label>
+          <select id="curl-to-code-language" data-curl-to-code-calculator-target="language" data-action="change->curl-to-code-calculator#convert"
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="ruby">Ruby</option>
+            <option value="php">PHP</option>
+          </select>
+        </div>
+
+        <div>
+          <button data-action="click->curl-to-code-calculator#convert"
+            class="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Конвертирај</button>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Метод</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-curl-to-code-calculator-target="resultMethod">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">URL</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400 truncate block" data-curl-to-code-calculator-target="resultUrl">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Заглавија</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-curl-to-code-calculator-target="resultHeaders">&mdash;</span>
+          </div>
+          <div class="text-center">
+            <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Тело</span>
+            <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-curl-to-code-calculator-target="resultHasBody">&mdash;</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="curl-to-code-output" class="text-sm font-semibold text-gray-600 dark:text-gray-400">Генериран код</label>
+            <button data-action="click->curl-to-code-calculator#copy" class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">Копирај</button>
+          </div>
+          <textarea id="curl-to-code-output" data-curl-to-code-calculator-target="output" readonly
+            class="w-full rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white p-3 text-sm font-mono"
+            rows="10" placeholder="Генерираниот код ќе се појави тука..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "curl-to-code" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Како да го користите конверторот cURL во код</h2>
+      <p>
+        Залепете cURL команда во полето за внесување, изберете го вашиот целен програмски јазик од паѓачкото мени и кликнете Конвертирај. Алатката ја анализира cURL командата за да ги извлече HTTP методот, URL-то, заглавијата и телото на барањето, а потоа генерира еквивалентен код користејќи ја стандардната HTTP библиотека на избраниот јазик. Панелот за статистика го прикажува анализираниот метод, URL-то, бројот на заглавија и дали има тело. Користете го копчето Копирај за да го копирате генерираниот код во вашиот клипборд.
+      </p>
+      <p>
+        Оваа алатка е непроценлива за програмери кои тестираат API со cURL и потоа треба да ги интегрираат тие барања во кодот на нивната апликација. Алатките за развој на прелистувачите ви дозволуваат да копирате кое било мрежно барање како cURL команда, што олеснува фаќање на функционално барање и негово конвертирање во код на јазикот по ваш избор.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Разбирање на cURL командите</h2>
+      <p>
+        cURL е најшироко користениот HTTP клиент за командна линија, инсталиран стандардно на практично секој оперативен систем. cURL команда се состои од клучниот збор <code>curl</code> проследен со URL и опционални знаменца. Знаменцето <code>-X</code> го специфицира HTTP методот (GET, POST, PUT, DELETE, итн.). Знаменцето <code>-H</code> додава заглавија на барањето како <code>Content-Type</code> и <code>Authorization</code>. Знаменцето <code>-d</code> испраќа податоци во телото на барањето. Знаменцето <code>-u</code> обезбедува акредитиви за основна автентикација.
+      </p>
+      <p>
+        Кога не е експлицитно специфициран метод, cURL стандардно користи GET. Кога знаменцето <code>-d</code> се користи без <code>-X</code>, cURL автоматски преминува на POST. Овие имплицитни однесувања се зачувани во генерираниот код, кој експлицитно го поставува методот за да ја направи намерата јасна независно од стандардните вредности специфични за јазикот.
+      </p>
+
+      <h3>Поддржани јазици и библиотеки</h3>
+      <p>
+        Конверторот генерира идиоматски код за четири популарни јазици. Python кодот ја користи библиотеката <code>requests</code>, која е де факто стандард за HTTP во Python. JavaScript кодот го користи вградениот <code>fetch</code> API, достапен во сите модерни прелистувачи и Node.js. Ruby кодот користи <code>Net::HTTP</code> од стандардната библиотека. PHP кодот ги користи <code>cURL</code> функциите (<code>curl_init</code>, <code>curl_setopt</code>, <code>curl_exec</code>), достапни во практично сите PHP инсталации.
+      </p>
+
+      <h3>Ракување со автентикација и заглавија</h3>
+      <p>
+        API барањата често бараат автентикација. Конверторот ја обработува автентикацијата со Bearer токен пренесена преку <code>-H 'Authorization: Bearer ...'</code>, основната автентикација преку <code>-u username:password</code> и заглавијата за API клуч. Прилагодените заглавија се преведуваат во соодветниот механизам за дефинирање заглавија за секој јазик. Content-Type заглавијата се зачувуваат за да се обезбеди телото на барањето да биде испратено во правилниот формат, без разлика дали е JSON, URL-кодирано или multipart.
+      </p>
+
+      <h2>Разбирање на cURL знаменцата</h2>
+      <p>
+        cURL нуди десетици знаменца за командна линија, но неколку претставуваат огромното мнозинство од реалната употреба. Учењето што прави секое од нив ви помага да читате и пишувате cURL команди со доверба, а нивното разбирање го олеснува верификувањето дека конвертираниот код е точен.
+      </p>
+      <h3>Знаменца за барања</h3>
+      <p>
+        Знаменцето <code>-X</code> (или <code>--request</code>) го поставува HTTP методот. Вообичаените вредности се <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code> и <code>DELETE</code>. Ако целосно го изоставите <code>-X</code>, cURL стандардно користи <code>GET</code> освен ако е присутно знаменце за податоци како <code>-d</code>, во кој случај автоматски преминува на <code>POST</code>. Знаменцето <code>-H</code> (или <code>--header</code>) додава прилагодено заглавие на барањето. Можете да го користите повеќе пати за поставување повеќе заглавија: <code>-H 'Content-Type: application/json' -H 'Accept: application/json'</code>. Знаменцето <code>-d</code> (или <code>--data</code>) испраќа податоци во телото на барањето и имплицира <code>POST</code>. За JSON полезни товари, генерално го комбинирате со <code>-H 'Content-Type: application/json'</code>. Варијантата <code>--data-raw</code> се однесува идентично но не го интерпретира префиксот <code>@</code> како референца кон датотека.
+      </p>
+      <h3>Знаменца за автентикација и излез</h3>
+      <p>
+        Знаменцето <code>-u</code> (или <code>--user</code>) обезбедува акредитиви за основна автентикација во формат <code>username:password</code>. cURL ги кодира во Base64 и ги испраќа во заглавието <code>Authorization</code>. Знаменцето <code>-o</code> (или <code>--output</code>) го запишува телото на одговорот во датотека наместо на стандарден излез. Знаменцето <code>-O</code> зачувува во датотека користејќи го далечинското име на датотеката од URL-то. Знаменцето <code>-v</code> (или <code>--verbose</code>) ги прикажува деталните информации за барањето и одговорот, вклучувајќи детали за TLS ракувањето и размената на заглавија, што е непроценливо за дебагирање. Знаменцето <code>-k</code> (или <code>--insecure</code>) му кажува на cURL да не го верификува TLS сертификатот, корисно за развојни околини со самопотпишани сертификати но опасно во продукција. Знаменцето <code>-L</code> (или <code>--location</code>) му кажува на cURL да ги следи HTTP пренасочувањата (3xx одговори), кои многу API и веб-страници ги емитуваат.
+      </p>
+
+      <h2>Како функционира конверзијата</h2>
+      <p>
+        Конвертирањето на cURL команда во изворен код вклучува неколку посебни чекори. Конверторот прво ја токенизира влезната низа, делејќи ја по празни простори додека ги почитува едноструките и двоструките наводници за вредностите на заглавијата и JSON телата што содржат празни простори да останат интактни. Потоа секвенцијално ја поминува листата на токени, идентификувајќи ги познатите знаменца и консумирајќи ги нивните аргументи. Знаменце како <code>-X</code> го консумира следниот токен како HTTP метод; <code>-H</code> го консумира следниот токен како низа на заглавие; <code>-d</code> или <code>--data</code> го консумира следниот токен како тело на барањето. Токените кои не се поврзани со знаменце и личат на URL-а (започнуваат со <code>http://</code> или <code>https://</code>) се фаќаат како целно URL.
+      </p>
+      <p>
+        Откако анализата е завршена, конверторот поседува структуриран приказ на барањето: URL-то, HTTP методот, листа на заглавија (секое поделено на име и вредност на првата двоточка), суровата низа на телото и евентуалните акредитиви за автентикација. Овој меѓупретстав е независен од јазикот. Последниот чекор е генерирање на код, каде шаблон специфичен за јазикот ја мапира секоја компонента во HTTP идиомите на целниот јазик. Методот станува аргумент на функција или константа, заглавијата стануваат речник или асоцијативна низа, а телото се прикачува на начинот на кој библиотеката го очекува. Генерираниот код е форматиран со правилно вовлекување и готов за извршување.
+      </p>
+      <p>
+        Специјалните случаи бараат посебно третирање. Повеќелиниските cURL команди кои користат продолжување со обратна коса црта (<code>\</code> на крајот на линијата) се спојуваат пред анализата. Знаменцето <code>-u</code> се преведува во механизам за основна автентикација специфичен за јазикот наместо да биде оставено како сурово заглавие. Дупликатните заглавија се зачувуваат по редослед, бидејќи некои API се потпираат на повеќе вредности за истото име на заглавие (на пример, повеќе <code>Set-Cookie</code> заглавија). Конверторот исто така ги отстранува знаците за промпт на shell <code>$</code> или <code>%</code> на почетокот на линијата кои понекогаш се појавуваат кога команда е копирана од упатство или снимка на терминал.
+      </p>
+
+      <h2>HTTP библиотеки специфични за јазици</h2>
+      <p>
+        Секој целен јазик користи различна библиотека со свои конвенции за конструирање на HTTP барања. Разбирањето на овие разлики ви помага да го изберете вистинскиот излез и да го модифицирате генерираниот код доколку е потребно.
+      </p>
+      <h3>Python &mdash; requests</h3>
+      <p>
+        Библиотеката <code>requests</code> е најпопуларниот HTTP клиент во Python екосистемот. Обезбедува едноставен API на високо ниво каде HTTP методот директно кореспондира со име на функција: <code>requests.get()</code>, <code>requests.post()</code>, итн. Заглавијата се пренесуваат како едноставен речник на клучниот аргумент <code>headers</code>. JSON телата можат да се пренесат преку параметарот <code>json</code>, кој автоматски го поставува Content-Type заглавието и го серијализира речникот. Параметарот <code>auth</code> прифаќа торка за основна автентикација. Податоците од одговорот се достапни преку <code>.json()</code>, <code>.text</code> или <code>.content</code> во зависност од посакуваниот формат.
+      </p>
+      <h3>JavaScript &mdash; fetch API</h3>
+      <p>
+        <code>fetch</code> API е вграден во сите модерни прелистувачи и Node.js 18+. Прима URL како прв аргумент и објект со опции како втор. Објектот со опции ги прифаќа својствата <code>method</code>, <code>headers</code> и <code>body</code>. Заглавијата можат да бидат обичен објект или инстанца на <code>Headers</code>. За разлика од <code>requests</code> во Python, <code>fetch</code> не фрла исклучок при HTTP статусни кодови за грешка; мора сами да проверите <code>response.ok</code>. Телото на одговорот се консумира асинхроно преку методи како <code>response.json()</code> или <code>response.text()</code>. Бидејќи <code>fetch</code> враќа Promise, генерираниот код користи <code>async/await</code> за читливост.
+      </p>
+      <h3>Ruby &mdash; Net::HTTP</h3>
+      <p>
+        Стандардната библиотека на Ruby вклучува <code>Net::HTTP</code>, која е поопширна од еквивалентите во Python или JavaScript, но не бара надворешни зависности. Типично барање започнува со парсирање на URL-то во <code>URI</code> објект, а потоа креирање инстанца на <code>Net::HTTP</code> конфигурирана за хостот и портот. Објектите за барање како <code>Net::HTTP::Post</code> или <code>Net::HTTP::Get</code> го претставуваат методот. Заглавијата се поставуваат со нотација на загради на објектот за барање. Телото се доделува директно. За HTTPS URL-а, <code>use_ssl</code> мора да биде поставен на <code>true</code>. Поради оваа опширност, многу Ruby програмери користат обвивачки gem-ови како <code>Faraday</code> или <code>HTTParty</code>, но генерираниот код се држи до стандардната библиотека за максимална преносливост.
+      </p>
+      <h3>PHP &mdash; cURL екстензија</h3>
+      <p>
+        PHP cURL екстензијата ја обвива истата libcurl библиотека која ја напојува алатката за командна линија <code>curl</code>. Работниот тек се врти околу рачка создадена со <code>curl_init()</code>. Опциите се поставуваат преку повици кон <code>curl_setopt()</code>: <code>CURLOPT_URL</code> за целното URL, <code>CURLOPT_CUSTOMREQUEST</code> за HTTP методот, <code>CURLOPT_HTTPHEADER</code> за низа од низи на заглавија, и <code>CURLOPT_POSTFIELDS</code> за телото на барањето. Поставувањето на <code>CURLOPT_RETURNTRANSFER</code> на <code>true</code> прави <code>curl_exec()</code> да го врати одговорот како низа наместо да го прикаже. Бидејќи PHP екстензијата одблизу го огледува C API на libcurl, генерираниот PHP код речиси еден-на-еден одговара на оригиналните cURL знаменца, правејќи ја оваа конверзијата најтранспарентна од четирите јазици.
+      </p>
+
+      <h2>Често поставувани прашања</h2>
+
+      <h3>Што е cURL?</h3>
+      <p>cURL е алатка за командна линија за правење HTTP барања. Е прединсталиран на Linux, macOS и Windows 10+, и е стандардна алатка за тестирање на API.</p>
+
+      <h3>Како да прочитам cURL команда?</h3>
+      <p>Започнува со <code>curl</code> проследено со URL. Користете -X за методот, -H за заглавија, -d за податоци во телото и -u за автентикација.</p>
+
+      <h3>Кои HTTP методи ги поддржува cURL?</h3>
+      <p>Сите стандардни методи: GET, POST, PUT, PATCH, DELETE, HEAD и OPTIONS. Поставете го методот со знаменцето -X.</p>
+
+      <h3>Можам ли да конвертирам cURL со автентикација?</h3>
+      <p>Да. Алатката ја обработува основната автентикација (-u), Bearer токените (-H Authorization) и други модели на автентикација базирани на заглавија.</p>
+
+      <h3>Дали оваа алатка ги обработува multipart податоците?</h3>
+      <p>Да. Командите со знаменца -F за прикачување датотеки и полиња на формулари се конвертираат во соодветната multipart синтакса на секој јазик.</p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "URL анализатор", description: "Разложете кое било URL на неговите компоненти: шема, хост, порт, патека, барање и фрагмент.", path: everyday_url_parser_path, icon_path: "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" },
+      { name: "Анализатор на HTTP заглавија", description: "Анализирајте и испитајте HTTP заглавија од суров текст на барање или одговор.", path: everyday_http_header_parser_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "JSON форматер", description: "Форматирајте, разубавете, минифицирајте и валидирајте JSON со анализа на бројот на клучеви и длабочината на вгнездување.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+
+    <% blog_posts = related_blog_posts("curl-to-code") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
