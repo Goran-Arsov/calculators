@@ -1,0 +1,209 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pension Calculator with Inflation - Free Online Tool",
+  description: "Calculate your projected pension pot and monthly retirement income, adjusted for inflation. See both nominal and real (today's money) values to plan realistically for retirement.",
+  canonical: finance_pension_url,
+  og: {
+    title: "Pension Calculator with Inflation - Free Online Tool | Calc Hammer",
+    description: "Calculate your projected pension pot and monthly retirement income, adjusted for inflation. See both nominal and real (today's money) values to plan realistically for retirement.",
+    url: finance_pension_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Pension Calculator", url: finance_pension_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does inflation affect my pension?", answer: "Inflation erodes the purchasing power of money over time. A pension pot of $1,000,000 in 30 years will not buy as much as $1,000,000 today. If inflation averages 2.5% annually, that $1,000,000 will have the purchasing power of approximately $477,000 in today's money. That is why planning in real (inflation-adjusted) terms is essential for retirement." },
+  { question: "What is the difference between nominal and real values?", answer: "Nominal values are the raw future dollar amounts. Real values are those amounts adjusted for inflation, expressed in today's purchasing power. Real values give a more meaningful picture of what your future pension can actually buy when you retire." },
+  { question: "How is monthly pension income calculated?", answer: "This calculator uses the standard annuity payment formula: PMT = PV * r / (1 - (1+r)^-n), where PV is your pension pot, r is the monthly return rate during retirement, and n is the total number of months in retirement. This gives the fixed monthly income that depletes the pot over the specified retirement duration." },
+  { question: "What inflation rate should I use?", answer: "Historical long-run inflation in developed economies has averaged around 2-3% per year. Central banks often target 2% inflation. For conservative planning, 2.5-3% is a reasonable assumption. If you are planning for an economy with higher historical inflation, adjust accordingly." },
+  { question: "Should I assume the same return rate during retirement?", answer: "This calculator assumes the same nominal return rate during both accumulation and withdrawal phases. In practice, many retirees shift to more conservative investments in retirement, which may produce lower returns. You can adjust the return rate downward to model a more conservative retirement portfolio." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Pension Calculator with Inflation",
+  description: "Calculate your projected pension pot and monthly retirement income with inflation adjustments. Shows both nominal and real (today's money) values.",
+  url: finance_pension_url,
+  category: "FinanceApplication",
+  calculator_slug: "pension"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Pension Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pension Calculator with Inflation</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Project your pension pot and monthly retirement income with inflation-adjusted values in today's money.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="pension-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="pension-current-age" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Age</label>
+            <input type="number" inputmode="decimal" id="pension-current-age" min="18" max="80" step="1" value="30" placeholder="e.g. 30"
+              data-pension-calculator-target="currentAge"
+              data-action="input->pension-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="pension-retirement-age" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Retirement Age</label>
+            <input type="number" inputmode="decimal" id="pension-retirement-age" min="30" max="100" step="1" value="65" placeholder="e.g. 65"
+              data-pension-calculator-target="retirementAge"
+              data-action="input->pension-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="pension-current-savings" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Pension Pot ($)</label>
+            <input type="number" inputmode="decimal" id="pension-current-savings" min="0" step="1000" value="50000" placeholder="e.g. 50000"
+              data-pension-calculator-target="currentSavings"
+              data-action="input->pension-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="pension-monthly-contribution" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Contribution ($)</label>
+            <input type="number" inputmode="decimal" id="pension-monthly-contribution" min="0" step="50" value="500" placeholder="e.g. 500"
+              data-pension-calculator-target="monthlyContribution"
+              data-action="input->pension-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="pension-return-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Expected Annual Return (%)</label>
+            <input type="number" inputmode="decimal" id="pension-return-rate" min="0" max="30" step="0.1" value="7" placeholder="e.g. 7"
+              data-pension-calculator-target="returnRate"
+              data-action="input->pension-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="pension-inflation-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Inflation Rate (%)</label>
+            <input type="number" inputmode="decimal" id="pension-inflation-rate" min="0" max="20" step="0.1" value="2.5" placeholder="e.g. 2.5"
+              data-pension-calculator-target="inflationRate"
+              data-action="input->pension-calculator#calculate"
+              class="w-full">
+          </div>
+          <div>
+            <label for="pension-years-in-retirement" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Years in Retirement</label>
+            <input type="number" inputmode="decimal" id="pension-years-in-retirement" min="1" max="50" step="1" value="25" placeholder="e.g. 25"
+              data-pension-calculator-target="yearsInRetirement"
+              data-action="input->pension-calculator#calculate"
+              class="w-full">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Years to Retire</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-pension-calculator-target="yearsToRetire">35</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">Total Contributions</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white" data-pension-calculator-target="totalContributions">$0.00</span>
+            </div>
+            <div class="pt-3 border-t border-blue-200 dark:border-blue-800">
+              <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Pension Pot at Retirement</div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Nominal</span>
+                <span class="text-lg font-bold text-green-600 dark:text-green-400" data-pension-calculator-target="nominalPot">$0.00</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Today's Money</span>
+                <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" data-pension-calculator-target="realPot">$0.00</span>
+              </div>
+            </div>
+            <div class="pt-3 border-t border-blue-200 dark:border-blue-800">
+              <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Monthly Income in Retirement</div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Nominal</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-pension-calculator-target="nominalMonthlyIncome">$0.00</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600 dark:text-gray-400">Today's Money</span>
+                <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400" data-pension-calculator-target="realMonthlyIncome">$0.00</span>
+              </div>
+            </div>
+          </div>
+          <button data-action="click->pension-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "pension" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Pension Calculator</h2>
+      <p>This pension calculator helps you plan realistically for retirement by accounting for one of the most overlooked factors in long-term financial planning: inflation. Unlike simple retirement calculators that only show you the raw future value of your pension pot, this tool also shows you what your savings will actually be worth in today's purchasing power when you eventually retire.</p>
+
+      <p>Start by entering your current age and the age at which you plan to retire. Next, enter the current value of your pension pot, including all workplace pensions, personal pensions, self-invested pensions (SIPPs), and any other retirement savings. Add your monthly contribution, which should include both your own contributions and any employer matching. If you are paying into a percentage-of-salary scheme, convert that to a monthly dollar amount based on your current pay.</p>
+
+      <p>The expected annual return reflects the average yearly growth you anticipate on your investments before inflation. A diversified portfolio of stocks historically returns around 7-10% per year in nominal terms, while a more conservative mix of stocks and bonds might return 5-7%. The inflation rate is the average annual rise in prices; in developed economies, 2-3% is a reasonable long-term assumption. Finally, enter how many years you expect to draw from your pension, typically 20-30 years depending on your expected retirement age and life expectancy.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Nominal vs Real Values</h2>
+      <p>The results section shows two values for both your projected pension pot and your monthly retirement income: nominal and real. Nominal values are the raw future dollar amounts your pot and monthly payments will equal at the time of retirement. Real values are those same amounts expressed in today's purchasing power — what they would actually buy if you were using them to shop in today's economy.</p>
+
+      <p>For example, if your calculator projects a nominal pension pot of $1,500,000 in 35 years and you assumed 2.5% inflation, the real value of that pot is approximately $633,000 in today's money. This is a dramatic difference and illustrates why it is critical to plan using real values rather than nominal ones. A $1.5 million retirement pot sounds like a comfortable fortune, but if it only has the purchasing power of $633,000 today, you may need to save significantly more.</p>
+
+      <h2>The Math Behind the Calculator</h2>
+      <p>The nominal pension pot is calculated using the standard future value formulas for compound interest on your current savings combined with the future value of a monthly annuity for your contributions:</p>
+      <p><strong>FV = PV x (1 + r/12)^(n x 12) + PMT x [((1 + r/12)^(n x 12) - 1) / (r/12)]</strong></p>
+      <p>Where PV is your current pension pot, PMT is your monthly contribution, r is the annual return rate, and n is the number of years until retirement.</p>
+      <p>The real (inflation-adjusted) pot is then calculated by dividing the nominal pot by the compound inflation factor:</p>
+      <p><strong>Real Pot = Nominal Pot / (1 + i)^n</strong></p>
+      <p>Where i is the annual inflation rate.</p>
+      <p>The monthly retirement income is calculated using the annuity payment formula, which gives the fixed monthly amount that will deplete the pot over the specified retirement duration assuming the same return rate continues:</p>
+      <p><strong>PMT = PV x r / (1 - (1 + r)^-n)</strong></p>
+      <p>Where PV is your pot at retirement, r is the monthly return rate, and n is the total number of months in retirement. The real monthly income is then discounted by inflation to show today's purchasing power.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does inflation affect my pension?</h3>
+      <p>Inflation erodes the purchasing power of money over time. A pension pot of $1,000,000 in 30 years will not buy as much as $1,000,000 today. If inflation averages 2.5% annually, that $1,000,000 will have the purchasing power of approximately $477,000 in today's money. That is why planning in real (inflation-adjusted) terms is essential for retirement.</p>
+
+      <h3>What is the difference between nominal and real values?</h3>
+      <p>Nominal values are the raw future dollar amounts. Real values are those amounts adjusted for inflation, expressed in today's purchasing power. Real values give a more meaningful picture of what your future pension can actually buy when you retire.</p>
+
+      <h3>How is monthly pension income calculated?</h3>
+      <p>This calculator uses the standard annuity payment formula: PMT = PV * r / (1 - (1+r)^-n), where PV is your pension pot, r is the monthly return rate during retirement, and n is the total number of months in retirement. This gives the fixed monthly income that depletes the pot over the specified retirement duration.</p>
+
+      <h3>What inflation rate should I use?</h3>
+      <p>Historical long-run inflation in developed economies has averaged around 2-3% per year. Central banks often target 2% inflation. For conservative planning, 2.5-3% is a reasonable assumption. If you are planning for an economy with higher historical inflation, adjust accordingly.</p>
+
+      <h3>Should I assume the same return rate during retirement?</h3>
+      <p>This calculator assumes the same nominal return rate during both accumulation and withdrawal phases. In practice, many retirees shift to more conservative investments in retirement, which may produce lower returns. You can adjust the return rate downward to model a more conservative retirement portfolio.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Retirement Calculator", description: "Estimate your retirement savings and monthly income based on the 4% withdrawal rule.", path: finance_retirement_path, icon_path: "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" },
+      { name: "Inflation Calculator", description: "See how inflation affects the purchasing power of money over time.", path: finance_inflation_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Compound Interest Calculator", description: "See how your savings grow with compound interest over time.", path: finance_compound_interest_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

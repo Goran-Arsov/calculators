@@ -5,6 +5,7 @@ module Finance
     def loan; end
     def investment; end
     def retirement; end
+    def pension; end
     def debt_payoff; end
     def salary; end
     def savings_goal; end

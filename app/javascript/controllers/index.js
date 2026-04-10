@@ -6,6 +6,7 @@ import CompoundInterestCalculatorController from "controllers/compound_interest_
 import LoanCalculatorController from "controllers/loan_calculator_controller"
 import InvestmentCalculatorController from "controllers/investment_calculator_controller"
 import RetirementCalculatorController from "controllers/retirement_calculator_controller"
+import PensionCalculatorController from "controllers/pension_calculator_controller"
 import DebtPayoffCalculatorController from "controllers/debt_payoff_calculator_controller"
 import SalaryCalculatorController from "controllers/salary_calculator_controller"
 import SavingsGoalCalculatorController from "controllers/savings_goal_calculator_controller"
@@ -312,6 +313,7 @@ application.register("compound-interest-calculator", CompoundInterestCalculatorC
 application.register("loan-calculator", LoanCalculatorController)
 application.register("investment-calculator", InvestmentCalculatorController)
 application.register("retirement-calculator", RetirementCalculatorController)
+application.register("pension-calculator", PensionCalculatorController)
 application.register("debt-payoff-calculator", DebtPayoffCalculatorController)
 application.register("salary-calculator", SalaryCalculatorController)
 application.register("savings-goal-calculator", SavingsGoalCalculatorController)

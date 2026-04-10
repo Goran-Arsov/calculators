@@ -4,6 +4,7 @@ namespace :finance do
   get "loan-calculator", to: "calculators#loan", as: :loan
   get "investment-calculator", to: "calculators#investment", as: :investment
   get "retirement-calculator", to: "calculators#retirement", as: :retirement
+  get "pension-calculator", to: "calculators#pension", as: :pension
   get "debt-payoff-calculator", to: "calculators#debt_payoff", as: :debt_payoff
   get "salary-calculator", to: "calculators#salary", as: :salary
   get "savings-goal-calculator", to: "calculators#savings_goal", as: :savings_goal
