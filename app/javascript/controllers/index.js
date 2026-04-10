@@ -270,6 +270,12 @@ import DeckCalculatorController from "controllers/deck_calculator_controller"
 import WallpaperCalculatorController from "controllers/wallpaper_calculator_controller"
 import TileCalculatorController from "controllers/tile_calculator_controller"
 import LumberCalculatorController from "controllers/lumber_calculator_controller"
+import MiterAngleCalculatorController from "controllers/miter_angle_calculator_controller"
+import WoodMoistureCalculatorController from "controllers/wood_moisture_calculator_controller"
+import WoodShrinkageCalculatorController from "controllers/wood_shrinkage_calculator_controller"
+import WoodWeightCalculatorController from "controllers/wood_weight_calculator_controller"
+import RipCutCalculatorController from "controllers/rip_cut_calculator_controller"
+import CabinetDoorCalculatorController from "controllers/cabinet_door_calculator_controller"
 import HvacBtuCalculatorController from "controllers/hvac_btu_calculator_controller"
 
 // Everyday calculators
@@ -478,6 +484,12 @@ application.register("deck-calculator", DeckCalculatorController)
 application.register("wallpaper-calculator", WallpaperCalculatorController)
 application.register("tile-calculator", TileCalculatorController)
 application.register("lumber-calculator", LumberCalculatorController)
+application.register("miter-angle-calculator", MiterAngleCalculatorController)
+application.register("wood-moisture-calculator", WoodMoistureCalculatorController)
+application.register("wood-shrinkage-calculator", WoodShrinkageCalculatorController)
+application.register("wood-weight-calculator", WoodWeightCalculatorController)
+application.register("rip-cut-calculator", RipCutCalculatorController)
+application.register("cabinet-door-calculator", CabinetDoorCalculatorController)
 application.register("hvac-btu-calculator", HvacBtuCalculatorController)
 
 // Everyday

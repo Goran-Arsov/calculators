@@ -1,0 +1,192 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Wood Shrinkage Calculator - Species Movement Tool",
+  description: "Calculate wood shrinkage from moisture content change across tangential and radial grain directions. Supports red oak, maple, walnut, cherry, mahogany and more.",
+  canonical: construction_wood_shrinkage_url,
+  og: {
+    title: "Wood Shrinkage Calculator - Species Movement Tool | Calc Hammer",
+    description: "Calculate how much wood will shrink as it dries. Enter species, grain direction, starting dimension, and moisture content change.",
+    url: construction_wood_shrinkage_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Wood Shrinkage Calculator", url: construction_wood_shrinkage_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is tangential vs radial shrinkage?", answer: "Tangential shrinkage is movement across the growth rings, which is the largest direction of wood movement. Radial shrinkage is movement toward the pith, or center of the tree, and is typically about half the tangential value. Longitudinal shrinkage along the length of the grain is negligible at less than 0.2 percent and is ignored for practical purposes. Flatsawn boards move primarily tangentially, while quartersawn boards move primarily radially and are dimensionally more stable." },
+  { question: "Why does wood only shrink below 30% MC?", answer: "Wood fibers contain two types of water: free water in the cell cavities and bound water within the cell walls. As wood dries, free water evaporates first with no change in dimension. Once all free water is gone at about 30 percent moisture content, known as the fiber saturation point, bound water begins to leave the cell walls, which causes the cells to shrink. All dimensional change happens between the fiber saturation point and the final moisture content." },
+  { question: "Which species move the least?", answer: "Teak and genuine mahogany have the lowest shrinkage values among common furniture woods, with total tangential shrinkage around 4 percent. Spanish cedar, eastern white pine, and western red cedar are also very stable. High-shrinkage species include American beech, hickory, and white oak, which can move more than 10 percent tangentially from green to oven dry. Quartersawn lumber of any species will be more stable than flatsawn." },
+  { question: "How do I allow for wood movement in joinery?", answer: "Never glue or fasten solid wood panels rigidly across the grain. Use breadboard ends with elongated slots, floating panels in frame-and-panel construction, tabletop fasteners that allow sliding, or wooden buttons in grooves. Always let wood acclimate to its final environment before building. Orient grain consistently so adjoining parts move together. Plan for seasonal changes of roughly 1/4 inch of movement per 12 inches of width for typical hardwoods." },
+  { question: "Does sealing wood stop shrinkage?", answer: "Finishes slow moisture exchange but do not prevent it over the long term. Even film finishes like polyurethane and lacquer allow water vapor to pass through slowly, so wood will still move with seasonal humidity changes just more gradually. End grain sealers help prevent rapid drying and checking, and finishing all sides of a panel equally helps prevent cupping, but no finish can eliminate wood movement entirely." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Wood Shrinkage Calculator",
+  description: "Calculate wood shrinkage across tangential or radial grain directions from moisture content change for common woodworking species.",
+  url: construction_wood_shrinkage_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "wood_shrinkage"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Wood Shrinkage Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Wood Shrinkage Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate how much a board will shrink as it dries. Choose a species, grain direction, starting dimension, and moisture content range.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="wood-shrinkage-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="wood-shrinkage-species" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Species</label>
+            <select id="wood-shrinkage-species" data-wood-shrinkage-calculator-target="species" data-action="input->wood-shrinkage-calculator#calculate change->wood-shrinkage-calculator#calculate" class="w-full">
+              <% Construction::WoodShrinkageCalculator::SPECIES.each do |key, data| %>
+                <option value="<%= key %>" <%= "selected" if key == "red_oak" %>><%= data[:name] %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <div>
+            <span class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Grain Direction</span>
+            <div class="flex gap-4">
+              <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <input type="radio" name="wood-shrinkage-direction" value="tangential" checked data-wood-shrinkage-calculator-target="direction" data-action="input->wood-shrinkage-calculator#calculate change->wood-shrinkage-calculator#calculate">
+                Tangential (flatsawn)
+              </label>
+              <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <input type="radio" name="wood-shrinkage-direction" value="radial" data-wood-shrinkage-calculator-target="direction" data-action="input->wood-shrinkage-calculator#calculate change->wood-shrinkage-calculator#calculate">
+                Radial (quartersawn)
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label for="wood-shrinkage-initial-dimension" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Initial Dimension</label>
+            <input id="wood-shrinkage-initial-dimension" type="number" inputmode="decimal" data-wood-shrinkage-calculator-target="initialDimension" data-action="input->wood-shrinkage-calculator#calculate" class="w-full" placeholder="10" step="0.0625" min="0">
+          </div>
+
+          <div>
+            <label for="wood-shrinkage-initial-mc" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Initial Moisture Content (%)</label>
+            <input id="wood-shrinkage-initial-mc" type="number" inputmode="decimal" data-wood-shrinkage-calculator-target="initialMc" data-action="input->wood-shrinkage-calculator#calculate" class="w-full" value="30" step="0.1" min="0" max="100">
+          </div>
+
+          <div>
+            <label for="wood-shrinkage-final-mc" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Final Moisture Content (%)</label>
+            <input id="wood-shrinkage-final-mc" type="number" inputmode="decimal" data-wood-shrinkage-calculator-target="finalMc" data-action="input->wood-shrinkage-calculator#calculate" class="w-full" value="8" step="0.1" min="0" max="100">
+          </div>
+        </div>
+
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Shrinkage</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-wood-shrinkage-calculator-target="resultShrinkagePct">0.000%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Dimension Change</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-wood-shrinkage-calculator-target="resultChange">0.0000</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Final Dimension</span>
+              <span class="text-2xl font-bold text-blue-600 dark:text-blue-400" data-wood-shrinkage-calculator-target="resultFinalDim">0.0000</span>
+            </div>
+          </div>
+          <button data-action="click->wood-shrinkage-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "wood_shrinkage" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Wood Shrinkage Works</h2>
+      <p>
+        Wood is a hygroscopic material, meaning it constantly exchanges moisture with the surrounding air. When freshly cut, wood contains a large amount of water both inside the cell cavities as free water and within the cell walls as bound water. As the board dries, free water leaves first with no change in dimension. Only after the free water is gone does the wood begin to shrink. Knowing how much a given species will move helps woodworkers, cabinet makers, and builders design joinery and allowances that will not fail with the seasons.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Tangential vs Radial Shrinkage</h2>
+      <p>
+        Wood does not shrink uniformly. Tangential shrinkage, measured across the growth rings, is usually nearly twice radial shrinkage, measured from bark toward the pith. That difference is why flatsawn boards tend to cup and twist more than quartersawn boards, which show mostly radial movement and stay flatter. Longitudinal shrinkage along the grain is so small it is ignored in furniture work. Choosing the right grain orientation for parts such as tabletops, drawer sides, and panels reduces warping and stress on joinery.
+      </p>
+
+      <h2>Fiber Saturation Point Explained</h2>
+      <p>
+        The fiber saturation point, generally assumed to be around 30 percent moisture content, marks the boundary between free water and bound water in wood. Above that threshold, the wood will not shrink no matter how wet it is. Below it, dimensional change is roughly linear with moisture content until the wood is oven dry. This calculator uses that linear relationship to estimate shrinkage between any two moisture contents by capping both values at 30 percent.
+      </p>
+
+      <h2>Why This Matters for Furniture Makers</h2>
+      <p>
+        A wide solid-wood panel can easily move a quarter inch or more between humid summer and dry winter. If that movement is not planned for, joints crack, panels split, and drawers bind. Using this calculator, a maker can estimate movement for a specific species, grain orientation, and expected moisture range, and then design breadboard ends, floating panels, elongated fastener holes, and proper expansion gaps. Acclimating lumber to shop humidity before building is also essential to minimize surprises after assembly.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is tangential vs radial shrinkage?</h3>
+      <p>
+        Tangential is movement across the growth rings and is the larger value. Radial is movement toward the center of the tree and is typically about half the tangential figure. Flatsawn boards move mostly tangentially while quartersawn boards move mostly radially.
+      </p>
+
+      <h3>Why does wood only shrink below 30% MC?</h3>
+      <p>
+        Below the fiber saturation point, bound water leaves the cell walls and the walls contract. Above it, only free water evaporates, which does not affect dimensions.
+      </p>
+
+      <h3>Which species move the least?</h3>
+      <p>
+        Teak and genuine mahogany are among the most stable common furniture woods, while beech, hickory, and white oak move the most.
+      </p>
+
+      <h3>How do I allow for wood movement in joinery?</h3>
+      <p>
+        Use floating panels, breadboard ends with slotted holes, tabletop fasteners, and wooden buttons. Never rigidly cross grain directions with glue or screws across wide panels.
+      </p>
+
+      <h3>Does sealing wood stop shrinkage?</h3>
+      <p>
+        No. Finishes slow moisture exchange but do not prevent it. Wood will still move seasonally, just more gradually with a film finish in place.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Wood Species Weight Calculator", description: "Estimate the weight of boards by species, dimensions, and quantity.", path: construction_wood_weight_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Lumber Calculator", description: "Calculate board feet and total cost from lumber dimensions.", path: construction_lumber_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Wood Moisture Calculator", description: "Estimate equilibrium moisture content for wood in your environment.", path: construction_wood_moisture_path, icon_path: "M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("wood-shrinkage-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Wood Moisture Content Calculator - Oven-Dry Method",
+  description: "Calculate wood moisture content using the oven-dry method. Enter wet weight and dry weight to get MC percentage, water content, and recommended use.",
+  canonical: construction_wood_moisture_url,
+  og: {
+    title: "Wood Moisture Content Calculator - Oven-Dry Method | Calc Hammer",
+    description: "Calculate wood moisture content using the oven-dry method. Enter wet and dry weights for instant MC% and use recommendations.",
+    url: construction_wood_moisture_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Wood Moisture Content Calculator", url: construction_wood_moisture_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is wood moisture content?", answer: "Wood moisture content (MC) is the weight of water in a piece of wood expressed as a percentage of the wood's oven-dry weight. The formula is MC = ((wet weight − dry weight) ÷ dry weight) × 100. For example, a sample weighing 110 grams wet and 100 grams dry has a moisture content of 10%." },
+  { question: "How do I measure dry weight accurately?", answer: "Place a small wood sample in an oven set to 103°C (217°F) for 24 hours, or until the weight stabilizes across successive measurements. Weigh the sample on an accurate digital scale. The stable weight is the oven-dry weight used to calculate moisture content. A toaster oven and kitchen scale work for DIY measurements." },
+  { question: "What is the fiber saturation point?", answer: "The fiber saturation point is the moisture content at which the cell walls of wood are fully saturated but the cell cavities contain no free water. For most species, this is around 28 to 30 percent. Above this point, wood is called green and does not shrink or swell. Below it, wood changes dimension as moisture content changes." },
+  { question: "What moisture content should interior woodworking wood have?", answer: "Wood used indoors should be at equilibrium with the typical indoor humidity, which usually means a moisture content between 6 and 9 percent. Furniture, cabinetry, and flooring are normally specified at 6 to 8 percent. Wood at higher MC will shrink after installation, causing gaps, splits, and failed joinery." },
+  { question: "Can I use a moisture meter instead?", answer: "Yes, pin and pinless moisture meters give fast readings for field use and are accurate enough for most project decisions. The oven-dry method is the gold standard and is used to calibrate meters. For critical work like flooring or instrument making, verify meter readings with an oven-dry test on a representative offcut." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Wood Moisture Content Calculator",
+  description: "Calculate wood moisture content from wet and dry sample weights using the oven-dry method.",
+  url: construction_wood_moisture_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "wood_moisture"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Wood Moisture Content Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Wood Moisture Content Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Determine wood moisture content using the oven-dry method. Enter the wet and dry sample weights to see the moisture percentage, water weight, and recommended use.</p>
+
+    <%# Ad: leaderboard — placed below content heading per AdSense best practices %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="wood-moisture-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="wm-wet" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wet Weight</label>
+            <input id="wm-wet" type="number" inputmode="decimal" data-wood-moisture-calculator-target="wetWeight" data-action="input->wood-moisture-calculator#calculate" class="w-full" placeholder="110" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="wm-dry" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Oven-Dry Weight</label>
+            <input id="wm-dry" type="number" inputmode="decimal" data-wood-moisture-calculator-target="dryWeight" data-action="input->wood-moisture-calculator#calculate" class="w-full" placeholder="100" step="0.01" min="0">
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Use the same unit for both weights (e.g. grams or ounces). The ratio is what matters.</p>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center py-2 border-b border-blue-200/60 dark:border-blue-800/40">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Moisture Content</span>
+              <span class="text-3xl font-extrabold text-blue-600 dark:text-blue-400" data-wood-moisture-calculator-target="resultMc">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Water Weight</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-wood-moisture-calculator-target="resultWater">0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Category</span>
+              <span class="text-sm font-semibold text-blue-600 dark:text-blue-400 text-right" data-wood-moisture-calculator-target="resultCategory">—</span>
+            </div>
+            <div class="pt-2 border-t border-blue-200/60 dark:border-blue-800/40">
+              <span class="block text-gray-600 dark:text-gray-400 text-sm mb-1">Recommended Use</span>
+              <span class="block text-sm font-medium text-gray-800 dark:text-gray-200" data-wood-moisture-calculator-target="resultSuitable">—</span>
+            </div>
+          </div>
+          <button data-action="click->wood-moisture-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "wood_moisture" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Moisture Content Is Measured</h2>
+      <p>
+        Wood moisture content is expressed as a percentage of the wood's oven-dry weight. Cut a small, representative sample from the board, weigh it on an accurate scale, and record that as the wet weight. Then dry the sample in an oven at 103°C (217°F) until its weight no longer changes — typically 18 to 24 hours — and record that stable weight as the oven-dry weight. The calculator applies the formula MC = ((wet − dry) ÷ dry) × 100 to produce the moisture content percentage.
+      </p>
+      <p>
+        Because the formula is a ratio, the unit you weigh in does not matter as long as you use the same unit for both numbers. Grams and ounces both work, though a digital scale that reads to 0.1 g or better gives the most reliable results for small samples.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Wood Moisture Matters</h2>
+      <p>
+        Wood is hygroscopic — it absorbs and releases water until it reaches equilibrium with the surrounding air. As moisture content changes below the fiber saturation point (around 28–30%), wood shrinks and swells across the grain. Installing wood at the wrong moisture content leads to gaps in flooring, split panels, failed miter joints, and warped tabletops. Matching wood MC to its end-use environment before building is the single most important step in avoiding these failures.
+      </p>
+
+      <h2>Oven-Dry Method (Most Accurate)</h2>
+      <p>
+        The oven-dry method is the reference standard for measuring wood moisture. Weigh a clean offcut, dry it in a lab or kitchen oven at around 103°C, re-weigh it after 24 hours, and re-weigh again every few hours until two consecutive readings match. That stable reading is the oven-dry weight. The method destroys the sample, so always cut an offcut rather than using the workpiece itself. For field work, a pin or pinless moisture meter gives fast readings accurate to within 1–2 percentage points for most species.
+      </p>
+
+      <h2>Target MC for Common Uses</h2>
+      <p>Match the wood's moisture content to its end-use environment before building:</p>
+      <ul>
+        <li>Exterior construction and outdoor furniture: 12–18%</li>
+        <li>Interior furniture: 6–8%</li>
+        <li>Flooring: 6–9%</li>
+        <li>Cabinetry: 6–8%</li>
+        <li>Musical instruments: 6–7%</li>
+      </ul>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is wood moisture content?</h3>
+      <p>
+        Wood moisture content is the weight of water in a piece of wood expressed as a percentage of its oven-dry weight. It is calculated as ((wet − dry) ÷ dry) × 100.
+      </p>
+
+      <h3>How do I measure dry weight accurately?</h3>
+      <p>
+        Dry a small sample in an oven at 103°C for about 24 hours until the weight stabilizes. Use a digital scale that reads to at least 0.1 g for reliable results.
+      </p>
+
+      <h3>What is the fiber saturation point?</h3>
+      <p>
+        The fiber saturation point is the MC at which the cell walls are fully saturated but the cell cavities hold no free water — typically 28 to 30 percent for most species.
+      </p>
+
+      <h3>What MC should interior woodworking wood have?</h3>
+      <p>
+        Wood for indoor furniture, cabinets, and flooring should be at 6 to 9 percent moisture content to match typical indoor humidity and avoid post-installation movement.
+      </p>
+
+      <h3>Can I use a moisture meter instead?</h3>
+      <p>
+        Yes. Pin and pinless moisture meters are accurate enough for most projects. The oven-dry method is the gold standard used to calibrate meters.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Lumber Calculator", description: "Calculate board feet and total cost from lumber dimensions.", path: construction_lumber_path, icon_path: "M4 6h16M4 10h16M4 14h16M4 18h16" },
+      { name: "Deck Calculator", description: "Estimate boards, joists, posts, and screws for your deck.", path: construction_deck_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Fence Calculator", description: "Calculate posts, rails, and pickets for your fence project.", path: construction_fence_path, icon_path: "M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11m16-11v11" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("wood-moisture-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

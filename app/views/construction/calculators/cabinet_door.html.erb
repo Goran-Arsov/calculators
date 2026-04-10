@@ -1,0 +1,205 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cabinet Door Calculator - Shaker Stiles, Rails & Panel",
+  description: "Calculate stile, rail, and panel dimensions for Shaker-style cabinet doors. Accounts for tongue depth and seasonal panel clearance.",
+  canonical: construction_cabinet_door_url,
+  og: {
+    title: "Cabinet Door Calculator - Shaker Stiles, Rails & Panel | Calc Hammer",
+    description: "Calculate stile, rail, and panel dimensions for Shaker-style cabinet doors, including tongue depth and panel clearance.",
+    url: construction_cabinet_door_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Cabinet Door Calculator", url: construction_cabinet_door_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a Shaker-style cabinet door?", answer: "A Shaker cabinet door is a frame-and-panel door made from two vertical stiles, two horizontal rails, and a flat center panel that floats inside a groove cut into the inside edges of the frame. The style originated with the Shaker religious community in the 1800s and is prized for its clean lines, strong joinery, and resistance to seasonal movement. Because the panel floats, the door can expand and contract with humidity without splitting the frame." },
+  { question: "Why do I need to add panel clearance?", answer: "Wood expands across the grain when humidity rises and contracts when it falls. A solid wood panel in a tight groove will crack the frame or split itself when it swells. A clearance of 1/16 inch per side on a small door and up to 1/8 inch per side on a wider panel gives the wood room to move without damage. Plywood panels need far less clearance because they are dimensionally stable, but a small gap still helps absorb glue squeeze-out and assembly errors." },
+  { question: "What's a typical stile and rail width?", answer: "The standard Shaker stile and rail width is 2 to 2.5 inches. This is wide enough to hide typical hinge cups, provide solid joinery with cope-and-stick bits, and leave a visually balanced frame around the panel. Narrower frames of 1.75 inches look more delicate on small doors, while wider frames of 3 inches are common on large pantry doors where the scale calls for a heavier frame." },
+  { question: "Should the panel be solid wood or plywood?", answer: "Both work. Solid wood panels look richer, especially when book-matched, but they move seasonally and require clearance. Plywood panels are dimensionally stable, cheaper, and ideal for painted finishes or when you want to eliminate movement concerns. Many builders use 1/4 inch plywood for painted doors and 1/2 inch solid wood panels for stained doors. The calculator's default board-foot estimate assumes a 1/2 inch panel thickness." },
+  { question: "How does tongue depth affect cutting?", answer: "Tongue depth is how deeply the rail's tongue or the panel's edge seats into the groove cut in the stiles. Most cope-and-stick router bits cut a groove about 3/8 inch deep, which is also the default tongue depth used by this calculator. A deeper groove means stronger joints and more panel support, but it also means you need to add more length to your rails and more width to your panel to fill the groove on both sides." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Cabinet Door Calculator",
+  description: "Calculate stile, rail, and panel dimensions for building Shaker-style frame-and-panel cabinet doors.",
+  url: construction_cabinet_door_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "cabinet_door"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Cabinet Door Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cabinet Door Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enter your finished door dimensions and get the exact stile, rail, and panel sizes for a Shaker-style frame-and-panel cabinet door, with tongue depth and seasonal panel clearance built in.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="cabinet-door-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="cabinet-door-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Door Width (inches)</label>
+            <input id="cabinet-door-width" type="number" inputmode="decimal" data-cabinet-door-calculator-target="doorWidth" data-action="input->cabinet-door-calculator#calculate" class="w-full" value="12" step="0.0625" min="0">
+          </div>
+          <div>
+            <label for="cabinet-door-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Door Height (inches)</label>
+            <input id="cabinet-door-height" type="number" inputmode="decimal" data-cabinet-door-calculator-target="doorHeight" data-action="input->cabinet-door-calculator#calculate" class="w-full" value="24" step="0.0625" min="0">
+          </div>
+          <div>
+            <label for="cabinet-door-stile-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Stile Width (inches)</label>
+            <input id="cabinet-door-stile-width" type="number" inputmode="decimal" data-cabinet-door-calculator-target="stileWidth" data-action="input->cabinet-door-calculator#calculate" class="w-full" value="2.5" step="0.0625" min="0">
+          </div>
+          <div>
+            <label for="cabinet-door-rail-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rail Width (inches)</label>
+            <input id="cabinet-door-rail-width" type="number" inputmode="decimal" data-cabinet-door-calculator-target="railWidth" data-action="input->cabinet-door-calculator#calculate" class="w-full" value="2.5" step="0.0625" min="0">
+          </div>
+          <div>
+            <label for="cabinet-door-tongue-depth" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tongue Depth (inches)</label>
+            <input id="cabinet-door-tongue-depth" type="number" inputmode="decimal" data-cabinet-door-calculator-target="tongueDepth" data-action="input->cabinet-door-calculator#calculate" class="w-full" value="0.375" step="0.0625" min="0">
+          </div>
+          <div>
+            <label for="cabinet-door-panel-clearance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Panel Clearance per Side (inches)</label>
+            <input id="cabinet-door-panel-clearance" type="number" inputmode="decimal" data-cabinet-door-calculator-target="panelClearance" data-action="input->cabinet-door-calculator#calculate" class="w-full" value="0.0625" step="0.0125" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-4">
+            <div>
+              <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Stiles (qty 2)</div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Length</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cabinet-door-calculator-target="resultStileLength">0.0000"</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Width</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cabinet-door-calculator-target="resultStileWidth">0.0000"</span>
+              </div>
+            </div>
+            <div>
+              <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Rails (qty 2)</div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Length</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cabinet-door-calculator-target="resultRailLength">0.0000"</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Width</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cabinet-door-calculator-target="resultRailWidth">0.0000"</span>
+              </div>
+            </div>
+            <div>
+              <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Panel (qty 1)</div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Width</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cabinet-door-calculator-target="resultPanelWidth">0.0000"</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Height</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cabinet-door-calculator-target="resultPanelHeight">0.0000"</span>
+              </div>
+            </div>
+            <div class="pt-2 border-t border-blue-200/60 dark:border-blue-800/60">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Total Board Feet (approx)</span>
+                <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cabinet-door-calculator-target="resultBoardFeet">0.000</span>
+              </div>
+            </div>
+          </div>
+          <button data-action="click->cabinet-door-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "cabinet_door" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Shaker Door Construction Works</h2>
+      <p>
+        A Shaker cabinet door is built from five pieces: two stiles, two rails, and a center panel. The stiles run the full height of the door on the left and right. The rails span horizontally between the stiles at the top and bottom, with a tongue on each end that seats into a matching groove cut into the inside edge of the stiles. That same groove also captures the edges of the flat center panel. The joinery is simple, strong, and can be cut with a matched pair of cope-and-stick router bits or on a shaper in about twenty minutes per door.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Measuring for Stiles and Rails</h2>
+      <p>
+        Start with the finished outside dimensions of the door, not the cabinet opening. For inset doors, subtract about 1/16 inch from each edge of the opening. For overlay doors, add the overlay amount on each side. Enter those finished dimensions into the calculator. The stiles are cut to the full door height. The rails are cut shorter than the door width because they sit between the two stiles, but then gain length on each end equal to the tongue depth so they can reach into the stile grooves. The calculator handles this math for you.
+      </p>
+
+      <h2>Why Panel Clearance Matters (Seasonal Movement)</h2>
+      <p>
+        Solid wood expands and contracts across its grain with changes in humidity. A dry winter shop followed by a humid summer can swell a panel by nearly 1/4 inch across its width. If that panel is glued or pinned tight in the frame, something has to give, and it is usually the joinery or the panel itself. Shaker doors solve this by letting the panel float freely in the frame grooves. Small rubber Space Balls or a thin foam strip in the groove keeps the panel centered while still allowing movement. The default panel clearance of 1/16 inch per side is conservative and safe for most cabinet-scale doors.
+      </p>
+
+      <h2>Tongue Depth and Groove Construction</h2>
+      <p>
+        Most cope-and-stick router bit sets cut a groove about 3/8 inch deep, which is also the default tongue depth in this calculator. Deeper grooves mean stronger frame joints and more panel support, but they also mean longer rails and a wider panel to match. If you are using a different bit set, measure the groove depth it produces and update the tongue depth field. Keep both numbers equal so the panel and the rail tongues seat fully without bottoming out before the shoulders close.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a Shaker-style cabinet door?</h3>
+      <p>
+        A Shaker door is a simple frame-and-panel door with two stiles, two rails, and a flat center panel that floats in a groove. It is valued for its clean look and its tolerance of seasonal wood movement.
+      </p>
+
+      <h3>Why do I need to add panel clearance?</h3>
+      <p>
+        Solid wood panels expand and contract with humidity. Leaving 1/16 to 1/8 inch of clearance on each side gives the panel room to move without cracking the frame.
+      </p>
+
+      <h3>What's a typical stile and rail width?</h3>
+      <p>
+        Most Shaker doors use stiles and rails 2 to 2.5 inches wide. Larger doors sometimes use 3 inch frames to keep the proportions balanced.
+      </p>
+
+      <h3>Should the panel be solid wood or plywood?</h3>
+      <p>
+        Plywood is stable and cheap, ideal for painted doors. Solid wood is richer looking but needs movement clearance. Choose based on finish and budget.
+      </p>
+
+      <h3>How does tongue depth affect cutting?</h3>
+      <p>
+        A deeper tongue produces a stronger joint but requires longer rails and a wider panel. Match the tongue depth to the groove depth cut by your router bit.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Lumber Calculator", description: "Calculate board feet and pricing for lumber purchases.", path: construction_lumber_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Rip Cut Calculator", description: "Figure out strips per board with saw blade kerf included.", path: construction_rip_cut_path, icon_path: "M4 6h16M4 12h16M4 18h16" },
+      { name: "Wood Shrinkage Calculator", description: "Predict seasonal wood movement for better joinery.", path: construction_wood_shrinkage_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("cabinet-door-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

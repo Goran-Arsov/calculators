@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Rip Cut Calculator - Strips Per Board with Kerf",
+  description: "Calculate how many rip cut strips you can get from a board, accounting for saw blade kerf. Perfect for woodworkers planning efficient cut lists.",
+  canonical: construction_rip_cut_url,
+  og: {
+    title: "Rip Cut Calculator - Strips Per Board with Kerf | Calc Hammer",
+    description: "Calculate how many rip cut strips you can get from a board, accounting for saw blade kerf. Plan efficient cut lists for table saw projects.",
+    url: construction_rip_cut_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Rip Cut Calculator", url: construction_rip_cut_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a saw kerf?", answer: "A saw kerf is the width of material removed by the blade as it cuts. Every time a blade passes through wood, it turns a thin strip of material into sawdust. For a table saw, the kerf is typically 1/8 inch (0.125) for a standard full-kerf blade or 3/32 inch (0.094) for a thin-kerf blade. Kerf width must be accounted for when planning rip cuts so that the finished strips actually fit across the width of the board." },
+  { question: "How do I measure my blade's kerf?", answer: "The easiest way to measure kerf is to check the manufacturer's specifications, which are usually printed on the blade itself or in its product listing. You can also measure it directly with digital calipers by placing the jaws against the widest part of two adjacent carbide teeth. Typical values are 0.094 inches for thin-kerf blades, 0.125 inches for standard full-kerf blades, and 0.156 inches for heavy-duty full-kerf blades." },
+  { question: "Does a thinner kerf save much wood?", answer: "Over a single rip cut the savings are tiny, but across a project with many strips the difference adds up. A thin-kerf blade removes about 25 percent less material per cut than a standard full-kerf blade. On a 24 inch board ripped into 1 inch strips, the thin-kerf blade leaves enough extra material for roughly one additional strip compared to a thicker blade." },
+  { question: "Why account for kerf when planning rips?", answer: "Ignoring kerf leads to cut lists that do not fit. If you plan to rip a 12 inch board into four 3 inch strips without accounting for kerf, the three kerf cuts between them remove another 3/8 inch, and your last strip will end up 3/8 inch undersized. Always subtract the kerf from the usable width or use a calculator that handles it for you." },
+  { question: "Can I use this for crosscuts?", answer: "Yes. The math is identical for any series of parallel cuts on a board, whether you are ripping along the grain or crosscutting across it. Just enter your board length in place of the width, and the strip length you want in place of the rip width. The calculator will tell you how many pieces you can get and how much material is lost to the saw blade." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Rip Cut Calculator",
+  description: "Calculate how many rip strips you can cut from a board while accounting for saw blade kerf.",
+  url: construction_rip_cut_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "rip_cut"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Rip Cut Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Rip Cut Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Figure out how many rip strips you can cut from a board, with saw blade kerf included in the math. Enter your board width, the strip width you want, and your blade's kerf.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="rip-cut-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="rip-cut-board-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Board Width (inches)</label>
+            <input id="rip-cut-board-width" type="number" inputmode="decimal" data-rip-cut-calculator-target="boardWidth" data-action="input->rip-cut-calculator#calculate" class="w-full" value="12" step="0.0625" min="0">
+          </div>
+          <div>
+            <label for="rip-cut-rip-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rip Width (inches)</label>
+            <input id="rip-cut-rip-width" type="number" inputmode="decimal" data-rip-cut-calculator-target="ripWidth" data-action="input->rip-cut-calculator#calculate" class="w-full" value="2.5" step="0.0625" min="0">
+          </div>
+          <div>
+            <label for="rip-cut-kerf-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Kerf Width (inches)</label>
+            <input id="rip-cut-kerf-width" type="number" inputmode="decimal" data-rip-cut-calculator-target="kerfWidth" data-action="input->rip-cut-calculator#calculate" class="w-full" value="0.125" step="0.001" min="0">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">Thin-kerf: 0.094 (3/32"), Standard: 0.125 (1/8"), Full-kerf: 0.156 (5/32")</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Number of Strips</span>
+              <span class="text-3xl font-extrabold text-blue-600 dark:text-blue-400" data-rip-cut-calculator-target="resultNumStrips">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Material Used</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-rip-cut-calculator-target="resultMaterialUsed">0.0000"</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Kerf Waste</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-rip-cut-calculator-target="resultKerfWaste">0.0000"</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Leftover</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-rip-cut-calculator-target="resultLeftover">0.0000"</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Efficiency</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-rip-cut-calculator-target="resultEfficiency">0.0%</span>
+            </div>
+          </div>
+          <button data-action="click->rip-cut-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "rip_cut" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Calculator Works</h2>
+      <p>
+        The Rip Cut Calculator answers a simple but critical woodworking question: how many strips of a given width can I actually get out of this board once I account for the blade? It uses the formula N equals the floor of (board width plus kerf) divided by (rip width plus kerf). This works because every cut after the first one removes a kerf's worth of material, so the total space consumed by N strips and the N minus one cuts between them must stay within the board's width. The calculator also reports how much material the cuts wasted, how much usable board is left over as a skinny final strip, and the overall efficiency of your layout as a percentage.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Kerf</h2>
+      <p>
+        Kerf refers to the slot of material removed by the saw blade as it passes through the wood. It is equal to the width of the teeth, not the body of the blade, because the teeth are set slightly wider to keep the body from binding in the cut. Table saw blades typically have a kerf between 0.094 inches for thin-kerf blades and 0.156 inches for heavy-duty full-kerf blades. Track saws and circular saws fall in the same range. Bandsaws have the smallest kerfs, often as narrow as 0.025 inches. Hand saws, rip handsaws, and Japanese pull saws vary widely and should be measured directly.
+      </p>
+
+      <h2>Choosing the Right Blade Kerf</h2>
+      <p>
+        Thin-kerf blades waste less wood and place less load on an underpowered saw, which makes them a good match for contractor saws and jobsite saws with motors under 2 horsepower. The downside is that the thinner plate flexes more easily, so cut quality can suffer in hardwoods if the blade is not stabilized with a stiffener. Full-kerf blades stay flatter through dense material, produce cleaner rip cuts, and last longer between sharpenings, but they need a cabinet saw with a stout motor to avoid bogging down. Choose the blade that matches your saw and your species, then dial the kerf into this calculator to plan accurately.
+      </p>
+
+      <h2>Planning Efficient Cut Lists</h2>
+      <p>
+        When you are ripping expensive hardwood, efficiency matters. Use the calculator to test different strip widths against your available board and see which combination produces the least waste. Sometimes a tiny adjustment, such as dropping your finished strip width from 2.5 inches to 2.4375 inches, lets you squeeze in an extra strip per board and can save hundreds of dollars across a large project. It is also smart to lay out the widest pieces first and let the narrow strips come from the leftover, because wide pieces are harder to source from the offcuts later.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a saw kerf?</h3>
+      <p>
+        A saw kerf is the width of material the blade removes with each cut. For a table saw, typical kerfs are 0.094 inches for a thin-kerf blade and 0.125 inches for a standard full-kerf blade.
+      </p>
+
+      <h3>How do I measure my blade's kerf?</h3>
+      <p>
+        Check the manufacturer specs printed on the blade or measure it directly with digital calipers across two adjacent carbide teeth at their widest point.
+      </p>
+
+      <h3>Does a thinner kerf save much wood?</h3>
+      <p>
+        On a single cut the savings are small, but across many rips the difference can add up to a full extra strip per board on wide stock.
+      </p>
+
+      <h3>Why account for kerf when planning rips?</h3>
+      <p>
+        Ignoring kerf makes your cut list run short. The kerfs between strips add up and leave the last strip undersized unless you subtract them in advance.
+      </p>
+
+      <h3>Can I use this for crosscuts?</h3>
+      <p>
+        Yes. The math applies to any series of parallel cuts. Just enter your board length and desired piece length instead of widths.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Lumber Calculator", description: "Calculate board feet and pricing for lumber purchases.", path: construction_lumber_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Wood Shrinkage Calculator", description: "Predict seasonal wood movement for better joinery.", path: construction_wood_shrinkage_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Cabinet Door Calculator", description: "Size stiles, rails, and panels for Shaker cabinet doors.", path: construction_cabinet_door_path, icon_path: "M4 4h16v16H4V4zm4 0v16m8-16v16" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("rip-cut-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

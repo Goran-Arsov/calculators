@@ -1,0 +1,195 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Wood Species Weight Calculator - Board Weight by Species",
+  description: "Calculate the weight of lumber by species, dimensions, and quantity. Supports oak, maple, walnut, mahogany, ipe, purpleheart and more with results in pounds and kilograms.",
+  canonical: construction_wood_weight_url,
+  og: {
+    title: "Wood Species Weight Calculator - Board Weight by Species | Calc Hammer",
+    description: "Estimate the weight of any wood board by species and dimensions. Results in pounds, kilograms, cubic feet, and cubic meters.",
+    url: construction_wood_weight_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Wood Species Weight Calculator", url: construction_wood_weight_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Why do different woods weigh different amounts?", answer: "Wood density varies with species because of differences in cell structure, cell wall thickness, and extractives. Dense tropical hardwoods like ipe and purpleheart can weigh more than twice as much as light softwoods like western red cedar or eastern white pine for the same volume. Growth rate, portion of heartwood versus sapwood, and the natural oils or silica content also influence weight. Species density is usually reported at 12 percent moisture content, which is the typical interior equilibrium value." },
+  { question: "How does moisture content affect weight?", answer: "Freshly cut or green lumber can weigh 40 to 60 percent more than the same board at 8 percent moisture content. As wood dries, water evaporates first from the cell cavities and then from the cell walls, reducing weight substantially. Kiln-dried lumber sold for interior woodworking is usually at 6 to 8 percent moisture content. Construction lumber stamped KD or S-DRY is closer to 15 to 19 percent. Wet framing lumber can be noticeably heavier to handle on the job site." },
+  { question: "What's the heaviest hardwood?", answer: "Among commercially available hardwoods, lignum vitae is the densest, with a specific gravity above 1.2, meaning it sinks in water. Ipe, cumaru, santos mahogany, and ebony are all very heavy as well, generally in the 65 to 75 pounds per cubic foot range. Purpleheart, bloodwood, and bubinga are also notably heavy. These tropical species are popular for decking, flooring, tool handles, and outdoor furniture because their density contributes to durability and rot resistance." },
+  { question: "How do I convert between lb/ft³ and kg/m³?", answer: "Multiply pounds per cubic foot by 16.0185 to get kilograms per cubic meter. Divide kilograms per cubic meter by 16.0185 to go the other direction. For example, red oak at 44 lb/ft³ is approximately 705 kg/m³. This calculator displays both units automatically so there is no need to convert by hand." },
+  { question: "How much does a 4x8 sheet of plywood weigh?", answer: "A full 4 by 8 foot sheet of plywood weight depends on thickness and species. A half-inch sheet of softwood plywood typically weighs around 40 pounds, three-quarter inch softwood plywood is around 60 pounds, and hardwood plywood such as birch tends to be about 15 to 20 percent heavier than softwood at the same thickness. Medium-density fiberboard at three-quarter inch thickness weighs about 95 pounds per sheet, noticeably heavier than plywood." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Wood Species Weight Calculator",
+  description: "Calculate the weight of lumber by species, thickness, width, length, and quantity, with results in pounds, kilograms, cubic feet, and cubic meters.",
+  url: construction_wood_weight_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "wood_weight"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Wood Species Weight Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Wood Species Weight Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate how much a board or a pile of lumber weighs. Select a species, enter the thickness, width, length, and quantity, and see weight in both pounds and kilograms.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="wood-weight-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="wood-weight-species" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Species</label>
+            <select id="wood-weight-species" data-wood-weight-calculator-target="species" data-action="input->wood-weight-calculator#calculate change->wood-weight-calculator#calculate" class="w-full">
+              <% Construction::WoodWeightCalculator::SPECIES_DENSITY.each do |key, data| %>
+                <option value="<%= key %>" <%= "selected" if key == "red_oak" %>><%= data[:name] %> (<%= data[:density_lb_ft3] %> lb/ft³)</option>
+              <% end %>
+            </select>
+          </div>
+
+          <div>
+            <label for="wood-weight-thickness" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Thickness (inches)</label>
+            <input id="wood-weight-thickness" type="number" inputmode="decimal" data-wood-weight-calculator-target="thickness" data-action="input->wood-weight-calculator#calculate" class="w-full" placeholder="2" step="0.25" min="0">
+          </div>
+
+          <div>
+            <label for="wood-weight-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Width (inches)</label>
+            <input id="wood-weight-width" type="number" inputmode="decimal" data-wood-weight-calculator-target="width" data-action="input->wood-weight-calculator#calculate" class="w-full" placeholder="6" step="0.25" min="0">
+          </div>
+
+          <div>
+            <label for="wood-weight-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Length (feet)</label>
+            <input id="wood-weight-length" type="number" inputmode="decimal" data-wood-weight-calculator-target="length" data-action="input->wood-weight-calculator#calculate" class="w-full" placeholder="8" step="0.5" min="0">
+          </div>
+
+          <div>
+            <label for="wood-weight-quantity" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Quantity</label>
+            <input id="wood-weight-quantity" type="number" inputmode="decimal" data-wood-weight-calculator-target="quantity" data-action="input->wood-weight-calculator#calculate" class="w-full" value="1" step="1" min="1">
+          </div>
+        </div>
+
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Density</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-wood-weight-calculator-target="resultDensity">0.00 lb/ft³</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weight per Piece</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-wood-weight-calculator-target="resultWeightEach">0.00 lb</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Total Weight</span>
+              <span class="text-2xl font-bold text-blue-600 dark:text-blue-400" data-wood-weight-calculator-target="resultTotalWeightLb">0.00 lb</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Weight (metric)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-wood-weight-calculator-target="resultTotalWeightKg">0.00 kg</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Volume</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-wood-weight-calculator-target="resultVolumeFt3">0.0000 ft³</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Volume (metric)</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-wood-weight-calculator-target="resultVolumeM3">0.0000 m³</span>
+            </div>
+          </div>
+          <button data-action="click->wood-weight-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "wood_weight" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Wood Weight Is Calculated</h2>
+      <p>
+        This calculator finds the volume of a board in cubic feet by multiplying thickness, width, and length and dividing by 1728 to convert cubic inches to cubic feet. Length is accepted in feet and converted internally. That volume is then multiplied by the species density in pounds per cubic foot to produce weight per piece. Multiplying by the quantity provides the total weight and total volume, with automatic conversion to kilograms and cubic meters. The density values used are averages at 12 percent moisture content, which is typical for kiln-dried interior lumber.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Density vs Specific Gravity</h2>
+      <p>
+        Wood science literature often lists density as specific gravity, which is the ratio of oven dry weight to the weight of an equal volume of water. Specific gravity is dimensionless and makes direct species comparisons easy. Density in pounds per cubic foot or kilograms per cubic meter is more useful for practical calculations because it is tied to real weight units. A specific gravity of 0.65 for red oak corresponds to roughly 44 pounds per cubic foot at 12 percent moisture content, which is the value this calculator uses.
+      </p>
+
+      <h2>Why Species Matters</h2>
+      <p>
+        Choosing the right species for a project involves more than appearance. Weight affects shipping costs, how a piece of furniture feels in use, how much tools will have to lift when cutting long boards, and how heavily a structure must be built to support a load. A solid oak tabletop feels reassuringly substantial, while a pine version of the same table is easier to move but less imposing. For hand-carried boards on a job site, knowing the weight in advance helps plan manpower and prevents injuries.
+      </p>
+
+      <h2>Moisture Content and Weight</h2>
+      <p>
+        The values here assume normal kiln-dried lumber around 12 percent moisture. Green or wet lumber can weigh substantially more, sometimes 40 to 60 percent more than the same board after drying. If you are estimating weight for freshly milled lumber, expect to add significant weight for the water still in the cells. Conversely, very dry lumber at 6 to 8 percent can weigh slightly less than the table values. For most practical estimates, 12 percent is the right reference point.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Why do different woods weigh different amounts?</h3>
+      <p>
+        Density varies with cell structure and wall thickness. Dense tropical hardwoods like ipe weigh more than twice as much as lightweight softwoods like cedar for the same volume.
+      </p>
+
+      <h3>How does moisture content affect weight?</h3>
+      <p>
+        Green lumber can weigh 40 to 60 percent more than kiln-dried lumber of the same species and size because the cells still contain free water.
+      </p>
+
+      <h3>What's the heaviest hardwood?</h3>
+      <p>
+        Lignum vitae is the densest commercial hardwood, heavy enough to sink in water. Ipe, ebony, santos mahogany, and purpleheart are also extremely heavy.
+      </p>
+
+      <h3>How do I convert between lb/ft³ and kg/m³?</h3>
+      <p>
+        Multiply pounds per cubic foot by 16.0185 to get kilograms per cubic meter. This calculator displays both units automatically.
+      </p>
+
+      <h3>How much does a 4x8 sheet of plywood weigh?</h3>
+      <p>
+        A half-inch softwood sheet is around 40 pounds, three-quarter inch softwood is around 60 pounds, and three-quarter inch MDF is closer to 95 pounds.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%# Email capture — shows after 2nd calculator visit %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Lumber Calculator", description: "Calculate board feet and total cost from lumber dimensions.", path: construction_lumber_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Wood Shrinkage Calculator", description: "Estimate how much a board will move as it dries, by species.", path: construction_wood_shrinkage_path, icon_path: "M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" },
+      { name: "Deck Calculator", description: "Estimate boards, joists, posts, and screws for your deck.", path: construction_deck_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" }
+    ] %>
+
+    <%# Calculator disclaimer %>
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <%# Recommended reading %>
+    <% blog_posts = related_blog_posts("wood-weight-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

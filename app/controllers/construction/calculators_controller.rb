@@ -19,5 +19,11 @@ module Construction
     def plumbing; end
     def electrical_load; end
     def retaining_wall; end
+    def miter_angle; end
+    def wood_moisture; end
+    def wood_shrinkage; end
+    def wood_weight; end
+    def rip_cut; end
+    def cabinet_door; end
   end
 end

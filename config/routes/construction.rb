@@ -18,4 +18,12 @@ namespace :construction do
   get "plumbing-calculator", to: "calculators#plumbing", as: :plumbing
   get "electrical-load-calculator", to: "calculators#electrical_load", as: :electrical_load
   get "retaining-wall-calculator", to: "calculators#retaining_wall", as: :retaining_wall
+
+  # Woodworking
+  get "miter-angle-calculator", to: "calculators#miter_angle", as: :miter_angle
+  get "wood-moisture-calculator", to: "calculators#wood_moisture", as: :wood_moisture
+  get "wood-shrinkage-calculator", to: "calculators#wood_shrinkage", as: :wood_shrinkage
+  get "wood-weight-calculator", to: "calculators#wood_weight", as: :wood_weight
+  get "rip-cut-calculator", to: "calculators#rip_cut", as: :rip_cut
+  get "cabinet-door-calculator", to: "calculators#cabinet_door", as: :cabinet_door
 end
