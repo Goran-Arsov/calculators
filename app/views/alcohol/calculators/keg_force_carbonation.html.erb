@@ -1,0 +1,150 @@
+<% set_meta_tags(
+  title: "Keg Force Carbonation Calculator - PSI for Target CO2 Volumes",
+  description: "Calculate the regulator PSI you need to force carbonate your keg to a target volumes of CO2 at any beer temperature. Based on the standard CO2 solubility tables.",
+  canonical: alcohol_keg_force_carbonation_url,
+  og: {
+    title: "Keg Force Carbonation Calculator | Calc Hammer",
+    description: "Calculate the regulator PSI for force carbonating beer to a target CO2 volume at any temperature.",
+    url: alcohol_keg_force_carbonation_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "Keg Force Carbonation Calculator", url: alcohol_keg_force_carbonation_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does force carbonation work?", answer: "Force carbonation pushes CO2 from a tank into a sealed keg of beer at a specific pressure. The CO2 dissolves into the beer until the dissolved CO2 reaches equilibrium with the headspace pressure. By controlling the temperature and pressure you control the dissolved CO2, and by waiting one to two weeks at the equilibrium pressure you produce stable, predictable carbonation." },
+  { question: "Why does temperature matter so much?", answer: "Cold beer dissolves more CO2 than warm beer. At 38 degrees Fahrenheit you only need about 11 PSI to reach 2.5 volumes, but at 60 degrees you would need around 22 PSI for the same carbonation. Always force carbonate in the kegerator at serving temperature so the same pressure that carbonates the beer also serves it without foaming or losing carbonation." },
+  { question: "What pressure should I use?", answer: "Set the regulator to the equilibrium PSI for your target CO2 volumes at your serving temperature. For most American craft beer at 38 degrees, that means 10 to 13 PSI. For low-carbed British ales it might be 5 to 8 PSI. For highly sparkling Belgian ales or wheats you need 14 to 18 PSI. The calculator returns the exact pressure for your inputs." },
+  { question: "How long does force carbonation take?", answer: "Set and forget at serving pressure takes 7 to 14 days to fully equilibrate, but the beer is drinkable after 5 days. The shake-and-rock method speeds it up to 24 to 48 hours but is harder to dial in precisely. The calculator assumes set-and-forget at the displayed pressure." },
+  { question: "What is the highest carbonation a keg can hold?", answer: "Standard Cornelius and Sankey kegs are rated to 130 PSI and routinely operate at 30 PSI without any issue. Practical force carbonation maxes out around 30 PSI, which corresponds to roughly 4.0 volumes at typical serving temperatures. Beyond that you would need higher pressure than serving systems can handle without long beer lines and nucleation control." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Keg Force Carbonation Calculator",
+  description: "Calculate the regulator PSI for force carbonating beer to a target CO2 volume.",
+  url: alcohol_keg_force_carbonation_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "keg-force-carbonation-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "Keg Force Carbonation Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Keg Force Carbonation Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the regulator pressure you need to force carbonate your keg to a target CO2 volumes at your serving temperature. Just set the pressure and wait one to two weeks for full equilibration.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="keg-force-carbonation-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="kf-temp" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Beer Temperature (°F)</label>
+            <input id="kf-temp" type="number" inputmode="decimal" data-keg-force-carbonation-calculator-target="tempF" data-action="input->keg-force-carbonation-calculator#calculate" class="w-full" value="38" step="1" min="28" max="80">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Use the actual serving temperature inside your kegerator.</p>
+          </div>
+          <div>
+            <label for="kf-vols" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target CO2 Volumes</label>
+            <input id="kf-vols" type="number" inputmode="decimal" data-keg-force-carbonation-calculator-target="vols" data-action="input->keg-force-carbonation-calculator#calculate" class="w-full" value="2.5" step="0.1" min="0.5" max="5">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-cyan-200/50 dark:border-cyan-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Regulator PSI</span>
+              <span class="text-3xl font-extrabold text-cyan-600 dark:text-cyan-400" data-keg-force-carbonation-calculator-target="resultPsi">—</span>
+            </div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">In kPa</span><span class="font-semibold" data-keg-force-carbonation-calculator-target="resultKpa">—</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Beer Temp (°C)</span><span class="font-semibold" data-keg-force-carbonation-calculator-target="resultTempC">—</span></div>
+            <div class="pt-2 border-t border-cyan-200/50 dark:border-cyan-800/50">
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">Carbonation Style</span>
+              <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 mt-1" data-keg-force-carbonation-calculator-target="resultStyle">—</p>
+            </div>
+          </div>
+          <button data-action="click->keg-force-carbonation-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "keg-force-carbonation-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Force Carbonation Works</h2>
+      <p>
+        Force carbonation pushes CO2 from a tank into a sealed keg of beer at a controlled pressure until the dissolved CO2 reaches equilibrium with the headspace gas pressure. The principle is Henry's Law: the amount of gas dissolved in a liquid is proportional to the partial pressure of that gas above the liquid, scaled by a temperature-dependent solubility constant. Once the system reaches equilibrium, the dissolved CO2 stays stable as long as the temperature and pressure stay constant. This is why kegerators can hold beer at consistent carbonation indefinitely as long as the regulator and the cold space are dialed in.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Temperature-Pressure Relationship</h2>
+      <p>
+        Cold liquids dissolve more gas than warm liquids, which is why a soda bottle goes flat much faster as it warms up. For beer, the practical implication is that the same target carbonation requires very different pressures at different temperatures. Holding 2.5 volumes of CO2 takes about 11 PSI at 38 degrees Fahrenheit, but jumps to about 16 PSI at 50 degrees and over 22 PSI at 60 degrees. This is the single most important rule of force carbonation: always carbonate at your serving temperature inside the kegerator, never at room temperature, otherwise the equilibrium pressure will be wrong and the beer will pour foamy or flat.
+      </p>
+
+      <h2>Set and Forget vs Shake and Rock</h2>
+      <p>
+        Set and forget is the most reliable force carbonation method. Connect the gas, set the regulator to the equilibrium pressure for your target volumes at your serving temperature, and walk away for 7 to 14 days. The beer is drinkable after 5 days and fully equilibrated after about 14. The advantage is precision: when the regulator is set to equilibrium pressure, you cannot overcarbonate even if you forget about the keg. Shake and rock methods bypass equilibrium by mechanically mixing CO2 into the beer at higher pressures, which is faster but harder to dial in and usually leaves the beer slightly overcarbonated for the first few pours.
+      </p>
+
+      <h2>Style Targets and Practical Pressure Ranges</h2>
+      <p>
+        Most American craft beers target 2.4 to 2.6 volumes of CO2, which means 10 to 13 PSI at typical kegerator temperatures of 36 to 40 degrees Fahrenheit. British real ales and Irish stouts run lower at 1.5 to 2.0 volumes and use 4 to 8 PSI, which is also why nitro-poured stouts use a 70/30 nitrogen-CO2 blend to deliver low CO2 with creamy texture. Belgian ales, wheat beers, and saisons run higher at 3.0 to 4.0 volumes and need 16 to 22 PSI, which often requires longer beer lines to prevent foaming during pouring. The calculator displays an appropriate style category alongside the calculated pressure to help you sanity check the result.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does force carbonation work?</h3>
+      <p>
+        CO2 from a tank pressurizes the keg headspace and dissolves into the beer until the dissolved CO2 reaches equilibrium with the headspace pressure.
+      </p>
+
+      <h3>Why does temperature matter so much?</h3>
+      <p>
+        Cold liquids dissolve more CO2 than warm. The same target volumes needs about half the pressure at 38°F as it does at 60°F. Always carbonate at serving temperature.
+      </p>
+
+      <h3>What pressure should I use?</h3>
+      <p>
+        For most American craft beer at 38°F, 10 to 13 PSI hits 2.4 to 2.6 volumes. The calculator returns the exact pressure for your target.
+      </p>
+
+      <h3>How long does force carbonation take?</h3>
+      <p>
+        7 to 14 days at serving pressure. The beer is drinkable in 5 days and fully equilibrated in 14.
+      </p>
+
+      <h3>What is the maximum CO2 volume?</h3>
+      <p>
+        Practical force carbonation tops out around 4.0 volumes at typical kegerator temperatures. Higher carbonations need long beer lines to serve without foaming.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Priming Sugar Calculator", description: "Calculate priming sugar for bottle conditioning.", path: alcohol_priming_sugar_path, icon_path: "M20 7l-8-4-8 4" },
+      { name: "ABV Calculator", description: "Calculate alcohol by volume from OG and FG.", path: alcohol_abv_path, icon_path: "M12 3v2m0 14v2" },
+      { name: "Yeast Pitch Rate", description: "Calculate yeast cells, packs, and starter size.", path: alcohol_yeast_pitch_path, icon_path: "M3 6l3 1m0 0l-3 9" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

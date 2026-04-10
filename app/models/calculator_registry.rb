@@ -210,6 +210,21 @@ class CalculatorRegistry
     { name: "Cross-Stitch Fabric Calculator", slug: "cross-stitch-fabric-calculator", path: :textile_cross_stitch_fabric_path, description: "Calculate the finished size of a cross-stitch design on any Aida count (11, 14, 16, 18, 22) and the fabric size to buy.", icon_path: "M4 4h16v16H4zM8 8h8v8H8z" }
   ].freeze
 
+  ALCOHOL_CALCULATORS = [
+    { name: "ABV Calculator", slug: "abv-calculator", path: :alcohol_abv_path, description: "Calculate alcohol by volume (ABV) for beer, wine, mead, and cider from original and final gravity readings.", icon_path: "M12 3v2m0 14v2M5 12H3m18 0h-2m-1.5-6.5l-1.4 1.4M7.9 16.1l-1.4 1.4m0-11l1.4 1.4m8.2 8.2l1.4 1.4M12 7a5 5 0 100 10 5 5 0 000-10z" },
+    { name: "IBU Calculator", slug: "ibu-calculator", path: :alcohol_ibu_path, description: "Calculate International Bitterness Units (IBU) for your beer recipe using the Tinseth hop utilization formula.", icon_path: "M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" },
+    { name: "SRM Beer Color Calculator", slug: "srm-beer-color-calculator", path: :alcohol_srm_path, description: "Estimate beer color in SRM (Standard Reference Method) and EBC from the malt bill using the Morey equation.", icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
+    { name: "Strike Water Temperature Calculator", slug: "strike-water-temperature-calculator", path: :alcohol_strike_water_path, description: "Calculate the strike water temperature needed to hit a target mash temperature based on grain weight and ratio.", icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.24 17 7.366c1.328 1.62 2 4.636 0 9 .345-.633.683-1.135 1-1.5.5.5.5 1.5.657 2.791z" },
+    { name: "Hydrometer Temperature Correction", slug: "hydrometer-temperature-correction-calculator", path: :alcohol_hydrometer_correction_path, description: "Correct your hydrometer gravity reading for sample temperature when it differs from the calibration temperature.", icon_path: "M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M16 12a4 4 0 11-8 0 4 4 0 018 0z" },
+    { name: "Refractometer Brix to Gravity Converter", slug: "brix-to-gravity-refractometer-converter", path: :alcohol_brix_to_gravity_path, description: "Convert refractometer Brix readings to specific gravity, including post-fermentation correction with wort correction factor.", icon_path: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" },
+    { name: "Yeast Pitch Rate Calculator", slug: "yeast-pitch-rate-calculator", path: :alcohol_yeast_pitch_path, description: "Calculate the yeast cells needed and number of dry yeast packs or starter size for a healthy fermentation.", icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+    { name: "Priming Sugar Calculator", slug: "priming-sugar-calculator", path: :alcohol_priming_sugar_path, description: "Calculate priming sugar for bottle conditioning beer to your target carbonation level using corn sugar, table sugar, or DME.", icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
+    { name: "Keg Force Carbonation Calculator", slug: "keg-force-carbonation-calculator", path: :alcohol_keg_force_carbonation_path, description: "Find the regulator PSI needed to force carbonate your keg to the target volumes of CO2 at your serving temperature.", icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+    { name: "Distiller's Proofing Calculator", slug: "distiller-proofing-dilution-calculator", path: :alcohol_distiller_proofing_path, description: "Calculate the water to add for diluting high-proof spirits to a target bottling proof, using the Pearson square method.", icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 9h-6L8 4z" },
+    { name: "Cocktail ABV Calculator", slug: "cocktail-abv-calculator", path: :alcohol_cocktail_abv_path, description: "Calculate the final alcohol by volume of any cocktail from up to four ingredients, including dilution from ice and stirring.", icon_path: "M5 3l14 0l-7 9l0 6m-3 0l6 0M9 9h6" },
+    { name: "Pour Cost Calculator", slug: "pour-cost-calculator", path: :alcohol_pour_cost_path, description: "Calculate bar pour cost percentage, profit margin, and gross profit per drink from bottle cost, pour size, and sale price.", icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+  ].freeze
+
   EVERYDAY_CALCULATORS = [
     { name: "Tip Calculator", slug: "tip-calculator", path: :everyday_tip_path, description: "Calculate tip amount and total bill, with options to split between people.", icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
     { name: "Discount Calculator", slug: "discount-calculator", path: :everyday_discount_path, description: "Calculate sale price, savings amount, and discount percentage.", icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" },
@@ -374,6 +389,11 @@ class CalculatorRegistry
       title: "Everyday Calculators",
       description: "Free everyday calculators for tips, discounts, age, dates, fuel, GPA, and cooking conversions. Quick answers for daily life.",
       calculators: EVERYDAY_CALCULATORS
+    },
+    "alcohol" => {
+      title: "Alcohol & Brewing Calculators",
+      description: "Free calculators for the alcohol industry: brewing, winemaking, distilling, and bartending. Calculate ABV, IBU, SRM color, yeast pitch rates, priming sugar, pour cost, and more.",
+      calculators: ALCOHOL_CALCULATORS
     }
   }.freeze
 

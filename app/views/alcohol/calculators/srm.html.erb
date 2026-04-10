@@ -1,0 +1,161 @@
+<% set_meta_tags(
+  title: "SRM Beer Color Calculator - Morey Equation",
+  description: "Estimate beer color in SRM (Standard Reference Method) and EBC from your malt bill using the Morey equation. Add up to four malts and see the predicted color and beer style.",
+  canonical: alcohol_srm_url,
+  og: {
+    title: "SRM Beer Color Calculator - Morey Equation | Calc Hammer",
+    description: "Estimate beer color in SRM and EBC from your malt bill. See predicted color and matching beer style instantly.",
+    url: alcohol_srm_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "SRM Beer Color Calculator", url: alcohol_srm_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is SRM in brewing?", answer: "SRM stands for Standard Reference Method, an American measure of beer color. It is determined by measuring the absorbance of light passing through a sample at 430 nanometers in a half-inch path-length cell, multiplied by 12.7. The SRM scale runs from about 2 for very pale lagers to over 40 for imperial stouts. Europeans use EBC, which equals roughly 1.97 times SRM." },
+  { question: "What is the Morey equation?", answer: "The Morey equation is the most widely used homebrew formula for estimating beer color from a recipe. It calculates Malt Color Units (MCU) as the sum of each malt weight times its lovibond rating divided by batch volume in gallons, then takes 1.4922 times MCU raised to the power of 0.6859. Morey is favored over older linear formulas because it accounts for the fact that adding more dark malt produces diminishing returns in color." },
+  { question: "How accurate is calculated SRM?", answer: "Calculated SRM is a useful estimate but reality varies because the boil time, kettle caramelization, water chemistry, fermentation, and yeast strain all influence final beer color. Most brewing software gets within 2 to 3 SRM points of measured values for typical beers and within 5 SRM points for very dark beers. Use the calculator to choose between recipes and styles, not as a substitute for measuring the finished beer." },
+  { question: "What is a Lovibond rating?", answer: "Lovibond is the traditional unit for malt color, named after Joseph Williams Lovibond who developed the original colored-glass comparator in 1883. A 2°L pale malt is the lightest color base malt and a 600°L black patent malt is the darkest. Modern malt analyses report Lovibond and SRM almost interchangeably for individual malts, with the conversion being approximately SRM equals 1.3546 times Lovibond minus 0.76." },
+  { question: "What SRM is a stout?", answer: "Dry stouts and most American stouts fall between 25 and 40 SRM. Imperial stouts and Russian imperial stouts run 30 to 40+ and appear opaque black in the glass. Schwarzbier (German black lager) sits at 17 to 30 SRM but reads as black at typical glass thicknesses because of the iron-related compounds in the dark malts." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "SRM Beer Color Calculator",
+  description: "Estimate beer color in SRM and EBC from a malt bill using the Morey equation.",
+  url: alcohol_srm_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "srm-beer-color-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "SRM Beer Color Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">SRM Beer Color Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate the color of your beer in SRM (Standard Reference Method) and EBC from your malt bill. Uses the Morey equation, the most widely accepted homebrew color model.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="srm-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="srm-volume" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Batch Volume (gal)</label>
+            <input id="srm-volume" type="number" inputmode="decimal" data-srm-calculator-target="batchVolume" data-action="input->srm-calculator#calculate" class="w-full" value="5" step="0.1" min="0">
+          </div>
+
+          <% [["1", "9.0", "2"], ["2", "1.0", "60"], ["3", "0", "0"], ["4", "0", "0"]].each do |num, weight, lov| %>
+            <div class="border-t border-gray-200/60 dark:border-gray-700/60 pt-3">
+              <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Malt <%= num %></div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label for="srm-malt<%= num %>-weight" class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Weight (lb)</label>
+                  <input id="srm-malt<%= num %>-weight" type="number" inputmode="decimal" data-srm-calculator-target="malt<%= num %>Weight" data-action="input->srm-calculator#calculate" class="w-full" value="<%= weight %>" step="0.1" min="0">
+                </div>
+                <div>
+                  <label for="srm-malt<%= num %>-lov" class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Color (°L)</label>
+                  <input id="srm-malt<%= num %>-lov" type="number" inputmode="decimal" data-srm-calculator-target="malt<%= num %>Lov" data-action="input->srm-calculator#calculate" class="w-full" value="<%= lov %>" step="0.1" min="0">
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">SRM</span>
+              <span class="text-3xl font-extrabold text-amber-600 dark:text-amber-400" data-srm-calculator-target="resultSrm">0</span>
+            </div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400">EBC</span><span class="text-xl font-bold text-amber-600 dark:text-amber-400" data-srm-calculator-target="resultEbc">0</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400">MCU</span><span class="text-base font-semibold" data-srm-calculator-target="resultMcu">0</span></div>
+            <div class="pt-3 flex items-center gap-3">
+              <div class="w-12 h-16 rounded border border-amber-300 dark:border-amber-700" data-srm-calculator-target="resultSwatch" style="background-color:#FFE699;" aria-label="Beer color swatch"></div>
+              <p class="text-sm font-semibold text-gray-800 dark:text-gray-200" data-srm-calculator-target="resultStyle">—</p>
+            </div>
+          </div>
+          <button data-action="click->srm-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "srm-beer-color-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Beer Color and the SRM Scale</h2>
+      <p>
+        The Standard Reference Method, or SRM, is the American beer color scale used by the Brewers Association and BJCP guidelines. It is determined by measuring the absorbance of light at 430 nanometers passing through a half-inch sample, multiplied by 12.7. The result is a scale where 2 is straw yellow, 10 is amber, 20 is copper-brown, and 40 plus is opaque black. European brewers use the EBC scale instead, which is roughly twice the SRM number, so a 6 SRM pilsner is about 12 EBC. Both scales report the same physical property in different units.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How the Morey Equation Works</h2>
+      <p>
+        Daniel Morey's 1995 equation is the most widely used homebrew color model. The first step is calculating Malt Color Units, which is the sum of each malt weight in pounds times its color in degrees Lovibond, divided by the batch volume in gallons. The second step transforms MCU into SRM with the formula 1.4922 times MCU raised to the power 0.6859. The exponent is critical because it captures the diminishing-returns nature of dark malt: doubling the dark malt does not double the visible color. Older linear models like Daniels overestimate dark beer color because they ignore this saturation effect.
+      </p>
+
+      <h2>Choosing Malts for a Target Color</h2>
+      <p>
+        Base malts contribute most of the grist weight but very little color, ranging from 1.5 to 4 degrees Lovibond for pilsner and pale base malts and up to 10 degrees for Munich and Vienna. Crystal and caramel malts in the 40 to 120 Lovibond range contribute most of the color in amber, brown, and red ales while also adding caramel sweetness and body. Roasted malts like chocolate malt at 350 to 450 degrees Lovibond and black patent at 500 to 600 degrees provide the dark color of porters and stouts in small quantities. Use crystal for warm reds and ambers and use roasted malt for cool browns and blacks.
+      </p>
+
+      <h2>Why Calculated Color Differs From Reality</h2>
+      <p>
+        The Morey equation is a model and the actual finished beer color depends on many factors the formula cannot account for. Long boils caramelize wort sugars and shift the color toward red and brown. Hard water and high pH increase the extraction of dark color compounds from the husks. Open versus closed fermenters and wort oxidation in transfer can also shift color. As a rule of thumb, expect calculated SRM to land within 2 to 3 points of measured values for pale and amber beers and within 5 points for dark beers. The calculator is a planning tool, not a substitute for visual judgment.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is SRM in brewing?</h3>
+      <p>
+        SRM is the Standard Reference Method beer color scale, measured by the absorbance of light at 430 nm. Pale lagers sit at 2 to 4 SRM, ambers at 10 to 18, and stouts above 30. EBC is the European equivalent and roughly equals 2 times SRM.
+      </p>
+
+      <h3>What is the Morey equation?</h3>
+      <p>
+        Morey calculates SRM as 1.4922 times Malt Color Units raised to 0.6859. MCU is the sum of weight in pounds times Lovibond color, divided by gallons. The non-linear exponent captures the diminishing-returns effect of dark malts.
+      </p>
+
+      <h3>How accurate is calculated SRM?</h3>
+      <p>
+        Calculated SRM is usually within 2 to 3 points of measured for pale and amber beers and within 5 points for very dark beers. Boil duration, kettle caramelization, and water chemistry all shift the actual color away from prediction.
+      </p>
+
+      <h3>What does Lovibond mean?</h3>
+      <p>
+        Lovibond is the traditional malt color rating, named after Joseph Williams Lovibond's 1883 colored-glass comparator. SRM equals approximately 1.3546 times Lovibond minus 0.76 for individual malts, and most modern maltsters report both numbers on a malt analysis sheet.
+      </p>
+
+      <h3>What SRM is a typical IPA?</h3>
+      <p>
+        American IPAs sit at 6 to 14 SRM (gold to deep gold) and English IPAs at 8 to 14 SRM (gold to amber). Hazy New England IPAs typically come in lighter and yellower because of less crystal malt and lower attenuation.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "IBU Calculator", description: "Calculate International Bitterness Units for your hop additions.", path: alcohol_ibu_path, icon_path: "M9 3v2m6-2v2" },
+      { name: "ABV Calculator", description: "Calculate alcohol by volume from original and final gravity.", path: alcohol_abv_path, icon_path: "M12 3v2m0 14v2" },
+      { name: "Strike Water Temperature", description: "Calculate strike water temp for hitting a target mash temp.", path: alcohol_strike_water_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

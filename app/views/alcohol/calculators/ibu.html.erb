@@ -1,0 +1,173 @@
+<% set_meta_tags(
+  title: "IBU Calculator - Tinseth Hop Bitterness Formula",
+  description: "Calculate International Bitterness Units (IBU) for your beer recipe using the Tinseth hop utilization formula. Add up to four hop additions and see total bitterness instantly.",
+  canonical: alcohol_ibu_url,
+  og: {
+    title: "IBU Calculator - Tinseth Hop Bitterness Formula | Calc Hammer",
+    description: "Calculate IBU for your beer recipe with the Tinseth formula. Add up to four hop additions and get total bitterness in real time.",
+    url: alcohol_ibu_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "IBU Calculator", url: alcohol_ibu_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is an IBU?", answer: "IBU stands for International Bitterness Unit and measures the concentration of iso-alpha acids in beer in parts per million. One IBU equals one milligram of iso-alpha acid per liter of beer. IBUs are the standard objective measure of beer bitterness, although perceived bitterness also depends on residual sweetness, alcohol, water mineral content, and yeast character." },
+  { question: "What is the Tinseth formula?", answer: "The Tinseth formula was developed by homebrewer Glenn Tinseth in 1997 to predict iso-alpha acid utilization during the boil. It accounts for the gravity of the wort and the boil time of each hop addition: utilization equals 1.65 times 0.000125 raised to the power of OG minus 1, multiplied by 1 minus e to the negative 0.04 times boil time, all divided by 4.15. Tinseth is the most popular IBU model among homebrewers because it matches commercial beer measurements reasonably well." },
+  { question: "How many IBUs should my beer have?", answer: "It depends on the style. Light lagers and witbiers usually sit between 8 and 18 IBU, pale ales 30 to 45, English IPAs 40 to 55, American IPAs 50 to 75, and double IPAs 65 to 100. Stouts and porters can range widely from 25 to 60 depending on whether they balance heavy roast and chocolate flavors. The official BJCP Style Guidelines list target IBU ranges for every recognized style." },
+  { question: "Does dry hopping add IBUs?", answer: "Practically no measurable IBUs come from dry hopping. Dry hops are added after the boil, so the alpha acids are not isomerized and contribute almost no measurable bitterness in lab IBU tests. Dry hopping does add hop flavor and aroma, and can sometimes contribute a perception of dryness or bitterness through hop oils and polyphenols, but those compounds are not measured by the standard IBU spectrophotometric test." },
+  { question: "Why does higher gravity wort produce fewer IBUs?", answer: "At higher original gravities, dissolved sugars reduce the solubility of iso-alpha acids and lower their utilization. The Tinseth bigness factor accounts for this with the term 1.65 times 0.000125 raised to OG minus 1. A 1.080 wort gives roughly 22 percent fewer IBUs from the same hop addition than a 1.040 wort, which is why imperial IPAs require so much more hops than session IPAs to taste similarly bitter." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "IBU Calculator",
+  description: "Calculate International Bitterness Units for a beer recipe using the Tinseth hop utilization formula.",
+  url: alcohol_ibu_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "ibu-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "IBU Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">IBU Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate International Bitterness Units (IBU) for your beer recipe using the Tinseth hop utilization formula. Enter your batch volume, original gravity, and up to four hop additions.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="ibu-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="ibu-volume" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Batch (gal)</label>
+              <input id="ibu-volume" type="number" inputmode="decimal" data-ibu-calculator-target="batchVolume" data-action="input->ibu-calculator#calculate" class="w-full" value="5" step="0.1" min="0">
+            </div>
+            <div>
+              <label for="ibu-og" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">OG</label>
+              <input id="ibu-og" type="number" inputmode="decimal" data-ibu-calculator-target="og" data-action="input->ibu-calculator#calculate" class="w-full" value="1.055" step="0.001" min="1">
+            </div>
+          </div>
+
+          <% [["1", "60", "Bittering"], ["2", "20", "Flavor"], ["3", "5", "Aroma"], ["4", "0", "Whirlpool"]].each_with_index do |(num, time, role), idx| %>
+            <div class="border-t border-gray-200/60 dark:border-gray-700/60 pt-3">
+              <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Hop <%= num %> — <%= role %></div>
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label for="ibu-hop<%= num %>-weight" class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Weight (oz)</label>
+                  <input id="ibu-hop<%= num %>-weight" type="number" inputmode="decimal" data-ibu-calculator-target="hop<%= num %>Weight" data-action="input->ibu-calculator#calculate" class="w-full" value="<%= idx == 0 ? '1.0' : (idx == 1 ? '0.5' : '0') %>" step="0.1" min="0">
+                </div>
+                <div>
+                  <label for="ibu-hop<%= num %>-aa" class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Alpha %</label>
+                  <input id="ibu-hop<%= num %>-aa" type="number" inputmode="decimal" data-ibu-calculator-target="hop<%= num %>Aa" data-action="input->ibu-calculator#calculate" class="w-full" value="7.0" step="0.1" min="0">
+                </div>
+                <div>
+                  <label for="ibu-hop<%= num %>-time" class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Time (min)</label>
+                  <input id="ibu-hop<%= num %>-time" type="number" inputmode="numeric" data-ibu-calculator-target="hop<%= num %>Time" data-action="input->ibu-calculator#calculate" class="w-full" value="<%= time %>" step="1" min="0">
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Total IBU</span>
+              <span class="text-3xl font-extrabold text-amber-600 dark:text-amber-400" data-ibu-calculator-target="resultTotal">0</span>
+            </div>
+            <div class="pt-1 pb-3 border-b border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">Category</span>
+              <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 mt-1" data-ibu-calculator-target="resultCategory">—</p>
+            </div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Hop 1</span><span class="font-semibold" data-ibu-calculator-target="resultHop1">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Hop 2</span><span class="font-semibold" data-ibu-calculator-target="resultHop2">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Hop 3</span><span class="font-semibold" data-ibu-calculator-target="resultHop3">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Hop 4</span><span class="font-semibold" data-ibu-calculator-target="resultHop4">—</span></div>
+          </div>
+          <button data-action="click->ibu-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white rounded-xl shadow-sm shadow-amber-500/20 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "ibu-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding IBU and Beer Bitterness</h2>
+      <p>
+        IBU stands for International Bitterness Unit and is a parts-per-million measure of iso-alpha acid concentration in finished beer. Iso-alpha acids are the bittering compounds produced when hop alpha acids isomerize during the boil, and they are responsible for almost all of the perceived bitterness in beer. One IBU equals one milligram of iso-alpha acid per liter, and the human palate can detect bitterness from about 5 IBU upward, with most drinkers finding 100 IBU to be the practical ceiling of distinguishable bitterness. Above that point bitterness still increases chemically but the tongue cannot tell the difference.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How the Tinseth Formula Works</h2>
+      <p>
+        The Tinseth formula calculates utilization as a product of two factors. The bigness factor accounts for the wort gravity, since high-gravity worts dissolve fewer iso-alpha acids: it equals 1.65 times 0.000125 raised to the power of OG minus 1. The boil time factor accounts for how long the hops boiled, since isomerization is time-dependent: it equals 1 minus e to the negative 0.04 times boil time, divided by 4.15. Multiplying the two gives the percentage of alpha acids that ended up as iso-alpha acids in the finished beer. The IBU formula then becomes alpha acid decimal times weight in ounces times utilization times 7489, divided by batch volume in gallons.
+      </p>
+
+      <h2>Bittering, Flavor, and Aroma Hop Additions</h2>
+      <p>
+        Hops added at different times in the boil contribute differently. A 60 minute bittering addition gives the most utilization because it has the longest exposure to heat, but the volatile flavor and aroma oils have evaporated by then. A 15 minute flavor addition contributes some bitterness plus more nuanced hop character. A 5 minute or flameout addition contributes very little measured bitterness but maximum aroma. Whirlpool and dry hop additions add essentially zero measured IBUs but can dramatically change perceived hop intensity. Most modern IPAs use a small bittering charge and stack the rest of the hops at the end of the boil and into the fermenter.
+      </p>
+
+      <h2>IBU vs Perceived Bitterness</h2>
+      <p>
+        The IBU number is an objective lab measurement, but perceived bitterness depends on the entire beer. Residual sweetness from unfermented sugars, malt-derived caramel notes, alcohol warmth, water carbonate hardness, and even carbonation level all affect how bitter a beer tastes. A 60 IBU American IPA at 1.060 OG tastes bitter and dry, while a 60 IBU barleywine at 1.100 OG with high crystal malt tastes balanced because the residual sweetness counters the bittering. This is why brewers talk about a Bitterness-to-Gravity ratio rather than IBUs alone when evaluating a recipe.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the Tinseth formula?</h3>
+      <p>
+        Tinseth is the most popular hop utilization model among homebrewers. It calculates IBUs as alpha acid decimal times weight in ounces times utilization times 7489 divided by batch volume in gallons, where utilization is a product of a gravity factor and a boil time factor.
+      </p>
+
+      <h3>How many IBUs should my beer have?</h3>
+      <p>
+        Lagers and witbiers sit at 8 to 18 IBU, pale ales 30 to 45, IPAs 50 to 75, double IPAs 65 to 100. Stouts and porters range from 25 to 60 depending on roast intensity. Match the IBU to the gravity to balance sweetness and bitterness.
+      </p>
+
+      <h3>Does dry hopping add IBUs?</h3>
+      <p>
+        Practically no measurable IBUs come from dry hopping because the alpha acids never isomerize. Dry hopping adds aroma and flavor through hop oils and polyphenols, but lab IBU tests do not detect those compounds.
+      </p>
+
+      <h3>Why does higher gravity reduce hop utilization?</h3>
+      <p>
+        Higher dissolved sugar concentration lowers the solubility of iso-alpha acids in wort. The Tinseth bigness factor models this: a 1.080 wort yields roughly 22 percent fewer IBUs from the same hop addition as a 1.040 wort.
+      </p>
+
+      <h3>How does this compare to Rager and Garetz?</h3>
+      <p>
+        Tinseth tends to predict slightly lower IBUs than Rager for high gravity beers, while Garetz models corrections for kettle volume and altitude. Tinseth is the most widely used and the closest match to commercial measurements for typical homebrew batches.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "ABV Calculator", description: "Calculate alcohol by volume from OG and FG.", path: alcohol_abv_path, icon_path: "M12 3v2m0 14v2M5 12H3m18 0h-2" },
+      { name: "SRM Beer Color", description: "Estimate beer color from your malt bill using the Morey equation.", path: alcohol_srm_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4z" },
+      { name: "Yeast Pitch Rate", description: "Calculate the cells, packs, or starter size needed for your batch.", path: alcohol_yeast_pitch_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

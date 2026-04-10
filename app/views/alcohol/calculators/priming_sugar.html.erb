@@ -1,0 +1,162 @@
+<% set_meta_tags(
+  title: "Priming Sugar Calculator - Bottle Conditioning",
+  description: "Calculate priming sugar for bottle conditioning beer to your target carbonation level. Uses fermentation temperature, batch size, and corn sugar, table sugar, or DME.",
+  canonical: alcohol_priming_sugar_url,
+  og: {
+    title: "Priming Sugar Calculator | Calc Hammer",
+    description: "Calculate priming sugar for bottle conditioning beer to a target CO2 volume.",
+    url: alcohol_priming_sugar_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "Priming Sugar Calculator", url: alcohol_priming_sugar_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does bottle conditioning work?", answer: "Priming sugar is added to flat beer before bottling. The yeast still in suspension consumes the sugar and produces CO2 inside the sealed bottle, where the gas dissolves into the beer to create natural carbonation. The process takes one to three weeks at room temperature for ales and longer for lagers." },
+  { question: "Why does fermentation temperature matter?", answer: "Beer at the end of fermentation already contains some dissolved CO2 from the active fermentation phase. The amount depends on the fermentation temperature: warmer beer holds less dissolved CO2, cooler beer holds more. The calculator subtracts this residual CO2 from your target volumes so you only add sugar for the additional carbonation needed." },
+  { question: "What's the difference between corn sugar, table sugar, and DME?", answer: "Corn sugar (dextrose) is the most common priming sugar because it ferments cleanly and predictably. Table sugar (sucrose) is slightly more efficient — about 91 percent of the corn sugar weight gives the same CO2. Dry malt extract works too but adds some unfermentable sugars and needs about 1.47 times the corn sugar weight to hit the same carbonation, while contributing slight malt flavor and color." },
+  { question: "How much CO2 should beer have?", answer: "Most American beers and IPAs target 2.4 to 2.6 volumes of CO2. British and Irish ales sit lower at 1.5 to 2.2 volumes. European lagers and pilsners target 2.4 to 2.8 volumes. Belgian ales and wheat beers run highest, often 3.0 to 4.0 volumes. The calculator displays an appropriate carbonation style range for the level you choose." },
+  { question: "Why are my bottles overcarbonated?", answer: "Three common causes: priming with too much sugar, bottling before fermentation actually finished, or storing bottles in a much warmer place than expected. Always confirm fermentation is complete with a stable hydrometer reading on two consecutive days, and check that the residual CO2 calculation matches the actual fermentation temperature." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Priming Sugar Calculator",
+  description: "Calculate priming sugar for bottle conditioning beer to a target CO2 level.",
+  url: alcohol_priming_sugar_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "priming-sugar-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "Priming Sugar Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Priming Sugar Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the exact amount of priming sugar to bottle condition your beer to a target carbonation level. Accounts for residual CO2 dissolved at your fermentation temperature.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="priming-sugar-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="ps-volume" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Batch Volume (gal)</label>
+            <input id="ps-volume" type="number" inputmode="decimal" data-priming-sugar-calculator-target="volume" data-action="input->priming-sugar-calculator#calculate" class="w-full" value="5" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="ps-temp" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fermentation Temp (°F)</label>
+            <input id="ps-temp" type="number" inputmode="decimal" data-priming-sugar-calculator-target="tempF" data-action="input->priming-sugar-calculator#calculate" class="w-full" value="68" step="1" min="32" max="100">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">The highest temperature during active fermentation, not the current temp.</p>
+          </div>
+          <div>
+            <label for="ps-co2" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target CO2 Volumes</label>
+            <input id="ps-co2" type="number" inputmode="decimal" data-priming-sugar-calculator-target="targetCo2" data-action="input->priming-sugar-calculator#calculate" class="w-full" value="2.4" step="0.1" min="0.5" max="5">
+          </div>
+          <div>
+            <label for="ps-sugar" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sugar Type</label>
+            <select id="ps-sugar" data-priming-sugar-calculator-target="sugarType" data-action="change->priming-sugar-calculator#calculate" class="w-full">
+              <option value="corn_sugar">Corn Sugar (Dextrose)</option>
+              <option value="table_sugar">Table Sugar (Sucrose)</option>
+              <option value="dme">Dry Malt Extract (DME)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-yellow-200/50 dark:border-yellow-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Sugar to Add</span>
+              <span class="text-3xl font-extrabold text-yellow-600 dark:text-yellow-400" data-priming-sugar-calculator-target="resultGrams">—</span>
+            </div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">In Ounces</span><span class="font-semibold" data-priming-sugar-calculator-target="resultOz">—</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Residual CO2</span><span class="font-semibold" data-priming-sugar-calculator-target="resultResidual">—</span></div>
+            <div class="pt-2 border-t border-yellow-200/50 dark:border-yellow-800/50">
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">Carbonation Style</span>
+              <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 mt-1" data-priming-sugar-calculator-target="resultStyle">—</p>
+            </div>
+          </div>
+          <button data-action="click->priming-sugar-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "priming-sugar-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Bottle Conditioning Carbonates Beer</h2>
+      <p>
+        Bottle conditioning carbonates beer the same way nature does it: live yeast eats added sugar and exhales CO2, which is trapped inside the sealed bottle and dissolves into the surrounding beer. The process takes one to three weeks at room temperature for ales and four to six weeks for lagers, depending on yeast health and the amount of sugar added. Bottle conditioning has been the traditional method for thousands of years and is still preferred for many Belgian, English, and German styles because it produces a fine, persistent carbonation and develops complex secondary flavors that forced carbonation in a keg cannot match.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Fermentation Temperature Matters</h2>
+      <p>
+        Beer leaving primary fermentation already contains some dissolved CO2 because the active fermentation produced enough gas to saturate the wort at the temperature the fermenter was held. The exact amount depends on fermentation temperature: cool beer at 50 degrees Fahrenheit retains about 1.4 volumes of CO2, while warm beer at 70 degrees retains only about 0.85 volumes. The calculator subtracts this residual CO2 from your target volumes so you only add enough priming sugar for the additional carbonation. Use the highest temperature reached during active fermentation, not the current temperature of the beer in the bottling bucket.
+      </p>
+
+      <h2>Sugar Choices for Priming</h2>
+      <p>
+        Corn sugar, also called dextrose or glucose, is the most common priming sugar because it ferments cleanly and quickly without leaving any residual flavor. Table sugar (sucrose) works equally well and is slightly more efficient: 91 percent of the corn sugar weight produces the same CO2 because sucrose is roughly twice the molecular weight of glucose with very different fermentation arithmetic. Dry malt extract is a third option that requires about 1.47 times the corn sugar weight to hit the same carbonation but contributes slight malt sweetness and a touch of color. Honey, maple syrup, and other natural sugars all work but require some testing to find the right amount for your style.
+      </p>
+
+      <h2>Target Carbonation by Style</h2>
+      <p>
+        Different beer styles target very different carbonation levels. British real ales sit at 1.0 to 1.5 volumes and feel almost flat compared to American beer. English bitters and Irish stouts run 1.5 to 2.0 volumes. Most American ales, porters, and stouts target 2.2 to 2.6 volumes. European lagers and American IPAs sit at 2.4 to 2.8 volumes. Belgian ales, wheat beers, and saisons run higher at 3.0 to 4.5 volumes, with some wild beers and lambics over 5.0 volumes. The calculator displays a style category alongside your target so you can match the carbonation to the recipe.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does bottle conditioning work?</h3>
+      <p>
+        Priming sugar is added to fermented beer before bottling. The yeast still in suspension consumes it and exhales CO2, which dissolves into the beer in the sealed bottle.
+      </p>
+
+      <h3>Why does fermentation temperature matter?</h3>
+      <p>
+        Fermentation already saturated the beer with some CO2 at the temperature it was held. Cool fermentations retain more residual CO2 than warm ones, so they need less priming sugar.
+      </p>
+
+      <h3>What's the difference between corn sugar and table sugar?</h3>
+      <p>
+        Both work cleanly, but table sugar is slightly more efficient. About 91 percent of the corn sugar weight in table sugar produces the same CO2.
+      </p>
+
+      <h3>How much CO2 should beer have?</h3>
+      <p>
+        American ales and IPAs target 2.4 to 2.6 volumes; British ales 1.5 to 2.0; Belgian ales 3.0 to 4.0. Match the target to the style.
+      </p>
+
+      <h3>Why are my bottles gushing?</h3>
+      <p>
+        Either too much priming sugar, bottling before fermentation finished, or storing too warm. Always confirm fermentation completion with a stable hydrometer reading.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Keg Force Carbonation", description: "Find the regulator PSI to force carbonate your keg.", path: alcohol_keg_force_carbonation_path, icon_path: "M9 12h6m-6 4h6" },
+      { name: "ABV Calculator", description: "Calculate alcohol by volume from OG and FG.", path: alcohol_abv_path, icon_path: "M12 3v2m0 14v2" },
+      { name: "Yeast Pitch Rate", description: "Calculate the yeast cells, packs, and starter size.", path: alcohol_yeast_pitch_path, icon_path: "M3 6l3 1m0 0l-3 9" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

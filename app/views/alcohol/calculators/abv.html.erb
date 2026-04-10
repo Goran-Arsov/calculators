@@ -1,0 +1,160 @@
+<% set_meta_tags(
+  title: "ABV Calculator - Alcohol By Volume from OG and FG",
+  description: "Calculate alcohol by volume (ABV) for beer, wine, mead, and cider from original and final gravity readings. Returns simple and advanced ABV plus apparent attenuation and calories.",
+  canonical: alcohol_abv_url,
+  og: {
+    title: "ABV Calculator - Alcohol By Volume from OG and FG | Calc Hammer",
+    description: "Calculate ABV for beer, wine, mead, and cider from OG and FG. Get simple and advanced ABV plus attenuation and calories.",
+    url: alcohol_abv_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "ABV Calculator", url: alcohol_abv_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is ABV in brewing?", answer: "ABV stands for alcohol by volume and is the percentage of pure ethanol in the finished beverage by volume. A 5% ABV beer contains 5 mL of ethanol in every 100 mL of beer. ABV is the standard way the alcohol industry labels beer, wine, cider, mead, and spirits, and most countries legally require it on packaging." },
+  { question: "What is the formula for ABV from gravity?", answer: "The simple formula is ABV = (OG − FG) × 131.25, where OG is the original gravity and FG is the final gravity. This is accurate for beers under 1.070 OG. For higher gravity beers, the more accurate Miller equation is ABV = (76.08 × (OG − FG) / (1.775 − OG)) × (FG / 0.794), which corrects for the non-linear relationship between sugar and alcohol at strong gravities." },
+  { question: "What is apparent attenuation?", answer: "Apparent attenuation is the percentage of sugars in the wort that the yeast fermented. It is calculated as (OG − FG) / (OG − 1) and reported as a percentage. Most ale yeasts attenuate 70 to 80 percent, lager yeasts 75 to 85 percent, and Belgian or saison strains 85 to 95 percent. It is called 'apparent' because the alcohol present skews the hydrometer reading slightly downward, so the true attenuation is a few points higher." },
+  { question: "Why are simple and advanced ABV different?", answer: "The simple ABV formula assumes a fixed conversion ratio between gravity drop and alcohol produced. In reality the conversion is non-linear because higher gravity worts produce more alcohol per gravity point dropped, and alcohol itself lowers the gravity of the final beer. For a 1.050 OG beer the two formulas agree closely, but for a 1.090 imperial stout the advanced formula gives roughly 0.5 percent higher ABV, which matters for label compliance." },
+  { question: "How do I read original and final gravity?", answer: "Take an original gravity reading with a hydrometer or refractometer in a sample of cooled wort just before pitching the yeast. Take a final gravity reading after fermentation has stopped, ideally on two consecutive days at the same value to confirm the beer is fully attenuated. Always correct hydrometer readings to the calibration temperature, usually 60 degrees Fahrenheit, using a temperature correction calculator." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "ABV Calculator",
+  description: "Calculate alcohol by volume from original and final gravity for beer, wine, cider, and mead.",
+  url: alcohol_abv_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "abv-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "ABV Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">ABV Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the alcohol by volume of your beer, wine, cider, or mead from your original and final gravity readings. Returns both the simple and advanced (Miller) ABV plus apparent attenuation and an estimated calorie count per 12 oz.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="abv-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="abv-og" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Original Gravity (OG)</label>
+            <input id="abv-og" type="number" inputmode="decimal" data-abv-calculator-target="og" data-action="input->abv-calculator#calculate" class="w-full" value="1.060" step="0.001" min="1" max="1.2">
+          </div>
+          <div>
+            <label for="abv-fg" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Final Gravity (FG)</label>
+            <input id="abv-fg" type="number" inputmode="decimal" data-abv-calculator-target="fg" data-action="input->abv-calculator#calculate" class="w-full" value="1.012" step="0.001" min="0.98" max="1.2">
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Tip: Take an OG reading after pitching yeast and an FG reading once gravity stays flat for two consecutive days.</p>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">ABV (Advanced)</span>
+              <span class="text-3xl font-extrabold text-amber-600 dark:text-amber-400" data-abv-calculator-target="resultAbvAdvanced">0%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">ABV (Simple)</span>
+              <span class="text-xl font-bold text-amber-600 dark:text-amber-400" data-abv-calculator-target="resultAbvSimple">0%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">ABW</span>
+              <span class="text-base font-semibold text-gray-800 dark:text-gray-200" data-abv-calculator-target="resultAbw">0%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Apparent Attenuation</span>
+              <span class="text-base font-semibold text-gray-800 dark:text-gray-200" data-abv-calculator-target="resultAttenuation">0%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Calories / 12 oz</span>
+              <span class="text-base font-semibold text-gray-800 dark:text-gray-200" data-abv-calculator-target="resultCalories">0</span>
+            </div>
+          </div>
+          <button data-action="click->abv-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white rounded-xl shadow-sm shadow-amber-500/20 hover:shadow-md hover:shadow-amber-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "abv-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>What ABV Means and Why Brewers Care</h2>
+      <p>
+        Alcohol by volume is the percentage of pure ethanol in the finished beverage by volume. A 5 percent ABV beer contains 5 mL of ethanol in every 100 mL of beer. Knowing the ABV of every batch matters for far more than label accuracy: it tells you whether your fermentation finished cleanly, whether your yeast ran out of nitrogen or sugar, and whether the recipe behaved like the expected style. For homebrewers it is the headline number every batch is judged by, and for licensed brewers and winemakers it has direct legal and tax implications because excise duty in most countries is calculated on alcohol content.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Simple vs Advanced ABV Formulas</h2>
+      <p>
+        The simple formula ABV equals OG minus FG times 131.25 is the one most homebrew books quote because the math is easy and the answer is good enough for typical 1.040 to 1.060 worts. The advanced formula uses ABV equals 76.08 times OG minus FG divided by 1.775 minus OG, all multiplied by FG divided by 0.794, and corrects for the non-linear relationship between gravity drop and alcohol production at higher strengths. For a 1.090 imperial stout the advanced formula returns roughly half a percent more ABV than the simple version, and that gap matters for accurate label compliance, judging in competition, and tax reporting if you sell the beer.
+      </p>
+
+      <h2>Original and Final Gravity in Practice</h2>
+      <p>
+        Original gravity is read in a chilled wort sample just before pitching yeast. Use either a calibrated hydrometer or a refractometer, but always remember to correct the reading for temperature and, with a refractometer, for the wort correction factor. Final gravity is read after fermentation has fully stopped, which usually means 10 to 14 days for an ale and 4 to 6 weeks for a lager. Confirm the FG by reading the same value on two consecutive days because a beer that is still slowly fermenting will look done one day and drop a point the next. Hydrometers are the most reliable tool for FG readings because the alcohol present skews refractometer readings.
+      </p>
+
+      <h2>Apparent vs Real Attenuation</h2>
+      <p>
+        The attenuation number returned here is apparent attenuation, calculated from the change in specific gravity. Real attenuation is always a few points higher because the alcohol produced during fermentation is less dense than water and pulls the apparent gravity reading down. For practical brewing decisions apparent attenuation is what matters: it tells you how dry the beer finished and whether the yeast strain hit its expected range. Most clean ale strains land 72 to 80 percent, lagers a few points higher, and Belgian, saison, and brettanomyces strains can attenuate 85 to 100 percent, which is what gives those beers their characteristic dryness.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the formula for ABV from gravity?</h3>
+      <p>
+        The simple formula is ABV equals OG minus FG times 131.25. The more accurate Miller formula is ABV equals 76.08 times the gravity drop divided by 1.775 minus OG, multiplied by FG over 0.794. The simple formula is fine under 1.070 OG; the advanced formula is more accurate for big beers.
+      </p>
+
+      <h3>How do I read original and final gravity?</h3>
+      <p>
+        Use a hydrometer in a chilled, degassed sample for both readings. Take the OG just before pitching yeast and the FG when fermentation has stopped, confirmed by two consecutive identical readings. Correct hydrometer readings for sample temperature when it differs from 60°F.
+      </p>
+
+      <h3>What is apparent attenuation?</h3>
+      <p>
+        Apparent attenuation is the percentage of sugars the yeast fermented, calculated from the gravity drop. Most ale strains land 72 to 80 percent, lagers 75 to 85 percent, and saisons or brettanomyces strains 85 percent or higher. It is the headline number for whether your fermentation finished.
+      </p>
+
+      <h3>What does ABW mean?</h3>
+      <p>
+        ABW is alcohol by weight and equals roughly ABV times 0.79336 because ethanol is less dense than water. American beer historically used ABW on labels until the 1990s, which is why old beers seem weaker than modern equivalents — a 4% ABW beer is roughly 5% ABV.
+      </p>
+
+      <h3>How accurate is this calculator?</h3>
+      <p>
+        For typical beer strengths the calculator is accurate to within 0.1 to 0.2 percent ABV. The biggest source of error is your gravity readings, not the formula, so use a calibrated hydrometer at the correct temperature for the most reliable result.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "IBU Calculator", description: "Calculate International Bitterness Units for your hop additions using the Tinseth formula.", path: alcohol_ibu_path, icon_path: "M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" },
+      { name: "Hydrometer Temperature Correction", description: "Correct your hydrometer gravity reading for sample temperature.", path: alcohol_hydrometer_correction_path, icon_path: "M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414M16 12a4 4 0 11-8 0 4 4 0 018 0z" },
+      { name: "Refractometer Brix to Gravity", description: "Convert Brix readings to specific gravity, with post-fermentation correction.", path: alcohol_brix_to_gravity_path, icon_path: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

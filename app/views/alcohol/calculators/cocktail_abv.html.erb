@@ -1,0 +1,171 @@
+<% set_meta_tags(
+  title: "Cocktail ABV Calculator - Final Strength With Dilution",
+  description: "Calculate the final alcohol by volume of any cocktail from up to four ingredients, including dilution from ice and stirring or shaking. Returns final ABV, volume, and US standard drinks.",
+  canonical: alcohol_cocktail_abv_url,
+  og: {
+    title: "Cocktail ABV Calculator | Calc Hammer",
+    description: "Calculate the final ABV of any cocktail with up to four ingredients and dilution.",
+    url: alcohol_cocktail_abv_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "Cocktail ABV Calculator", url: alcohol_cocktail_abv_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is cocktail ABV calculated?", answer: "Cocktail ABV is the volume-weighted average ABV of all ingredients, then adjusted downward for the water added by ice melt during shaking or stirring. The pre-dilution ABV equals the sum of each ingredient volume times its ABV, divided by the total ingredient volume. After dilution the final ABV equals the pre-dilution ABV divided by 1 plus the dilution percentage." },
+  { question: "How much dilution does shaking add?", answer: "Per Dave Arnold's Liquid Intelligence and other modern bar science references, hard shaking with cracked ice typically adds 25 to 30 percent dilution by volume in 10 to 15 seconds. Stirring with cubed ice adds about 20 to 25 percent dilution in 30 to 40 seconds. Building drinks on the rocks adds 5 to 15 percent depending on how long you take to drink them. Built drinks with no ice add zero dilution." },
+  { question: "Why does dilution matter for cocktail ABV?", answer: "Dilution can drop the alcohol content of a cocktail by 20 to 30 percent. A martini stirred from 2 ounces of 40 percent gin and half an ounce of 18 percent vermouth has a pre-dilution ABV of 35.6 percent, but after stirring the final ABV is closer to 28 percent. Knowing the post-dilution ABV is essential for understanding how strong a drink actually is and for tracking standard drinks responsibly." },
+  { question: "What is a US standard drink?", answer: "A US standard drink contains 14 grams of pure alcohol, which is the alcohol in roughly 12 ounces of 5 percent beer, 5 ounces of 12 percent wine, or 1.5 ounces of 40 percent spirit. The calculator converts the final cocktail volume and ABV into standard drinks so you can track consumption against guidelines from the CDC and dietary recommendations." },
+  { question: "Does this work for batched cocktails?", answer: "Yes, exactly. For a batched cocktail you measure each ingredient by volume and treat the bottled or stored mix the same as a single drink. Just remember that batched cocktails do not get the same ice dilution as fresh-shaken individual servings, so most bartenders pre-dilute the batch with cold water to match the dilution they would expect from shaking." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Cocktail ABV Calculator",
+  description: "Calculate the final ABV of a cocktail from multiple ingredients with dilution.",
+  url: alcohol_cocktail_abv_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "cocktail-abv-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "Cocktail ABV Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cocktail ABV Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the final alcohol by volume of any cocktail from up to four ingredients, including dilution from ice melt during shaking or stirring. Returns final ABV, volume, and US standard drinks.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="cocktail-abv-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="cab-method" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Mixing Method</label>
+            <select id="cab-method" data-cocktail-abv-calculator-target="method" data-action="change->cocktail-abv-calculator#calculate" class="w-full">
+              <option value="built">Built (no ice, no dilution)</option>
+              <option value="rocks">Built on the rocks (~10%)</option>
+              <option value="stirred" selected>Stirred (~22%)</option>
+              <option value="shaken">Shaken (~28%)</option>
+            </select>
+          </div>
+
+          <% [["1", "2.0", "40"], ["2", "1.0", "16"], ["3", "0.25", "0"], ["4", "0", "0"]].each do |num, vol, abv| %>
+            <div class="border-t border-gray-200/60 dark:border-gray-700/60 pt-3">
+              <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Ingredient <%= num %></div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label for="cab-ing<%= num %>-vol" class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Volume (oz)</label>
+                  <input id="cab-ing<%= num %>-vol" type="number" inputmode="decimal" data-cocktail-abv-calculator-target="ing<%= num %>Vol" data-action="input->cocktail-abv-calculator#calculate" class="w-full" value="<%= vol %>" step="0.05" min="0">
+                </div>
+                <div>
+                  <label for="cab-ing<%= num %>-abv" class="block text-xs text-gray-500 dark:text-gray-400 mb-1">ABV %</label>
+                  <input id="cab-ing<%= num %>-abv" type="number" inputmode="decimal" data-cocktail-abv-calculator-target="ing<%= num %>Abv" data-action="input->cocktail-abv-calculator#calculate" class="w-full" value="<%= abv %>" step="0.1" min="0" max="100">
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-rose-200/50 dark:border-rose-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Final ABV</span>
+              <span class="text-3xl font-extrabold text-rose-600 dark:text-rose-400" data-cocktail-abv-calculator-target="resultFinalAbv">—</span>
+            </div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Pre-Dilution ABV</span><span class="font-semibold" data-cocktail-abv-calculator-target="resultPreAbv">—</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Dilution</span><span class="font-semibold" data-cocktail-abv-calculator-target="resultDilution">—</span></div>
+            <div class="pt-2 border-t border-rose-200/50 dark:border-rose-800/50">
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Final Volume</span><span class="font-semibold" data-cocktail-abv-calculator-target="resultVolumeOz">—</span></div>
+              <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">In mL</span><span class="font-semibold" data-cocktail-abv-calculator-target="resultVolumeMl">—</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">US Standard Drinks</span><span class="font-semibold" data-cocktail-abv-calculator-target="resultStandardDrinks">—</span></div>
+            </div>
+            <div class="pt-2">
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">Strength</span>
+              <p class="text-sm font-semibold mt-1" data-cocktail-abv-calculator-target="resultStrength">—</p>
+            </div>
+          </div>
+          <button data-action="click->cocktail-abv-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "cocktail-abv-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Why Cocktail ABV Is Lower Than the Spirit ABV</h2>
+      <p>
+        Cocktails almost always contain ingredients with very different alcohol contents, and the final cocktail ABV is the volume-weighted average of all of them. A martini built from 2 ounces of 40 percent gin and half an ounce of 18 percent vermouth pre-dilution sits at roughly 36 percent ABV, not 40, because the vermouth dilutes the gin. Then you have the dilution from ice during stirring or shaking, which adds another 20 to 30 percent water by volume. By the time the drink reaches the glass, the actual ABV is around 28 percent. This is why a properly diluted classic martini is closer in strength to a glass of fortified wine than a shot of straight gin.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Dilution From Shaking and Stirring</h2>
+      <p>
+        Modern cocktail science thanks largely to Dave Arnold's Liquid Intelligence and Cocktail Codex by the Death &amp; Co team has put real numbers on how much water ends up in a cocktail from ice melt. Hard shaking with cracked ice for 10 to 15 seconds adds 25 to 30 percent dilution. Stirring with cubed ice for 30 to 40 seconds adds 20 to 25 percent. Building over rocks adds 5 to 15 percent depending on drink time. Built drinks with no ice (like a hot toddy) add zero dilution. The calculator uses these numbers as defaults, but every bartender's technique varies slightly so you may need to tune the dilution percentage by 2 to 4 points for your style.
+      </p>
+
+      <h2>Standard Drinks and Responsible Tracking</h2>
+      <p>
+        The US standard drink contains 14 grams of pure alcohol, which equals roughly 1.5 ounces of an 80 proof spirit, 5 ounces of 12 percent wine, or 12 ounces of 5 percent beer. CDC dietary guidelines recommend no more than two standard drinks per day for men and one per day for women. A typical strong cocktail like a Manhattan or martini is about 1.5 standard drinks, while a session-strength low-ABV cocktail might be 0.6 to 0.8 standard drinks. The calculator computes standard drinks from the final ABV and final volume so you can track consumption accurately, especially for batched or pre-mixed drinks where the alcohol content can be deceptive.
+      </p>
+
+      <h2>Designing Balanced Drinks</h2>
+      <p>
+        A well-balanced cocktail typically lands between 14 and 22 percent ABV after dilution. Below 14 percent you are in light, session-strength territory like a spritz or a highball. From 14 to 22 percent covers most classic mixed drinks: Manhattans, Negronis, Old Fashioneds, daiquiris, and sours. Above 22 percent you are in spirit-forward territory where the cocktail tastes mostly of the base spirit, with the other ingredients acting as accents rather than equal partners. Use the calculator while iterating on recipes to dial in the strength category you want, and test the result on a friend before declaring a recipe finished.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is cocktail ABV calculated?</h3>
+      <p>
+        Volume-weighted average of all ingredient ABVs, then divided by 1 plus the dilution percentage from ice melt during mixing.
+      </p>
+
+      <h3>How much dilution does shaking add?</h3>
+      <p>
+        Hard shaking adds 25 to 30 percent dilution; stirring adds 20 to 25 percent; building on rocks adds 5 to 15 percent.
+      </p>
+
+      <h3>What is a US standard drink?</h3>
+      <p>
+        14 grams of pure alcohol, equivalent to 1.5 oz of 80-proof spirit, 5 oz of 12% wine, or 12 oz of 5% beer.
+      </p>
+
+      <h3>Does this work for batched cocktails?</h3>
+      <p>
+        Yes — measure each ingredient by total volume. For a batched cocktail you usually need to pre-add water to match the dilution from shaking.
+      </p>
+
+      <h3>What is a typical cocktail ABV?</h3>
+      <p>
+        Most balanced cocktails land between 14 and 22 percent ABV after dilution. Spirit-forward drinks like Manhattans and martinis sit at 20 to 28 percent.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Pour Cost Calculator", description: "Calculate bar pour cost percentage and profit margin.", path: alcohol_pour_cost_path, icon_path: "M12 8c-1.657 0-3 .895-3 2" },
+      { name: "Distiller's Proofing", description: "Dilute high-proof spirit to bottling strength.", path: alcohol_distiller_proofing_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547" },
+      { name: "ABV Calculator", description: "Calculate alcohol by volume from OG and FG.", path: alcohol_abv_path, icon_path: "M12 3v2m0 14v2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

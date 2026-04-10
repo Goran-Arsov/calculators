@@ -1,0 +1,170 @@
+<% set_meta_tags(
+  title: "Pour Cost Calculator - Bar Profitability",
+  description: "Calculate bar pour cost percentage, profit margin, gross profit per drink, and suggested sale price from bottle cost, bottle size, pour size, and menu price.",
+  canonical: alcohol_pour_cost_url,
+  og: {
+    title: "Pour Cost Calculator | Calc Hammer",
+    description: "Calculate bar pour cost percentage, profit margin, and gross profit per drink.",
+    url: alcohol_pour_cost_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "Pour Cost Calculator", url: alcohol_pour_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is pour cost in a bar?", answer: "Pour cost is the percentage of the menu sale price that the raw alcohol cost represents. If a drink sells for $10 and the spirit costs $2 to pour, the pour cost is 20 percent. Pour cost is the single most important number for measuring bar profitability and is the standard benchmark used across the hospitality industry to compare bars and brands." },
+  { question: "What is a good pour cost percentage?", answer: "The industry standard target is 18 to 24 percent for spirits, 25 to 30 percent for beer, and 28 to 35 percent for wine. Premium cocktail bars aim for 18 to 22 percent on spirit-driven drinks and dive bars usually run 20 to 25 percent. Anything above 30 percent typically signals that prices are too low or that bartenders are over-pouring or comping too much." },
+  { question: "How is pour cost calculated?", answer: "Cost per pour equals the bottle cost divided by the bottle size in ounces, times the pour size in ounces. Pour cost percentage equals cost per pour divided by sale price, times 100. Profit per pour equals sale price minus cost per pour, and gross margin equals profit divided by sale price as a percentage." },
+  { question: "What is the suggested sale price?", answer: "The suggested sale price is the menu price you would need to charge to hit a target pour cost percentage. It is calculated as cost per pour divided by the target pour cost as a decimal. For a $1.30 cost per pour and a 20 percent target, the suggested sale price is $6.50. Use this as a starting point and adjust for local market, drink complexity, and brand positioning." },
+  { question: "Does this account for spillage and waste?", answer: "No. Real-world pour cost is always slightly higher than calculated because of spillage, over-pouring, comps, breakage, and theft. Most bars add 1 to 3 percentage points to their calculated pour cost as a waste allowance. If your actual pour cost is more than 3 points higher than calculated, you have a process or training problem worth investigating." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Pour Cost Calculator",
+  description: "Calculate bar pour cost percentage and profit margin from bottle cost and pour size.",
+  url: alcohol_pour_cost_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "pour-cost-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "Pour Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pour Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate bar pour cost percentage, profit per pour, gross margin, and the suggested sale price for a target pour cost. The single most important profitability metric for any bar program.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="pour-cost-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="pc-bottle-cost" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Bottle Cost ($)</label>
+            <input id="pc-bottle-cost" type="number" inputmode="decimal" data-pour-cost-calculator-target="bottleCost" data-action="input->pour-cost-calculator#calculate" class="w-full" value="22.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="pc-bottle-ml" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Bottle Size (mL)</label>
+            <input id="pc-bottle-ml" type="number" inputmode="decimal" data-pour-cost-calculator-target="bottleMl" data-action="input->pour-cost-calculator#calculate" class="w-full" value="750" step="50" min="0">
+          </div>
+          <div>
+            <label for="pc-pour-oz" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pour Size (oz)</label>
+            <input id="pc-pour-oz" type="number" inputmode="decimal" data-pour-cost-calculator-target="pourOz" data-action="input->pour-cost-calculator#calculate" class="w-full" value="1.5" step="0.25" min="0">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Standard is 1.5 oz; some bars pour 2 oz for premium drinks.</p>
+          </div>
+          <div>
+            <label for="pc-sale-price" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Menu Sale Price ($)</label>
+            <input id="pc-sale-price" type="number" inputmode="decimal" data-pour-cost-calculator-target="salePrice" data-action="input->pour-cost-calculator#calculate" class="w-full" value="9.00" step="0.25" min="0">
+          </div>
+          <div>
+            <label for="pc-target-pct" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target Pour Cost (%)</label>
+            <input id="pc-target-pct" type="number" inputmode="decimal" data-pour-cost-calculator-target="targetPct" data-action="input->pour-cost-calculator#calculate" class="w-full" value="20" step="1" min="1" max="100">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-emerald-200/50 dark:border-emerald-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Pour Cost</span>
+              <span class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400" data-pour-cost-calculator-target="resultPourCostPct">—</span>
+            </div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Cost per Pour</span><span class="font-semibold" data-pour-cost-calculator-target="resultCostPour">—</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Profit per Pour</span><span class="font-semibold text-emerald-700 dark:text-emerald-400" data-pour-cost-calculator-target="resultProfitPour">—</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Gross Margin</span><span class="font-semibold" data-pour-cost-calculator-target="resultMargin">—</span></div>
+            <div class="pt-2 border-t border-emerald-200/50 dark:border-emerald-800/50">
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Pours per Bottle</span><span class="font-semibold" data-pour-cost-calculator-target="resultPoursPerBottle">—</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Profit per Bottle</span><span class="font-semibold text-emerald-700 dark:text-emerald-400" data-pour-cost-calculator-target="resultProfitBottle">—</span></div>
+            </div>
+            <div class="pt-2 border-t border-emerald-200/50 dark:border-emerald-800/50">
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Suggested Price</span><span class="font-bold text-base" data-pour-cost-calculator-target="resultSuggested">—</span></div>
+            </div>
+            <div class="pt-2">
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">Rating</span>
+              <p class="text-sm font-semibold mt-1" data-pour-cost-calculator-target="resultRating">—</p>
+            </div>
+          </div>
+          <button data-action="click->pour-cost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "pour-cost-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Pour Cost Is the Foundation of Bar Profitability</h2>
+      <p>
+        Pour cost is the percentage of the sale price of a drink that the raw alcohol cost represents. If you pay $22 for a 750 mL bottle of well bourbon and pour 1.5 oz drinks, each pour costs about $1.30. Sell that drink for $9 and your pour cost is roughly 14.5 percent. Pour cost is the single most important number for measuring bar profitability because it tells you the gross margin on your most variable cost: the alcohol itself. Once a bar has settled rent, payroll, and overhead, the difference between a profitable program and a money-losing one comes down almost entirely to pour cost discipline across the bottles, draft lines, and wine list.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Industry Benchmarks by Category</h2>
+      <p>
+        Different beverage categories have different target pour costs. Spirits-based cocktails should land between 18 and 24 percent, with high-end craft cocktail bars often achieving 18 to 20 percent through smart sourcing and disciplined recipes. Beer pours typically run higher at 25 to 30 percent because of lower margins on commodity brands and the cost of draft system maintenance. Wine by the glass is typically 28 to 35 percent because of the higher cost basis and the expectation of a generous pour. Mixers, syrups, garnishes, ice, and labor are not included in pour cost — those are separate line items in the overall beverage cost calculation.
+      </p>
+
+      <h2>Calculating Pour Cost in Practice</h2>
+      <p>
+        The formula is straightforward: cost per pour equals the bottle cost divided by the total ounces in the bottle, times the pour size in ounces. A 750 mL bottle holds 25.36 ounces, so a $22 bottle costs $0.867 per ounce, and a 1.5 oz pour costs $1.30. Pour cost percentage is then $1.30 divided by the menu price. The calculator also returns gross profit per pour and per full bottle, which is useful when forecasting daily revenue from inventory levels. The suggested sale price reverses the math: enter your target pour cost percentage and it returns the price you would need to charge to hit it.
+      </p>
+
+      <h2>Why Actual Pour Cost Differs From Calculated</h2>
+      <p>
+        The calculator returns the theoretical pour cost assuming every pour is exactly the configured size and nothing is wasted. Real-world pour cost is always 1 to 3 percentage points higher because of spillage, over-pouring, free pours, comps, broken bottles, theft, and inventory shrinkage. A well-run bar with proper measurement (jiggers or controlled spouts) and good inventory controls can keep the gap to 1 to 2 points. A loose operation with free pours and unaudited inventory often runs 5 points or more above calculated, which is why managers track actual versus calculated pour cost weekly and investigate any persistent gap.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is pour cost in a bar?</h3>
+      <p>
+        The percentage of a drink's sale price that the raw alcohol costs. A $1.30 pour sold for $9 has a 14.5 percent pour cost.
+      </p>
+
+      <h3>What is a good pour cost?</h3>
+      <p>
+        Industry standard is 18 to 24 percent for spirits, 25 to 30 percent for beer, and 28 to 35 percent for wine. Premium cocktail bars aim for 18 to 22.
+      </p>
+
+      <h3>How is pour cost calculated?</h3>
+      <p>
+        Cost per pour = bottle cost / bottle ounces × pour ounces. Pour cost % = cost per pour / sale price × 100.
+      </p>
+
+      <h3>What is the suggested sale price?</h3>
+      <p>
+        The price you would need to charge to hit your target pour cost. Calculated as cost per pour / target pour cost as decimal.
+      </p>
+
+      <h3>Does this account for spillage?</h3>
+      <p>
+        No. Add 1 to 3 percentage points for waste, spillage, and over-pouring. Anything more than that means you have a training or process problem.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Cocktail ABV Calculator", description: "Calculate the final ABV of any cocktail with dilution.", path: alcohol_cocktail_abv_path, icon_path: "M5 3l14 0l-7 9l0 6m-3 0l6 0M9 9h6" },
+      { name: "Distiller's Proofing", description: "Dilute high-proof spirit to bottling strength.", path: alcohol_distiller_proofing_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547" },
+      { name: "ABV Calculator", description: "Calculate alcohol by volume from OG and FG.", path: alcohol_abv_path, icon_path: "M12 3v2m0 14v2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

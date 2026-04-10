@@ -1,0 +1,155 @@
+<% set_meta_tags(
+  title: "Refractometer Brix to Gravity Converter",
+  description: "Convert refractometer Brix readings to specific gravity, with optional post-fermentation correction using the wort correction factor and the Sean Terrill cubic.",
+  canonical: alcohol_brix_to_gravity_url,
+  og: {
+    title: "Refractometer Brix to Gravity Converter | Calc Hammer",
+    description: "Convert refractometer Brix to specific gravity, including post-fermentation correction with WCF.",
+    url: alcohol_brix_to_gravity_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "Refractometer Brix to Gravity", url: alcohol_brix_to_gravity_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is Brix?", answer: "Brix is a measurement of dissolved solids in a liquid, expressed as the percentage of sucrose by weight. One degree Brix equals one gram of sucrose in 100 grams of solution. Refractometers measure Brix by detecting how much light bends as it passes through the sample. For unfermented wort, Brix correlates closely to specific gravity, but the relationship breaks down once fermentation produces alcohol." },
+  { question: "What is the wort correction factor?", answer: "The wort correction factor (WCF) accounts for the fact that wort has different refractive properties than pure sucrose solution because it contains maltose, dextrins, proteins, and other compounds. Most refractometers are calibrated for sucrose, so a wort sample reads about 4 percent higher in Brix than its true sugar content. The standard WCF is 1.04 for typical all-grain wort, though it can range from 1.02 to 1.06 depending on grain bill and mash conditions." },
+  { question: "Why doesn't a refractometer work for FG?", answer: "Once fermentation produces alcohol, the alcohol bends light differently than sugar and skews the refractive index reading. A refractometer reading of 8 Brix on fermented beer does not mean 8 percent sugar, it means a mixture of alcohol, residual sugar, and wort solids that happens to refract light to that point. The Sean Terrill cubic equation in this calculator corrects for the alcohol contribution and returns a true specific gravity." },
+  { question: "How is FG calculated from OG Brix and FG Brix?", answer: "The calculator uses the Sean Terrill 2011 cubic equation, which is the most accurate and widely-used model for converting fermented refractometer readings to specific gravity. It corrects both Brix readings with the WCF and then applies a polynomial that subtracts the alcohol contribution to arrive at a true FG. Typical accuracy is within 0.001 to 0.002 SG when compared to a hydrometer." },
+  { question: "Which is more accurate, hydrometer or refractometer?", answer: "For original gravity, both are equally accurate when used correctly. For final gravity, a hydrometer is more accurate by a small margin because it measures density directly without needing an alcohol correction. The refractometer's main advantage is sample size: it needs only two or three drops, while a hydrometer needs a full trial jar of liquid that has to be discarded after the reading." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Refractometer Brix to Gravity Converter",
+  description: "Convert refractometer Brix to specific gravity, with post-fermentation alcohol correction.",
+  url: alcohol_brix_to_gravity_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "brix-to-gravity-refractometer-converter"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "Refractometer Brix to Gravity" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Refractometer Brix to Gravity Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert refractometer Brix readings to specific gravity. Leave the FG Brix blank for a simple OG conversion, or fill it in to apply the Sean Terrill cubic and get the corrected post-fermentation FG and ABV.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="brix-to-gravity-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="bg-og-brix" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">OG Brix (°Bx)</label>
+            <input id="bg-og-brix" type="number" inputmode="decimal" data-brix-to-gravity-calculator-target="ogBrix" data-action="input->brix-to-gravity-calculator#calculate" class="w-full" value="14" step="0.1" min="0" max="40">
+          </div>
+          <div>
+            <label for="bg-fg-brix" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">FG Brix (°Bx) <span class="text-gray-400 font-normal">— optional</span></label>
+            <input id="bg-fg-brix" type="number" inputmode="decimal" data-brix-to-gravity-calculator-target="fgBrix" data-action="input->brix-to-gravity-calculator#calculate" class="w-full" value="7" step="0.1" min="0" max="40">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave blank if you only need to convert OG.</p>
+          </div>
+          <div>
+            <label for="bg-wcf" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wort Correction Factor</label>
+            <input id="bg-wcf" type="number" inputmode="decimal" data-brix-to-gravity-calculator-target="wcf" data-action="input->brix-to-gravity-calculator#calculate" class="w-full" value="1.04" step="0.01" min="1" max="1.1">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">1.04 is the default for most all-grain wort.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-emerald-200/50 dark:border-emerald-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">OG (SG)</span>
+              <span class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400" data-brix-to-gravity-calculator-target="resultOg">—</span>
+            </div>
+            <div class="flex justify-between items-center pb-2 border-b border-emerald-200/50 dark:border-emerald-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">FG (SG)</span>
+              <span class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400" data-brix-to-gravity-calculator-target="resultFg">—</span>
+            </div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">ABV</span><span class="font-semibold" data-brix-to-gravity-calculator-target="resultAbv">—</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Apparent Attenuation</span><span class="font-semibold" data-brix-to-gravity-calculator-target="resultAttenuation">—</span></div>
+          </div>
+          <button data-action="click->brix-to-gravity-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "brix-to-gravity-refractometer-converter" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Brix and Refractometers in Brewing</h2>
+      <p>
+        Brix is a percentage-by-weight scale of dissolved sucrose. A refractometer is a small optical instrument that measures Brix by shining a light through a few drops of sample and detecting the angle at which the light bends. The bigger the bend, the more dissolved solids in the liquid. Refractometers are loved by brewers because they need only two or three drops, work in seconds, and survive years of abuse on the brew deck. The trade-off is that the conversion to specific gravity is straightforward only for unfermented wort; once alcohol enters the picture, you need a correction equation.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Wort Correction Factor</h2>
+      <p>
+        Refractometers are calibrated for sucrose solutions, but wort is not pure sucrose. Wort contains maltose, maltotriose, dextrins, proteins, and various non-sugar dissolved solids that bend light slightly differently than pure sucrose. The correction factor that bridges the gap is called the wort correction factor or WCF, and a value of 1.04 means your refractometer reads 4 percent higher in Brix than the actual extract content of the wort. To find your specific WCF, take simultaneous readings on the same wort sample with a refractometer and a calibrated hydrometer, then divide the refractometer Brix by the Brix derived from the hydrometer SG. Most all-grain brewers land between 1.02 and 1.06.
+      </p>
+
+      <h2>Post-Fermentation Conversion Using Terrill's Cubic</h2>
+      <p>
+        Once fermentation produces alcohol, a simple Brix to SG conversion is no longer accurate because alcohol bends light differently than sugar. Sean Terrill developed a cubic regression in 2011 that uses both the OG Brix and the FG Brix, applies the WCF to both, and returns a corrected final gravity that closely matches a hydrometer reading. The equation is mathematically ugly but reliably accurate to within 0.001 to 0.002 SG when compared with measured values. This calculator runs the Terrill cubic automatically when you fill in both OG and FG Brix, so you can take both measurements with a refractometer and skip the hydrometer entirely for routine brewing.
+      </p>
+
+      <h2>Refractometer vs Hydrometer Trade-Offs</h2>
+      <p>
+        For original gravity, both instruments are equally accurate when used correctly. For final gravity, a hydrometer wins by a small margin because it measures density directly without needing an alcohol correction. The hydrometer downside is sample size: a trial jar needs 100 to 200 mL of beer, which has to be discarded or sanitized to return. A refractometer needs three drops, which means you can take measurements throughout fermentation without losing meaningful volume from the carboy. Most brewers eventually use both: a refractometer for daily fermentation tracking and a hydrometer for the final, official, archive-worthy reading.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is Brix?</h3>
+      <p>
+        Brix is the percentage of dissolved sucrose by weight. Refractometers measure it optically. One degree Brix equals one gram of sucrose per 100 grams of solution.
+      </p>
+
+      <h3>What is the wort correction factor?</h3>
+      <p>
+        The WCF corrects for the difference in refractive index between sucrose and actual wort. A WCF of 1.04 means the refractometer reads 4 percent higher in Brix than the true wort extract content.
+      </p>
+
+      <h3>Why doesn't a plain Brix to SG formula work after fermentation?</h3>
+      <p>
+        Alcohol bends light differently than sugar and skews the refractive index reading. The Sean Terrill cubic equation corrects for the alcohol contribution and returns a true SG.
+      </p>
+
+      <h3>How accurate is this calculator?</h3>
+      <p>
+        Within 0.001 to 0.002 specific gravity points compared to a hydrometer reading, assuming your WCF is correct.
+      </p>
+
+      <h3>How do I find my refractometer's WCF?</h3>
+      <p>
+        Take simultaneous refractometer and hydrometer readings on the same unfermented wort sample, then divide the refractometer Brix by the SG-derived Brix. Average the result over several batches for the best accuracy.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Hydrometer Temperature Correction", description: "Correct hydrometer readings for sample temperature.", path: alcohol_hydrometer_correction_path, icon_path: "M12 3v2m0 14v2" },
+      { name: "ABV Calculator", description: "Calculate alcohol by volume from OG and FG.", path: alcohol_abv_path, icon_path: "M12 3v2m0 14v2" },
+      { name: "Yeast Pitch Rate", description: "Calculate the yeast cells, packs, and starter size.", path: alcohol_yeast_pitch_path, icon_path: "M3 6l3 1m0 0l-3 9" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

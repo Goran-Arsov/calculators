@@ -1,0 +1,150 @@
+<% set_meta_tags(
+  title: "Hydrometer Temperature Correction Calculator",
+  description: "Correct your hydrometer specific gravity reading for sample temperature when it differs from the calibration temperature. Get the true gravity in seconds.",
+  canonical: alcohol_hydrometer_correction_url,
+  og: {
+    title: "Hydrometer Temperature Correction Calculator | Calc Hammer",
+    description: "Correct hydrometer gravity readings for sample temperature when they differ from the calibrated value.",
+    url: alcohol_hydrometer_correction_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "Hydrometer Temperature Correction", url: alcohol_hydrometer_correction_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Why does temperature affect hydrometer readings?", answer: "Hydrometers measure specific gravity by floating in a liquid, and the density of liquids changes with temperature. Most brewing hydrometers are calibrated at 60 degrees Fahrenheit, so a sample taken at 80 degrees will read low because the warmer liquid is less dense and the hydrometer sits higher. The standard correction is roughly +0.001 specific gravity for every 10 degrees above 60°F." },
+  { question: "What formula does the calculator use?", answer: "It uses the standard polynomial correction equation widely cited in homebrewing references: 1.313454 minus 0.132674 times T plus 2.057793e-3 times T squared minus 2.627634e-6 times T cubed, where T is the sample temperature in Fahrenheit. The correction value is added in the thousandths place to your measured gravity." },
+  { question: "Should I cool the sample first?", answer: "If you can wait, cooling the sample to the calibration temperature is the most accurate approach because it eliminates the correction step entirely. In practice many brewers take readings at warmer temperatures because cooling delays workflow, and the correction polynomial is accurate to within about 0.001 SG up to 100 degrees Fahrenheit." },
+  { question: "Does this work for refractometers?", answer: "No. Refractometers have a completely different temperature dependency and most modern refractometers have automatic temperature compensation. This calculator is for hydrometer readings only. If you use a refractometer, see the Brix to Gravity calculator instead, which handles refractive index measurements." },
+  { question: "What if my hydrometer is calibrated at 68°F or 20°C?", answer: "Set the calibration temperature to 68°F (or 20°C, which is also 68°F) in the calculator. Some European hydrometers are calibrated at 20°C while most American hydrometers are calibrated at 60°F. The label on your hydrometer should state the calibration temperature; if not, assume 60°F for American instruments and 20°C for European." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Hydrometer Temperature Correction Calculator",
+  description: "Correct hydrometer specific gravity readings for sample temperature.",
+  url: alcohol_hydrometer_correction_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "hydrometer-temperature-correction-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "Hydrometer Temperature Correction" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Hydrometer Temperature Correction Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Correct your hydrometer specific gravity reading for sample temperature when it differs from the calibration temperature. Get the true gravity in one click.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="hydrometer-correction-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="hc-measured" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Measured Gravity</label>
+            <input id="hc-measured" type="number" inputmode="decimal" data-hydrometer-correction-calculator-target="measured" data-action="input->hydrometer-correction-calculator#calculate" class="w-full" value="1.050" step="0.001" min="0.98" max="1.2">
+          </div>
+          <div>
+            <label for="hc-sample" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sample Temperature (°F)</label>
+            <input id="hc-sample" type="number" inputmode="decimal" data-hydrometer-correction-calculator-target="sampleTemp" data-action="input->hydrometer-correction-calculator#calculate" class="w-full" value="80" step="1" min="32" max="212">
+          </div>
+          <div>
+            <label for="hc-cal" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Calibration Temperature (°F)</label>
+            <input id="hc-cal" type="number" inputmode="decimal" data-hydrometer-correction-calculator-target="calTemp" data-action="input->hydrometer-correction-calculator#calculate" class="w-full" value="60" step="1" min="32" max="212">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Most American hydrometers calibrate at 60°F. European hydrometers usually calibrate at 68°F (20°C).</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Corrected Gravity</span>
+              <span class="text-3xl font-extrabold text-blue-600 dark:text-blue-400" data-hydrometer-correction-calculator-target="resultCorrected">—</span>
+            </div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Adjustment</span><span class="font-semibold" data-hydrometer-correction-calculator-target="resultAdjustment">—</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Brix Equivalent</span><span class="font-semibold" data-hydrometer-correction-calculator-target="resultBrix">—</span></div>
+          </div>
+          <button data-action="click->hydrometer-correction-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "hydrometer-temperature-correction-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Why Hydrometer Readings Need Temperature Correction</h2>
+      <p>
+        A hydrometer measures specific gravity by floating in a liquid: the deeper it sinks, the lower the gravity. The instrument is calibrated to give an accurate reading at one specific temperature, almost always 60 degrees Fahrenheit for American homebrew hydrometers and 20 degrees Celsius (68°F) for European laboratory hydrometers. The reason is that liquid density decreases as temperature increases. Hot wort is less dense than cool wort of the same sugar content, so the hydrometer sits higher and reads low. If you take a reading on hot wort straight out of the kettle without correcting it, you will under-report your original gravity by 4 to 6 specific gravity points, which is a significant error for ABV and recipe records.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Correction Polynomial</h2>
+      <p>
+        Brewing references including Palmer's How to Brew and Daniels's Designing Great Beers cite a third-order polynomial correction in degrees Fahrenheit: 1.313454 minus 0.132674 times T plus 2.057793 thousandths times T squared minus 2.627634 millionths times T cubed. The output is an offset in the third decimal place that you add to your measured reading. At 60 degrees the polynomial returns near zero (no correction needed). At 80 degrees it returns about +2 thousandths, so a hydrometer reading of 1.050 corrects to 1.052. At 100 degrees the correction grows to about +4 thousandths.
+      </p>
+
+      <h2>Practical Tips for Accurate Readings</h2>
+      <p>
+        Pull a sample into a tall, narrow trial jar that lets the hydrometer float freely without touching the sides. Spin the hydrometer gently when you drop it in to release any clinging bubbles, then read at eye level looking through the meniscus. Always read the bottom of the meniscus, which is where the calibration was performed. If you can spare five minutes, drop the trial jar into an ice bath to bring the sample down to 60 degrees and skip the correction entirely. For critical FG readings, take two or three samples on different days to confirm fermentation is truly complete before assuming the gravity is final.
+      </p>
+
+      <h2>Hydrometer vs Refractometer</h2>
+      <p>
+        Hydrometers and refractometers measure gravity by completely different principles, so the corrections are different. Hydrometers measure liquid density and need a temperature offset like the one this calculator provides. Refractometers measure how much light bends when passing through the sample and have built-in automatic temperature compensation in modern instruments. Once fermentation has started and alcohol is present, refractometers also need a wort correction factor and a different formula entirely, which is what the Brix to Gravity Refractometer Converter handles. Use the right tool for the right reading.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Why does temperature affect hydrometer readings?</h3>
+      <p>
+        Liquid density decreases as temperature increases, so warmer wort floats the hydrometer higher and gives a lower reading. The hydrometer is calibrated for one temperature; readings taken at any other temperature need to be corrected.
+      </p>
+
+      <h3>What formula is used?</h3>
+      <p>
+        A standard third-order polynomial in degrees Fahrenheit cited in Palmer's How to Brew, returning a thousandths correction added to your measured gravity.
+      </p>
+
+      <h3>Can I just cool the sample?</h3>
+      <p>
+        Yes — cooling the sample to the calibration temperature is the most accurate approach. An ice bath brings a small trial jar to 60°F in five minutes.
+      </p>
+
+      <h3>Does this work for refractometers?</h3>
+      <p>
+        No. Refractometers measure refractive index, not density, and have a different correction. Use the Brix to Gravity calculator for refractometer readings.
+      </p>
+
+      <h3>How accurate is this correction?</h3>
+      <p>
+        Within about 0.001 SG up to 100°F. Above 100°F the polynomial drifts and you should cool the sample.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "ABV Calculator", description: "Calculate alcohol by volume from OG and FG.", path: alcohol_abv_path, icon_path: "M12 3v2m0 14v2" },
+      { name: "Refractometer Brix to Gravity", description: "Convert Brix readings to specific gravity, with WCF correction.", path: alcohol_brix_to_gravity_path, icon_path: "M19 11H5m14 0a2 2 0 012 2v6" },
+      { name: "Strike Water Temperature", description: "Calculate strike water for hitting a target mash temperature.", path: alcohol_strike_water_path, icon_path: "M17.657 18.657" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

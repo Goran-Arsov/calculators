@@ -291,6 +291,20 @@ import FabricShrinkageCalculatorController from "controllers/fabric_shrinkage_ca
 import CrossStitchFabricCalculatorController from "controllers/cross_stitch_fabric_calculator_controller"
 import HvacBtuCalculatorController from "controllers/hvac_btu_calculator_controller"
 
+// Alcohol & Brewing calculators
+import AbvCalculatorController from "controllers/abv_calculator_controller"
+import IbuCalculatorController from "controllers/ibu_calculator_controller"
+import SrmCalculatorController from "controllers/srm_calculator_controller"
+import StrikeWaterCalculatorController from "controllers/strike_water_calculator_controller"
+import HydrometerCorrectionCalculatorController from "controllers/hydrometer_correction_calculator_controller"
+import BrixToGravityCalculatorController from "controllers/brix_to_gravity_calculator_controller"
+import YeastPitchCalculatorController from "controllers/yeast_pitch_calculator_controller"
+import PrimingSugarCalculatorController from "controllers/priming_sugar_calculator_controller"
+import KegForceCarbonationCalculatorController from "controllers/keg_force_carbonation_calculator_controller"
+import DistillerProofingCalculatorController from "controllers/distiller_proofing_calculator_controller"
+import CocktailAbvCalculatorController from "controllers/cocktail_abv_calculator_controller"
+import PourCostCalculatorController from "controllers/pour_cost_calculator_controller"
+
 // Everyday calculators
 import TipCalculatorController from "controllers/tip_calculator_controller"
 import DiscountCalculatorController from "controllers/discount_calculator_controller"
@@ -517,6 +531,20 @@ application.register("fabric-gsm-calculator", FabricGsmCalculatorController)
 application.register("fabric-shrinkage-calculator", FabricShrinkageCalculatorController)
 application.register("cross-stitch-fabric-calculator", CrossStitchFabricCalculatorController)
 application.register("hvac-btu-calculator", HvacBtuCalculatorController)
+
+// Alcohol & Brewing
+application.register("abv-calculator", AbvCalculatorController)
+application.register("ibu-calculator", IbuCalculatorController)
+application.register("srm-calculator", SrmCalculatorController)
+application.register("strike-water-calculator", StrikeWaterCalculatorController)
+application.register("hydrometer-correction-calculator", HydrometerCorrectionCalculatorController)
+application.register("brix-to-gravity-calculator", BrixToGravityCalculatorController)
+application.register("yeast-pitch-calculator", YeastPitchCalculatorController)
+application.register("priming-sugar-calculator", PrimingSugarCalculatorController)
+application.register("keg-force-carbonation-calculator", KegForceCarbonationCalculatorController)
+application.register("distiller-proofing-calculator", DistillerProofingCalculatorController)
+application.register("cocktail-abv-calculator", CocktailAbvCalculatorController)
+application.register("pour-cost-calculator", PourCostCalculatorController)
 
 // Everyday
 application.register("tip-calculator", TipCalculatorController)

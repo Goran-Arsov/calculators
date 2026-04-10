@@ -1,0 +1,172 @@
+<% set_meta_tags(
+  title: "Yeast Pitch Rate Calculator - Cells, Packs, and Starters",
+  description: "Calculate the yeast cells needed for your batch and the number of dry yeast packs or liquid starter size for a healthy fermentation.",
+  canonical: alcohol_yeast_pitch_url,
+  og: {
+    title: "Yeast Pitch Rate Calculator | Calc Hammer",
+    description: "Calculate yeast cells, packs, and starter size for any beer batch.",
+    url: alcohol_yeast_pitch_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "Yeast Pitch Rate Calculator", url: alcohol_yeast_pitch_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Why does pitch rate matter?", answer: "Underpitching yeast leads to slow starts, stuck fermentations, off flavors from stressed yeast, and excessive ester or fusel alcohol production. Overpitching produces clean but underexpressive fermentation, with reduced ester and phenol character that some styles depend on. Hitting the right cell count gives you predictable fermentation timing, full attenuation, and the flavor profile the style demands." },
+  { question: "What pitch rate should I use?", answer: "The Chris White / White Labs standard is 0.75 million cells per milliliter per degree Plato for ales and 1.5 million cells per milliliter per degree Plato for lagers. High-gravity beers above 1.060 OG should bump to 1.0 million per mL per °P for ales and 2.0 million per mL per °P for lagers. The math becomes total cells in billions equals pitch rate times volume in mL times Plato divided by 1000." },
+  { question: "How many cells are in a packet of dry yeast?", answer: "An 11-gram packet of fresh dry yeast contains approximately 220 billion viable cells, or 20 billion cells per gram. Dry yeast loses about 21 percent viability per month at room temperature, so a packet that is six months old contains roughly 130 billion viable cells. Refrigeration slows the decline. Most packets are date-stamped so you can estimate viability accurately." },
+  { question: "How big a starter do I need?", answer: "A 1-liter stir-plate starter inoculated with one fresh 100-billion-cell smack pack typically grows to about 200 billion cells, a 2x growth factor. For a 5-gallon ale at 1.050 OG you need about 175 billion cells, so a 1-liter starter is sufficient. For a 5-gallon lager at the same OG you need 350 billion cells and a 2-liter starter, or two packs without a starter." },
+  { question: "Can I just pitch a single dry packet?", answer: "For a 5-gallon ale below 1.060 OG, yes. One fresh 11-gram packet of dry ale yeast contains roughly 220 billion viable cells, which exceeds the 175 billion needed. For lagers, high gravity beers, or older yeast, plan to pitch two packets or build a starter." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Yeast Pitch Rate Calculator",
+  description: "Calculate yeast cells, packs, and starter size for any beer batch.",
+  url: alcohol_yeast_pitch_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "yeast-pitch-rate-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "Yeast Pitch Rate Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Yeast Pitch Rate Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the yeast cells needed for your batch and the number of dry yeast packs or liquid starter size for a healthy, predictable fermentation.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="yeast-pitch-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="yp-volume" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Batch Volume (gal)</label>
+            <input id="yp-volume" type="number" inputmode="decimal" data-yeast-pitch-calculator-target="volume" data-action="input->yeast-pitch-calculator#calculate" class="w-full" value="5" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="yp-og" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Original Gravity</label>
+            <input id="yp-og" type="number" inputmode="decimal" data-yeast-pitch-calculator-target="og" data-action="input->yeast-pitch-calculator#calculate" class="w-full" value="1.050" step="0.001" min="1" max="1.15">
+          </div>
+          <div>
+            <label for="yp-beer-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Beer Type</label>
+            <select id="yp-beer-type" data-yeast-pitch-calculator-target="beerType" data-action="change->yeast-pitch-calculator#calculate" class="w-full">
+              <option value="ale">Ale</option>
+              <option value="lager">Lager</option>
+            </select>
+          </div>
+          <div>
+            <label for="yp-yeast-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Yeast Form</label>
+            <select id="yp-yeast-type" data-yeast-pitch-calculator-target="yeastType" data-action="change->yeast-pitch-calculator#calculate" class="w-full">
+              <option value="dry">Dry (11g packs)</option>
+              <option value="liquid">Liquid (100B packs)</option>
+            </select>
+          </div>
+          <div>
+            <label for="yp-age" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Yeast Age (days)</label>
+            <input id="yp-age" type="number" inputmode="numeric" data-yeast-pitch-calculator-target="age" data-action="input->yeast-pitch-calculator#calculate" class="w-full" value="30" step="1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-purple-200/50 dark:border-purple-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Cells Needed</span>
+              <span class="text-3xl font-extrabold text-purple-600 dark:text-purple-400" data-yeast-pitch-calculator-target="resultCells">—</span>
+            </div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Plato</span><span class="font-semibold" data-yeast-pitch-calculator-target="resultPlato">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Pitch Rate</span><span class="font-semibold" data-yeast-pitch-calculator-target="resultPitchRate">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Viability</span><span class="font-semibold" data-yeast-pitch-calculator-target="resultViability">—</span></div>
+            <div data-yeast-pitch-calculator-target="resultDryGroup" class="pt-2 border-t border-purple-200/50 dark:border-purple-800/50">
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Dry Packs (11g)</span><span class="font-bold text-lg" data-yeast-pitch-calculator-target="resultDryPacks">—</span></div>
+              <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Total Dry Yeast</span><span class="font-semibold" data-yeast-pitch-calculator-target="resultDryGrams">—</span></div>
+            </div>
+            <div data-yeast-pitch-calculator-target="resultLiquidGroup" class="hidden pt-2 border-t border-purple-200/50 dark:border-purple-800/50">
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Packs (no starter)</span><span class="font-bold text-lg" data-yeast-pitch-calculator-target="resultLiquidPacks">—</span></div>
+              <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Starter (1 pack)</span><span class="font-semibold" data-yeast-pitch-calculator-target="resultStarter">—</span></div>
+            </div>
+          </div>
+          <button data-action="click->yeast-pitch-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "yeast-pitch-rate-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Why Yeast Pitch Rate Matters</h2>
+      <p>
+        The number of yeast cells you pitch into your wort sets the trajectory of the entire fermentation. Pitch too few cells and the yeast must reproduce many generations before they can begin fermenting in earnest, which stresses the cell walls, depletes nutrients, and leads to off-flavors like acetaldehyde, fusel alcohols, and excessive ester production. Pitch too many cells and the yeast skips most of its growth phase entirely, leaving the beer underexpressive and lacking the characteristic ester profile that makes a Belgian or English ale taste like the style. The right pitch rate produces a clean, predictable fermentation that completes on schedule and lets the yeast express the flavor profile the recipe requires.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Standard Pitch Rates</h2>
+      <p>
+        The standard pitch rates from Chris White and Jamil Zainasheff's Yeast book are 0.75 million cells per milliliter per degree Plato for ales and 1.5 million cells per milliliter per degree Plato for lagers. The reason lagers need twice as many cells is that they ferment cool, around 50 degrees Fahrenheit, where yeast metabolism slows dramatically and you need more cells to compensate. For beers above 1.060 original gravity, bump the rate to 1.0 million per mL per °P for ales and 2.0 million per mL per °P for lagers because the higher osmotic pressure of strong worts also stresses the cells. The total cells in billions equals pitch rate times volume in mL times Plato divided by 1000.
+      </p>
+
+      <h2>Dry vs Liquid Yeast and Viability</h2>
+      <p>
+        Fresh dry yeast contains roughly 20 billion viable cells per gram, or 220 billion cells in a typical 11 gram packet. Dry yeast also loses viability over time at about 21 percent per month at room temperature, slower if refrigerated. Fresh liquid yeast packs typically advertise 100 billion cells, but actual cell counts vary by manufacturer and batch. Liquid yeast loses viability faster than dry, dropping to roughly 50 percent within three months of the production date. The calculator factors yeast age into both viability calculations and adjusts the recommended pack count or starter size accordingly.
+      </p>
+
+      <h2>Building a Starter</h2>
+      <p>
+        A yeast starter grows your existing yeast supply to the cell count you need. The simplest setup is a 1.040 wort (about 100 grams of dry malt extract per liter of water) in a flask on a stir plate at room temperature. A 1-liter starter inoculated with one fresh 100-billion-cell pack of liquid yeast typically grows to roughly 200 billion cells in 24 to 36 hours. For high-gravity beers and lagers you may need a 2-liter or even step-up starter to reach the cell count without buying multiple packs. Refrigerate the finished starter overnight, decant most of the spent wort, and pitch the slurry to avoid changing the beer flavor with starter beer.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What pitch rate should I use?</h3>
+      <p>
+        0.75 million cells per mL per °P for ales; 1.5 million for lagers. Bump those to 1.0 and 2.0 respectively for high-gravity beers above 1.060 OG.
+      </p>
+
+      <h3>How many cells in an 11 gram pack of dry yeast?</h3>
+      <p>
+        About 220 billion viable cells when fresh, declining roughly 21 percent per month at room temperature.
+      </p>
+
+      <h3>How big a starter do I need?</h3>
+      <p>
+        A 1-liter stir-plate starter inoculated with one fresh 100B liquid pack typically grows to about 200B cells, sufficient for a 5-gallon ale.
+      </p>
+
+      <h3>Can I just pitch a single dry packet?</h3>
+      <p>
+        For a 5-gallon ale below 1.060 OG, yes. One fresh 11g packet contains more than enough cells. Lagers and big beers need two packets or a starter.
+      </p>
+
+      <h3>What happens if I underpitch?</h3>
+      <p>
+        Slow starts, stalled fermentations, and off flavors including diacetyl, acetaldehyde, fusel alcohols, and excessive esters from stressed yeast.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "ABV Calculator", description: "Calculate alcohol by volume from OG and FG.", path: alcohol_abv_path, icon_path: "M12 3v2m0 14v2" },
+      { name: "Strike Water Temperature", description: "Calculate strike water for hitting a target mash temperature.", path: alcohol_strike_water_path, icon_path: "M17.657 18.657" },
+      { name: "Priming Sugar Calculator", description: "Calculate priming sugar for bottle conditioning.", path: alcohol_priming_sugar_path, icon_path: "M20 7l-8-4-8 4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

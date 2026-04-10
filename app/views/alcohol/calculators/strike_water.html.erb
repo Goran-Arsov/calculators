@@ -1,0 +1,159 @@
+<% set_meta_tags(
+  title: "Strike Water Temperature Calculator - All-Grain Brewing",
+  description: "Calculate the strike water temperature you need to hit your target mash temperature using grain weight, grain temperature, and water-to-grain ratio. Uses John Palmer's infusion equation.",
+  canonical: alcohol_strike_water_url,
+  og: {
+    title: "Strike Water Temperature Calculator | Calc Hammer",
+    description: "Calculate the exact strike water temperature for hitting your target mash temperature in all-grain brewing.",
+    url: alcohol_strike_water_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "Strike Water Temperature Calculator", url: alcohol_strike_water_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is strike water temperature?", answer: "Strike water is the hot water poured over crushed grain to start the mash in all-grain brewing. The strike water needs to be hotter than the desired mash temperature because the cool, dry grain absorbs heat from the water. The strike temperature is the precise temperature that, after mixing with the grain, will land at your target mash temperature." },
+  { question: "What formula does this calculator use?", answer: "It uses John Palmer's standard infusion equation: Strike Temp equals 0.2 divided by the water-to-grain ratio in quarts per pound, multiplied by the difference between target mash temp and grain temp, plus the target mash temp. The 0.2 constant is the ratio of the specific heat of grain to water." },
+  { question: "What is a typical water-to-grain ratio?", answer: "Most homebrewers use 1.25 to 1.5 quarts of water per pound of grain, which is roughly 2.6 to 3.1 liters per kilogram. Lower ratios produce a stiffer, more concentrated mash often used for German lagers. Higher ratios produce a thinner, looser mash that is easier to stir and lauter and more common in American ale brewing." },
+  { question: "Why does my strike water need to be hotter than the mash temp?", answer: "The crushed grain enters the mash at room temperature, around 65 to 75 degrees Fahrenheit, and absorbs heat from the strike water. Grain has roughly one fifth the heat capacity of water by weight, but the temperature drop on contact is still significant. For a typical 10 pound grain bill at 1.25 quarts per pound striking 152 degrees, you need about 165 degree water." },
+  { question: "Can I trust the calculator exactly?", answer: "The formula is accurate to within about 1 to 2 degrees Fahrenheit if your inputs are correct. The two biggest sources of error are inaccurate grain temperature and the heat absorbed by the mash tun itself. Pre-heating your mash tun with hot water and discarding it before adding strike water removes most of the tun absorption, and reading grain temperature with a probe before mashing in eliminates the rest of the guesswork." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Strike Water Temperature Calculator",
+  description: "Calculate strike water temperature for hitting a target mash temperature in all-grain brewing.",
+  url: alcohol_strike_water_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "strike-water-temperature-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "Strike Water Temperature Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Strike Water Temperature Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the strike water temperature you need to hit your target mash temperature for any grain weight, grain temperature, and water-to-grain ratio. Uses John Palmer's standard infusion equation.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="strike-water-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="sw-grain-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Grain Weight (lb)</label>
+            <input id="sw-grain-weight" type="number" inputmode="decimal" data-strike-water-calculator-target="grainWeight" data-action="input->strike-water-calculator#calculate" class="w-full" value="10" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="sw-grain-temp" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Grain Temp (°F)</label>
+            <input id="sw-grain-temp" type="number" inputmode="decimal" data-strike-water-calculator-target="grainTemp" data-action="input->strike-water-calculator#calculate" class="w-full" value="70" step="1" min="32" max="120">
+          </div>
+          <div>
+            <label for="sw-target-temp" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target Mash Temp (°F)</label>
+            <input id="sw-target-temp" type="number" inputmode="decimal" data-strike-water-calculator-target="targetTemp" data-action="input->strike-water-calculator#calculate" class="w-full" value="152" step="1" min="90" max="170">
+          </div>
+          <div>
+            <label for="sw-ratio" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Water-to-Grain Ratio (qt/lb)</label>
+            <input id="sw-ratio" type="number" inputmode="decimal" data-strike-water-calculator-target="ratio" data-action="input->strike-water-calculator#calculate" class="w-full" value="1.25" step="0.05" min="0.5" max="3">
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Tip: Pre-heat your mash tun with hot water and dump it just before mashing in to neutralize tun absorption.</p>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-orange-200/50 dark:border-orange-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Strike Temp</span>
+              <span class="text-3xl font-extrabold text-orange-600 dark:text-orange-400" data-strike-water-calculator-target="resultStrikeF">0 °F</span>
+            </div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400">Strike Temp (°C)</span><span class="text-base font-semibold" data-strike-water-calculator-target="resultStrikeC">0 °C</span></div>
+            <div class="pt-2 border-t border-orange-200/50 dark:border-orange-800/50">
+              <span class="text-xs text-gray-500 dark:text-gray-400 uppercase">Water Volume</span>
+              <div class="flex justify-between mt-1"><span class="text-gray-600 dark:text-gray-400">Quarts</span><span class="font-semibold" data-strike-water-calculator-target="resultVolumeQt">0 qt</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Gallons</span><span class="font-semibold" data-strike-water-calculator-target="resultVolumeGal">0 gal</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Liters</span><span class="font-semibold" data-strike-water-calculator-target="resultVolumeL">0 L</span></div>
+            </div>
+          </div>
+          <button data-action="click->strike-water-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "strike-water-temperature-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>What Strike Water Temperature Means</h2>
+      <p>
+        Strike water is the hot water you pour onto crushed grain to start the mash in all-grain brewing. It is called strike water because the moment of mixing dictates the entire mash profile that follows. The cool, dry grain absorbs heat from the water and pulls the combined temperature down, so the strike water itself must be hotter than the target mash temperature. Hitting the right mash temperature matters because mash temperature controls enzyme activity: lower mash temperatures around 148 to 150 degrees Fahrenheit favor beta-amylase and produce more fermentable sugars and a drier finished beer, while higher mash temperatures around 156 to 158 favor alpha-amylase and produce more dextrins and a fuller-bodied beer.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Infusion Equation Explained</h2>
+      <p>
+        John Palmer popularized the standard infusion equation in How to Brew. The formula is strike temperature equals 0.2 divided by the water-to-grain ratio in quarts per pound, multiplied by the difference between the target mash temperature and the grain temperature, plus the target mash temperature itself. The 0.2 constant comes from the fact that grain has roughly one fifth the heat capacity of water by weight. As the ratio increases (more water per pound of grain), the heat absorbed by the grain becomes a smaller fraction of the total energy, so the strike water needs to be only slightly hotter than the target.
+      </p>
+
+      <h2>Choosing a Water-to-Grain Ratio</h2>
+      <p>
+        Most homebrewers settle into a 1.25 to 1.5 quart per pound mash. Stiffer mashes around 1.0 to 1.25 quarts per pound concentrate enzymes and protect them from heat denaturation, which is one reason traditional German lager brewers prefer thick mashes. Looser mashes from 1.5 to 2.0 quarts per pound are easier to stir and rake, and they produce slightly higher attenuation by giving enzymes better access to the starch. For batch sparge brewers, the strike volume is independent of the sparge volume, so feel free to mash at any ratio you prefer and adjust the sparge accordingly.
+      </p>
+
+      <h2>Why Mash Tun Absorption Matters</h2>
+      <p>
+        The standard infusion equation assumes the mash tun does not absorb any heat itself. In reality a cold cooler tun, plastic bucket, or stainless kettle steals several degrees of heat from the strike water on contact. The simplest fix is to pre-heat the tun: fill it with hot water at or above the strike temperature, let it sit for five to ten minutes, then dump the water and immediately add the actual strike water. Done this way, the tun is already at thermal equilibrium and does not change the mash temperature. If you skip pre-heating, add 2 to 4 degrees Fahrenheit to the calculated strike temperature to compensate.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is strike water temperature?</h3>
+      <p>
+        Strike water is the hot water poured over crushed grain to start the mash. It must be hotter than the target mash temperature so that, after the cool grain absorbs heat from the water, the combined temperature lands on target.
+      </p>
+
+      <h3>What formula does this use?</h3>
+      <p>
+        John Palmer's standard infusion equation: Tw equals 0.2 divided by the water-to-grain ratio in qt/lb, times the difference between target and grain temperatures, plus the target mash temperature.
+      </p>
+
+      <h3>What ratio should I use?</h3>
+      <p>
+        1.25 to 1.5 quarts per pound is the homebrew standard. Lower ratios produce a stiff German-style mash; higher ratios produce a looser American-style mash. Both work fine for most beer styles.
+      </p>
+
+      <h3>Why is my actual mash temp lower than calculated?</h3>
+      <p>
+        The mash tun absorbs some heat. Pre-heat the tun with hot water before mashing in, or add 2 to 4 degrees Fahrenheit to the calculated strike temp to compensate.
+      </p>
+
+      <h3>Is this the same equation BeerSmith uses?</h3>
+      <p>
+        Yes. BeerSmith, Brewer's Friend, and most homebrew calculators use the same Palmer infusion equation. They differ slightly in how they handle mash tun thermal mass corrections.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "ABV Calculator", description: "Calculate alcohol by volume from OG and FG.", path: alcohol_abv_path, icon_path: "M12 3v2m0 14v2" },
+      { name: "IBU Calculator", description: "Calculate International Bitterness Units for hop additions.", path: alcohol_ibu_path, icon_path: "M9 3v2m6-2v2" },
+      { name: "Yeast Pitch Rate", description: "Calculate the yeast cells, packs, and starter size you need.", path: alcohol_yeast_pitch_path, icon_path: "M3 6l3 1m0 0l-3 9" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

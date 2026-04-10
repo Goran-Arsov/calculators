@@ -1,0 +1,164 @@
+<% set_meta_tags(
+  title: "Distiller's Proofing Calculator - Dilute Spirits to Bottling Strength",
+  description: "Calculate the water to add when diluting high-proof spirits to a target bottling proof. Returns final volume and water in liters, gallons, and milliliters.",
+  canonical: alcohol_distiller_proofing_url,
+  og: {
+    title: "Distiller's Proofing Calculator | Calc Hammer",
+    description: "Calculate water to add for diluting spirits to a target bottling proof.",
+    url: alcohol_distiller_proofing_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Alcohol & Brewing", url: category_url("alcohol") },
+  { name: "Distiller's Proofing Calculator", url: alcohol_distiller_proofing_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is proofing in distilling?", answer: "Proofing is the process of diluting high-proof distillate down to the final bottling strength. Spirits leave the still at very high proof — 130 to 190 depending on the still type — and most are bottled between 80 and 100 proof. Distillers add purified water in carefully measured amounts to land on the legal label proof, then verify with a hydrometer." },
+  { question: "What does 'proof' mean?", answer: "In the United States, proof equals two times the alcohol by volume percentage. A 40 percent ABV spirit is 80 proof. The term comes from a historical practice in 17th-century England where distillers would 'prove' their spirit by soaking gunpowder in it and lighting it on fire — if the powder burned, the spirit was proof of being above 50 percent ABV. Modern proof is purely a labeling convention." },
+  { question: "Does this calculator account for ethanol-water contraction?", answer: "No. When ethanol and water mix, the total volume contracts slightly because the molecules pack more efficiently together, by about 2 to 3 percent at common bottling proofs. The calculator returns a volume-based dilution that ignores contraction, which is accurate enough for planning purposes but not exact. After blending, always verify the final proof with a calibrated alcoholometer or hydrometer because licensed distillers are legally required to confirm the bottled proof for tax stamps." },
+  { question: "What is the Pearson square method?", answer: "The Pearson square is a graphical shortcut for solving any dilution problem with two known concentrations to find the ratio needed to hit a target. For distiller proofing it gives the same answer as the algebraic equation V_final = V_start × ABV_start / ABV_target. The Pearson square is taught in cheese-making and dairy processing and shows up in distilling because the math is identical." },
+  { question: "What water should I use for proofing?", answer: "Always use distilled, deionized, or reverse-osmosis water for proofing. Tap water and well water contain minerals, chlorine, and dissolved gases that can produce louching (cloudy haze), off flavors, or undesirable reactions with the spirit, especially in clear spirits like vodka and gin. Most distilleries use reverse-osmosis water with the minerals stripped out." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Distiller's Proofing Calculator",
+  description: "Calculate water to add for diluting high-proof spirits to a target bottling proof.",
+  url: alcohol_distiller_proofing_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "distiller-proofing-dilution-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Alcohol & Brewing", url: category_path("alcohol") },
+  { name: "Distiller's Proofing Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Distiller's Proofing Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">Calculate the water to add for diluting high-proof spirit to a target bottling proof. Returns the final volume and the exact water addition in liters, gallons, and milliliters. Intended as a reference for licensed distillers and educational use.</p>
+
+    <div class="mb-8 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl">
+      <p class="text-sm text-amber-900 dark:text-amber-200 leading-relaxed">
+        <strong>Heads up:</strong> Distilling spirits at home may be illegal where you live. In the United States it requires a federal TTB Distilled Spirits Plant permit, and many other countries restrict or prohibit unlicensed distillation. Check your local laws before producing spirits — this calculator is provided for licensed distillers and educational purposes only.
+      </p>
+    </div>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="distiller-proofing-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="dp-start-abv" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Starting ABV (%)</label>
+            <input id="dp-start-abv" type="number" inputmode="decimal" data-distiller-proofing-calculator-target="startAbv" data-action="input->distiller-proofing-calculator#calculate" class="w-full" value="75" step="0.1" min="0.1" max="95">
+          </div>
+          <div>
+            <label for="dp-start-vol" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Starting Volume (L)</label>
+            <input id="dp-start-vol" type="number" inputmode="decimal" data-distiller-proofing-calculator-target="startVolume" data-action="input->distiller-proofing-calculator#calculate" class="w-full" value="10" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="dp-target-abv" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target ABV (%)</label>
+            <input id="dp-target-abv" type="number" inputmode="decimal" data-distiller-proofing-calculator-target="targetAbv" data-action="input->distiller-proofing-calculator#calculate" class="w-full" value="40" step="0.1" min="0">
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Tip: Always verify the final proof with a calibrated alcoholometer or hydrometer after blending.</p>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Water to Add</span>
+              <span class="text-2xl font-extrabold text-amber-600 dark:text-amber-400" data-distiller-proofing-calculator-target="resultWaterL">—</span>
+            </div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">In Gallons</span><span class="font-semibold" data-distiller-proofing-calculator-target="resultWaterGal">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">In Milliliters</span><span class="font-semibold" data-distiller-proofing-calculator-target="resultWaterMl">—</span></div>
+            <div class="pt-2 border-t border-amber-200/50 dark:border-amber-800/50">
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Final Volume</span><span class="font-semibold" data-distiller-proofing-calculator-target="resultFinalL">—</span></div>
+              <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">In Gallons</span><span class="font-semibold" data-distiller-proofing-calculator-target="resultFinalGal">—</span></div>
+            </div>
+            <div class="pt-2 border-t border-amber-200/50 dark:border-amber-800/50">
+              <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Start Proof</span><span class="font-semibold" data-distiller-proofing-calculator-target="resultStartProof">—</span></div>
+              <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Target Proof</span><span class="font-semibold" data-distiller-proofing-calculator-target="resultTargetProof">—</span></div>
+            </div>
+          </div>
+          <button data-action="click->distiller-proofing-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "distiller-proofing-dilution-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>What Proofing Means in Distilling</h2>
+      <p>
+        Proofing is the final step before bottling a spirit. Most spirits leave the still at very high alcohol content, ranging from 130 proof for traditional pot still whiskey to nearly 190 proof for vodka and neutral spirits made on a continuous column still. Almost no consumer spirits are bottled at still strength because the high alcohol content is harsh, expensive in tax, and difficult to drink. The distiller dilutes the high-proof distillate down to the final bottling strength, typically 80 proof (40 percent ABV) for most vodkas and gins, 80 to 100 proof for whiskey, and 80 proof for most rum. Some craft spirits and barrel-strength offerings are bottled at higher proof for connoisseurs. Note that producing spirits at home may be illegal in your jurisdiction — in the United States it requires a federal TTB Distilled Spirits Plant permit, and many other countries restrict or prohibit unlicensed distillation, so always check your local laws first.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Dilution Equation</h2>
+      <p>
+        The math is simple: a fixed amount of pure alcohol takes up a smaller percentage of a bigger total volume. If you have 10 liters of 75 percent ABV spirit (which contains 7.5 liters of pure ethanol), and you want to dilute it to 40 percent ABV, the final volume needs to be 7.5 divided by 0.40, or 18.75 liters. The water to add is the final volume minus the starting volume, in this case 8.75 liters. The general equation is final volume equals starting volume times starting ABV divided by target ABV. The Pearson square is a graphical shortcut to the same answer and is sometimes preferred when blending two spirits of different proofs.
+      </p>
+
+      <h2>Why Volume-Based Math Is Approximate</h2>
+      <p>
+        When ethanol and water mix, the total volume contracts slightly because the polar water molecules pack more tightly into the gaps between ethanol molecules than they do alone. At common bottling proofs the contraction is about 2 to 3 percent of the calculated total volume. This calculator returns a volume-based dilution and ignores contraction, which is accurate enough for planning purposes. Licensed distillers are required to verify the actual bottled proof with a TTB-approved alcoholometer or hydrometer immediately before bottling because the legal label proof must match the measured value within 0.15 percent ABV.
+      </p>
+
+      <h2>Practical Proofing Tips</h2>
+      <p>
+        Always use distilled, deionized, or reverse-osmosis water for proofing. Tap and well water contain minerals, chlorine, and dissolved gases that can cause louching (a cloudy haze in clear spirits), discoloration in aged spirits, and unpleasant flavors that no amount of filtration can fully remove. Add water slowly while stirring gently to avoid heat shock, and let the proofed spirit rest for 24 hours before final measurement because the contraction takes time to complete. For barrel-aged spirits, taste at multiple proof points before deciding on a final bottling strength because aroma compounds change perception dramatically as the alcohol level drops.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What does proof mean?</h3>
+      <p>
+        US proof equals two times the ABV percentage. An 80 proof spirit is 40 percent ABV.
+      </p>
+
+      <h3>What formula does this calculator use?</h3>
+      <p>
+        Final volume equals starting volume times starting ABV divided by target ABV. Water to add is final volume minus starting volume.
+      </p>
+
+      <h3>Does it account for ethanol-water contraction?</h3>
+      <p>
+        No. The calculator returns a volume-based dilution that ignores the 2 to 3 percent contraction. Always verify the final proof with a calibrated alcoholometer.
+      </p>
+
+      <h3>What water should I use for proofing?</h3>
+      <p>
+        Always use distilled, deionized, or reverse-osmosis water. Tap water can cause louching, discoloration, and off-flavors.
+      </p>
+
+      <h3>Can I use this for blending two spirits?</h3>
+      <p>
+        For two-spirit blending, use the Pearson square or solve V1*A1 + V2*A2 = (V1+V2)*A_target. This calculator is for diluting one spirit with water only.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "ABV Calculator", description: "Calculate alcohol by volume from OG and FG.", path: alcohol_abv_path, icon_path: "M12 3v2m0 14v2" },
+      { name: "Cocktail ABV Calculator", description: "Calculate the final ABV of a cocktail with multiple ingredients.", path: alcohol_cocktail_abv_path, icon_path: "M5 3l14 0l-7 9l0 6m-3 0l6 0M9 9h6" },
+      { name: "Pour Cost Calculator", description: "Calculate bar pour cost percentage and profit margin.", path: alcohol_pour_cost_path, icon_path: "M12 8c-1.657 0-3 .895-3 2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "alcohol" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
