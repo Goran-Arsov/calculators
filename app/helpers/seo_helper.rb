@@ -6,6 +6,7 @@ module SeoHelper
     "physics" => "/images/og/physics.png",
     "health" => "/images/og/health.png",
     "construction" => "/images/og/construction.png",
+    "textile" => "/images/og/textile.png",
     "everyday" => "/images/og/everyday.png"
   }.freeze
 

@@ -1,0 +1,171 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cross Stitch Fabric Calculator - Aida & Evenweave",
+  description: "Calculate the finished size of a cross-stitch design on Aida 11, 14, 16, 18, 22, or evenweave fabric. Get the exact fabric size to buy including hooping or framing margin.",
+  canonical: textile_cross_stitch_fabric_url,
+  og: {
+    title: "Cross Stitch Fabric Calculator - Aida & Evenweave | Calc Hammer",
+    description: "Calculate the finished size of your cross-stitch design and the fabric size to buy on any Aida or evenweave count.",
+    url: textile_cross_stitch_fabric_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Textile & Sewing", url: category_url("textile") },
+  { name: "Cross Stitch Fabric Calculator", url: textile_cross_stitch_fabric_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What does Aida 14 mean?", answer: "Aida 14 means the fabric has 14 holes, and therefore 14 stitches, per inch. Higher counts have more, smaller holes per inch, which produces finer detail and a smaller finished design. Aida 11 is very coarse and beginner friendly, Aida 14 is the most common choice, Aida 16 and 18 are finer, and Aida 22 (also called Hardanger) is quite fine. The same stitch pattern will look smaller on a higher-count fabric." },
+  { question: "How much margin should I add to cross-stitch fabric?", answer: "Three inches of margin on every side (six inches total in each direction) is the standard recommendation for most projects. This leaves room for the hoop or scroll frame to clamp onto blank fabric, keeps your stitching away from the frayed edges, and provides enough fabric for framing in a mat later. For very small designs, two inches may be enough. For large projects that will be stretched over foam board or professionally framed, add four inches per side." },
+  { question: "What's the difference between Aida and evenweave?", answer: "Aida is a cotton fabric woven with distinct blocks that create obvious holes at the corners, making it easy to see where each cross stitch goes. Evenweave fabrics like Lugana, Jobelan, and linen have smooth, plain-woven construction where the threads are evenly spaced but there are no visible holes. Aida is recommended for beginners and designs with whole stitches. Evenweave is preferred for designs with fractional stitches, backstitch detail, and a more refined finished look." },
+  { question: "Why do I stitch over 2 threads on linen?", answer: "Linen and fine evenweaves have threads that are too small to stitch over individually, so the convention is to stitch over 2 threads per stitch. This effectively halves the count: 28-count linen stitched over 2 gives the same stitch density as 14-count Aida. Stitching over 2 also looks cleaner because each cross straddles a thread intersection, which hides any slight imperfection in the weave and gives a smoother finished surface." },
+  { question: "How do I calculate fabric size from stitch count?", answer: "Divide the stitch count in each direction by the effective stitches per inch (fabric count divided by stitches-over), then add twice your margin. For example, a 140 by 140 stitch design on Aida 14 is 140 / 14 = 10 inches in each direction. Adding 3 inches of margin on each side gives 16 by 16 inches of fabric to buy. This calculator handles all the math automatically and shows the size in both inches and centimeters." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Cross Stitch Fabric Calculator",
+  description: "Calculate the finished size of a cross-stitch design and the fabric size to buy for any Aida or evenweave count, with optional hooping or framing margin.",
+  url: textile_cross_stitch_fabric_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "cross-stitch-fabric-calculator"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Textile & Sewing", url: category_path("textile") },
+  { name: "Cross Stitch Fabric Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cross Stitch Fabric Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the finished size of your cross-stitch design and the fabric size to buy. Enter your design dimensions in stitches, choose your Aida or evenweave count, and the calculator figures out both the stitched area and the fabric you need.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="cross-stitch-fabric-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="cs-design-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Design Width (stitches)</label>
+              <input id="cs-design-width" type="number" inputmode="numeric" data-cross-stitch-fabric-calculator-target="designWidth" data-action="input->cross-stitch-fabric-calculator#calculate" class="w-full" value="100" step="1" min="1">
+            </div>
+            <div>
+              <label for="cs-design-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Design Height (stitches)</label>
+              <input id="cs-design-height" type="number" inputmode="numeric" data-cross-stitch-fabric-calculator-target="designHeight" data-action="input->cross-stitch-fabric-calculator#calculate" class="w-full" value="100" step="1" min="1">
+            </div>
+          </div>
+          <div>
+            <label for="cs-count" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fabric Count</label>
+            <select id="cs-count" data-cross-stitch-fabric-calculator-target="count" data-action="change->cross-stitch-fabric-calculator#calculate" class="w-full">
+              <% Textile::CrossStitchFabricCalculator::FABRIC_COUNTS.each do |entry| %>
+                <option value="<%= entry[:count] %>" <%= "selected" if entry[:count] == 14 %>><%= entry[:type] %> (<%= entry[:count] %> ct)</option>
+              <% end %>
+            </select>
+          </div>
+          <div>
+            <label for="cs-stitches-over" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Stitches Over</label>
+            <select id="cs-stitches-over" data-cross-stitch-fabric-calculator-target="stitchesOver" data-action="change->cross-stitch-fabric-calculator#calculate" class="w-full">
+              <option value="1" selected>1 (Aida — stitch over 1 block)</option>
+              <option value="2">2 (Evenweave / Linen — stitch over 2 threads)</option>
+            </select>
+          </div>
+          <div>
+            <label for="cs-margin" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Margin per Side (inches)</label>
+            <input id="cs-margin" type="number" inputmode="decimal" data-cross-stitch-fabric-calculator-target="marginIn" data-action="input->cross-stitch-fabric-calculator#calculate" class="w-full" value="3" step="0.5" min="0">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">3 inches per side is standard for hooping and framing.</p>
+          </div>
+        </div>
+
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div>
+              <span class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Design Finished Size</span>
+              <span class="block text-lg font-bold text-blue-600 dark:text-blue-400" data-cross-stitch-fabric-calculator-target="resultDesignIn">0 × 0 in</span>
+              <span class="block text-sm font-medium text-gray-700 dark:text-gray-300" data-cross-stitch-fabric-calculator-target="resultDesignCm">0 × 0 cm</span>
+            </div>
+            <div class="pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="block text-sm text-gray-700 dark:text-gray-300 font-semibold mb-1">Fabric Size to Buy</span>
+              <span class="block text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-cross-stitch-fabric-calculator-target="resultFabricIn">0 × 0 in</span>
+              <span class="block text-sm font-medium text-gray-700 dark:text-gray-300" data-cross-stitch-fabric-calculator-target="resultFabricCm">0 × 0 cm</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-600 dark:text-gray-400">Total Stitches</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-cross-stitch-fabric-calculator-target="resultTotalStitches">0</span>
+            </div>
+          </div>
+          <button data-action="click->cross-stitch-fabric-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-3">Fabric Size on Every Count</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b-2 border-gray-300 dark:border-gray-700">
+                <th class="py-2 pr-4 text-left text-gray-600 dark:text-gray-400 font-semibold">Fabric</th>
+                <th class="py-2 pr-4 text-right text-gray-600 dark:text-gray-400 font-semibold">Fabric (in)</th>
+                <th class="py-2 text-right text-gray-600 dark:text-gray-400 font-semibold">Fabric (cm)</th>
+              </tr>
+            </thead>
+            <tbody data-cross-stitch-fabric-calculator-target="comparisonBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "cross-stitch-fabric-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Aida vs Evenweave vs Linen: What's the Difference?</h2>
+      <p>
+        Aida is the go-to cross-stitch fabric for beginners and casual stitchers because it is woven in distinct blocks that create obvious holes at every corner. You can see exactly where each stitch belongs, which makes counting easy and mistakes rare. Aida comes in counts from 6 (rug canvas) to 22 (Hardanger), with 14 count being the most common and 16 or 18 used for finer detail. Evenweave fabrics like Lugana, Jobelan, and Jazlyn have a smoother plain weave with evenly spaced threads but no visible holes, producing a more refined finished look. Linen is the premium choice for heirloom projects and reproduction samplers. Its handwoven appearance and subtle thread variations give finished pieces a classic, professional quality. Linen and evenweave are usually stitched over 2 threads per stitch, which effectively halves the count and creates a smoother cross on each intersection.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Stitch Count Matters</h2>
+      <p>
+        The fabric count determines the finished size of your cross-stitch design. Higher counts pack more stitches into each inch, so the same pattern will look smaller and more detailed on a fine fabric than on a coarse one. A 140 by 140 stitch design is 10 inches square on Aida 14, about 7.8 inches on Aida 18, and only 5 inches on Aida 28 stitched over 2. Choose the count based on the effect you want: larger for quick projects and wall art, smaller for framed miniatures and ornaments. Your eyesight also matters — very fine counts like 32 and 40 are challenging without magnification, while Aida 11 and 14 are comfortable for almost anyone. The fiber content, color, and thread count of the fabric all affect how stitches look and how the finished piece drapes or frames.
+      </p>
+
+      <h2>How Much Margin to Add</h2>
+      <p>
+        Three inches of blank fabric on every side is the standard recommendation for cross-stitch projects. The margin gives you room to grip the fabric in a hoop or scroll frame without stitching near the edge, prevents fraying from reaching your stitches, and provides enough clean fabric to mount the finished piece for framing. For small ornaments, 1.5 to 2 inches per side can be enough. For large samplers that will be professionally framed with a mat, add 4 inches per side so the framer has room to work. Always add margin to both the width and the height, since cross-stitch designs are often non-square. This calculator assumes 3 inches per side by default, but you can change the margin to match your project needs.
+      </p>
+
+      <h2>Converting Stitch Count to Inches</h2>
+      <p>
+        The formula is simple: design dimension in inches equals stitch count divided by effective stitches per inch. Effective stitches per inch equals the fabric count divided by how many threads you stitch over. For Aida stitched over 1, effective count equals fabric count. For linen or evenweave stitched over 2, divide the fabric count by 2. Multiply inches by 2.54 to convert to centimeters. Always round up when buying fabric, and remember to add margin for hooping and framing. This calculator does all the conversions automatically and shows a comparison table so you can see how your design size changes on every common fabric count in one view.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Fabric Yardage Calculator", description: "Calculate how much fabric you need for any sewing project including pattern repeat.", path: textile_fabric_yardage_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 10h16" },
+      { name: "Fabric GSM Calculator", description: "Calculate fabric weight in grams per square meter from a swatch sample.", path: textile_fabric_gsm_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5" },
+      { name: "Seam Allowance Converter", description: "Convert seam allowances between inches and centimeters and calculate cut size.", path: textile_seam_allowance_path, icon_path: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "textile" %>
+
+    <% blog_posts = related_blog_posts("cross-stitch-fabric-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

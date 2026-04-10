@@ -1,0 +1,222 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Seam Allowance Converter - Imperial & Metric",
+  description: "Convert seam allowances between inches and centimeters. Calculate cut size from finished size with any seam allowance (¼\", ⅜\", ½\", ⅝\", 1cm, 1.5cm).",
+  canonical: textile_seam_allowance_url,
+  og: {
+    title: "Seam Allowance Converter - Imperial & Metric | Calc Hammer",
+    description: "Convert seam allowances between inches and centimeters. Calculate cut size from finished size with any seam allowance.",
+    url: textile_seam_allowance_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Textile & Sewing", url: category_url("textile") },
+  { name: "Seam Allowance Converter", url: textile_seam_allowance_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is seam allowance?", answer: "Seam allowance is the extra fabric added around the edge of a pattern piece to allow for stitching a seam. The finished measurement of a garment is the dimension after the seam is sewn, while the cut size includes the seam allowance on every edge that will be stitched. Standard seam allowances vary by pattern type, from a narrow 1/4 inch used in quilting to 5/8 inch used in commercial garment patterns." },
+  { question: "Why is quilting seam allowance ¼ inch?", answer: "Quilting uses a 1/4 inch seam allowance because patchwork blocks need to be very precise to fit together across dozens or hundreds of pieces, and narrow seams reduce bulk at intersections. A scant 1/4 inch (a thread or two less than a full 1/4 inch) is sometimes used to account for the thread width and fabric fold, keeping finished block sizes accurate." },
+  { question: "What's the difference between ⅝\" and 1.5 cm?", answer: "A 5/8 inch seam allowance is approximately 1.5875 cm, while 1.5 cm is approximately 0.5906 inch. They are close but not identical, and the 0.1 cm difference matters for fitted garments across many seams. Big Four American patterns use 5/8 inch, while most European patterns use 1.5 cm, so always check the pattern instructions before cutting." },
+  { question: "How do I convert a European pattern to inches?", answer: "European patterns use metric measurements throughout. To convert, multiply centimeters by 0.3937 to get inches, or divide by 2.54. For seam allowances, 1 cm equals about 3/8 inch and 1.5 cm equals about 5/8 inch, though these are rounded conversions. This calculator gives you the exact conversion for any seam allowance you enter." },
+  { question: "What seam allowance should I use for knits?", answer: "Knit garments typically use a 3/8 inch or 1 cm seam allowance, which is narrower than woven garment seam allowances because knits do not fray and most knit seams are sewn with a serger that trims as it stitches. Some knit patterns include the seam allowance in the serger width itself, so always follow the pattern instructions." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Seam Allowance Converter",
+  description: "Convert seam allowances between imperial and metric units and calculate cut size from finished size for sewing patterns.",
+  url: textile_seam_allowance_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "seam-allowance-converter"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Textile & Sewing", url: category_path("textile") },
+  { name: "Seam Allowance Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Seam Allowance Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert seam allowances between imperial and metric and calculate cut size from finished size for any sewing pattern. Supports the most common seam allowances used in garment sewing and quilting.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="seam-allowance-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="sa-finished-size" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Finished Size</label>
+            <input id="sa-finished-size" type="number" inputmode="decimal" data-seam-allowance-calculator-target="finishedSize" data-action="input->seam-allowance-calculator#calculate" class="w-full" value="10" step="0.125" min="0">
+          </div>
+          <div>
+            <label for="sa-seam-allowance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Seam Allowance</label>
+            <input id="sa-seam-allowance" type="number" inputmode="decimal" data-seam-allowance-calculator-target="seamAllowance" data-action="input->seam-allowance-calculator#calculate" class="w-full" value="0.625" step="0.0625" min="0">
+          </div>
+          <div>
+            <span class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Unit</span>
+            <div class="flex gap-4">
+              <label class="inline-flex items-center gap-2">
+                <input type="radio" name="sa-unit" value="in" checked data-seam-allowance-calculator-target="unit" data-action="change->seam-allowance-calculator#calculate">
+                <span class="text-sm text-gray-700 dark:text-gray-300">Inches</span>
+              </label>
+              <label class="inline-flex items-center gap-2">
+                <input type="radio" name="sa-unit" value="cm" data-seam-allowance-calculator-target="unit" data-action="change->seam-allowance-calculator#calculate">
+                <span class="text-sm text-gray-700 dark:text-gray-300">Centimeters</span>
+              </label>
+            </div>
+          </div>
+          <div>
+            <label for="sa-seams-per-edge" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Seams per Edge</label>
+            <select id="sa-seams-per-edge" data-seam-allowance-calculator-target="seamsPerEdge" data-action="change->seam-allowance-calculator#calculate" class="w-full">
+              <option value="0">0 (fold, no seam)</option>
+              <option value="1">1 (single seam)</option>
+              <option value="2" selected>2 (both edges, most common)</option>
+            </select>
+          </div>
+          <div>
+            <span class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Quick Pick</span>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" data-action="click->seam-allowance-calculator#quickPick" data-value="0.25" data-unit="in" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">¼"</button>
+              <button type="button" data-action="click->seam-allowance-calculator#quickPick" data-value="0.375" data-unit="in" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">⅜"</button>
+              <button type="button" data-action="click->seam-allowance-calculator#quickPick" data-value="0.5" data-unit="in" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">½"</button>
+              <button type="button" data-action="click->seam-allowance-calculator#quickPick" data-value="0.625" data-unit="in" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">⅝"</button>
+              <button type="button" data-action="click->seam-allowance-calculator#quickPick" data-value="1" data-unit="cm" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">1 cm</button>
+              <button type="button" data-action="click->seam-allowance-calculator#quickPick" data-value="1.5" data-unit="cm" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">1.5 cm</button>
+            </div>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total SA Added</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-seam-allowance-calculator-target="resultTotalSa">0</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Cut Size</span>
+              <span class="text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-seam-allowance-calculator-target="resultCutSize">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cut Size (inches)</span>
+              <span class="text-base font-semibold text-blue-600 dark:text-blue-400" data-seam-allowance-calculator-target="resultCutSizeIn">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cut Size (cm)</span>
+              <span class="text-base font-semibold text-blue-600 dark:text-blue-400" data-seam-allowance-calculator-target="resultCutSizeCm">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">SA (inches)</span>
+              <span class="text-base font-semibold text-blue-600 dark:text-blue-400" data-seam-allowance-calculator-target="resultSaIn">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">SA (cm)</span>
+              <span class="text-base font-semibold text-blue-600 dark:text-blue-400" data-seam-allowance-calculator-target="resultSaCm">0</span>
+            </div>
+          </div>
+          <button data-action="click->seam-allowance-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+        <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-3">Common Seam Allowance Conversions</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-gray-800">
+                <th class="text-left py-2 font-semibold text-gray-700 dark:text-gray-300">Imperial</th>
+                <th class="text-left py-2 font-semibold text-gray-700 dark:text-gray-300">Metric</th>
+                <th class="text-left py-2 font-semibold text-gray-700 dark:text-gray-300">Typical Use</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 dark:text-gray-400">
+              <tr class="border-b border-gray-100 dark:border-gray-900"><td class="py-2">1/4"</td><td class="py-2">0.635 cm</td><td class="py-2">Quilting, heirloom sewing</td></tr>
+              <tr class="border-b border-gray-100 dark:border-gray-900"><td class="py-2">3/8"</td><td class="py-2">0.9525 cm</td><td class="py-2">Knits, French seams</td></tr>
+              <tr class="border-b border-gray-100 dark:border-gray-900"><td class="py-2">1/2"</td><td class="py-2">1.27 cm</td><td class="py-2">Home decor, bags</td></tr>
+              <tr class="border-b border-gray-100 dark:border-gray-900"><td class="py-2">5/8"</td><td class="py-2">1.5875 cm</td><td class="py-2">Commercial garment patterns</td></tr>
+              <tr class="border-b border-gray-100 dark:border-gray-900"><td class="py-2">0.3937"</td><td class="py-2">1 cm</td><td class="py-2">European knits</td></tr>
+              <tr><td class="py-2">0.5906"</td><td class="py-2">1.5 cm</td><td class="py-2">European garment patterns</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "seam-allowance-converter" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Seam Allowance</h2>
+      <p>
+        Seam allowance is the strip of fabric between the cut edge of a pattern piece and the stitching line where two pieces are joined. It gives you something to sew through, keeps the stitches from pulling out of the fabric, and provides a buffer against fraying. Every dimension on a finished garment is smaller than the cut piece because the seam allowance on each stitched edge is hidden inside the seam. When you measure your finished shirt at the bust, for example, the cut fabric before sewing was wider by twice the side seam allowance. Understanding how seam allowance relates to finished size is essential for fitting, altering, and converting between imperial and metric patterns.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Common Seam Allowances by Project Type</h2>
+      <p>
+        Different sewing traditions use different standard seam allowances. Patchwork quilting uses 1/4 inch so the many small pieces in a block fit together precisely without bulky seams at intersections. Commercial American garment patterns from brands like Simplicity, McCall's, Butterick, and Vogue use 5/8 inch, which gives a generous margin for fitting adjustments. Independent and European patterns typically use 1.5 cm, which is close to but not exactly 5/8 inch. Home decor and bag making often use 1/2 inch for sturdy seams that can handle heavier fabric weights. French seams and narrow hems on delicate fabrics may use 3/8 inch, and knit garments often use 3/8 inch or 1 cm because serger stitching trims the excess as it sews. Always check the pattern instructions before cutting.
+      </p>
+
+      <h2>Converting Finished Size to Cut Size</h2>
+      <p>
+        To go from a finished measurement to a cut size, add the seam allowance to every stitched edge. Most pattern pieces have seams on both edges of a given dimension, so you add twice the seam allowance. For a piece that has one edge as a fold (like the center front of a symmetrical blouse cut on the fold), only the other edge needs seam allowance added. For a piece with a clean hem or finished edge, no seam allowance is added there. This calculator lets you choose 0, 1, or 2 seams per edge so you can handle all three situations correctly.
+      </p>
+
+      <h2>Why Accurate Seam Allowance Matters</h2>
+      <p>
+        Small errors in seam allowance add up quickly across multiple seams. If you sew eight seams at 1/8 inch narrower than the pattern calls for, your finished garment will be a full inch larger than intended. In quilting, even a thread-width inconsistency in a 1/4 inch seam can throw off block sizes across a big quilt top. Use an accurate presser foot guide, a seam gauge, or marked throat plate lines to keep your seam allowance consistent. When converting between inches and centimeters, use the exact conversion rather than rough equivalents so your fit and finish stay true to the pattern.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is seam allowance?</h3>
+      <p>
+        Seam allowance is the extra fabric added around the edge of a pattern piece to allow for stitching a seam. The finished measurement is the dimension after the seam is sewn, while the cut size includes the seam allowance on every stitched edge. Standard allowances vary from 1/4 inch in quilting to 5/8 inch in commercial garment patterns.
+      </p>
+
+      <h3>Why is quilting seam allowance ¼ inch?</h3>
+      <p>
+        Quilting uses a 1/4 inch seam allowance because patchwork blocks need to be precise across dozens of pieces, and narrow seams reduce bulk at intersections. A scant 1/4 inch is sometimes used to account for thread width and the fabric fold, keeping finished block sizes accurate.
+      </p>
+
+      <h3>What's the difference between ⅝" and 1.5 cm?</h3>
+      <p>
+        A 5/8 inch seam allowance is about 1.5875 cm, while 1.5 cm is about 0.5906 inch. They are close but not identical. Big Four American patterns use 5/8 inch, while most European patterns use 1.5 cm, so always check the pattern before cutting.
+      </p>
+
+      <h3>How do I convert a European pattern to inches?</h3>
+      <p>
+        European patterns use metric measurements throughout. Multiply centimeters by 0.3937 to get inches. For seam allowances, 1 cm equals about 3/8 inch and 1.5 cm equals about 5/8 inch, though these are rounded conversions.
+      </p>
+
+      <h3>What seam allowance should I use for knits?</h3>
+      <p>
+        Knit garments typically use a 3/8 inch or 1 cm seam allowance. Knits do not fray and most knit seams are sewn with a serger that trims as it stitches. Always follow the pattern instructions for the specific knit fabric and construction.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Fabric Yardage Calculator", description: "Calculate how much fabric to buy for a sewing project based on piece dimensions.", path: textile_fabric_yardage_path, icon_path: "M4 6a2 2 0 012-2h12a2 2 0 012 2v2H4V6zm0 6h16v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8z" },
+      { name: "Fabric Shrinkage Calculator", description: "Calculate fabric shrinkage percentage from before and after washing measurements.", path: textile_fabric_shrinkage_path, icon_path: "M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" },
+      { name: "Quilt Binding Strips Calculator", description: "Calculate the number and length of binding strips needed for any quilt size.", path: textile_binding_strips_path, icon_path: "M4 6h16M4 12h16M4 18h16" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "textile" %>
+
+    <% blog_posts = related_blog_posts("seam-allowance-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

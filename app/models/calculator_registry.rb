@@ -195,6 +195,21 @@ class CalculatorRegistry
     { name: "Cabinet Door Parts Calculator", slug: "cabinet-door-calculator", path: :construction_cabinet_door_path, description: "Calculate stile, rail, and panel dimensions for Shaker-style cabinet doors with tongue-and-groove joinery.", icon_path: "M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" }
   ].freeze
 
+  TEXTILE_CALCULATORS = [
+    { name: "Fabric Yardage Calculator", slug: "fabric-yardage-calculator", path: :textile_fabric_yardage_path, description: "Calculate how many yards or meters of fabric you need for a sewing project, with conversions between 45\", 54\", and 60\" widths.", icon_path: "M4 6a2 2 0 012-2h12a2 2 0 012 2v2H4V6zm0 6h16v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8z" },
+    { name: "Seam Allowance Converter", slug: "seam-allowance-converter", path: :textile_seam_allowance_path, description: "Convert seam allowances between imperial and metric and see cut size vs finished size for any pattern piece.", icon_path: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14" },
+    { name: "Knitting Gauge Calculator", slug: "knitting-gauge-calculator", path: :textile_knitting_gauge_path, description: "Calculate cast-on stitches from your gauge swatch and target measurement, or convert between pattern gauge and your actual gauge.", icon_path: "M4 6h16M4 12h16M4 18h16" },
+    { name: "Crochet Gauge Calculator", slug: "crochet-gauge-calculator", path: :textile_crochet_gauge_path, description: "Calculate starting chain and row count for crochet projects based on your gauge swatch and target measurements.", icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20zm0 4a6 6 0 110 12 6 6 0 010-12z" },
+    { name: "Needle & Hook Size Converter", slug: "knitting-needle-hook-size-converter", path: :textile_needle_hook_size_path, description: "Convert knitting needle sizes between US, UK, and metric, and crochet hook sizes between US letter and millimeter.", icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" },
+    { name: "Yarn Yardage Calculator", slug: "yarn-yardage-calculator", path: :textile_yarn_yardage_path, description: "Estimate how much yarn you need for knitting or crochet projects by project type, size, and yarn weight.", icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20z" },
+    { name: "Quilt Backing Calculator", slug: "quilt-backing-calculator", path: :textile_quilt_backing_path, description: "Calculate quilt backing fabric yardage from quilt top dimensions including the extra overage needed for longarm quilting.", icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 12h16M12 4v16" },
+    { name: "Half-Square Triangle Calculator", slug: "half-square-triangle-calculator", path: :textile_half_square_triangle_path, description: "Calculate the cut square size needed to make half-square triangles of a finished size using 2-at-a-time, 4-at-a-time, or 8-at-a-time methods.", icon_path: "M4 20L20 4M4 20h16L4 4v16z" },
+    { name: "Quilt Binding Strips Calculator", slug: "quilt-binding-strips-calculator", path: :textile_binding_strips_path, description: "Calculate the number and length of fabric binding strips needed to bind a quilt of any size with joined diagonal seams.", icon_path: "M4 6h16M4 12h16M4 18h16" },
+    { name: "Fabric GSM Calculator", slug: "fabric-gsm-calculator", path: :textile_fabric_gsm_path, description: "Calculate fabric weight in grams per square meter (GSM) from a weighed sample of any size.", icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+    { name: "Fabric Shrinkage Calculator", slug: "fabric-shrinkage-calculator", path: :textile_fabric_shrinkage_path, description: "Calculate fabric shrinkage percentage from before and after washing measurements and determine the extra fabric to cut.", icon_path: "M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" },
+    { name: "Cross-Stitch Fabric Calculator", slug: "cross-stitch-fabric-calculator", path: :textile_cross_stitch_fabric_path, description: "Calculate the finished size of a cross-stitch design on any Aida count (11, 14, 16, 18, 22) and the fabric size to buy.", icon_path: "M4 4h16v16H4zM8 8h8v8H8z" }
+  ].freeze
+
   EVERYDAY_CALCULATORS = [
     { name: "Tip Calculator", slug: "tip-calculator", path: :everyday_tip_path, description: "Calculate tip amount and total bill, with options to split between people.", icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
     { name: "Discount Calculator", slug: "discount-calculator", path: :everyday_discount_path, description: "Calculate sale price, savings amount, and discount percentage.", icon_path: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" },
@@ -349,6 +364,11 @@ class CalculatorRegistry
       title: "Construction Calculators",
       description: "Free construction calculators for paint, flooring, concrete, gravel, and fencing. Estimate materials and costs before your next project.",
       calculators: CONSTRUCTION_CALCULATORS
+    },
+    "textile" => {
+      title: "Textile & Sewing Calculators",
+      description: "Free textile calculators for sewing, knitting, crochet, quilting, and cross-stitch. Calculate fabric yardage, gauge, yarn amounts, quilt backing, and more.",
+      calculators: TEXTILE_CALCULATORS
     },
     "everyday" => {
       title: "Everyday Calculators",

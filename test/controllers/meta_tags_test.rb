@@ -4,7 +4,7 @@ class MetaTagsTest < ActionDispatch::IntegrationTest
   test "homepage has correct meta tags" do
     get root_path
     assert_response :success
-    assert_select "title", /CalcWise/
+    assert_select "title", /Calc Hammer/
     assert_select "meta[name='description']"
     assert_select "link[rel='canonical']"
   end

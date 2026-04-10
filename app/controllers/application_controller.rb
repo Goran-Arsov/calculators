@@ -32,19 +32,29 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  CATEGORY_OG_SLUGS = %w[finance math physics health construction textile everyday].freeze
+
   def set_default_meta_tags
     domain = ENV.fetch("DOMAIN", request.base_url)
+    image_url = "#{domain}/#{category_og_image}"
     set_meta_tags(
       og: {
-        image: "#{domain}/og-image.png",
+        image: image_url,
         site_name: "Calc Hammer"
       },
       twitter: {
         card: "summary_large_image",
         site: "@calchammer",
-        image: "#{domain}/og-image.png"
+        image: image_url
       }
     )
+  end
+
+  # Pick a category-specific OG image based on the current controller's module.
+  # Falls back to the generic og-image.png for non-category controllers.
+  def category_og_image
+    category = controller_path.split("/").first
+    CATEGORY_OG_SLUGS.include?(category) ? "og-#{category}.png" : "og-image.png"
   end
 
   def not_found

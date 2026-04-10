@@ -3,7 +3,7 @@ class EmbedsController < ApplicationController
   before_action :allow_iframe
   helper_method :embed_mode?
 
-  VALID_CATEGORIES = %w[finance math physics health construction everyday].freeze
+  VALID_CATEGORIES = %w[finance math physics health construction textile everyday].freeze
 
   def show
     @category = params[:category]

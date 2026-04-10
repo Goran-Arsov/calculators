@@ -1,0 +1,186 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Quilt Binding Strips Calculator - Yardage Required",
+  description: "Calculate the number of binding strips and fabric yardage needed to bind a quilt of any size. Works with standard 2.5-inch double-fold binding and custom widths.",
+  canonical: textile_binding_strips_url,
+  og: {
+    title: "Quilt Binding Strips Calculator - Yardage Required | Calc Hammer",
+    description: "Calculate the number of binding strips and fabric yardage needed to bind a quilt of any size.",
+    url: textile_binding_strips_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Textile & Sewing", url: category_url("textile") },
+  { name: "Quilt Binding Strips Calculator", url: textile_binding_strips_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How wide should quilt binding strips be?", answer: "The most common binding strip width is 2.5 inches for a double-fold (French) binding that finishes at about 3/8 of an inch on the front and back of the quilt. Some quilters prefer 2.25 inches for a tighter, more traditional look, or 2.75 inches for a fuller binding that shows more fabric on the front. The width also depends on the thickness of your batting — thicker batting needs wider strips to wrap around the edge comfortably." },
+  { question: "How many strips do I need for a twin-size quilt?", answer: "A standard twin quilt is roughly 70 by 90 inches, giving a perimeter of 320 inches. With 10 inches of overage for corners and joining, you need 330 inches of binding total. Dividing by the 42-inch usable width of standard quilting cotton gives about 8 strips. At 2.5 inches wide, that is 20 inches of fabric, or roughly 5/8 of a yard. Always round up and buy a little extra in case of mistakes." },
+  { question: "What's the difference between bias and straight binding?", answer: "Straight-grain binding is cut across the width of the fabric (cross-grain) and is the most common choice because it is fast, uses less fabric, and works well for quilts with straight edges. Bias binding is cut at a 45-degree angle and has more stretch, making it the right choice for quilts with curved or scalloped edges. Bias binding also wears more durably along the quilt edge because multiple threads cross each friction point." },
+  { question: "Should I join binding strips with a straight or diagonal seam?", answer: "Always join binding strips with a diagonal seam at a 45-degree angle. Diagonal seams distribute bulk across a wider area so they lie flat and are virtually invisible in the finished binding. Straight seams create a stiff ridge that stands out visually and can interfere with the binding folding smoothly around the edge. Trim the seam to 1/4 inch and press open for the flattest result." },
+  { question: "Can I use scraps for binding?", answer: "Yes — scrappy bindings are a classic look, especially for utility quilts, charity quilts, and memory quilts. Collect strips of any leftover binding-width fabric, join them with diagonal seams, and go around the quilt as usual. For a planned scrappy look, sort the scraps into a repeating color sequence. For a random scrappy look, grab and sew without thinking about order." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Quilt Binding Strips Calculator",
+  description: "Calculate the number of binding strips and fabric yardage needed to bind a quilt of any size.",
+  url: textile_binding_strips_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "quilt-binding-strips-calculator"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Textile & Sewing", url: category_path("textile") },
+  { name: "Quilt Binding Strips Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Quilt Binding Strips Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the number of binding strips and fabric yardage needed to bind your quilt. Enter your quilt dimensions to get the exact number of 42-inch-long strips and the fabric required.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="binding-strips-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="bs-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Quilt Width (inches)</label>
+            <input id="bs-width" type="number" inputmode="decimal" data-binding-strips-calculator-target="quiltWidth" data-action="input->binding-strips-calculator#calculate" class="w-full" value="60" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="bs-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Quilt Length (inches)</label>
+            <input id="bs-length" type="number" inputmode="decimal" data-binding-strips-calculator-target="quiltLength" data-action="input->binding-strips-calculator#calculate" class="w-full" value="80" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="bs-strip" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Strip Width (inches)</label>
+            <select id="bs-strip" data-binding-strips-calculator-target="stripWidth" data-action="change->binding-strips-calculator#calculate" class="w-full">
+              <option value="2.25">2.25" (traditional)</option>
+              <option value="2.5" selected>2.5" (standard double-fold)</option>
+              <option value="2.75">2.75" (fuller binding)</option>
+              <option value="3">3.0" (wide binding)</option>
+            </select>
+          </div>
+          <div>
+            <label for="bs-fabric" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fabric Usable Width (inches)</label>
+            <input id="bs-fabric" type="number" inputmode="decimal" data-binding-strips-calculator-target="fabricWidth" data-action="input->binding-strips-calculator#calculate" class="w-full" value="42" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="bs-overage" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Overage for Corners & Joining (inches)</label>
+            <input id="bs-overage" type="number" inputmode="decimal" data-binding-strips-calculator-target="overage" data-action="input->binding-strips-calculator#calculate" class="w-full" value="10" step="1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Perimeter</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-binding-strips-calculator-target="resultPerimeter">0 in</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Length Needed</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-binding-strips-calculator-target="resultTotalLength">0 in</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Strips Needed</span>
+              <span class="text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-binding-strips-calculator-target="resultStripsNeeded">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Fabric Used</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-binding-strips-calculator-target="resultFabricUsed">0 in</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Total Yards</span>
+              <span class="text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-binding-strips-calculator-target="resultYards">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Meters</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-binding-strips-calculator-target="resultMeters">0</span>
+            </div>
+          </div>
+          <button data-action="click->binding-strips-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "quilt-binding-strips-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Double-Fold Binding Math</h2>
+      <p>
+        Double-fold binding, sometimes called French binding, is the most common way to finish a quilt. Strips are cut at 2.5 inches wide, joined end to end with diagonal seams, then folded in half lengthwise so the raw edges are enclosed. This folded strip is sewn to the front of the quilt with a 1/4-inch seam and then flipped to the back and hand stitched or machine stitched down. The result is a durable, double-layered edge that protects the quilt from wear. To calculate strips, measure the quilt perimeter, add overage for corners and joining seams, then divide by the usable fabric width to get the number of strips to cut across the bolt.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why You Need 10 Inches of Extra Length</h2>
+      <p>
+        The 10-inch overage built into this calculator accounts for two specific things. First, each of the four corners requires roughly 1 inch of extra binding to fold into a mitered corner, which adds 4 inches to the total length. Second, each diagonal joining seam between strips consumes approximately 3/4 to 1 inch of binding length, and a typical quilt uses 6 to 8 joining seams. Adding these together, 10 inches is a safe minimum for most bed-sized quilts. For very large king quilts or bindings with many joining seams, consider adding 12 to 15 inches of overage instead.
+      </p>
+
+      <h2>Bias Binding vs Straight-Grain Binding</h2>
+      <p>
+        Straight-grain binding is cut across the width of the fabric, parallel to the weft threads. It uses less fabric than bias binding and works beautifully for any quilt with straight edges. The grain runs along the length of the binding, so it has very little stretch and lies flat against the quilt edge. Bias binding is cut at a 45-degree angle to the selvage and has significant diagonal stretch, which makes it the only sensible choice for quilts with curved or scalloped edges because it can ease around the curves without puckering. Bias binding also wears longer along the quilt edge because many threads cross each friction point, giving it a slight durability advantage on heirloom quilts that will be heavily used.
+      </p>
+
+      <h2>Choosing Binding Strip Width</h2>
+      <p>
+        The default 2.5-inch strip width produces a modern binding about 3/8 inch wide on each side of the quilt. If you prefer a more traditional look, cut strips at 2.25 inches for a narrower finished binding. For quilts with thick batting or a chunky aesthetic, 2.75 or 3 inch strips give a fuller, more substantial binding. Always test your preferred width on a scrap before binding a finished quilt.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How wide should quilt binding strips be?</h3>
+      <p>
+        The most common width is 2.5 inches for double-fold binding. Use 2.25 inches for a traditional narrow look or 2.75 inches for a fuller binding with thick batting.
+      </p>
+
+      <h3>How many strips do I need for a twin-size quilt?</h3>
+      <p>
+        A 70 by 90 inch twin has a 320 inch perimeter. With 10 inches of overage, you need 330 inches of binding. Divided by a 42-inch fabric width, that is 8 strips — roughly 5/8 yard at 2.5 inches wide.
+      </p>
+
+      <h3>What's the difference between bias and straight binding?</h3>
+      <p>
+        Straight-grain binding is cut cross-wise and works for all straight-edged quilts. Bias binding is cut at 45 degrees and stretches around curves for scalloped or round quilts.
+      </p>
+
+      <h3>Should I join binding strips with a straight or diagonal seam?</h3>
+      <p>
+        Always use a diagonal seam at 45 degrees. It distributes bulk so the seam lies flat and is nearly invisible in the finished binding.
+      </p>
+
+      <h3>Can I use scraps for binding?</h3>
+      <p>
+        Yes, scrappy bindings are a classic utility-quilt look. Collect leftover strips of binding width, join them with diagonal seams, and bind the quilt as usual.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Quilt Backing Calculator", description: "Calculate quilt backing fabric yardage with longarm overage.", path: textile_quilt_backing_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 12h16M12 4v16" },
+      { name: "Fabric Yardage Calculator", description: "Calculate fabric yardage from pattern piece dimensions and fabric width.", path: textile_fabric_yardage_path, icon_path: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14" },
+      { name: "Half-Square Triangle Calculator", description: "Calculate the cut size for half-square triangles in any quilt pattern.", path: textile_half_square_triangle_path, icon_path: "M4 20L20 4M4 20h16L4 4v16z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "textile" %>
+
+    <% blog_posts = related_blog_posts("quilt-binding-strips-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

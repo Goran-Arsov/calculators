@@ -1,0 +1,191 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Crochet Gauge Calculator - Starting Chain & Rows",
+  description: "Calculate the starting chain and total rows for your crochet project from a gauge swatch. Accurate stitch counts for any target width and length with turning chain support.",
+  canonical: textile_crochet_gauge_url,
+  og: {
+    title: "Crochet Gauge Calculator - Starting Chain & Rows | Calc Hammer",
+    description: "Turn your crochet gauge swatch into an exact starting chain and row count for any target size.",
+    url: textile_crochet_gauge_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Textile & Sewing", url: category_url("textile") },
+  { name: "Crochet Gauge Calculator", url: textile_crochet_gauge_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is crochet gauge?", answer: "Crochet gauge is the number of stitches and rows per a given area of crocheted fabric, usually measured over 4 inches or 10 centimeters. Gauge depends on your yarn, hook size, stitch type, and personal tension. Getting the right gauge is what makes a wearable garment fit and a blanket come out the size it was designed to be." },
+  { question: "Why do I need turning chains?", answer: "When you work crochet in rows, the first stitch of each new row needs extra height so it reaches the top of the previous row. Those extra chains at the start of a row are called turning chains. Single crochet needs 1 turning chain, half double crochet needs 2, double crochet needs 3, and treble crochet needs 4. The starting chain at the very beginning of a project also adds the same extra chains to set up the height of the first row." },
+  { question: "Does gauge matter for a scarf?", answer: "Gauge matters less for a scarf than for a fitted garment, but it still affects fabric density, drape, and how much yarn you use. If you crochet loosely with a small hook the fabric will feel stiff; if you crochet tightly with a large hook it will be holey. Even scarves benefit from swatching for feel, even if the exact dimensions are flexible." },
+  { question: "How do I match a pattern's gauge exactly?", answer: "Work a swatch with the yarn and hook the pattern recommends, wash and block it the way you will treat the finished project, then measure. If you have too many stitches per inch, go up a hook size. If you have too few, go down a hook size. Keep adjusting until the stitch count matches. Row gauge is harder to match and is usually less critical since patterns tell you to work to a measurement." },
+  { question: "Should I count the turning chain as a stitch?", answer: "It depends on the stitch type and the pattern. For double crochet and treble crochet, the turning chain is often counted as the first stitch of the row. For single crochet, the turning chain is almost never counted. Always follow what the specific pattern tells you, because counting a turning chain inconsistently throws off your stitch count." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Crochet Gauge Calculator",
+  description: "Calculate starting chain and total rows for a crochet project based on a gauge swatch and target dimensions.",
+  url: textile_crochet_gauge_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "crochet-gauge-calculator"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Textile & Sewing", url: category_path("textile") },
+  { name: "Crochet Gauge Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Crochet Gauge Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Turn your crochet gauge swatch into an exact starting chain and row count. Enter your measured gauge and target dimensions — the calculator adds the right number of turning chains for your stitch type.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="crochet-gauge-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="cg-st4" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Stitches per 4 inches</label>
+            <input id="cg-st4" type="number" inputmode="decimal" data-crochet-gauge-calculator-target="stitchesPer4in" data-action="input->crochet-gauge-calculator#calculate" class="w-full" value="14" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="cg-rw4" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rows per 4 inches</label>
+            <input id="cg-rw4" type="number" inputmode="decimal" data-crochet-gauge-calculator-target="rowsPer4in" data-action="input->crochet-gauge-calculator#calculate" class="w-full" value="16" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="cg-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target Width (inches)</label>
+            <input id="cg-width" type="number" inputmode="decimal" data-crochet-gauge-calculator-target="targetWidth" data-action="input->crochet-gauge-calculator#calculate" class="w-full" value="20" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="cg-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target Length (inches)</label>
+            <input id="cg-length" type="number" inputmode="decimal" data-crochet-gauge-calculator-target="targetLength" data-action="input->crochet-gauge-calculator#calculate" class="w-full" value="24" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="cg-extra" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Turning Chains (stitch type)</label>
+            <select id="cg-extra" data-crochet-gauge-calculator-target="startingChainExtra" data-action="change->crochet-gauge-calculator#calculate" class="w-full">
+              <option value="1" selected>1 — Single Crochet (sc)</option>
+              <option value="2">2 — Half Double Crochet (hdc)</option>
+              <option value="3">3 — Double Crochet (dc)</option>
+              <option value="4">4 — Treble Crochet (tr)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-3 border-b border-blue-200/50 dark:border-blue-900/40">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Starting Chain</span>
+              <span class="text-2xl font-bold text-blue-600 dark:text-blue-400" data-crochet-gauge-calculator-target="resultStartingChain">0</span>
+            </div>
+            <div class="flex justify-between items-center pb-3 border-b border-blue-200/50 dark:border-blue-900/40">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Total Rows</span>
+              <span class="text-2xl font-bold text-blue-600 dark:text-blue-400" data-crochet-gauge-calculator-target="resultTotalRows">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Base Stitches</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-crochet-gauge-calculator-target="resultBaseStitches">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Stitches per inch</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-crochet-gauge-calculator-target="resultStPerIn">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Rows per inch</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-crochet-gauge-calculator-target="resultRowsPerIn">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Stitches per 10 cm</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-crochet-gauge-calculator-target="resultStPer10cm">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Rows per 10 cm</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-crochet-gauge-calculator-target="resultRowsPer10cm">0</span>
+            </div>
+          </div>
+          <button data-action="click->crochet-gauge-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "crochet-gauge-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Crochet Gauge vs Knitting Gauge: Key Differences</h2>
+      <p>
+        Crochet and knitting both use the term "gauge" to mean the same thing — stitches and rows per measured area — but the numbers are very different. Crochet stitches are generally taller and wider than knit stitches made with the same yarn, so a worsted weight yarn that gives 20 stitches per 4 inches in knitting may only give 14 stitches per 4 inches in single crochet. Double crochet is even more dramatic: a single dc is roughly three times the height of a knit stitch, so row gauge is much lower. This also means crochet projects tend to use more yarn than knit projects of the same size, which is worth planning for when buying materials.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How to Measure Your Crochet Gauge Accurately</h2>
+      <p>
+        Start by making a swatch at least 6 inches square using the exact yarn, hook, and stitch pattern the project calls for. Do not count the starting chain or the turning chains as part of your gauge measurement area. Once the swatch is finished, weave in the ends, wash it the same way you will wash the finished piece, and block it to dry flat. After it is fully dry, lay a ruler across the middle of the swatch and count how many stitches fit inside a 4-inch window horizontally, then count the rows vertically. Measuring in the center of the swatch avoids the distorted edge stitches, which can throw off your count by a full stitch or more and lead to a garment that ends up too tight or too loose.
+      </p>
+
+      <h2>Why You Need Turning Chains</h2>
+      <p>
+        When you work crochet in rows, each new row needs to start at the height of the top of the previous row so that the new stitches line up. Those extra chains worked at the beginning of a row are called turning chains, and the number you need depends on the stitch. Single crochet uses 1 turning chain, half double crochet uses 2, double crochet uses 3, and treble crochet uses 4. The starting chain at the very beginning of a project also includes those extra chains to set the height of the first row. This calculator adds them automatically based on the stitch type you select, so the starting chain value you get is the full chain count you should work before your first row.
+      </p>
+
+      <h2>Adjusting Gauge: Hook Size and Tension</h2>
+      <p>
+        If your gauge does not match the pattern, change your hook size rather than trying to crochet tighter or looser on purpose. If you have too many stitches per inch, go up a hook size to loosen the fabric. If you have too few stitches per inch, drop down a size to tighten it. A half-size change (a common metric between US letter sizes) is often enough to tip the gauge the right way without completely changing the fabric's drape.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is crochet gauge?</h3>
+      <p>
+        Crochet gauge is the number of stitches and rows in a 4-inch (10 cm) square of crocheted fabric. It depends on your yarn, hook, stitch type, and tension.
+      </p>
+
+      <h3>Why do I need turning chains?</h3>
+      <p>
+        Turning chains add height so the first stitch of each new row reaches the top of the previous row. Single crochet uses 1, half double 2, double 3, and treble 4.
+      </p>
+
+      <h3>Does gauge matter for a scarf?</h3>
+      <p>
+        It matters less than for fitted garments, but gauge still affects fabric drape, density, and total yarn used, so swatching is still worthwhile.
+      </p>
+
+      <h3>How do I match a pattern's gauge exactly?</h3>
+      <p>
+        Swatch with the recommended yarn and hook, wash and block, then measure. Go up a hook size if you have too many stitches per inch, down if you have too few.
+      </p>
+
+      <h3>Should I count the turning chain as a stitch?</h3>
+      <p>
+        For double and treble crochet the turning chain is often counted as the first stitch, but for single crochet it usually is not. Always follow the specific pattern.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Knitting Gauge Calculator", description: "Calculate cast-on stitches and rows from your knitting gauge swatch.", path: textile_knitting_gauge_path, icon_path: "M4 6h16M4 12h16M4 18h16" },
+      { name: "Needle & Hook Size Converter", description: "Convert knitting needles and crochet hooks between US, UK, and metric.", path: textile_needle_hook_size_path, icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" },
+      { name: "Yarn Yardage Calculator", description: "Estimate how much yarn your knitting or crochet project will need.", path: textile_yarn_yardage_path, icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "textile" %>
+
+    <% blog_posts = related_blog_posts("crochet-gauge-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

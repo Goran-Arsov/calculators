@@ -67,6 +67,7 @@ Rails.application.routes.draw do
   draw(:physics)
   draw(:health)
   draw(:construction)
+  draw(:textile)
   draw(:everyday)
 
   # User-submitted calculator formulas
@@ -122,7 +123,7 @@ Rails.application.routes.draw do
 
   # Category landing pages (must be last to avoid catching other routes)
   get ":category", to: "categories#show", as: :category,
-      constraints: { category: /finance|math|physics|health|construction|everyday/ }
+      constraints: { category: /finance|math|physics|health|construction|textile|everyday/ }
 
   root "home#index"
 end

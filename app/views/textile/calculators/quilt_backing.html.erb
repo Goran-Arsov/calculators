@@ -1,0 +1,187 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Quilt Backing Calculator - Fabric Yardage Required",
+  description: "Calculate the fabric yardage needed to back your quilt including the extra overage required for longarm quilting. Supports both standard and wide-back fabric widths.",
+  canonical: textile_quilt_backing_url,
+  og: {
+    title: "Quilt Backing Calculator - Fabric Yardage Required | Calc Hammer",
+    description: "Calculate the fabric yardage needed to back your quilt including the extra overage for longarm quilting.",
+    url: textile_quilt_backing_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Textile & Sewing", url: category_url("textile") },
+  { name: "Quilt Backing Calculator", url: textile_quilt_backing_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much overage do I need for quilt backing?", answer: "For longarm quilting, add 4 inches of overage on each side of the quilt top — so 8 inches total to both width and length. This extra fabric is clamped into the longarm frame and is absolutely necessary; skimping on it will frustrate your longarm quilter. For home machine quilting or hand quilting, you can get away with 2 to 3 inches of overage per side, which is about 4 to 6 inches total to each dimension." },
+  { question: "What is wide-back quilt fabric?", answer: "Wide-back fabric is quilting cotton sold in 108-inch widths specifically for quilt backing. It eliminates the need to piece the backing for most bed-sized quilts, saving time and avoiding the bulky seam down the middle. Wide-back prints are usually tonal or subtle so they don't compete with the quilt top. They cost more per yard than standard 42-inch fabric but save yardage overall because you don't need multiple pieced panels." },
+  { question: "Should my backing have a horizontal or vertical seam?", answer: "The choice depends on your quilt dimensions — pick the orientation that uses less total yardage. Generally, if your quilt is longer than it is wide, a vertical seam (panels running lengthwise) uses less fabric. If your quilt is wider than it is long, a horizontal seam is more efficient. This calculator automatically picks the orientation with the lower yardage. Some quilters prefer one orientation regardless of yardage to avoid a seam at the visual center." },
+  { question: "Do I need to pre-wash backing fabric?", answer: "Pre-washing backing fabric is a personal choice. Some quilters pre-wash everything to remove sizing, eliminate shrinkage, and test colorfastness, especially for reds and deep blues that are prone to bleeding. Others prefer the crispness of unwashed fabric and accept some shrinkage when the finished quilt is washed. If you pre-wash the backing, also pre-wash the top and batting to avoid differential shrinkage creating wrinkles." },
+  { question: "Can I piece backing from multiple fabrics?", answer: "Absolutely — pieced backings are a great way to use up large leftover pieces and reduce fabric costs. Aim for a few large sections rather than tiny scraps, and avoid bulky seams at the edges where the longarm frame attaches. Pressed seams should lie flat, and any directional prints should be oriented consistently. A pieced backing is sometimes called a scrappy backing and can become a design feature of the finished quilt." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Quilt Backing Calculator",
+  description: "Calculate quilt backing fabric yardage from quilt top dimensions, including the overage needed for longarm quilting.",
+  url: textile_quilt_backing_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "quilt-backing-calculator"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Textile & Sewing", url: category_path("textile") },
+  { name: "Quilt Backing Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Quilt Backing Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate exactly how much fabric you need to back your quilt. The calculator adds the standard 4-inch overage for longarm quilting and figures out whether you need to piece your backing.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="quilt-backing-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="qb-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Quilt Width (inches)</label>
+            <input id="qb-width" type="number" inputmode="decimal" data-quilt-backing-calculator-target="quiltWidth" data-action="input->quilt-backing-calculator#calculate" class="w-full" value="60" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="qb-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Quilt Length (inches)</label>
+            <input id="qb-length" type="number" inputmode="decimal" data-quilt-backing-calculator-target="quiltLength" data-action="input->quilt-backing-calculator#calculate" class="w-full" value="80" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="qb-overage" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Overage per Side (inches)</label>
+            <input id="qb-overage" type="number" inputmode="decimal" data-quilt-backing-calculator-target="overage" data-action="input->quilt-backing-calculator#calculate" class="w-full" value="4" step="0.5" min="0">
+            <p class="text-xs text-gray-500 mt-1">4" per side is standard for longarm quilting.</p>
+          </div>
+          <div>
+            <label for="qb-fabric-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fabric Width (inches)</label>
+            <select id="qb-fabric-width" data-quilt-backing-calculator-target="fabricWidth" data-action="change->quilt-backing-calculator#calculate" class="w-full">
+              <option value="42" selected>42" (standard quilting cotton)</option>
+              <option value="44">44" (standard, untrimmed selvage)</option>
+              <option value="108">108" (wide-back)</option>
+              <option value="118">118" (extra-wide back)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Backing Width</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-quilt-backing-calculator-target="resultBackingW">0 in</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Backing Length</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-quilt-backing-calculator-target="resultBackingL">0 in</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Needs Seam</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-quilt-backing-calculator-target="resultNeedsSeam">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Panels</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-quilt-backing-calculator-target="resultNumPanels">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Seam Orientation</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-quilt-backing-calculator-target="resultSeamOrientation">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Total Yards</span>
+              <span class="text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-quilt-backing-calculator-target="resultYards">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Meters</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-quilt-backing-calculator-target="resultMeters">0</span>
+            </div>
+          </div>
+          <button data-action="click->quilt-backing-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "quilt-backing-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Why You Need Backing Overage</h2>
+      <p>
+        Backing overage is extra fabric beyond the dimensions of your quilt top, and it is not optional if you plan to have your quilt longarm quilted. A longarm machine clamps the backing edges into a frame and rolls the quilt sandwich through as the quilting proceeds. The clamps and leaders need at least 4 inches of bare backing on all four sides of the quilt top, which means you must add 4 inches per side — 8 inches total to both the width and length of your finished top. For home machine quilting or hand quilting, you have more flexibility and can get away with 2 to 3 inches of overage per side. Skimping on overage is one of the most common and frustrating quilting mistakes because it can render a beautifully pieced top unquiltable on a longarm.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Standard Width vs Wide-Back Fabric</h2>
+      <p>
+        Standard quilting cotton is sold in 42 to 44 inch widths, which means almost any quilt wider than roughly 34 inches requires a pieced backing with at least one seam. Wide-back fabric solves this problem by coming in 108-inch or even 118-inch widths, which is enough to back a king-sized quilt in a single panel with no seams. Wide-back prints are typically tonal or subtle so they do not compete with the quilt top design. The per-yard cost is higher than standard cotton, but because you only need to buy one continuous piece instead of 2, 3, or 4 panels, the total cost is often similar or lower for large quilts — and you save the time of piecing the backing.
+      </p>
+
+      <h2>Horizontal vs Vertical Seams in Backing</h2>
+      <p>
+        When you need to piece a backing from standard-width fabric, you have to choose between a horizontal seam (running side to side across the width of the quilt) and a vertical seam (running top to bottom along the length). The right choice is whichever orientation uses less total yardage, and this depends on the proportions of your quilt. For a quilt that is longer than it is wide, a vertical seam with panels running lengthwise usually wins. For a wider quilt, a horizontal seam is more efficient. This calculator automatically tries both orientations and picks the one that uses less fabric, saving you both money and the time of cutting more panels than necessary.
+      </p>
+
+      <h2>Tips for Matching Patterned Backing Fabric</h2>
+      <p>
+        If your backing has a directional print, a large-scale motif, or a repeat that needs to match across the seam, you will need extra yardage beyond the basic calculation. Add at least one pattern repeat of extra length so you can align the design across the seam without awkward jumps. For stripes and plaids, buy an additional half yard for insurance. Tonal prints and small random patterns are very forgiving and need no extra allowance.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much overage do I need for quilt backing?</h3>
+      <p>
+        Add 4 inches of overage per side for longarm quilting, or 2 to 3 inches per side for home machine or hand quilting. Do not skip this extra fabric.
+      </p>
+
+      <h3>What is wide-back quilt fabric?</h3>
+      <p>
+        Wide-back fabric is quilting cotton sold in 108 or 118 inch widths, letting you back most quilts in a single seamless panel. It costs more per yard but saves total yardage and time.
+      </p>
+
+      <h3>Should my backing have a horizontal or vertical seam?</h3>
+      <p>
+        Pick whichever orientation uses less fabric. For taller quilts, vertical seams usually win; for wider quilts, horizontal seams are more efficient. This calculator chooses automatically.
+      </p>
+
+      <h3>Do I need to pre-wash backing fabric?</h3>
+      <p>
+        Pre-washing is optional but recommended if you also pre-wash the top and batting. It removes sizing and prevents colorfast issues like bleeding reds and dark blues.
+      </p>
+
+      <h3>Can I piece backing from multiple fabrics?</h3>
+      <p>
+        Yes. Use large leftover pieces, press seams flat, and avoid bulky seams near the edges where the longarm frame clamps.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Quilt Binding Strips Calculator", description: "Calculate the number of binding strips and fabric yardage to bind any quilt.", path: textile_binding_strips_path, icon_path: "M4 6h16M4 12h16M4 18h16" },
+      { name: "Fabric Yardage Calculator", description: "Calculate fabric yardage from pattern piece dimensions and fabric width.", path: textile_fabric_yardage_path, icon_path: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14" },
+      { name: "Half-Square Triangle Calculator", description: "Calculate the exact cut size needed for half-square triangles in any quilt pattern.", path: textile_half_square_triangle_path, icon_path: "M4 20L20 4M4 20h16L4 4v16z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "textile" %>
+
+    <% blog_posts = related_blog_posts("quilt-backing-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

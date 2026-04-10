@@ -1,0 +1,179 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Knitting Gauge Calculator - Stitch & Row Count",
+  description: "Calculate cast-on stitches and row count from your knitting gauge swatch. Enter stitches and rows per 4 inches, plus your target width and length to get perfect measurements.",
+  canonical: textile_knitting_gauge_url,
+  og: {
+    title: "Knitting Gauge Calculator - Stitch & Row Count | Calc Hammer",
+    description: "Turn your knitting gauge swatch into accurate cast-on stitches and row counts for any project size.",
+    url: textile_knitting_gauge_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Textile & Sewing", url: category_url("textile") },
+  { name: "Knitting Gauge Calculator", url: textile_knitting_gauge_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is knitting gauge?", answer: "Knitting gauge is the number of stitches and rows per a measured area of knitted fabric, usually expressed as stitches and rows per 4 inches (10 cm). Gauge depends on your yarn, needle size, stitch pattern, and personal tension. Matching a pattern's gauge is essential for the finished garment to come out the size the designer intended." },
+  { question: "Why is my gauge different from the pattern?", answer: "Every knitter has a unique tension that affects how tight or loose their stitches are. Even with the exact yarn and needles a pattern calls for, you may get more or fewer stitches per inch. To match a pattern's gauge, go up a needle size if your gauge has too many stitches per inch (fabric too tight), or down a size if you have too few (fabric too loose)." },
+  { question: "Should I wash my swatch before measuring?", answer: "Yes. Always wash and block your swatch the same way you will treat the finished garment. Many yarns, especially natural fibers like wool and cotton, change significantly after washing. Measuring an unblocked swatch can lead to a finished garment that is inches off from the intended size after its first wash." },
+  { question: "What if I'm between needle sizes?", answer: "If the closest match to your target gauge falls between two needle sizes, try the smaller size first and knit a fresh swatch. If the fabric feels too dense, go up. Gauge can also be adjusted slightly by changing stitch pattern, but needle size is the primary lever." },
+  { question: "How big should my swatch be?", answer: "Cast on enough stitches to measure a flat 6-inch square at minimum, ideally larger. Stitches near the edges distort, so measuring 4 inches in the center of a 6-inch swatch gives a more accurate reading than measuring across the entire piece." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Knitting Gauge Calculator",
+  description: "Calculate cast-on stitches and row count from a knitting gauge swatch for any target width and length.",
+  url: textile_knitting_gauge_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "knitting-gauge-calculator"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Textile & Sewing", url: category_path("textile") },
+  { name: "Knitting Gauge Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Knitting Gauge Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Turn your knitting gauge swatch into accurate stitch counts. Enter your gauge (stitches and rows per 4 inches) and target dimensions to get the exact cast-on and row numbers for your project.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="knitting-gauge-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="kg-st4" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Stitches per 4 inches</label>
+            <input id="kg-st4" type="number" inputmode="decimal" data-knitting-gauge-calculator-target="stitchesPer4in" data-action="input->knitting-gauge-calculator#calculate" class="w-full" value="20" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="kg-rw4" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rows per 4 inches</label>
+            <input id="kg-rw4" type="number" inputmode="decimal" data-knitting-gauge-calculator-target="rowsPer4in" data-action="input->knitting-gauge-calculator#calculate" class="w-full" value="28" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="kg-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target Width (inches)</label>
+            <input id="kg-width" type="number" inputmode="decimal" data-knitting-gauge-calculator-target="targetWidth" data-action="input->knitting-gauge-calculator#calculate" class="w-full" value="20" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="kg-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target Length (inches)</label>
+            <input id="kg-length" type="number" inputmode="decimal" data-knitting-gauge-calculator-target="targetLength" data-action="input->knitting-gauge-calculator#calculate" class="w-full" value="24" step="0.5" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pb-3 border-b border-blue-200/50 dark:border-blue-900/40">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Cast-On Stitches</span>
+              <span class="text-2xl font-bold text-blue-600 dark:text-blue-400" data-knitting-gauge-calculator-target="resultCastOn">0</span>
+            </div>
+            <div class="flex justify-between items-center pb-3 border-b border-blue-200/50 dark:border-blue-900/40">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Total Rows</span>
+              <span class="text-2xl font-bold text-blue-600 dark:text-blue-400" data-knitting-gauge-calculator-target="resultTotalRows">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Stitches per inch</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-knitting-gauge-calculator-target="resultStPerIn">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Rows per inch</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-knitting-gauge-calculator-target="resultRowsPerIn">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Stitches per 10 cm</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-knitting-gauge-calculator-target="resultStPer10cm">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Rows per 10 cm</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-knitting-gauge-calculator-target="resultRowsPer10cm">0</span>
+            </div>
+          </div>
+          <button data-action="click->knitting-gauge-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "knitting-gauge-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Why Gauge Is the Most Important Thing in Knitting</h2>
+      <p>
+        Gauge is the single biggest determinant of whether your finished sweater, hat, or blanket comes out the size you expect. A pattern will tell you something like "20 stitches and 28 rows to 4 inches in stockinette stitch on 4 mm needles," and if you do not match that, every stitch count in the pattern will give you a different finished measurement than the designer intended. A sweater designed to be 40 inches around can easily end up 36 or 44 inches if your gauge is off by just half a stitch per inch. That small difference adds up quickly across hundreds of stitches, which is why experienced knitters always swatch first and treat gauge as a non-negotiable starting step rather than an optional one.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How to Knit a Proper Gauge Swatch</h2>
+      <p>
+        Cast on at least 6 inches worth of stitches using the yarn, needles, and stitch pattern you will use in the finished project. Knit a square at least 6 inches tall so that you can measure a full 4 inches in the center, away from the distorted edge stitches. Bind off loosely, then wash and block the swatch exactly the way you plan to care for the finished garment. This step matters: many yarns bloom, relax, or tighten up dramatically after their first wash, and skipping blocking is the most common reason a carefully knit sweater does not fit. Let the swatch dry fully flat, then lay a ruler across the center and count the stitches and rows inside a 4-inch square.
+      </p>
+
+      <h2>Converting Between Imperial and Metric Gauge</h2>
+      <p>
+        Patterns from US sources usually list gauge per 4 inches, while European and British patterns use 10 centimeters. The two are close but not identical: 4 inches equals 10.16 cm, so a gauge of 20 stitches per 4 inches converts to about 19.69 stitches per 10 cm. The calculator above shows both values so you can compare your swatch directly to any pattern regardless of its country of origin.
+      </p>
+
+      <h2>What to Do When Your Gauge Doesn't Match the Pattern</h2>
+      <p>
+        If your swatch has too many stitches per inch, your fabric is tighter than the pattern expects, so try a needle one size larger. If you have too few stitches per inch, go down a needle size. Never force a gauge change by knitting tighter or looser on purpose; you will not be able to sustain that tension for thousands of stitches. Keep swatching until one needle size gives you the stitch gauge (stitch gauge matters more than row gauge in most patterns).
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is knitting gauge?</h3>
+      <p>
+        Knitting gauge is the number of stitches and rows per 4 inches (10 cm) of knitted fabric. It depends on your yarn, needles, stitch pattern, and personal tension, and matching a pattern's gauge is essential for the finished piece to come out the right size.
+      </p>
+
+      <h3>Why is my gauge different from the pattern?</h3>
+      <p>
+        Every knitter has a unique tension. Go up a needle size if your gauge has too many stitches per inch, or down if you have too few.
+      </p>
+
+      <h3>Should I wash my swatch before measuring?</h3>
+      <p>
+        Yes. Always wash and block your swatch the same way you will treat the finished garment, since many yarns change significantly after washing.
+      </p>
+
+      <h3>What if I'm between needle sizes?</h3>
+      <p>
+        Try the smaller size first. If the fabric feels too dense, go up one size and knit a fresh swatch.
+      </p>
+
+      <h3>How big should my swatch be?</h3>
+      <p>
+        Cast on enough stitches to measure at least a 6-inch square so you can measure a clean 4 inches in the center, away from the distorted edge stitches.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Crochet Gauge Calculator", description: "Calculate starting chain and rows from your crochet gauge swatch.", path: textile_crochet_gauge_path, icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20zm0 4a6 6 0 110 12 6 6 0 010-12z" },
+      { name: "Needle & Hook Size Converter", description: "Convert knitting needles and crochet hooks between US, UK, and metric.", path: textile_needle_hook_size_path, icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" },
+      { name: "Yarn Yardage Calculator", description: "Estimate how much yarn your knitting or crochet project will need.", path: textile_yarn_yardage_path, icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "textile" %>
+
+    <% blog_posts = related_blog_posts("knitting-gauge-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

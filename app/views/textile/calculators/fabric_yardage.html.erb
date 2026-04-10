@@ -1,0 +1,182 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Fabric Yardage Calculator - Free Online Tool",
+  description: "Calculate how much fabric you need for any sewing project. Enter piece dimensions, quantity, and fabric width to get yards and meters required, with pattern repeat support.",
+  canonical: textile_fabric_yardage_url,
+  og: {
+    title: "Fabric Yardage Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate how much fabric you need for any sewing project. Enter piece dimensions, quantity, and fabric width to get yards and meters required.",
+    url: textile_fabric_yardage_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Textile & Sewing", url: category_url("textile") },
+  { name: "Fabric Yardage Calculator", url: textile_fabric_yardage_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much fabric do I need for a dress?", answer: "A typical knee-length dress takes about 2 to 3 yards of 45-inch fabric or 1.5 to 2 yards of 60-inch fabric. A maxi dress or gown can require 4 to 6 yards depending on the silhouette, whether the skirt is full or fitted, and whether sleeves are included. Always check the back of your pattern envelope for the exact yardage recommendation for your size and view." },
+  { question: "What fabric width should I choose?", answer: "Apparel fabrics are usually sold in 45-inch or 60-inch widths, while quilting cotton is almost always 42 to 44 inches wide. Home decor fabrics are often 54 or 60 inches. Wider fabric generally means less total yardage for a given project, so compare the total cost rather than just the per-yard price when choosing between widths." },
+  { question: "What is a pattern repeat?", answer: "A pattern repeat is the distance between identical points on a printed or woven fabric design, such as stripes, plaids, florals, or border prints. To match the design across seams, you need to cut each piece aligned with the repeat, which uses extra fabric. The calculator accounts for this by rounding each piece length up to the next multiple of the repeat." },
+  { question: "Should I buy extra fabric for pre-washing?", answer: "Yes, most natural fiber fabrics shrink 3 to 10 percent on their first wash, so buying at least a quarter yard extra is wise. Pre-wash the fabric before cutting so the finished garment will not shrink later. Cotton, linen, and rayon shrink the most, while synthetics like polyester shrink very little." },
+  { question: "How do I convert yards to meters?", answer: "One yard equals 0.9144 meters, or approximately 0.91 meters. To convert yards to meters, multiply by 0.9144. To convert meters to yards, multiply by 1.0936. This calculator shows both values automatically so you can shop from patterns and fabric stores that use either measurement system." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Fabric Yardage Calculator",
+  description: "Calculate how much fabric to buy for a sewing project based on piece dimensions, quantity, fabric width, and pattern repeat.",
+  url: textile_fabric_yardage_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "fabric-yardage-calculator"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Textile & Sewing", url: category_path("textile") },
+  { name: "Fabric Yardage Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Fabric Yardage Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate exactly how much fabric to buy for your sewing project. Enter your pattern piece dimensions, quantity, and fabric width to get total yards and meters needed.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="fabric-yardage-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="fy-piece-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Piece Length (inches)</label>
+            <input id="fy-piece-length" type="number" inputmode="decimal" data-fabric-yardage-calculator-target="pieceLength" data-action="input->fabric-yardage-calculator#calculate" class="w-full" value="24" step="0.25" min="0">
+          </div>
+          <div>
+            <label for="fy-piece-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Piece Width (inches)</label>
+            <input id="fy-piece-width" type="number" inputmode="decimal" data-fabric-yardage-calculator-target="pieceWidth" data-action="input->fabric-yardage-calculator#calculate" class="w-full" value="18" step="0.25" min="0">
+          </div>
+          <div>
+            <label for="fy-num-pieces" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Pieces</label>
+            <input id="fy-num-pieces" type="number" inputmode="numeric" data-fabric-yardage-calculator-target="numPieces" data-action="input->fabric-yardage-calculator#calculate" class="w-full" value="4" step="1" min="1">
+          </div>
+          <div>
+            <label for="fy-fabric-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fabric Width (inches)</label>
+            <select id="fy-fabric-width" data-fabric-yardage-calculator-target="fabricWidth" data-action="change->fabric-yardage-calculator#calculate" class="w-full">
+              <option value="45" selected>45" (quilting cotton, apparel)</option>
+              <option value="54">54" (home decor)</option>
+              <option value="60">60" (apparel, knits)</option>
+              <option value="72">72" (wide home decor)</option>
+            </select>
+          </div>
+          <div>
+            <label for="fy-repeat" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pattern Repeat (inches, optional)</label>
+            <input id="fy-repeat" type="number" inputmode="decimal" data-fabric-yardage-calculator-target="repeat" data-action="input->fabric-yardage-calculator#calculate" class="w-full" value="0" step="0.25" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Pieces Across</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-fabric-yardage-calculator-target="resultPiecesAcross">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Rows Needed</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-fabric-yardage-calculator-target="resultRowsNeeded">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Length</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-fabric-yardage-calculator-target="resultLengthIn">0 in</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Total Yards</span>
+              <span class="text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-fabric-yardage-calculator-target="resultYards">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Meters</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-fabric-yardage-calculator-target="resultMeters">0</span>
+            </div>
+          </div>
+          <button data-action="click->fabric-yardage-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "fabric-yardage-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Fabric Yardage Calculator</h2>
+      <p>
+        Enter the length and width of a single pattern piece in inches, then enter how many of that piece you need to cut. Select the fabric width you plan to buy from the dropdown, and the calculator will determine how many pieces fit across the width of the fabric, how many rows of cutting you need, and the total length of fabric required in inches, yards, and meters. If your fabric has a repeating design that you need to match, enter the repeat length in inches and the calculator will add extra length so each piece starts on the same point in the repeat. The layout assumes pieces are placed in a simple grid with grainlines parallel to the fabric selvage, which is the safe starting estimate for most projects.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Fabric Widths: 45", 54", and 60"</h2>
+      <p>
+        Fabric is sold in several standard widths that affect how much total yardage you need. Quilting cotton and most basic apparel cotton come in 42 to 45 inch widths, which is the narrowest common width and usually means buying more yards. Home decor fabrics, upholstery weights, and twills are frequently 54 inches wide, which is a good middle ground for cushions, curtains, and slipcovers. Apparel fabrics, knits, and fashion textiles are often 58 to 60 inches wide, which allows for wider pattern pieces like skirts and dresses to fit across a single width without piecing. Some specialty fabrics like muslin, sheeting, and wide quilt backing are 72, 108, or even 120 inches wide. Wider fabric almost always requires less yardage for a given project, so compare total cost per project rather than just the per-yard price when you have a choice between widths.
+      </p>
+
+      <h2>Why Pattern Repeat Matters</h2>
+      <p>
+        When a fabric has a printed or woven design that repeats at regular intervals, such as stripes, plaids, florals, or border prints, you need to align each cut piece with the same point in the repeat for the finished garment to look professional. This means cutting each piece from a fresh starting point in the pattern, which uses extra length. A fabric with a six-inch repeat and a piece that is 25 inches long will actually need 30 inches of fabric per piece, because you round the length up to the next multiple of the repeat. For large-scale prints with repeats of 12 inches or more, the added yardage can be significant, so always check the repeat before purchasing and add extra.
+      </p>
+
+      <h2>Tips for Buying Fabric</h2>
+      <p>
+        Always buy a little extra beyond the calculated minimum. A quarter to half yard of insurance protects you against cutting mistakes, shrinkage from pre-washing, off-grain fabric, and flaws in the bolt. Pre-wash natural fibers like cotton, linen, and rayon before cutting to avoid surprises in the finished garment, and press the fabric before laying out pattern pieces. If your pattern has bias-cut pieces, you may need more yardage than a straight grain layout would suggest, because bias cuts cannot be nested as efficiently. When in doubt, use the pattern envelope yardage as the authoritative answer and treat this calculator as a planning tool for custom pieces and quick estimates.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much fabric do I need for a dress?</h3>
+      <p>
+        A typical knee-length dress takes about 2 to 3 yards of 45-inch fabric or 1.5 to 2 yards of 60-inch fabric. A maxi dress or gown can require 4 to 6 yards depending on the silhouette. Always check the back of your pattern envelope for the exact yardage for your size and view.
+      </p>
+
+      <h3>What fabric width should I choose?</h3>
+      <p>
+        Apparel fabrics are usually sold in 45-inch or 60-inch widths, while quilting cotton is almost always 42 to 44 inches wide. Home decor fabrics are often 54 or 60 inches. Wider fabric generally means less total yardage, so compare total cost rather than just per-yard price.
+      </p>
+
+      <h3>What is a pattern repeat?</h3>
+      <p>
+        A pattern repeat is the distance between identical points on a printed or woven fabric design, such as stripes, plaids, or florals. To match the design across seams, you need to cut each piece aligned with the repeat, which uses extra fabric that the calculator accounts for.
+      </p>
+
+      <h3>Should I buy extra fabric for pre-washing?</h3>
+      <p>
+        Yes, most natural fiber fabrics shrink 3 to 10 percent on their first wash, so buying at least a quarter yard extra is wise. Pre-wash the fabric before cutting so the finished garment will not shrink later. Cotton, linen, and rayon shrink the most.
+      </p>
+
+      <h3>How do I convert yards to meters?</h3>
+      <p>
+        One yard equals 0.9144 meters. To convert yards to meters, multiply by 0.9144. To convert meters to yards, multiply by 1.0936. This calculator shows both values automatically so you can shop from patterns that use either system.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Seam Allowance Converter", description: "Convert seam allowances between inches and centimeters and calculate cut size from finished size.", path: textile_seam_allowance_path, icon_path: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14" },
+      { name: "Fabric Shrinkage Calculator", description: "Calculate fabric shrinkage percentage from before and after washing measurements.", path: textile_fabric_shrinkage_path, icon_path: "M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" },
+      { name: "Quilt Backing Calculator", description: "Calculate quilt backing yardage from quilt top dimensions with overage for longarm quilting.", path: textile_quilt_backing_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 12h16M12 4v16" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "textile" %>
+
+    <% blog_posts = related_blog_posts("fabric-yardage-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

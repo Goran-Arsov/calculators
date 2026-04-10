@@ -276,6 +276,19 @@ import WoodShrinkageCalculatorController from "controllers/wood_shrinkage_calcul
 import WoodWeightCalculatorController from "controllers/wood_weight_calculator_controller"
 import RipCutCalculatorController from "controllers/rip_cut_calculator_controller"
 import CabinetDoorCalculatorController from "controllers/cabinet_door_calculator_controller"
+// Textile calculators
+import FabricYardageCalculatorController from "controllers/fabric_yardage_calculator_controller"
+import SeamAllowanceCalculatorController from "controllers/seam_allowance_calculator_controller"
+import KnittingGaugeCalculatorController from "controllers/knitting_gauge_calculator_controller"
+import CrochetGaugeCalculatorController from "controllers/crochet_gauge_calculator_controller"
+import NeedleHookSizeCalculatorController from "controllers/needle_hook_size_calculator_controller"
+import YarnYardageCalculatorController from "controllers/yarn_yardage_calculator_controller"
+import QuiltBackingCalculatorController from "controllers/quilt_backing_calculator_controller"
+import HalfSquareTriangleCalculatorController from "controllers/half_square_triangle_calculator_controller"
+import BindingStripsCalculatorController from "controllers/binding_strips_calculator_controller"
+import FabricGsmCalculatorController from "controllers/fabric_gsm_calculator_controller"
+import FabricShrinkageCalculatorController from "controllers/fabric_shrinkage_calculator_controller"
+import CrossStitchFabricCalculatorController from "controllers/cross_stitch_fabric_calculator_controller"
 import HvacBtuCalculatorController from "controllers/hvac_btu_calculator_controller"
 
 // Everyday calculators
@@ -490,6 +503,19 @@ application.register("wood-shrinkage-calculator", WoodShrinkageCalculatorControl
 application.register("wood-weight-calculator", WoodWeightCalculatorController)
 application.register("rip-cut-calculator", RipCutCalculatorController)
 application.register("cabinet-door-calculator", CabinetDoorCalculatorController)
+// Textile calculators
+application.register("fabric-yardage-calculator", FabricYardageCalculatorController)
+application.register("seam-allowance-calculator", SeamAllowanceCalculatorController)
+application.register("knitting-gauge-calculator", KnittingGaugeCalculatorController)
+application.register("crochet-gauge-calculator", CrochetGaugeCalculatorController)
+application.register("needle-hook-size-calculator", NeedleHookSizeCalculatorController)
+application.register("yarn-yardage-calculator", YarnYardageCalculatorController)
+application.register("quilt-backing-calculator", QuiltBackingCalculatorController)
+application.register("half-square-triangle-calculator", HalfSquareTriangleCalculatorController)
+application.register("binding-strips-calculator", BindingStripsCalculatorController)
+application.register("fabric-gsm-calculator", FabricGsmCalculatorController)
+application.register("fabric-shrinkage-calculator", FabricShrinkageCalculatorController)
+application.register("cross-stitch-fabric-calculator", CrossStitchFabricCalculatorController)
 application.register("hvac-btu-calculator", HvacBtuCalculatorController)
 
 // Everyday
