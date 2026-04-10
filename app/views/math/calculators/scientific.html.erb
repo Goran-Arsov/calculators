@@ -1,0 +1,198 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Scientific Calculator - Free Online Tool",
+  description: "Free online scientific calculator with trigonometry, logarithms, exponents, factorials, memory, and degree/radian modes. Evaluate complex expressions instantly.",
+  canonical: math_scientific_url,
+  og: {
+    title: "Scientific Calculator - Free Online Tool | Calc Hammer",
+    description: "Free online scientific calculator with trigonometry, logarithms, exponents, factorials, memory, and degree/radian modes. Evaluate complex expressions instantly.",
+    url: math_scientific_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Math", url: category_url("math") },
+  { name: "Scientific Calculator", url: math_scientific_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a scientific calculator?", answer: "A scientific calculator is a calculator that supports advanced mathematical functions beyond basic arithmetic, including trigonometry (sin, cos, tan and their inverses), logarithms (log base 10 and natural log), exponents and powers, square roots, factorials, and mathematical constants like pi and e. It is essential for algebra, trigonometry, calculus, physics, engineering, and statistics." },
+  { question: "How do I switch between degree and radian mode?", answer: "Click the DEG/RAD button at the top of the calculator to toggle between degree and radian mode. The current mode is shown in the display header. Use radians for calculus and pure math, and degrees for geometry, navigation, and everyday trigonometry problems." },
+  { question: "What does the 2nd button do?", answer: "The 2nd button activates secondary functions on keys that have them. For example, pressing 2nd before sin gives you the inverse sine (asin). This provides access to inverse trigonometric functions, natural exponentials, and other advanced operations without cluttering the main button layout." },
+  { question: "How does the memory work?", answer: "Memory lets you store intermediate results. MC clears the memory, MR recalls the stored value into the expression, M+ adds the current result to memory, and M- subtracts the current result from memory. An M indicator appears when memory holds a non-zero value." },
+  { question: "Can I use the keyboard?", answer: "Yes. The calculator accepts keyboard input for digits, decimal point, basic operators (+, -, *, /, ^, %), parentheses, Enter or = to evaluate, Backspace to delete the last character, and Escape to clear. You can type full expressions directly into the calculator." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Scientific Calculator",
+  description: "Free online scientific calculator with trigonometry, logarithms, exponents, factorials, memory, and degree/radian modes.",
+  url: math_scientific_url,
+  category: "UtilityApplication",
+  calculator_slug: "scientific"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Math", url: category_path("math") },
+  { name: "Scientific Calculator" }
+] %>
+
+<%
+  btn_num = "px-2 py-3 md:py-4 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold text-base md:text-lg transition-colors active:scale-95"
+  btn_op = "px-2 py-3 md:py-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-semibold text-base md:text-lg transition-colors active:scale-95"
+  btn_fn = "px-2 py-3 md:py-4 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium text-xs md:text-sm transition-colors active:scale-95"
+  btn_warn = "px-2 py-3 md:py-4 rounded-lg bg-amber-100 dark:bg-amber-900/30 hover:bg-amber-200 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-400 font-semibold text-sm md:text-base transition-colors active:scale-95"
+  btn_danger = "px-2 py-3 md:py-4 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold text-sm md:text-base transition-colors active:scale-95"
+  btn_equals = "px-2 py-3 md:py-4 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-base md:text-lg transition-colors active:scale-95 shadow-md shadow-blue-500/20"
+%>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Scientific Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Full scientific calculator with trigonometry, logarithms, exponents, factorials, memory, and degree/radian modes. Type or click the buttons.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="scientific-calculator ad-engagement"
+         data-action="keydown@window->scientific-calculator#handleKeydown"
+         class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-5 md:p-6 mb-8 max-w-xl mx-auto">
+
+      <%# Display %>
+      <div class="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-black dark:to-gray-900 rounded-xl p-4 mb-4 shadow-inner">
+        <div class="flex justify-between items-center text-xs text-gray-400 mb-2">
+          <span data-scientific-calculator-target="modeLabel" class="font-mono font-semibold">RAD</span>
+          <span data-scientific-calculator-target="memoryIndicator" class="font-mono font-semibold text-amber-400"></span>
+        </div>
+        <div data-scientific-calculator-target="history" class="text-right text-sm text-gray-500 font-mono h-5 overflow-hidden whitespace-nowrap">&nbsp;</div>
+        <div data-scientific-calculator-target="expression" class="text-right text-base text-gray-300 font-mono h-6 overflow-x-auto whitespace-nowrap" aria-live="polite">&nbsp;</div>
+        <div data-scientific-calculator-target="display" class="text-right text-3xl md:text-4xl font-bold text-white font-mono mt-1 overflow-x-auto whitespace-nowrap" aria-live="polite" aria-atomic="true">0</div>
+      </div>
+
+      <%# Button grid %>
+      <div class="grid grid-cols-5 gap-1.5 md:gap-2">
+        <%# Row 1: mode, memory, clear %>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="mode" class="<%= btn_fn %>">DEG/RAD</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="memoryClear" class="<%= btn_fn %>">MC</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="memoryRecall" class="<%= btn_fn %>">MR</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="memoryAdd" class="<%= btn_fn %>">M+</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="memorySubtract" class="<%= btn_fn %>">M&minus;</button>
+
+        <%# Row 2: trig + constants %>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="function" data-value="sin(" class="<%= btn_fn %>">sin</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="function" data-value="cos(" class="<%= btn_fn %>">cos</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="function" data-value="tan(" class="<%= btn_fn %>">tan</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="constant" data-value="pi" class="<%= btn_fn %>">π</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="constant" data-value="e" class="<%= btn_fn %>">e</button>
+
+        <%# Row 3: inverse trig + log/ln %>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="function" data-value="asin(" class="<%= btn_fn %>">sin⁻¹</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="function" data-value="acos(" class="<%= btn_fn %>">cos⁻¹</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="function" data-value="atan(" class="<%= btn_fn %>">tan⁻¹</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="function" data-value="log(" class="<%= btn_fn %>">log</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="function" data-value="ln(" class="<%= btn_fn %>">ln</button>
+
+        <%# Row 4: powers, roots, factorial %>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="operator" data-value="^2" class="<%= btn_fn %>">x²</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="operator" data-value="^" class="<%= btn_fn %>">xʸ</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="function" data-value="sqrt(" class="<%= btn_fn %>">√</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="postfix" data-value="!" class="<%= btn_fn %>">n!</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="function" data-value="exp(" class="<%= btn_fn %>">eˣ</button>
+
+        <%# Row 5: parens, abs, ans, clear %>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="paren" data-value="(" class="<%= btn_fn %>">(</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="paren" data-value=")" class="<%= btn_fn %>">)</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="function" data-value="abs(" class="<%= btn_fn %>">|x|</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="ans" class="<%= btn_fn %>">Ans</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="clearEntry" class="<%= btn_warn %>">⌫</button>
+
+        <%# Row 6: 7 8 9 ÷ AC %>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="digit" data-value="7" class="<%= btn_num %>">7</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="digit" data-value="8" class="<%= btn_num %>">8</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="digit" data-value="9" class="<%= btn_num %>">9</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="operator" data-value="/" class="<%= btn_op %>">÷</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="clear" class="<%= btn_danger %>">AC</button>
+
+        <%# Row 7: 4 5 6 × % %>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="digit" data-value="4" class="<%= btn_num %>">4</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="digit" data-value="5" class="<%= btn_num %>">5</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="digit" data-value="6" class="<%= btn_num %>">6</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="operator" data-value="*" class="<%= btn_op %>">×</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="percent" class="<%= btn_fn %>">%</button>
+
+        <%# Row 8: 1 2 3 − ± %>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="digit" data-value="1" class="<%= btn_num %>">1</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="digit" data-value="2" class="<%= btn_num %>">2</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="digit" data-value="3" class="<%= btn_num %>">3</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="operator" data-value="-" class="<%= btn_op %>">−</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="toggleSign" class="<%= btn_fn %>">±</button>
+
+        <%# Row 9: 0 . = + %>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="digit" data-value="0" class="<%= btn_num %> col-span-2">0</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="digit" data-value="." class="<%= btn_num %>">.</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="operator" data-value="+" class="<%= btn_op %>">+</button>
+        <button type="button" data-action="click->scientific-calculator#press" data-type="equals" class="<%= btn_equals %>">=</button>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "scientific" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Scientific Calculator</h2>
+      <p>This scientific calculator lets you evaluate complex mathematical expressions by clicking the buttons or typing directly from your keyboard. Enter numbers and operators to build an expression, then press the equals button (or the Enter key) to compute the result. The current expression appears in the small row above the main display, and the computed result shows in the large display below it. Press AC to start over or the backspace key to delete the last character.</p>
+
+      <p>The calculator supports all standard scientific operations including the four basic arithmetic operators, parentheses for grouping, exponents using the x² and xʸ keys, square roots, factorials, and the modulo operator accessed via the percent key. Trigonometric functions (sine, cosine, tangent) and their inverses are available, along with both common and natural logarithms, the exponential function, and the absolute value function. The mathematical constants π (pi) and e (Euler's number) can be inserted into your expression with a single click.</p>
+
+      <p>By default the calculator operates in radian mode, which is the standard for calculus and most advanced mathematics. Click the DEG/RAD button to switch to degree mode, which is more intuitive for geometry, navigation, and everyday trigonometry. The current mode is displayed in the top-left corner of the calculator screen so you always know which angular unit is active. When you change modes, any existing expression remains but future trig calculations will use the new unit.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Memory Functions</h2>
+      <p>The memory feature lets you store intermediate results for reuse without having to retype them. After computing a result, press M+ to add it to memory, or M- to subtract it. Press MR to insert the stored value into your current expression at any time. MC clears the memory back to zero. An M indicator appears in the top-right of the display when memory holds a non-zero value, so you always know when something is saved.</p>
+
+      <h2>Supported Functions and Constants</h2>
+      <p>The calculator supports the following functions and constants, which can also be typed directly: <strong>sin, cos, tan</strong> for trigonometry; <strong>asin, acos, atan</strong> for inverse trigonometry; <strong>log</strong> for base-10 logarithm; <strong>ln</strong> for natural logarithm; <strong>sqrt</strong> for square root; <strong>exp</strong> for the exponential function (e to the power of x); <strong>abs</strong> for absolute value; and <strong>pi</strong> and <strong>e</strong> for the mathematical constants. Use the caret symbol <strong>^</strong> for exponentiation and the exclamation mark <strong>!</strong> for factorial. Parentheses can be nested to any depth.</p>
+
+      <h2>Keyboard Shortcuts</h2>
+      <p>Type any digit, decimal point, or basic operator (+, -, *, /, ^, %) directly from your keyboard. Parentheses are also supported. Press <strong>Enter</strong> or <strong>=</strong> to evaluate the expression, <strong>Backspace</strong> to delete the last character, and <strong>Escape</strong> to clear everything. You can type function names like sin, cos, sqrt, and log directly into the expression line, followed by the argument in parentheses.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a scientific calculator?</h3>
+      <p>A scientific calculator is a calculator that supports advanced mathematical functions beyond basic arithmetic, including trigonometry (sin, cos, tan and their inverses), logarithms (log base 10 and natural log), exponents and powers, square roots, factorials, and mathematical constants like pi and e. It is essential for algebra, trigonometry, calculus, physics, engineering, and statistics.</p>
+
+      <h3>How do I switch between degree and radian mode?</h3>
+      <p>Click the DEG/RAD button at the top of the calculator to toggle between degree and radian mode. The current mode is shown in the display header. Use radians for calculus and pure math, and degrees for geometry, navigation, and everyday trigonometry problems.</p>
+
+      <h3>What does the 2nd button do?</h3>
+      <p>The inverse trigonometric functions (sin⁻¹, cos⁻¹, tan⁻¹) are already exposed as dedicated buttons in this calculator, so there is no separate 2nd key. Press any of those buttons directly to insert the corresponding inverse function into your expression.</p>
+
+      <h3>How does the memory work?</h3>
+      <p>Memory lets you store intermediate results. MC clears the memory, MR recalls the stored value into the expression, M+ adds the current result to memory, and M- subtracts the current result from memory. An M indicator appears when memory holds a non-zero value.</p>
+
+      <h3>Can I use the keyboard?</h3>
+      <p>Yes. The calculator accepts keyboard input for digits, decimal point, basic operators, parentheses, Enter or = to evaluate, Backspace to delete the last character, and Escape to clear. You can type full expressions directly into the calculator.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Exponent Calculator", description: "Calculate the result of raising a number to any power.", path: math_exponent_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Logarithm Calculator", description: "Calculate logarithms with any base including natural log and log base 10.", path: math_logarithm_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Scientific Notation Calculator", description: "Convert between standard form and scientific notation.", path: math_scientific_notation_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "math" %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

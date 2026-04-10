@@ -1,0 +1,160 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Integral Calculator - Definite Integrals Online | CalcWise",
+  description: "Compute definite integrals numerically using Simpson's rule. Supports polynomials, trigonometric, exponential, and logarithmic functions. Free, instant, no sign-up.",
+  canonical: math_integral_url,
+  og: {
+    title: "Integral Calculator - Definite Integrals Online | CalcWise",
+    description: "Compute definite integrals numerically using Simpson's rule. Supports polynomials, trig, exp, ln. Free and instant.",
+    url: math_integral_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Math", url: category_url("math") },
+  { name: "Integral Calculator", url: math_integral_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a definite integral?", answer: "A definite integral computes the signed area under the curve of a function f(x) between two bounds a and b. It is written as ∫[a, b] f(x) dx and represents the accumulation of the function's values over that interval. If the curve lies above the x-axis, the result is positive; if below, it is negative." },
+  { question: "What method does this calculator use?", answer: "This calculator uses Simpson's rule, a numerical integration method that approximates the area under a curve by fitting parabolas through pairs of intervals. Simpson's rule is exact for polynomials up to degree three and converges very quickly for smooth functions, making it more accurate than the trapezoidal rule for the same number of intervals." },
+  { question: "Which functions and operators are supported?", answer: "You can use +, -, *, /, ^ for power, parentheses for grouping, and the variable x. Built-in functions include sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, ln (natural log), log10, exp, sqrt, and abs. The constants pi and e are also recognised." },
+  { question: "Why is the result not exact for some functions?", answer: "Simpson's rule is a numerical approximation. For polynomials up to degree three the result is mathematically exact, but for other functions (sine, exponential, logarithm) there is a small error that depends on how many intervals you use. Increasing the number of intervals reduces the error but takes longer to compute." },
+  { question: "Can this calculator handle improper integrals?", answer: "Not reliably. If the function is undefined at a bound or has a vertical asymptote inside the interval (for example 1/x from -1 to 1), the calculator will return an error or an inaccurate result. For improper integrals, restrict the bounds to a region where the function is finite and continuous." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Integral Calculator",
+  description: "Compute definite integrals numerically using Simpson's rule. Supports polynomial, trigonometric, exponential, and logarithmic functions.",
+  url: math_integral_url,
+  category: "MathApplication",
+  calculator_slug: "integral"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Math", url: category_path("math") },
+  { name: "Integral Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Integral Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Compute definite integrals of any function instantly. Enter an expression in x along with the lower and upper bounds &mdash; results update as you type using Simpson&rsquo;s rule for fast, accurate numerical integration.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="integral-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-base font-bold">&int;</div>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Compute &int;<sub>a</sub><sup>b</sup> f(x) dx</h2>
+        <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono hidden sm:inline">Simpson&rsquo;s rule</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="integral-expression" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Function f(x)</label>
+            <input id="integral-expression" type="text" autocomplete="off" spellcheck="false" data-integral-calculator-target="expression" data-action="input->integral-calculator#calculate" class="w-full font-mono" placeholder="e.g. x^2 + sin(x)" value="x^2">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">Use x as the variable. Supported: + &minus; * / ^, sin, cos, tan, ln, log10, exp, sqrt, abs, pi, e.</p>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="integral-lower" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Lower bound a</label>
+              <input id="integral-lower" type="number" inputmode="decimal" data-integral-calculator-target="lower" data-action="input->integral-calculator#calculate" class="w-full" placeholder="0" step="any" value="0">
+            </div>
+            <div>
+              <label for="integral-upper" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Upper bound b</label>
+              <input id="integral-upper" type="number" inputmode="decimal" data-integral-calculator-target="upper" data-action="input->integral-calculator#calculate" class="w-full" placeholder="1" step="any" value="1">
+            </div>
+          </div>
+          <div>
+            <label for="integral-intervals" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Intervals (precision)</label>
+            <input id="integral-intervals" type="number" inputmode="numeric" data-integral-calculator-target="intervals" data-action="input->integral-calculator#calculate" class="w-full" placeholder="1000" step="2" min="2" max="100000" value="1000">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">More intervals give higher accuracy. Default 1000 is plenty for most functions.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Result</h2>
+          <div class="space-y-3">
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 block text-sm mb-1">&int; f(x) dx</span>
+              <span class="text-2xl font-bold text-blue-600 dark:text-blue-400 break-all" data-integral-calculator-target="result">&mdash;</span>
+            </div>
+            <div>
+              <span class="text-xs text-gray-500 dark:text-gray-400" data-integral-calculator-target="method"></span>
+            </div>
+            <div>
+              <span class="text-xs text-red-600 dark:text-red-400" data-integral-calculator-target="error"></span>
+            </div>
+          </div>
+          <button data-action="click->integral-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "integral" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Integral Calculator</h2>
+      <p>Enter the function you want to integrate using x as the variable, then set the lower bound a and upper bound b of the interval. The calculator computes the definite integral &int;<sub>a</sub><sup>b</sup> f(x) dx in real time as you type. You can use standard mathematical notation including parentheses, exponents with the caret operator (x^2), and built-in functions like sin(x), exp(x), and ln(x). The constants pi and e are also recognised, so you can write expressions like sin(pi*x) or exp(-x^2) directly.</p>
+
+      <p>The result represents the signed area between the curve f(x) and the x-axis over the interval. Areas above the x-axis count as positive and areas below count as negative. If you swap the bounds (enter a value for a that is larger than b), the calculator automatically flips the sign of the result, matching the standard mathematical convention.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How Simpson&rsquo;s Rule Works</h2>
+      <p>This calculator uses <strong>Simpson&rsquo;s rule</strong>, a numerical integration method that approximates the area under a curve by fitting parabolic arcs through groups of three points. The interval [a, b] is divided into n equal subintervals (n must be even), and the integral is approximated by the formula:</p>
+      <p><strong>&int;<sub>a</sub><sup>b</sup> f(x) dx &asymp; (h/3) &middot; [f(x<sub>0</sub>) + 4f(x<sub>1</sub>) + 2f(x<sub>2</sub>) + 4f(x<sub>3</sub>) + ... + 4f(x<sub>n-1</sub>) + f(x<sub>n</sub>)]</strong></p>
+      <p>where h = (b &minus; a) / n is the width of each subinterval. Simpson&rsquo;s rule is <strong>exact</strong> for polynomials up to degree three, and for smoother functions it converges much faster than the simpler trapezoidal rule. With the default 1000 intervals, accuracy is typically better than one part in a million for well-behaved functions.</p>
+
+      <h3>Supported Functions and Operators</h3>
+      <p>The expression parser supports the four basic operators (+, &minus;, *, /), exponentiation with ^, unary minus, and parentheses for grouping. The following built-in functions are available: <strong>sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, ln</strong> (natural logarithm), <strong>log10</strong> (base-10 logarithm), <strong>exp, sqrt, and abs</strong>. The constants <strong>pi</strong> (&pi; &asymp; 3.14159) and <strong>e</strong> (&asymp; 2.71828) can be used anywhere a number is expected.</p>
+
+      <h3>When Numerical Integration Falls Short</h3>
+      <p>Numerical methods work best on smooth, continuous functions over finite intervals. If your function has a vertical asymptote inside the interval (such as 1/x crossing zero), Simpson&rsquo;s rule will produce nonsense or an error. Improper integrals with infinite bounds are also not supported directly &mdash; you would need to truncate the interval to a large but finite range and accept the resulting approximation. For symbolic answers (such as obtaining x<sup>3</sup>/3 + C as the antiderivative of x<sup>2</sup>), you need a computer algebra system rather than a numerical calculator like this one.</p>
+
+      <h2>Common Use Cases</h2>
+      <p>Definite integrals appear constantly in physics (work done by a variable force, displacement from a velocity function), engineering (signal energy, fluid flow), statistics (cumulative probabilities of continuous distributions), and economics (consumer surplus, present value of continuous cash flows). Calculus students use them to compute areas, volumes of revolution, arc lengths, and centres of mass. This calculator gives you a quick way to check homework answers, validate hand calculations, or explore how a function behaves over a region without setting up a full mathematical software environment.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a definite integral?</h3>
+      <p>A definite integral computes the signed area under the curve of a function f(x) between two bounds a and b. It is written as &int;<sub>a</sub><sup>b</sup> f(x) dx and represents the accumulation of the function&rsquo;s values over that interval.</p>
+
+      <h3>What method does this calculator use?</h3>
+      <p>This calculator uses Simpson&rsquo;s rule, a numerical integration method that fits parabolas through pairs of intervals. It is exact for polynomials up to degree three and converges very quickly for smooth functions.</p>
+
+      <h3>Which functions and operators are supported?</h3>
+      <p>You can use +, &minus;, *, /, ^ for power, parentheses for grouping, and the variable x. Built-in functions include sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, ln, log10, exp, sqrt, and abs. The constants pi and e are also recognised.</p>
+
+      <h3>Why is the result not exact for some functions?</h3>
+      <p>Simpson&rsquo;s rule is a numerical approximation. For polynomials up to degree three the result is exact, but for other functions there is a small error that depends on how many intervals you use. Increasing the intervals reduces the error.</p>
+
+      <h3>Can this calculator handle improper integrals?</h3>
+      <p>Not reliably. If the function is undefined at a bound or has a vertical asymptote inside the interval, the calculator will return an error or an inaccurate result. Restrict the bounds to a region where the function is finite and continuous.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Quadratic Equation Calculator", description: "Solve any quadratic equation ax² + bx + c = 0 instantly.", path: math_quadratic_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Exponent Calculator", description: "Raise any base to any power and get the result instantly.", path: math_exponent_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Logarithm Calculator", description: "Calculate logarithms with any base, including ln and log10.", path: math_logarithm_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

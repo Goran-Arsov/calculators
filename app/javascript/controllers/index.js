@@ -60,6 +60,8 @@ import MeanMedianModeCalculatorController from "controllers/mean_median_mode_cal
 import BaseConverterCalculatorController from "controllers/base_converter_calculator_controller"
 import SigFigsCalculatorController from "controllers/sig_figs_calculator_controller"
 import ScientificNotationCalculatorController from "controllers/scientific_notation_calculator_controller"
+import IntegralCalculatorController from "controllers/integral_calculator_controller"
+import ScientificCalculatorController from "controllers/scientific_calculator_controller"
 
 // Physics calculators
 import VelocityCalculatorController from "controllers/velocity_calculator_controller"
@@ -367,6 +369,8 @@ application.register("mean-median-mode-calculator", MeanMedianModeCalculatorCont
 application.register("base-converter-calculator", BaseConverterCalculatorController)
 application.register("sig-figs-calculator", SigFigsCalculatorController)
 application.register("scientific-notation-calculator", ScientificNotationCalculatorController)
+application.register("scientific-calculator", ScientificCalculatorController)
+application.register("integral-calculator", IntegralCalculatorController)
 
 // Physics
 application.register("velocity-calculator", VelocityCalculatorController)

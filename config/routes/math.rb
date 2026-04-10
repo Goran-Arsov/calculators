@@ -18,6 +18,8 @@ namespace :math do
   get "base-converter", to: "calculators#base_converter", as: :base_converter
   get "significant-figures-calculator", to: "calculators#sig_figs", as: :sig_figs
   get "scientific-notation-calculator", to: "calculators#scientific_notation", as: :scientific_notation
+  get "scientific-calculator", to: "calculators#scientific", as: :scientific
+  get "integral-calculator", to: "calculators#integral", as: :integral
 
   # Micro-calculator variants
   get "percentage-increase-calculator", to: "calculators#percentage_increase", as: :percentage_increase

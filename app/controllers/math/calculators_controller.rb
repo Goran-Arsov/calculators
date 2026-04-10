@@ -19,6 +19,8 @@ module Math
     def base_converter; end
     def sig_figs; end
     def scientific_notation; end
+    def scientific; end
+    def integral; end
     def percentage_increase; end
     def percentage_decrease; end
     def percentage_off; end
