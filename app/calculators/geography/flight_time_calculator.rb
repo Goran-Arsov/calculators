@@ -28,9 +28,9 @@ module Geography
       @distance_km = distance_km&.to_f
       @cruise_speed_kph = if aircraft && AIRCRAFT_SPEEDS_KPH.key?(aircraft.to_s)
                             AIRCRAFT_SPEEDS_KPH[aircraft.to_s]
-                          else
+      else
                             cruise_speed_kph.to_f
-                          end
+      end
       @taxi_minutes = taxi_minutes.to_f
       @errors = []
     end

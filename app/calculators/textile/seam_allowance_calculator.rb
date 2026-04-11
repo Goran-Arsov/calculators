@@ -14,7 +14,7 @@ module Textile
     }.freeze
 
     VALID_UNITS = %w[in cm].freeze
-    VALID_SEAMS_PER_EDGE = [0, 1, 2].freeze
+    VALID_SEAMS_PER_EDGE = [ 0, 1, 2 ].freeze
 
     def initialize(finished_size:, seam_allowance:, unit: "in", seams_per_edge: 2)
       @finished_size = finished_size.to_f

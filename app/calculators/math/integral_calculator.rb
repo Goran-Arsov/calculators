@@ -102,7 +102,7 @@ module Math
         while peek[:type] == :op && %w[+ -].include?(peek[:value])
           op = consume[:value]
           right = parse_term
-          node = [:binop, op, node, right]
+          node = [ :binop, op, node, right ]
         end
         node
       end
@@ -112,7 +112,7 @@ module Math
         while peek[:type] == :op && %w[* /].include?(peek[:value])
           op = consume[:value]
           right = parse_unary
-          node = [:binop, op, node, right]
+          node = [ :binop, op, node, right ]
         end
         node
       end
@@ -120,7 +120,7 @@ module Math
       def parse_unary
         if peek[:type] == :op && peek[:value] == "-"
           consume
-          return [:neg, parse_unary]
+          return [ :neg, parse_unary ]
         end
         if peek[:type] == :op && peek[:value] == "+"
           consume
@@ -134,7 +134,7 @@ module Math
         if peek[:type] == :op && peek[:value] == "^"
           consume
           exponent = parse_unary
-          return [:binop, "^", base, exponent]
+          return [ :binop, "^", base, exponent ]
         end
         base
       end
@@ -144,7 +144,7 @@ module Math
         case tok[:type]
         when :number
           consume
-          [:num, tok[:value].to_f]
+          [ :num, tok[:value].to_f ]
         when :ident
           consume
           name = tok[:value]
@@ -154,12 +154,12 @@ module Math
             arg = parse_expression
             raise ParseError, "missing closing parenthesis" unless peek[:type] == :rparen
             consume
-            [:func, name, arg]
+            [ :func, name, arg ]
           else
             case name
-            when "x" then [:var]
-            when "pi" then [:num, ::Math::PI]
-            when "e" then [:num, ::Math::E]
+            when "x" then [ :var ]
+            when "pi" then [ :num, ::Math::PI ]
+            when "e" then [ :num, ::Math::E ]
             else
               raise ParseError, "unknown identifier '#{name}'"
             end
