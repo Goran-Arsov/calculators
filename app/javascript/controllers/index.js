@@ -321,6 +321,20 @@ import GeohashConverterController from "controllers/geohash_converter_controller
 import DegreesToKilometersConverterController from "controllers/degrees_to_kilometers_converter_controller"
 import FlightTimeCalculatorController from "controllers/flight_time_calculator_controller"
 
+// Gardening calculators
+import MulchCalculatorController from "controllers/mulch_calculator_controller"
+import TopsoilCalculatorController from "controllers/topsoil_calculator_controller"
+import RaisedBedSoilCalculatorController from "controllers/raised_bed_soil_calculator_controller"
+import CompostCalculatorController from "controllers/compost_calculator_controller"
+import FertilizerCalculatorController from "controllers/fertilizer_calculator_controller"
+import GrassSeedCalculatorController from "controllers/grass_seed_calculator_controller"
+import LawnWateringCalculatorController from "controllers/lawn_watering_calculator_controller"
+import PlantSpacingCalculatorController from "controllers/plant_spacing_calculator_controller"
+import GrowingDegreeDaysCalculatorController from "controllers/growing_degree_days_calculator_controller"
+import TreeAgeCalculatorController from "controllers/tree_age_calculator_controller"
+import GreenhouseHeaterCalculatorController from "controllers/greenhouse_heater_calculator_controller"
+import CompostRatioCalculatorController from "controllers/compost_ratio_calculator_controller"
+
 // Everyday calculators
 import TipCalculatorController from "controllers/tip_calculator_controller"
 import DiscountCalculatorController from "controllers/discount_calculator_controller"
@@ -577,6 +591,20 @@ application.register("hiking-time-calculator", HikingTimeCalculatorController)
 application.register("geohash-converter", GeohashConverterController)
 application.register("degrees-to-kilometers-converter", DegreesToKilometersConverterController)
 application.register("flight-time-calculator", FlightTimeCalculatorController)
+
+// Gardening
+application.register("mulch-calculator", MulchCalculatorController)
+application.register("topsoil-calculator", TopsoilCalculatorController)
+application.register("raised-bed-soil-calculator", RaisedBedSoilCalculatorController)
+application.register("compost-calculator", CompostCalculatorController)
+application.register("fertilizer-calculator", FertilizerCalculatorController)
+application.register("grass-seed-calculator", GrassSeedCalculatorController)
+application.register("lawn-watering-calculator", LawnWateringCalculatorController)
+application.register("plant-spacing-calculator", PlantSpacingCalculatorController)
+application.register("growing-degree-days-calculator", GrowingDegreeDaysCalculatorController)
+application.register("tree-age-calculator", TreeAgeCalculatorController)
+application.register("greenhouse-heater-calculator", GreenhouseHeaterCalculatorController)
+application.register("compost-ratio-calculator", CompostRatioCalculatorController)
 
 // Everyday
 application.register("tip-calculator", TipCalculatorController)

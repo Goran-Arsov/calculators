@@ -1,0 +1,153 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Mulch Calculator - How Much Mulch Do I Need?",
+  description: "Free mulch calculator. Enter length, width, and desired depth to find out how many cubic yards, cubic feet, and 2 cu ft bags of mulch you need for your garden bed or landscape.",
+  canonical: gardening_mulch_url,
+  og: {
+    title: "Mulch Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate how much mulch you need in cubic yards, cubic feet, and bags.",
+    url: gardening_mulch_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Gardening", url: category_url("gardening") },
+  { name: "Mulch Calculator", url: gardening_mulch_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much mulch do I need for a 100 square foot bed?", answer: "For a 100 square foot garden bed at the recommended 3 inch depth, you need 25 cubic feet of mulch, which is 0.93 cubic yards, or 13 bags of the standard 2 cubic foot bag. At 2 inches you need 16.7 cubic feet (0.62 cubic yards), and at 4 inches you need 33.3 cubic feet (1.23 cubic yards)." },
+  { question: "How deep should mulch be?", answer: "A 2 to 3 inch layer is the sweet spot for most landscape beds. Less than 2 inches will break down too quickly and fail to suppress weeds, while more than 4 inches can suffocate plant roots, trap moisture against tree trunks, and cause disease. Refresh mulch once a year, adding just enough to top back up to 3 inches rather than piling new layers on top of old, compacted mulch." },
+  { question: "How many cubic yards in a cubic foot?", answer: "One cubic yard equals 27 cubic feet, because a yard is 3 feet, and 3 × 3 × 3 = 27. Landscape suppliers sell mulch in bulk cubic yards at a significant discount compared to bags, typically at 30 to 50 percent less per cubic foot once you cross the threshold of about 2 or 3 yards, which is where delivery becomes cost-effective." },
+  { question: "How many bags of mulch equal a yard?", answer: "At the most common bag size of 2 cubic feet, you need 13.5 bags to make a cubic yard. At 3 cubic feet per bag, it is 9 bags. Most big-box stores sell 2 cubic foot bags; some garden centers still carry the older 3 cubic foot bag, and some bulk mulch is sold in 1 cubic foot bags, which take 27 bags to make a yard." },
+  { question: "Does mulch type affect how much I need?", answer: "No. Volume is volume regardless of material. Whether you are buying shredded hardwood, pine bark nuggets, cedar, cypress, rubber, or dyed wood, the cubic feet and cubic yards come out the same from the length × width × depth formula. The only thing that changes is the weight and the price per cubic foot. Rubber mulch is the heaviest, hardwood is medium, and pine bark is the lightest for a given volume." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Mulch Calculator",
+  description: "Calculate how much mulch you need in cubic yards, cubic feet, and 2 cu ft bags from bed length, width, and depth.",
+  url: gardening_mulch_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "mulch-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Gardening", url: category_path("gardening") },
+  { name: "Mulch Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Mulch Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much mulch do you need for your garden bed or landscape? Enter length, width, and desired depth to see cubic yards, cubic feet, and the number of 2 cu ft bags to buy.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="mulch-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Length (ft)</label>
+            <input type="number" inputmode="decimal" data-mulch-calculator-target="length" data-action="input->mulch-calculator#calculate" class="w-full" value="20" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Width (ft)</label>
+            <input type="number" inputmode="decimal" data-mulch-calculator-target="width" data-action="input->mulch-calculator#calculate" class="w-full" value="5" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Depth (inches)</label>
+            <input type="number" inputmode="decimal" data-mulch-calculator-target="depth" data-action="input->mulch-calculator#calculate" class="w-full" value="3" step="any" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-lime-50 dark:from-emerald-900/20 dark:to-lime-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Mulch You Need</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Area</span>
+              <span class="text-base font-bold text-emerald-700 dark:text-emerald-400" data-mulch-calculator-target="resultArea">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Cubic feet</span>
+              <span class="text-base font-bold text-emerald-700 dark:text-emerald-400" data-mulch-calculator-target="resultCubicFeet">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Cubic yards</span>
+              <span class="text-3xl font-extrabold text-emerald-700 dark:text-emerald-400" data-mulch-calculator-target="resultCubicYards">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">2 cu ft bags</span>
+              <span class="text-base font-bold text-emerald-700 dark:text-emerald-400" data-mulch-calculator-target="resultBags">—</span>
+            </div>
+          </div>
+          <button data-action="click->mulch-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-lime-600 hover:from-emerald-700 hover:to-lime-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "mulch-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Mulch Calculator</h2>
+      <p>
+        Measure the length and width of the area you want to mulch in feet, then decide on the depth in inches. The calculator multiplies length by width by depth divided by 12 to get the volume in cubic feet, and divides by 27 to convert cubic feet to cubic yards, because a cubic yard is a 3 foot cube that contains 27 cubic feet. Most landscape beds use a 2 to 3 inch depth; around trees and shrubs, 3 to 4 inches is standard. The default example, a 20 by 5 foot bed at 3 inches, calls for 25 cubic feet or roughly 0.93 cubic yards of mulch.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Bulk vs Bagged Mulch: Which Is Cheaper?</h2>
+      <p>
+        Bagged mulch is convenient for small jobs but almost always costs more per cubic foot than bulk. A 2 cubic foot bag from a big box store runs 4 to 6 dollars, which is 2 to 3 dollars per cubic foot. Bulk mulch delivered to your driveway is usually 30 to 40 dollars per cubic yard (one yard is 27 cubic feet), which works out to roughly 1.10 to 1.50 dollars per cubic foot, less than half the bagged price. The break-even point is about 2 cubic yards, or around 54 cubic feet — below that, delivery fees wipe out the savings. For big jobs, order bulk; for touching up a single bed, buy bags.
+      </p>
+
+      <h2>How Deep Should You Mulch?</h2>
+      <p>
+        The rule is 2 to 3 inches for flower beds and 3 to 4 inches around trees and shrubs. Less than 2 inches breaks down too quickly and fails to suppress weeds; more than 4 inches traps moisture against plant crowns and tree trunks, which causes rot, disease, and the dreaded mulch volcano. Never pile mulch against the base of a tree or shrub. Keep mulch pulled back about 3 inches from the trunk so the root flare is visible, water and air can reach the soil, and bark-rotting fungi have no dark, wet hiding place. Refresh mulch in spring to top it back up to 3 inches rather than simply adding a new layer every year.
+      </p>
+
+      <h2>Mulch Types Compared</h2>
+      <p>
+        Shredded hardwood is the best all-purpose choice for established beds and slopes because it knits together and does not wash away. Pine bark nuggets look tidy and last a long time but float during heavy rain. Cedar and cypress resist decay and have natural insect-repelling properties, but they cost more. Pine straw is light, breathes well, and is the traditional mulch for acid-loving plants like azaleas and blueberries. Rubber mulch lasts forever, which sounds great until it leaches zinc and microplastics, so avoid it in vegetable beds. Dyed mulches are fine for appearance but can stain hardscape if they shift.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many bags of mulch do I need for a yard?</h3>
+      <p>It takes 13 to 14 bags of 2 cubic foot mulch to make a cubic yard. A cubic yard contains 27 cubic feet, so 27 ÷ 2 = 13.5 bags.</p>
+
+      <h3>How deep should mulch be?</h3>
+      <p>2 to 3 inches for flower beds and 3 to 4 inches around trees and shrubs. Never pile mulch against a trunk — keep a 3 inch gap so the root flare can breathe.</p>
+
+      <h3>When should I mulch?</h3>
+      <p>Late spring, once the soil has warmed. Mulching too early traps cold in the soil and slows plant growth. A fall top-up protects roots from freeze-thaw cycles.</p>
+
+      <h3>How often should I replace mulch?</h3>
+      <p>Top it up once a year. Don't remove old mulch unless it's moldy or compacted — let it break down into the soil to feed your plants.</p>
+
+      <h3>Does mulch attract termites?</h3>
+      <p>Not to the house itself. Termites feed on wood-in-contact-with-soil; mulch near the foundation is fine as long as it's pulled back from siding and is no deeper than 2 inches.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Topsoil Calculator", description: "Calculate how much topsoil you need for a lawn or garden in cubic yards and 40 lb bags.", path: gardening_topsoil_path, icon_path: "M4 6h16M4 10h16M4 14h16M4 18h16" },
+      { name: "Compost Calculator", description: "Work out how much compost to amend a garden bed at any depth.", path: gardening_compost_path, icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20zm0 4v6l4 2" },
+      { name: "Raised Bed Soil Calculator", description: "Calculate soil, compost, and aeration needs for raised beds.", path: gardening_raised_bed_soil_path, icon_path: "M4 4h16v16H4zM4 10h16M4 16h16" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "gardening" %>
+
+    <% blog_posts = related_blog_posts("mulch-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

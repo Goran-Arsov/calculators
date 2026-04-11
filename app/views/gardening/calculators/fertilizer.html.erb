@@ -1,0 +1,153 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Fertilizer Calculator - Pounds of Fertilizer You Need",
+  description: "Free fertilizer calculator. Enter lawn or garden area, nitrogen rate per 1,000 sq ft, and your fertilizer's N percentage to see exactly how many pounds, ounces, and kilos of fertilizer to apply.",
+  canonical: gardening_fertilizer_url,
+  og: {
+    title: "Fertilizer Calculator - Free Online Tool | Calc Hammer",
+    description: "Convert NPK rates into pounds of fertilizer per lawn or garden.",
+    url: gardening_fertilizer_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Gardening", url: category_url("gardening") },
+  { name: "Fertilizer Calculator", url: gardening_fertilizer_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I read NPK numbers on fertilizer?", answer: "The three numbers on a fertilizer bag — 10-10-10, 21-0-0, 16-4-8 — are the percentages by weight of nitrogen (N), phosphorus as P2O5 (P), and potassium as K2O (K). A 50 lb bag of 21-0-0 contains 10.5 lb of actual nitrogen (50 × 0.21), zero phosphorus, and zero potassium. The rest is carrier and filler. Fertilizer is applied based on pounds of actual nitrogen per 1,000 square feet, not pounds of fertilizer product." },
+  { question: "How much nitrogen should I apply to my lawn?", answer: "Cool season grasses like Kentucky bluegrass, tall fescue, and perennial ryegrass need about 2 to 4 pounds of actual nitrogen per 1,000 square feet per year, split into 3 or 4 applications in spring and fall. Warm season grasses like bermudagrass, zoysia, and St. Augustine need 3 to 6 pounds per year, applied from late spring through summer. Start at the low end if you bag clippings and the high end if you mulch back." },
+  { question: "How do I calculate pounds of fertilizer from a rate?", answer: "Divide the desired pounds of nitrogen per 1,000 square feet by the decimal N percentage of your fertilizer. For 1 lb of N per 1,000 sq ft using 21-0-0, you need 1 / 0.21 = 4.76 lb of product per 1,000 sq ft. For a 5,000 sq ft lawn, multiply by 5: 23.8 lb of fertilizer. The calculator handles the conversion automatically once you enter area, rate, and N percent." },
+  { question: "Can you over-fertilize a lawn?", answer: "Yes — over-fertilization causes thatch buildup, disease, and burned grass, and excess nitrogen runs off into waterways. Never apply more than 1 lb of actual nitrogen per 1,000 sq ft in a single application of quick-release fertilizer. Slow-release fertilizers can be applied at slightly higher rates because the nitrogen releases over 8 to 12 weeks rather than all at once." },
+  { question: "Is organic fertilizer different?", answer: "Organic fertilizers like composted manure, blood meal, and feather meal have lower NPK numbers (blood meal is 12-0-0, feather meal is 12-0-0, alfalfa meal is 3-2-2), so you need to apply more product by weight to get the same amount of actual nitrogen. The calculator still works the same way — just use the organic fertilizer's first NPK number as the nitrogen percent." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Fertilizer Calculator",
+  description: "Calculate pounds of fertilizer from area, nitrogen rate, and product N percent.",
+  url: gardening_fertilizer_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "fertilizer-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Gardening", url: category_path("gardening") },
+  { name: "Fertilizer Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Fertilizer Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert a nitrogen application rate and your fertilizer's NPK percentage into the exact pounds, ounces, and kilos of fertilizer to apply to your lawn or garden.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="fertilizer-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Area (sq ft)</label>
+            <input type="number" inputmode="decimal" data-fertilizer-calculator-target="area" data-action="input->fertilizer-calculator#calculate" class="w-full" value="5000" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Nitrogen rate (lb N / 1,000 sq ft)</label>
+            <input type="number" inputmode="decimal" data-fertilizer-calculator-target="nRate" data-action="input->fertilizer-calculator#calculate" class="w-full" value="1" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fertilizer N % (first NPK number)</label>
+            <input type="number" inputmode="decimal" data-fertilizer-calculator-target="nPercent" data-action="input->fertilizer-calculator#calculate" class="w-full" value="21" step="any" min="0" max="100">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Fertilizer You Need</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Actual nitrogen</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-fertilizer-calculator-target="resultN">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-green-200/50 dark:border-green-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Fertilizer</span>
+              <span class="text-3xl font-extrabold text-green-700 dark:text-green-400" data-fertilizer-calculator-target="resultPounds">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Ounces</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-fertilizer-calculator-target="resultOunces">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Kilograms</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-fertilizer-calculator-target="resultKilos">—</span>
+            </div>
+          </div>
+          <button data-action="click->fertilizer-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "fertilizer-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Fertilizer Calculator</h2>
+      <p>
+        Enter the lawn or garden area in square feet, the recommended nitrogen rate per 1,000 square feet (usually 1 pound of actual nitrogen per application), and the nitrogen percent from your fertilizer bag — the first of the three NPK numbers. The calculator divides the target pounds of nitrogen by the decimal N percent to get the pounds of actual fertilizer product you need to spread. The default 5,000 sq ft lawn at 1 lb N per 1,000 sq ft with 21-0-0 urea works out to 23.8 lb of fertilizer product.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Reading an NPK Label</h2>
+      <p>
+        Fertilizer labels always list three numbers: nitrogen (N), phosphorus pentoxide (P2O5, shown as P), and potassium oxide (K2O, shown as K). These are percentages by weight. A 50 lb bag of 10-10-10 contains 5 lb of each, leaving 35 lb of filler. A 25 lb bag of 29-0-4 has 7.25 lb of nitrogen and 1 lb of potassium. For turf, most of the N, P, and K goes to leaf growth, root growth, and disease resistance respectively. Most established lawns need no phosphorus — it often builds up to excess and contributes to water pollution — so many lawn fertilizers now have a zero middle number.
+      </p>
+
+      <h2>How Much Nitrogen Does Your Lawn Need?</h2>
+      <p>
+        Cool-season grasses want 2 to 4 lb of nitrogen per 1,000 sq ft per year. Warm-season grasses want 3 to 6 lb per year. Split the total into 3 or 4 applications — spring, early summer, late summer, and fall for cool-season; late spring through early fall for warm-season. Never apply more than 1 lb of quick-release nitrogen in one application; slow-release products can go up to 1.5 lb per application because the release stretches over 8 to 12 weeks. Low-maintenance lawns can get away with only 1 to 2 lb per year, mostly from returning clippings.
+      </p>
+
+      <h2>Quick vs Slow Release Fertilizer</h2>
+      <p>
+        Quick-release fertilizers are urea, ammonium sulfate, and ammonium nitrate. They green up the lawn in days but run out in a few weeks and can burn grass if over-applied. Slow-release fertilizers use urea-formaldehyde, sulfur-coated urea, or polymer-coated prills; they release over 8 to 12 weeks, are much more forgiving, and are the standard for commercial lawn care. Organic fertilizers like composted manure and feather meal are inherently slow-release because soil microbes must break them down.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What does 21-0-0 mean?</h3>
+      <p>21% nitrogen, 0% phosphorus, 0% potassium. It is urea, a cheap quick-release nitrogen source.</p>
+
+      <h3>How much 10-10-10 do I need for 1 lb N?</h3>
+      <p>10 lb of 10-10-10 contains 1 lb of N.</p>
+
+      <h3>When should I fertilize my lawn?</h3>
+      <p>Cool-season: early spring, early fall, and late fall. Warm-season: late spring through early fall.</p>
+
+      <h3>Can I fertilize in summer?</h3>
+      <p>Avoid heavy quick-release applications in summer heat — they stress the grass. Slow-release is safer.</p>
+
+      <h3>Is organic fertilizer as good as synthetic?</h3>
+      <p>Yes for long-term soil health; synthetic wins for fast green-up. Most pros use both in rotation.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Grass Seed Calculator", description: "Calculate how much grass seed to buy for new lawns or overseeding.", path: gardening_grass_seed_path, icon_path: "M12 20V10" },
+      { name: "Lawn Watering Calculator", description: "Estimate how many gallons your lawn needs each week.", path: gardening_lawn_watering_path, icon_path: "M12 2C8 8 4 12 4 16a8 8 0 0016 0" },
+      { name: "Compost Calculator", description: "Work out how much compost to amend a garden bed at any depth.", path: gardening_compost_path, icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "gardening" %>
+
+    <% blog_posts = related_blog_posts("fertilizer-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

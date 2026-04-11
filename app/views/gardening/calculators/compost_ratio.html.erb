@@ -1,0 +1,148 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Compost C:N Ratio Calculator - Browns vs Greens",
+  description: "Free compost C:N ratio calculator. Enter browns and greens weights to find your compost's carbon-to-nitrogen ratio and get feedback on whether to add more of either.",
+  canonical: gardening_compost_ratio_url,
+  og: {
+    title: "Compost C:N Ratio Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate carbon-to-nitrogen ratio from browns and greens.",
+    url: gardening_compost_ratio_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Gardening", url: category_url("gardening") },
+  { name: "Compost C:N Ratio Calculator", url: gardening_compost_ratio_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the ideal C:N ratio for compost?", answer: "The ideal carbon-to-nitrogen (C:N) ratio for a hot, fast-finishing compost pile is 25:1 to 30:1. Below 20:1 the pile is nitrogen-rich: it heats up fast, then smells like ammonia and loses nitrogen as gas. Above 40:1 the pile is carbon-rich: it decomposes slowly, doesn't heat up, and can tie up nitrogen in the soil if you use it before it finishes. The calculator tells you which side of ideal you are on and how to adjust." },
+  { question: "What are browns and greens?", answer: "Browns are carbon-rich, dry, brown materials: dry leaves, straw, cardboard, newsprint, wood chips, sawdust, and eggshells. Greens are nitrogen-rich, wet, fresh materials: grass clippings, kitchen scraps, coffee grounds, manure, and green plant trimmings. The names have nothing to do with color — coffee grounds are brown but classify as green, and dry coffee filters are brown in both color and category." },
+  { question: "What ratio of browns to greens by volume?", answer: "By volume, a good rule is 2 to 3 parts browns to 1 part greens, because browns are lighter and fluffier than greens for the same weight. By weight, roughly 1:1 to 2:1 browns to greens gets you close to 30:1 C:N. The calculator works in weight because that is more precise. For most home composters, a loose 2:1 by volume is close enough without weighing." },
+  { question: "How do I know if my compost pile is the right ratio?", answer: "Smell and temperature tell you. A pile that is 25:1 to 30:1 heats to 130-160°F within a few days, smells earthy, and shrinks visibly as it decomposes. A pile that smells like ammonia is too nitrogen-rich — add more browns. A pile that sits cold and does not shrink is too carbon-rich — add more greens and water. A pile that smells sour or swampy is too wet and compacted, regardless of ratio." },
+  { question: "Does the C:N ratio need to be exact?", answer: "No — compost is forgiving. Anything from 20:1 to 40:1 will eventually produce finished compost; the ratio just changes how fast and how hot it runs. Hot composting (fast, kills weed seeds and pathogens, finishes in 4 to 8 weeks) needs 25:1 to 30:1. Cold composting (passive, takes 6 to 12 months) works at any reasonable ratio. Match your effort level to the method you want to use." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Compost C:N Ratio Calculator",
+  description: "Calculate compost carbon-to-nitrogen ratio from browns and greens weights.",
+  url: gardening_compost_ratio_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "compost-ratio-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Gardening", url: category_path("gardening") },
+  { name: "Compost C:N Ratio Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Compost C:N Ratio Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Balance browns and greens for a hot, fast-finishing compost pile. Enter weights and see your carbon-to-nitrogen ratio plus feedback on what to adjust.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="compost-ratio-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Browns weight (lb) — dry leaves, straw, cardboard</label>
+            <input type="number" inputmode="decimal" data-compost-ratio-calculator-target="browns" data-action="input->compost-ratio-calculator#calculate" class="w-full" value="60" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Greens weight (lb) — grass, kitchen scraps, manure</label>
+            <input type="number" inputmode="decimal" data-compost-ratio-calculator-target="greens" data-action="input->compost-ratio-calculator#calculate" class="w-full" value="40" step="any" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-yellow-50 to-lime-50 dark:from-yellow-900/20 dark:to-lime-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Your Pile</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Carbon</span>
+              <span class="text-base font-bold text-lime-700 dark:text-lime-400" data-compost-ratio-calculator-target="resultCarbon">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Nitrogen</span>
+              <span class="text-base font-bold text-lime-700 dark:text-lime-400" data-compost-ratio-calculator-target="resultNitrogen">—</span>
+            </div>
+            <div class="pt-3 border-t border-lime-200/50 dark:border-lime-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm block">C:N ratio</span>
+              <span class="text-3xl font-extrabold text-lime-700 dark:text-lime-400" data-compost-ratio-calculator-target="resultRatio">—</span>
+            </div>
+            <div class="pt-2">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-compost-ratio-calculator-target="resultStatus">—</span>
+            </div>
+          </div>
+          <button data-action="click->compost-ratio-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-lime-600 to-yellow-600 hover:from-lime-700 hover:to-yellow-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "compost-ratio-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Why the C:N Ratio Matters</h2>
+      <p>
+        Compost microbes need both carbon (energy) and nitrogen (protein) to reproduce and digest organic matter. When the ratio is right — about 25 to 30 parts carbon for every 1 part nitrogen — microbes thrive, the pile heats to 130-160°F within a few days, and the pile finishes in 4 to 8 weeks. Too much nitrogen (ratio below 20:1) produces ammonia gas and a stinky pile that loses the nitrogen you wanted to keep. Too much carbon (above 40:1) and microbes run out of nitrogen, the pile cools, and decomposition stalls.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>What Counts as Brown vs Green?</h2>
+      <p>
+        Browns are the carbon-rich, dry, fibrous materials: dry autumn leaves (50:1), straw (80:1), wood chips (400:1), cardboard (350:1), sawdust (500:1), pine needles (80:1), dried grass (80:1), and shredded newsprint (175:1). Greens are the nitrogen-rich, wet materials: fresh grass clippings (20:1), kitchen scraps (15:1), coffee grounds (20:1), fresh manure (15:1 to 25:1 depending on animal), and green plant trimmings (30:1). The classification is about nitrogen content, not color — coffee grounds are dark brown but count as a green.
+      </p>
+
+      <h2>Simple Rules of Thumb</h2>
+      <p>
+        If you do not want to weigh, use a simple 2 or 3 parts brown to 1 part green by volume. That roughly matches 30:1 because browns are lighter and fluffier. For a hot pile, build all at once to a minimum 3 × 3 × 3 foot cube and turn every 5 to 7 days. For a passive cold pile, just add materials as you have them; it will finish in 6 to 12 months without any intervention. Always moisten dry materials as you build the pile — wring-out-sponge moisture is ideal. Too dry and it won't break down; too wet and it suffocates.
+      </p>
+
+      <h2>Troubleshooting a Bad Pile</h2>
+      <p>
+        Smells like ammonia: too many greens, add browns and turn. Smells sour or like rotten eggs: too wet and compacted, add dry browns and turn. Does not heat up: either too dry (add water), too small (add mass), too cold (insulate), or too carbon-rich (add greens). Attracts flies or rodents: cover kitchen scraps with browns and keep the pile hot. Finishes with weed seeds still viable: the pile never got hot enough; turn more often and aim for 140°F at the center to kill seeds.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is 30:1 really the ideal?</h3>
+      <p>Yes, for hot aerobic composting. Cold composting works at a wider range, from 20:1 to 50:1.</p>
+
+      <h3>What ratio are coffee grounds?</h3>
+      <p>About 20:1. They count as greens even though they are brown in color.</p>
+
+      <h3>Can I compost dog waste?</h3>
+      <p>Not for food gardens. Dog and cat waste can carry pathogens unsafe for vegetable compost.</p>
+
+      <h3>Do I need a specific pile size?</h3>
+      <p>For hot composting, at least 3 × 3 × 3 feet. Smaller piles cannot retain enough heat.</p>
+
+      <h3>Should I add compost starter or inoculant?</h3>
+      <p>Unnecessary — a handful of existing compost or garden soil adds all the microbes you need.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Compost Calculator", description: "Work out how much finished compost to amend a garden bed.", path: gardening_compost_path, icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20z" },
+      { name: "Fertilizer Calculator", description: "Calculate pounds of fertilizer from NPK rate and area.", path: gardening_fertilizer_path, icon_path: "M12 2l3 7h7" },
+      { name: "Raised Bed Soil Calculator", description: "Calculate soil, compost, and aeration for raised beds.", path: gardening_raised_bed_soil_path, icon_path: "M4 4h16v16H4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "gardening" %>
+
+    <% blog_posts = related_blog_posts("compost-ratio-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

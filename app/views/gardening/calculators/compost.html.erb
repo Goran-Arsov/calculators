@@ -1,0 +1,157 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Compost Calculator - How Much Compost Do I Need?",
+  description: "Free compost calculator. Enter bed length, width, and depth to find out how many cubic yards, pounds, and bags of compost you need to amend your garden or top-dress your lawn.",
+  canonical: gardening_compost_url,
+  og: {
+    title: "Compost Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate how much compost you need in cubic yards, pounds, and bags.",
+    url: gardening_compost_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Gardening", url: category_url("gardening") },
+  { name: "Compost Calculator", url: gardening_compost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much compost do I need for a garden bed?", answer: "For an established garden bed, apply 1 to 2 inches of compost and work it into the top 6 inches of soil. For a 100 square foot bed at 2 inches of compost, that is 16.7 cubic feet, which is 0.62 cubic yards or 17 bags of the standard 1 cubic foot bag. New beds or very depleted soils can handle 3 to 4 inches of compost at once." },
+  { question: "Can you use too much compost?", answer: "Yes. More than 3 or 4 inches of fresh compost mixed into soil at once can create a nitrogen imbalance and a phosphorus buildup. Vegetables grow vegetative rather than fruiting, tomatoes get leggy, and over time, phosphorus runoff pollutes local waterways. For annual top-ups, 1 to 2 inches is plenty. For completely rebuilding a bed, you can use a higher rate once and then back off." },
+  { question: "How deep should I top-dress a lawn with compost?", answer: "Apply 0.25 to 0.5 inches of finished compost as a top-dressing. Rake it in so most of it falls between blades of grass and touches the soil. For a 1,000 square foot lawn at a quarter inch, you need 20.8 cubic feet of compost, which is 0.77 cubic yards. Top-dress in early fall or early spring when the grass is actively growing and can take advantage of the nutrients." },
+  { question: "How much does a cubic yard of compost weigh?", answer: "Finished compost weighs roughly 1,000 to 1,500 pounds per cubic yard depending on moisture content. That is roughly half the weight of topsoil. One cubic foot weighs about 45 pounds. A standard 1 cubic foot bag weighs 40 to 50 pounds and a 40 lb bag holds about 0.75 cubic feet." },
+  { question: "Bulk vs bagged compost: which is better?", answer: "Bulk compost is dramatically cheaper, usually 30 to 50 dollars per cubic yard versus 5 to 8 dollars per 1 cubic foot bag (which works out to 135 to 215 dollars per cubic yard). Bulk is worth it above 1 to 2 cubic yards. The trade-off is quality: bagged compost from a reputable brand is almost always fully finished and weed-seed free, while bulk compost quality varies wildly by supplier — ask to see it before ordering." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Compost Calculator",
+  description: "Calculate how much compost you need in cubic yards, pounds, and bags from area and depth.",
+  url: gardening_compost_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "compost-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Gardening", url: category_path("gardening") },
+  { name: "Compost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Compost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Work out how much compost to amend a garden bed, lawn, or planter at any depth. Results in cubic feet, cubic yards, pounds, and 1 cu ft bags.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="compost-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Length (ft)</label>
+            <input type="number" inputmode="decimal" data-compost-calculator-target="length" data-action="input->compost-calculator#calculate" class="w-full" value="10" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Width (ft)</label>
+            <input type="number" inputmode="decimal" data-compost-calculator-target="width" data-action="input->compost-calculator#calculate" class="w-full" value="10" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Depth (inches)</label>
+            <input type="number" inputmode="decimal" data-compost-calculator-target="depth" data-action="input->compost-calculator#calculate" class="w-full" value="2" step="any" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-lime-50 to-emerald-50 dark:from-lime-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Compost You Need</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Area</span>
+              <span class="text-base font-bold text-lime-700 dark:text-lime-400" data-compost-calculator-target="resultArea">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Cubic feet</span>
+              <span class="text-base font-bold text-lime-700 dark:text-lime-400" data-compost-calculator-target="resultCubicFeet">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-lime-200/50 dark:border-lime-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Cubic yards</span>
+              <span class="text-3xl font-extrabold text-lime-700 dark:text-lime-400" data-compost-calculator-target="resultCubicYards">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Weight</span>
+              <span class="text-base font-bold text-lime-700 dark:text-lime-400" data-compost-calculator-target="resultPounds">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">1 cu ft bags</span>
+              <span class="text-base font-bold text-lime-700 dark:text-lime-400" data-compost-calculator-target="resultBags">—</span>
+            </div>
+          </div>
+          <button data-action="click->compost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-lime-600 to-emerald-600 hover:from-lime-700 hover:to-emerald-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "compost-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Calculate Compost</h2>
+      <p>
+        Compost is measured in the same way as any bulk landscape material: multiply the length and width of the area by the depth (in feet — divide inches by 12) to get cubic feet, then divide by 27 for cubic yards. The calculator also estimates weight at 45 pounds per cubic foot of finished compost, which is about half the density of topsoil. For a garden amendment, use 1 to 2 inches; for top-dressing lawns, 0.25 to 0.5 inches; for building new beds, up to 3 inches worked into the top 6 inches of existing soil.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How Compost Improves Soil</h2>
+      <p>
+        Compost is the single best amendment you can make to any soil. It feeds soil microbes, improves drainage in heavy clay, improves water retention in sandy soil, supplies slow-release nitrogen and phosphorus, and raises cation exchange capacity, which is the soil's ability to hold onto nutrients. Every one percent increase in soil organic matter adds roughly 16,500 gallons of water-holding capacity per acre. A 2 inch annual top-up on vegetable beds is the cheapest and most reliable way to build fertility over years.
+      </p>
+
+      <h2>When to Add Compost</h2>
+      <p>
+        Spring and fall are the best times. In spring, add 1 to 2 inches to vegetable beds before planting and lightly work it in. In fall, after harvest, apply another inch and leave it on the surface to overwinter — earthworms and freeze-thaw cycles will pull it into the soil by spring. Lawn top-dressing is best in early fall when grass is actively growing roots and can benefit from the nutrients and microbial boost before winter. Avoid composting around plant stems directly; leave a 2 inch gap to prevent crown rot.
+      </p>
+
+      <h2>Buying Quality Compost</h2>
+      <p>
+        Good finished compost is dark brown, crumbly, smells earthy and sweet, and has no recognizable food scraps or plant material. It should not smell sour, swampy, or like ammonia — those are signs of unfinished or anaerobic compost that will harm plants. Ask for a source: municipal compost from yard waste is usually safe, while compost from municipal biosolids has come under scrutiny for contamination with PFAS and heavy metals. Certified Organic or Seal of Testing Assurance (STA) compost has been lab tested for pathogens and maturity.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much compost for a vegetable garden?</h3>
+      <p>1 to 2 inches per year, worked into the top 6 inches.</p>
+
+      <h3>Can compost burn plants?</h3>
+      <p>Only if it is unfinished or has too much fresh manure — finished compost is gentle.</p>
+
+      <h3>Mushroom compost vs regular?</h3>
+      <p>Mushroom compost is richer in calcium and cheaper in some regions but can be salty — use it sparingly on sensitive plants.</p>
+
+      <h3>How long does compost last?</h3>
+      <p>Bagged finished compost keeps indefinitely if dry; bulk piles should be used within a year before nutrients leach out.</p>
+
+      <h3>Can I mix compost into potting soil?</h3>
+      <p>Yes, up to about 25% compost by volume. More than that and drainage suffers in containers.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Mulch Calculator", description: "Calculate how much mulch you need in cubic yards and bags.", path: gardening_mulch_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" },
+      { name: "Topsoil Calculator", description: "Calculate how much topsoil you need for lawns and gardens.", path: gardening_topsoil_path, icon_path: "M4 6h16M4 10h16M4 14h16M4 18h16" },
+      { name: "Compost C:N Ratio Calculator", description: "Balance browns and greens for a hot, fast-finishing compost pile.", path: gardening_compost_ratio_path, icon_path: "M4 6h16M4 12h16M4 18h16" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "gardening" %>
+
+    <% blog_posts = related_blog_posts("compost-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

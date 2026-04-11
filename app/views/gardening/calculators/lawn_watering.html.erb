@@ -1,0 +1,153 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Lawn Watering Calculator - Gallons Per Week",
+  description: "Free lawn watering calculator. Enter lawn size and desired inches of water per week to see gallons, liters, and sprinkler run time needed to keep your grass healthy.",
+  canonical: gardening_lawn_watering_url,
+  og: {
+    title: "Lawn Watering Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate gallons of water your lawn needs each week.",
+    url: gardening_lawn_watering_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Gardening", url: category_url("gardening") },
+  { name: "Lawn Watering Calculator", url: gardening_lawn_watering_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much water does a lawn need per week?", answer: "Most lawns need 1 to 1.5 inches of water per week during the growing season, including rainfall. One inch over a 1,000 sq ft lawn equals 623 gallons. A 5,000 sq ft lawn needs about 3,100 gallons per week at 1 inch. Warm-season grasses like bermudagrass are more drought-tolerant and can get by on 0.75 inch; cool-season grasses in summer may need 1.5 to 2 inches in very hot weather." },
+  { question: "How long should I run my sprinklers?", answer: "Divide the gallons needed by your sprinkler's gallons per minute (GPM). A typical oscillating sprinkler puts out 3 to 5 GPM; in-ground zones vary from 8 to 20 GPM. To deliver 623 gallons to a 1,000 sq ft area with a 4 GPM sprinkler, run it 156 minutes per week, split into 2 or 3 sessions. The calculator shows this automatically when you enter a GPM value." },
+  { question: "How often should I water my lawn?", answer: "Twice a week is usually better than daily. Deep, infrequent watering encourages grass roots to grow down rather than out, making the lawn more drought-tolerant. In cooler weather, once a week is enough. In extreme heat, 3 times a week. Water early morning (5-9 AM) to minimize evaporation and avoid leaving leaves wet overnight, which encourages disease." },
+  { question: "How do I know if my lawn needs water?", answer: "Walk across the lawn. If the grass springs back, it is fine. If footprints remain visible, the grass is water-stressed and needs water soon. Another test: push a screwdriver into the soil. If it goes in easily to 6 inches, moisture is adequate. If you hit hard resistance at 2 or 3 inches, the soil is drying out." },
+  { question: "Do smart sprinkler controllers save water?", answer: "Yes, typically 15 to 30 percent. Smart controllers use local weather data and soil moisture to skip watering after rain, reduce run times in cool weather, and extend them in heatwaves. EPA WaterSense certified models are independently tested. The payback period is usually 1 to 3 years in metered water areas." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Lawn Watering Calculator",
+  description: "Calculate gallons and liters of water your lawn needs each week from area and watering depth.",
+  url: gardening_lawn_watering_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "lawn-watering-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Gardening", url: category_path("gardening") },
+  { name: "Lawn Watering Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Lawn Watering Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How many gallons of water does your lawn need per week? Enter the lawn area, desired weekly watering depth, and optional sprinkler flow rate to see your run time.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="lawn-watering-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Lawn area (sq ft)</label>
+            <input type="number" inputmode="decimal" data-lawn-watering-calculator-target="area" data-action="input->lawn-watering-calculator#calculate" class="w-full" value="5000" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Inches of water per week</label>
+            <input type="number" inputmode="decimal" data-lawn-watering-calculator-target="inches" data-action="input->lawn-watering-calculator#calculate" class="w-full" value="1" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sprinkler flow (GPM, optional)</label>
+            <input type="number" inputmode="decimal" data-lawn-watering-calculator-target="gpm" data-action="input->lawn-watering-calculator#calculate" class="w-full" value="5" step="any" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-sky-50 to-cyan-50 dark:from-sky-900/20 dark:to-cyan-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Water You Need</h2>
+          <div class="space-y-3">
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">Gallons per week</span>
+              <span class="text-3xl font-extrabold text-sky-700 dark:text-sky-400" data-lawn-watering-calculator-target="resultGallons">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-sky-200/50 dark:border-sky-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Liters per week</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-lawn-watering-calculator-target="resultLiters">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Gallons per day</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-lawn-watering-calculator-target="resultDaily">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Sprinkler run / week</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-lawn-watering-calculator-target="resultMinutes">—</span>
+            </div>
+          </div>
+          <button data-action="click->lawn-watering-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-700 hover:to-cyan-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "lawn-watering-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Much Water Does a Lawn Really Need?</h2>
+      <p>
+        The old rule of 1 inch per week is still the best starting point. One inch of water over 1 square foot equals 0.6234 gallons, so 1 inch over 1,000 sq ft is 623 gallons. Over 5,000 sq ft, that is 3,117 gallons per week. In extreme heat, cool-season grasses can benefit from 1.5 to 2 inches per week, while drought-tolerant warm-season grasses often thrive on 0.75 inch. The calculator gives you the exact number from your area, weekly depth, and sprinkler output.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Deep Watering vs Shallow Watering</h2>
+      <p>
+        Water deeply and infrequently — that is the single most important rule of lawn watering. A daily 10 minute sprinkle produces a shallow root system that dries out instantly when you miss a day. One long soak every 3 to 4 days drives roots 6 to 8 inches deep, where soil moisture is more stable, and dramatically improves drought tolerance. Aim to put down the full weekly amount in 2 sessions (cool-season) or 3 sessions (warm-season in extreme heat).
+      </p>
+
+      <h2>Finding Your Sprinkler's Output</h2>
+      <p>
+        Use the tuna can test. Place 6 empty tuna cans at random spots within your sprinkler's pattern and run the sprinkler for exactly 15 minutes. Measure the water depth in each can with a ruler and average them. Multiply by 4 to get the hourly output in inches. If the cans collected 0.25 inches in 15 minutes, your sprinkler puts down 1 inch per hour. To deliver 1 inch per week, run it 60 minutes total, split into 2 or 3 sessions. Also check for coverage — if the cans vary wildly, your sprinkler pattern is uneven.
+      </p>
+
+      <h2>Best Time of Day to Water</h2>
+      <p>
+        Early morning, 5 to 9 AM, is best. Evaporation is minimal, wind is calm, and grass leaves dry by midday so fungal diseases cannot take hold. Evening watering leaves leaves wet all night, which causes brown patch, dollar spot, and other turf diseases. Midday watering wastes 20 to 40 percent of water to evaporation and is banned during drought restrictions in many areas. If you must water by hand on weekends, do it early and thoroughly.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many gallons in an inch of water over 1,000 sq ft?</h3>
+      <p>623 gallons. That is the core conversion behind this calculator.</p>
+
+      <h3>Should I water every day?</h3>
+      <p>No — deep watering 2 or 3 times a week is better for root development.</p>
+
+      <h3>When can I skip watering?</h3>
+      <p>After significant rainfall — anything over 0.5 inches counts as a watering.</p>
+
+      <h3>Is it OK to water in the evening?</h3>
+      <p>Occasional evening watering is fine, but regular evening watering encourages lawn disease.</p>
+
+      <h3>How much does lawn watering cost?</h3>
+      <p>At 3 dollars per 1,000 gallons, a 5,000 sq ft lawn costs about 9 dollars per week to water.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Fertilizer Calculator", description: "Calculate pounds of fertilizer from NPK rate and area.", path: gardening_fertilizer_path, icon_path: "M12 2l3 7h7" },
+      { name: "Grass Seed Calculator", description: "Calculate how much grass seed to buy for new lawns or overseeding.", path: gardening_grass_seed_path, icon_path: "M12 20V10" },
+      { name: "Mulch Calculator", description: "Calculate how much mulch you need for garden beds.", path: gardening_mulch_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "gardening" %>
+
+    <% blog_posts = related_blog_posts("lawn-watering-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

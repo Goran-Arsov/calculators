@@ -1,0 +1,160 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Plant Spacing Calculator - Plants Per Bed & Row",
+  description: "Free plant spacing calculator. Enter bed dimensions and plant spacing to see how many plants fit, using square or triangular spacing patterns for maximum yield.",
+  canonical: gardening_plant_spacing_url,
+  og: {
+    title: "Plant Spacing Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate how many plants fit in a bed with square or triangular spacing.",
+    url: gardening_plant_spacing_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Gardening", url: category_url("gardening") },
+  { name: "Plant Spacing Calculator", url: gardening_plant_spacing_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many plants can I fit in a 4x8 raised bed?", answer: "It depends on the spacing. At 12 inch spacing square-pattern, a 4 × 8 bed holds 5 × 9 = 45 plants. At 6 inch spacing, it holds 9 × 17 = 153. At 18 inch spacing, 3 × 6 = 18. Triangular spacing fits about 15 percent more plants into the same bed by offsetting each row. Square Foot Gardening uses 1-per-square for cabbage and broccoli, 4-per-square for lettuce, 9-per-square for bush beans and spinach, and 16-per-square for carrots, radishes, and onions." },
+  { question: "What is triangular vs square plant spacing?", answer: "Square spacing arranges plants on a grid where every plant is the same distance from its neighbors in both directions. Triangular (staggered) spacing offsets each row by half the plant spacing, so each plant has 6 equidistant neighbors forming a hexagonal pattern. Triangular packs 15 percent more plants into the same area and is slightly more efficient, but square is easier to plant, weed, and harvest." },
+  { question: "How far apart should tomato plants be?", answer: "Indeterminate tomatoes need 24 to 36 inches between plants. Determinate (bush) tomatoes can go at 18 to 24 inches. In a staked or caged setup, tighter is fine — 18 inch stakes with 18 inches between plants. In a sprawling ground culture, spread them 36 to 48 inches. Close spacing increases airflow problems and encourages fungal disease, so err on the side of more space if you have room." },
+  { question: "Does closer spacing give more yield?", answer: "Up to a point. Double-cropping and intensive spacing increase yield per square foot but not per plant. Beyond the optimum, plants shade each other, compete for water and nutrients, and yield drops. For example, carrots at 2 inch spacing give lots of small carrots; at 4 inches they give larger, more uniform roots but about half the count. Most vegetables have a sweet spot where total yield per area is maximized — usually close to the recommended row-spacing for traditional rows." },
+  { question: "How many plants per square foot?", answer: "The Square Foot Gardening rule: 1 large plant, 4 medium, 9 small, or 16 tiny per square foot. Examples — 1: cabbage, broccoli, pepper; 4: lettuce, swiss chard, parsley; 9: bush beans, spinach, beets; 16: carrots, radishes, onions. This rule works best in intensively gardened beds with rich soil because close plantings demand lots of nutrients." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Plant Spacing Calculator",
+  description: "Calculate how many plants fit in a garden bed using square or triangular spacing.",
+  url: gardening_plant_spacing_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "plant-spacing-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Gardening", url: category_path("gardening") },
+  { name: "Plant Spacing Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Plant Spacing Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How many plants fit in your garden bed? Enter bed dimensions and plant spacing to see the total plant count for square or triangular patterns.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="plant-spacing-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Bed length (ft)</label>
+            <input type="number" inputmode="decimal" data-plant-spacing-calculator-target="length" data-action="input->plant-spacing-calculator#calculate" class="w-full" value="8" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Bed width (ft)</label>
+            <input type="number" inputmode="decimal" data-plant-spacing-calculator-target="width" data-action="input->plant-spacing-calculator#calculate" class="w-full" value="4" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Plant spacing (inches)</label>
+            <input type="number" inputmode="decimal" data-plant-spacing-calculator-target="spacing" data-action="input->plant-spacing-calculator#calculate" class="w-full" value="12" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pattern</label>
+            <select data-plant-spacing-calculator-target="pattern" data-action="change->plant-spacing-calculator#calculate" class="w-full">
+              <option value="square" selected>Square (grid)</option>
+              <option value="triangular">Triangular (staggered)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-lime-50 dark:from-green-900/20 dark:to-lime-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Plant Count</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Bed area</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-plant-spacing-calculator-target="resultArea">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-green-200/50 dark:border-green-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Total plants</span>
+              <span class="text-3xl font-extrabold text-green-700 dark:text-green-400" data-plant-spacing-calculator-target="resultPlants">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Rows</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-plant-spacing-calculator-target="resultRows">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Plants per row</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-plant-spacing-calculator-target="resultPerRow">—</span>
+            </div>
+          </div>
+          <button data-action="click->plant-spacing-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-lime-600 hover:from-green-700 hover:to-lime-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "plant-spacing-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Plant Spacing Works</h2>
+      <p>
+        For square spacing, the calculator divides the bed length by the spacing to get the number of plants per row, and divides the bed width by the spacing to get the number of rows. For triangular spacing, each row is offset by half the spacing and the row-to-row distance is spacing × √3 / 2 (about 0.866), which packs roughly 15 percent more plants into the same area. The default example — an 8 × 4 ft bed with 12 inch spacing — fits 45 plants square or about 54 triangular.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Common Plant Spacings</h2>
+      <p>
+        Cabbage, broccoli, cauliflower, and peppers: 18 to 24 inches. Tomatoes (indeterminate): 24 to 36 inches. Tomatoes (determinate, caged): 18 to 24 inches. Lettuce heads: 10 to 12 inches. Bush beans: 4 to 6 inches in rows, 18 inches between rows. Pole beans: 6 inches at the base of a trellis. Carrots and radishes: 2 to 3 inches thinned. Onions: 4 inches. Potatoes: 12 inches in rows 30 inches apart. Corn: 9 inches in rows 30 inches apart (and always in blocks, not single rows, for pollination).
+      </p>
+
+      <h2>Square Foot Gardening</h2>
+      <p>
+        Mel Bartholomew's Square Foot Gardening popularized a simpler spacing scheme: divide each square foot into 1, 4, 9, or 16 planting spots based on plant size. One large per square (cabbage, pepper, tomato). Four medium per square (lettuce, chard, parsley). Nine small per square (bush beans, spinach, beets). Sixteen tiny per square (carrots, radishes, onions). This method is intuitive and packs a lot into a small bed, but demands rich soil and consistent watering because plants are so densely packed.
+      </p>
+
+      <h2>Square vs Triangular Pattern</h2>
+      <p>
+        Square is easier — plant in a grid, walk in straight lines, harvest in order. Triangular gets you 15 percent more plants per area, which is why commercial growers use it for field-grown vegetables and orchards. For home gardens, the extra labor of staggering often isn't worth the modest yield bump unless you are gardening intensively in a small space. For ornamental plantings and groundcovers, triangular looks more natural and fills in faster.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many tomato plants in a 4x4 bed?</h3>
+      <p>4 indeterminate tomatoes at 24 inch spacing, or 9 determinate at 16 inch.</p>
+
+      <h3>Can I plant closer than recommended?</h3>
+      <p>Yes, in rich soil with consistent watering — but airflow suffers, so watch for fungal disease.</p>
+
+      <h3>Is wider spacing always better?</h3>
+      <p>No — above the optimum, yield per area drops and weeds fill the gaps.</p>
+
+      <h3>How do I stagger triangular rows?</h3>
+      <p>Offset every other row by half the plant spacing so each plant sits between two neighbors in the previous row.</p>
+
+      <h3>Does square foot gardening work?</h3>
+      <p>Yes, in well-built raised beds with rich soil and consistent watering — it is not suitable for poor or compacted soil.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Raised Bed Soil Calculator", description: "Calculate soil, compost, and aeration needs for raised beds.", path: gardening_raised_bed_soil_path, icon_path: "M4 4h16v16H4z" },
+      { name: "Compost Calculator", description: "Work out how much compost to amend a garden bed at any depth.", path: gardening_compost_path, icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20z" },
+      { name: "Growing Degree Days Calculator", description: "Track heat accumulation for crop timing.", path: gardening_growing_degree_days_path, icon_path: "M15 17h5l-1.405-1.405" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "gardening" %>
+
+    <% blog_posts = related_blog_posts("plant-spacing-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

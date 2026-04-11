@@ -227,6 +227,21 @@ class CalculatorRegistry
     { name: "Flight Time Calculator", slug: "flight-time-calculator", path: :geography_flight_time_path, description: "Estimate flight duration from coordinates or distance with aircraft cruise speeds and taxi time. Useful for travelers and pilots.", icon_path: "M12 19l9 2-9-18-9 18 9-2zm0 0v-8" }
   ].freeze
 
+  GARDENING_CALCULATORS = [
+    { name: "Mulch Calculator", slug: "mulch-calculator", path: :gardening_mulch_path, description: "Calculate how much mulch you need for a garden bed or landscape area, in cubic yards, cubic feet, and 2 cu ft bags.", icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
+    { name: "Topsoil Calculator", slug: "topsoil-calculator", path: :gardening_topsoil_path, description: "Estimate topsoil needed for a lawn, garden bed, or planter in cubic yards, cubic feet, and 40 lb bags, based on area and depth.", icon_path: "M4 6h16M4 10h16M4 14h16M4 18h16" },
+    { name: "Raised Bed Soil Calculator", slug: "raised-bed-soil-calculator", path: :gardening_raised_bed_soil_path, description: "Calculate how much soil, compost, and aeration your raised bed needs, with Mel's Mix ratios and bag/yard output for any size and number of beds.", icon_path: "M4 4h16v16H4zM4 10h16M4 16h16" },
+    { name: "Compost Calculator", slug: "compost-calculator", path: :gardening_compost_path, description: "Work out how much finished compost you need to amend a garden bed at a given depth, in cubic yards, pounds, and 1 cu ft bags.", icon_path: "M12 2a10 10 0 100 20 10 10 0 000-20zm0 4v6l4 2" },
+    { name: "Fertilizer Calculator", slug: "fertilizer-calculator", path: :gardening_fertilizer_path, description: "Convert an N-P-K ratio and application rate into pounds of fertilizer to apply to a lawn or garden of any size.", icon_path: "M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z" },
+    { name: "Grass Seed Calculator", slug: "grass-seed-calculator", path: :gardening_grass_seed_path, description: "Calculate how much grass seed to buy for new lawns or overseeding, with species-specific application rates for cool and warm season grasses.", icon_path: "M12 20V10m0 0l-4 4m4-4l4 4M6 6h12" },
+    { name: "Lawn Watering Calculator", slug: "lawn-watering-calculator", path: :gardening_lawn_watering_path, description: "Estimate gallons and liters of water your lawn needs each week from its square footage and the desired watering depth in inches.", icon_path: "M12 2C8 8 4 12 4 16a8 8 0 0016 0c0-4-4-8-8-14z" },
+    { name: "Plant Spacing Calculator", slug: "plant-spacing-calculator", path: :gardening_plant_spacing_path, description: "Calculate how many plants fit in a garden bed using square or triangular spacing patterns, based on bed dimensions and desired spacing.", icon_path: "M4 4h4v4H4zM10 4h4v4h-4zM16 4h4v4h-4zM4 10h4v4H4zM10 10h4v4h-4zM16 10h4v4h-4zM4 16h4v4H4zM10 16h4v4h-4zM16 16h4v4h-4z" },
+    { name: "Growing Degree Days Calculator", slug: "growing-degree-days-calculator", path: :gardening_growing_degree_days_path, description: "Calculate growing degree days (GDD) from daily max/min temperatures and a base temperature to predict crop and pest development stages.", icon_path: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" },
+    { name: "Tree Age Calculator", slug: "tree-age-calculator", path: :gardening_tree_age_path, description: "Estimate a tree's age from its trunk circumference using ISA growth factors for oak, maple, pine, walnut, and other common species.", icon_path: "M12 2l4 6h-3v6h-2V8H8l4-6zm-5 14h10v2H7v-2zm2 4h6v2H9v-2z" },
+    { name: "Greenhouse Heater BTU Calculator", slug: "greenhouse-heater-calculator", path: :gardening_greenhouse_heater_path, description: "Calculate the BTU/hour and wattage of greenhouse heater you need based on greenhouse size, glazing type, and temperature delta.", icon_path: "M3 12l9-9 9 9M5 10v10h14V10" },
+    { name: "Compost C:N Ratio Calculator", slug: "compost-ratio-calculator", path: :gardening_compost_ratio_path, description: "Calculate the carbon-to-nitrogen ratio of a compost pile from brown and green material weights, with feedback on how to balance your pile.", icon_path: "M4 6h16M4 12h16M4 18h16" }
+  ].freeze
+
   ALCOHOL_CALCULATORS = [
     { name: "ABV Calculator", slug: "abv-calculator", path: :alcohol_abv_path, description: "Calculate alcohol by volume (ABV) for beer, wine, mead, and cider from original and final gravity readings.", icon_path: "M12 3v2m0 14v2M5 12H3m18 0h-2m-1.5-6.5l-1.4 1.4M7.9 16.1l-1.4 1.4m0-11l1.4 1.4m8.2 8.2l1.4 1.4M12 7a5 5 0 100 10 5 5 0 000-10z" },
     { name: "IBU Calculator", slug: "ibu-calculator", path: :alcohol_ibu_path, description: "Calculate International Bitterness Units (IBU) for your beer recipe using the Tinseth hop utilization formula.", icon_path: "M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" },
@@ -416,6 +431,11 @@ class CalculatorRegistry
       title: "Geography Calculators",
       description: "Free geography calculators and mapping tools for coordinate distance, bearing, midpoint, latitude/longitude conversion, map scale, and population density. Built for travelers, GIS users, hikers, students, and planners.",
       calculators: GEOGRAPHY_CALCULATORS
+    },
+    "gardening" => {
+      title: "Gardening & Landscaping Calculators",
+      description: "Free gardening and landscaping calculators for mulch, topsoil, raised beds, compost, fertilizer, grass seed, lawn watering, plant spacing, growing degree days, tree age, and greenhouse heating. Plan your garden like a pro.",
+      calculators: GARDENING_CALCULATORS
     }
   }.freeze
 

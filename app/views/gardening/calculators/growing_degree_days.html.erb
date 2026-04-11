@@ -1,0 +1,156 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Growing Degree Days Calculator (GDD) - Crop & Pest Timing",
+  description: "Free growing degree days calculator. Enter daily max/min temperatures and base temperature to compute GDD for crop development, pest emergence, and phenology tracking.",
+  canonical: gardening_growing_degree_days_url,
+  og: {
+    title: "Growing Degree Days Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate growing degree days (GDD) from daily high and low temperatures.",
+    url: gardening_growing_degree_days_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Gardening", url: category_url("gardening") },
+  { name: "Growing Degree Days Calculator", url: gardening_growing_degree_days_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are growing degree days?", answer: "Growing degree days (GDD) are a measure of heat accumulation used to predict plant and insect development stages. The formula is simple: GDD = ((Tmax + Tmin) / 2) − Tbase, where Tmax and Tmin are the daily high and low temperatures and Tbase is the threshold below which the plant or insect does not develop. For most vegetables and weeds, the base is 50°F (10°C); for corn and soybeans, 50°F; for cotton and peanuts, 60°F; for wheat, 32 to 40°F. Negative values are set to zero." },
+  { question: "Why are GDD more useful than calendar days?", answer: "Because plants and insects respond to temperature, not the date. A warm spring speeds development; a cold spring slows it. Two seasons can have the same calendar dates but very different GDD totals, which is why tracking degree days produces far more accurate predictions of bloom time, harvest, and pest emergence than any calendar-based schedule. Most university extension services publish GDD-based IPM (Integrated Pest Management) schedules for their region." },
+  { question: "What base temperature should I use?", answer: "Match the base to the species: 50°F (10°C) for most vegetables, corn, soybeans, and lawn weeds; 40°F for spring bulbs, peas, and wheat; 55°F for tomatoes; 60°F for warm-season species like cotton and peanuts. When you do not know, 50°F is the universal default and is what most extension GDD maps use. Some pests use a specific base — for example, European corn borer uses 50°F, while codling moth uses 50°F but accumulates from biofix (first moth capture), not from January 1." },
+  { question: "How many GDD does corn need?", answer: "Corn needs roughly 2,700 GDD (base 50°F) from planting to black layer (physiological maturity) for full-season hybrids, and 2,100 to 2,400 for shorter-season hybrids. Seed companies publish a 'GDD to maturity' figure for each hybrid. Sweet corn needs about 1,500 GDD to harvest. Tomatoes need 1,200 to 1,500 GDD (base 50°F) from transplant to first ripe fruit." },
+  { question: "How are GDD calculated for a season?", answer: "Add up the daily GDD from a chosen start date. For corn, start at planting. For pest management, start at January 1 or at biofix. For bloom prediction, start at January 1 or March 1. The running total is what you compare against published thresholds to predict events — for example, first codling moth emergence at 250 GDD (base 50°F, from biofix), or peak bloom of apples at 255 GDD (base 50°F, from January 1)." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Growing Degree Days Calculator",
+  description: "Calculate daily growing degree days (GDD) from high and low temperatures and a base temperature.",
+  url: gardening_growing_degree_days_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "growing-degree-days-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Gardening", url: category_path("gardening") },
+  { name: "Growing Degree Days Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Growing Degree Days Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate daily growing degree days (GDD) to predict crop development, pest emergence, and bloom timing more accurately than calendar schedules.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="growing-degree-days-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit</label>
+            <select data-growing-degree-days-calculator-target="unit" data-action="change->growing-degree-days-calculator#calculate" class="w-full">
+              <option value="fahrenheit" selected>Fahrenheit (°F)</option>
+              <option value="celsius">Celsius (°C)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Daily high</label>
+            <input type="number" inputmode="decimal" data-growing-degree-days-calculator-target="tmax" data-action="input->growing-degree-days-calculator#calculate" class="w-full" value="80" step="any">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Daily low</label>
+            <input type="number" inputmode="decimal" data-growing-degree-days-calculator-target="tmin" data-action="input->growing-degree-days-calculator#calculate" class="w-full" value="60" step="any">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Base temperature (optional)</label>
+            <input type="number" inputmode="decimal" data-growing-degree-days-calculator-target="base" data-action="input->growing-degree-days-calculator#calculate" class="w-full" placeholder="50" step="any">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">GDD Today</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Average</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-growing-degree-days-calculator-target="resultAverage">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Base</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-growing-degree-days-calculator-target="resultBase">—</span>
+            </div>
+            <div class="pt-3 border-t border-orange-200/50 dark:border-orange-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm block">GDD accumulated</span>
+              <span class="text-3xl font-extrabold text-orange-700 dark:text-orange-400" data-growing-degree-days-calculator-target="resultGdd">—</span>
+            </div>
+          </div>
+          <button data-action="click->growing-degree-days-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "growing-degree-days-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Growing Degree Days Formula</h2>
+      <p>
+        The simple averaging formula is GDD = ((Tmax + Tmin) / 2) − Tbase, with negative values set to zero. If the average temperature for the day is 70°F and the base temperature is 50°F, that day contributes 20 GDD. If Tmax and Tmin averaged 45°F, the value (−5) is set to zero and the day contributes nothing. More sophisticated formulas — the Baskerville-Emin double-sine method and the modified sine-wave method — better account for daily temperature curves, but the simple method is accurate within 2 to 5 percent and is what most home growers and extension services use.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Choosing a Base Temperature</h2>
+      <p>
+        The base temperature is the threshold below which the organism stops developing. Use 50°F (10°C) for most vegetables, corn, lawn weeds, and general-purpose garden tracking. Use 40°F (4°C) for peas, spring bulbs, and wheat. Use 55°F for tomatoes. Use 60°F for peanuts and cotton. For pests, match the pest's specific base — codling moth 50°F, European corn borer 50°F, Japanese beetle 50°F, armyworm 48°F. Always note the base temperature alongside the GDD value because they are not interchangeable.
+      </p>
+
+      <h2>Practical GDD Applications</h2>
+      <p>
+        Farmers use accumulated GDD to pick hybrid maturity ratings — a 2,500 GDD hybrid suits a 2,400 GDD growing area, while a 2,800 GDD hybrid risks getting caught by frost before maturity. Home gardeners can use GDD to plan succession plantings, predict first tomato ripening (1,200 GDD base 50°F from transplant), and time pest scouting. IPM scouts use degree day models to time the single most effective insecticide spray per season — for example, codling moth spray at 250 GDD (base 50°F, from biofix) catches the first wave of egg hatch before the larvae enter the fruit.
+      </p>
+
+      <h2>Where to Get Temperature Data</h2>
+      <p>
+        Your local weather station is usually within a few miles and publishes daily highs and lows through NOAA, Weather Underground, or a local university extension service. Many extension services maintain regional GDD accumulators online that pull live weather data — Michigan State University's Enviroweather, Cornell NEWA, and UC IPM DDFM are examples. For your specific yard, a simple min/max thermometer or a modest home weather station gets you closer to real microclimate numbers, which matter at the edges of hardiness zones.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the base temperature for corn?</h3>
+      <p>50°F (10°C). That is the standard base for the major US corn belt.</p>
+
+      <h3>Can GDD be negative?</h3>
+      <p>No — if the calculated value is negative, it is set to zero and that day contributes nothing.</p>
+
+      <h3>Is there a maximum cut-off?</h3>
+      <p>Some models cap Tmax at 86°F (30°C) to account for heat stress slowing development — this is the modified method.</p>
+
+      <h3>How do I use GDD for pest management?</h3>
+      <p>Compare accumulated GDD since January 1 (or biofix) against published thresholds for egg hatch, pupation, and adult emergence.</p>
+
+      <h3>Is a warmer year better?</h3>
+      <p>Up to a point — too many high-temperature days slow growth in cool-season crops like peas and lettuce.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Plant Spacing Calculator", description: "Plan how many plants fit in a garden bed.", path: gardening_plant_spacing_path, icon_path: "M4 4h4v4H4z" },
+      { name: "Fertilizer Calculator", description: "Calculate pounds of fertilizer from NPK rate and area.", path: gardening_fertilizer_path, icon_path: "M12 2l3 7h7" },
+      { name: "Tree Age Calculator", description: "Estimate a tree's age from trunk circumference.", path: gardening_tree_age_path, icon_path: "M12 2l4 6h-3v6h-2V8H8l4-6z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "gardening" %>
+
+    <% blog_posts = related_blog_posts("growing-degree-days-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
