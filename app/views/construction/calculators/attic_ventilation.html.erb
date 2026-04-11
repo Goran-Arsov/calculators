@@ -1,0 +1,174 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Attic Ventilation Calculator - NFA, Soffit & Ridge",
+  description: "Free attic ventilation calculator. Enter attic area and ventilation method to see required Net Free Area (NFA) in square inches, split between intake (soffit) and exhaust (ridge).",
+  canonical: construction_attic_ventilation_url,
+  og: {
+    title: "Attic Ventilation Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate attic NFA and soffit/ridge vent counts per IRC R806.2.",
+    url: construction_attic_ventilation_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Attic Ventilation Calculator", url: construction_attic_ventilation_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the 1:300 attic ventilation rule?", answer: "IRC section R806.2 allows attic ventilation at 1 square foot of net free area (NFA) per 300 square feet of attic floor, provided that at least 40 percent and no more than 50 percent of the ventilation is high (ridge, gable, or roof vents) and the rest is low (soffit or eave vents), and the ceiling has a vapor retarder. For an 1,800 sq ft attic, that means 6 sq ft of NFA total — 3 sq ft intake at the soffit and 3 sq ft exhaust at the ridge. If you cannot balance the vents 50/50, fall back to 1:150." },
+  { question: "What is Net Free Area (NFA)?", answer: "NFA is the actual open area of a vent through which air can flow, excluding the frame, screen, and louvers that block air. Vent manufacturers publish NFA on their product labels — a typical 8×16 inch soffit vent might have a gross area of 128 sq in but a NFA of only 65 sq in because screens and louvers block the rest. Always use NFA (not gross area) when calculating ventilation." },
+  { question: "How many soffit vents do I need?", answer: "Divide the required intake NFA by the NFA of each vent. If you need 432 sq in of intake NFA and each soffit vent has 65 sq in NFA, you need 7 vents. Distribute them evenly along the soffit — a vent at each rafter bay is ideal if your soffit material allows. Continuous strip soffit vents are easier to install and provide consistent airflow; the strip-type rating is usually 9 sq in NFA per linear foot." },
+  { question: "Why does attic ventilation matter?", answer: "Proper attic ventilation removes summer heat that bakes shingles and raises cooling bills, and removes winter moisture that condenses on cold sheathing, causing mold and rot. It also prevents ice dams by keeping the attic air temperature close to outdoor temperature so snow melts evenly instead of refreezing at the eaves. An under-ventilated attic is the #1 cause of premature shingle failure and of winter ice dam damage to ceilings." },
+  { question: "Can I use only a ridge vent?", answer: "No — a ridge vent without adequate soffit intake creates a negative pressure that can pull conditioned air from the living space, defeating the point. Ventilation requires balanced intake and exhaust. If you cannot add soffit vents (blocked soffits, boxed cornices), use gable vents or low roof vents instead. The total intake NFA should roughly match the exhaust NFA." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Attic Ventilation Calculator",
+  description: "Calculate attic NFA and soffit/ridge vent counts per IRC R806.2.",
+  url: construction_attic_ventilation_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "attic-ventilation-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Attic Ventilation Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Attic Ventilation Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much attic ventilation do you need? Enter attic area and method (1:300 balanced or 1:150) to see required NFA and soffit/ridge vent counts per IRC R806.2.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="attic-ventilation-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Attic floor area (sq ft)</label>
+            <input type="number" inputmode="decimal" data-attic-ventilation-calculator-target="area" data-action="input->attic-ventilation-calculator#calculate" class="w-full" value="1800" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Method</label>
+            <select data-attic-ventilation-calculator-target="method" data-action="change->attic-ventilation-calculator#calculate" class="w-full">
+              <option value="balanced_1_300" selected>1:300 (balanced, requires vapor retarder)</option>
+              <option value="unbalanced_1_150">1:150 (no vapor retarder)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">NFA per soffit vent (sq in)</label>
+            <input type="number" inputmode="decimal" data-attic-ventilation-calculator-target="soffitNfa" data-action="input->attic-ventilation-calculator#calculate" class="w-full" value="9" step="any" min="0">
+            <p class="text-xs text-gray-500 mt-1">Check your vent label — typical 8×16 soffit vent ≈ 65 sq in NFA, continuous strip ≈ 9 per linear ft.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">NFA per ridge vent foot (sq in)</label>
+            <input type="number" inputmode="decimal" data-attic-ventilation-calculator-target="ridgeNfa" data-action="input->attic-ventilation-calculator#calculate" class="w-full" value="18" step="any" min="0">
+            <p class="text-xs text-gray-500 mt-1">Typical ridge vent ≈ 12-20 sq in NFA per linear foot.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Ventilation Needed</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Method</span>
+              <span class="text-base font-bold text-indigo-700 dark:text-indigo-400" data-attic-ventilation-calculator-target="resultMethod">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Total NFA</span>
+              <span class="text-base font-bold text-indigo-700 dark:text-indigo-400" data-attic-ventilation-calculator-target="resultNfaSqft">—</span>
+            </div>
+            <div class="pt-3 border-t border-indigo-200/50 dark:border-indigo-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm block">Total NFA (sq in)</span>
+              <span class="text-3xl font-extrabold text-indigo-700 dark:text-indigo-400" data-attic-ventilation-calculator-target="resultNfaSqin">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Intake (50%)</span>
+              <span class="text-base font-bold text-indigo-700 dark:text-indigo-400" data-attic-ventilation-calculator-target="resultIntake">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Exhaust (50%)</span>
+              <span class="text-base font-bold text-indigo-700 dark:text-indigo-400" data-attic-ventilation-calculator-target="resultExhaust">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-indigo-200/50 dark:border-indigo-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Soffit vents</span>
+              <span class="text-base font-bold text-indigo-700 dark:text-indigo-400" data-attic-ventilation-calculator-target="resultSoffit">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Ridge vent</span>
+              <span class="text-base font-bold text-indigo-700 dark:text-indigo-400" data-attic-ventilation-calculator-target="resultRidge">—</span>
+            </div>
+          </div>
+          <button data-action="click->attic-ventilation-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "attic-ventilation-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>The 1:300 vs 1:150 Rules</h2>
+      <p>
+        IRC R806.2 allows two methods. The 1:300 rule requires 1 square foot of net free area (NFA) per 300 sq ft of attic floor, but only if ventilation is balanced (40-50% high, 50-60% low) and the ceiling has a vapor retarder. The 1:150 rule requires twice the NFA (1 sq ft per 150 sq ft of attic) and is used when the balanced condition cannot be met. For an 1,800 sq ft attic, 1:300 gives 6 sq ft (864 sq in) total NFA, split 432 sq in intake and 432 sq in exhaust; 1:150 gives 12 sq ft (1,728 sq in) total.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Balance Matters</h2>
+      <p>
+        Balanced ventilation means roughly equal intake (low, at the soffit or eave) and exhaust (high, at the ridge). Air enters low, rises as it picks up heat and moisture, and exits high — a natural chimney effect called the stack effect. Unbalanced ventilation (too much exhaust without enough intake) can create negative pressure in the attic that pulls conditioned air from the living space, wasting energy and potentially pulling moisture from the house envelope into the attic where it causes damage. Never install a ridge vent without matching soffit intake.
+      </p>
+
+      <h2>Reading Vent Labels for NFA</h2>
+      <p>
+        Every code-compliant vent product has a Net Free Area rating in square inches, usually printed on the label or spec sheet. Common values: 8×16 undereave soffit vent 65 sq in NFA, 12×12 gable vent 60 sq in NFA, continuous strip soffit vent 9 sq in per linear foot, continuous ridge vent 12-20 sq in per linear foot, roof-mounted static vent 60-120 sq in each, powered attic fan 600-1,600 CFM (converted to NFA equivalents by manufacturer). Always use NFA, never gross area, in your calculations.
+      </p>
+
+      <h2>Common Installation Mistakes</h2>
+      <p>
+        Blocked soffit vents: insulation baffles at the rafter bay are essential; without them, loose-blown insulation blocks the vent opening. Mixed exhaust types: do not combine ridge vents with gable vents or powered fans — the different exhaust points short-circuit the airflow and one steals from the other. Insufficient intake: ridge vents with too little soffit area pull conditioned air from the house. Blocked air channel: cathedral ceilings and vaulted roofs must have a clear 1 to 2 inch air channel from soffit to ridge at every rafter bay.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Can I add a powered attic fan instead?</h3>
+      <p>Yes, but it must have adequate soffit intake — otherwise it pulls air from the house. Modern energy codes often discourage them.</p>
+
+      <h3>How do I know if my attic is under-ventilated?</h3>
+      <p>Summer: roof feels like a furnace and shingles curl. Winter: frost on rafters, ice dams at eaves, mold on sheathing.</p>
+
+      <h3>Does a ridge vent work without soffit vents?</h3>
+      <p>No — they short-circuit without intake. You need both.</p>
+
+      <h3>Are gable vents enough?</h3>
+      <p>Only in small attics or as intake vents. They are less efficient than continuous ridge + soffit.</p>
+
+      <h3>Should I install a radiant barrier?</h3>
+      <p>Yes in hot climates — radiant barrier + ridge/soffit reduces attic temperature 20-30°F on summer afternoons.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Insulation Calculator", description: "Calculate how much insulation you need for attic, wall, or floor.", path: construction_insulation_path, icon_path: "M4 6h16v12H4z" },
+      { name: "Roofing Calculator", description: "Calculate bundles and squares of shingles for your roof.", path: construction_roofing_path, icon_path: "M3 12l9-9 9 9" },
+      { name: "HVAC BTU Calculator", description: "Size your heating and cooling system.", path: construction_hvac_btu_path, icon_path: "M12 2v2m0 16v2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("attic-ventilation-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

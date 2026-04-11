@@ -26,4 +26,16 @@ namespace :construction do
   get "wood-weight-calculator", to: "calculators#wood_weight", as: :wood_weight
   get "rip-cut-calculator", to: "calculators#rip_cut", as: :rip_cut
   get "cabinet-door-calculator", to: "calculators#cabinet_door", as: :cabinet_door
+
+  # Home improvement
+  get "grout-calculator", to: "calculators#grout", as: :grout
+  get "carpet-calculator", to: "calculators#carpet", as: :carpet
+  get "baseboard-calculator", to: "calculators#baseboard", as: :baseboard
+  get "siding-calculator", to: "calculators#siding", as: :siding
+  get "gutter-calculator", to: "calculators#gutter", as: :gutter
+  get "water-heater-sizing-calculator", to: "calculators#water_heater_sizing", as: :water_heater_sizing
+  get "pool-volume-calculator", to: "calculators#pool_volume", as: :pool_volume
+  get "kitchen-remodel-cost-calculator", to: "calculators#kitchen_remodel", as: :kitchen_remodel
+  get "bathroom-remodel-cost-calculator", to: "calculators#bathroom_remodel", as: :bathroom_remodel
+  get "attic-ventilation-calculator", to: "calculators#attic_ventilation", as: :attic_ventilation
 end

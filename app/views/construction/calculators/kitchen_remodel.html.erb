@@ -1,0 +1,171 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Kitchen Remodel Cost Calculator - Budget Estimator",
+  description: "Free kitchen remodel cost calculator. Enter kitchen size and tier to see an estimated budget with low/high range and a component breakdown for cabinets, counters, and labor.",
+  canonical: construction_kitchen_remodel_url,
+  og: {
+    title: "Kitchen Remodel Cost Calculator - Free Online Tool | Calc Hammer",
+    description: "Estimate a kitchen remodel budget by size, tier, and features.",
+    url: construction_kitchen_remodel_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Kitchen Remodel Cost Calculator", url: construction_kitchen_remodel_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much does a kitchen remodel cost?", answer: "National averages from Remodeling Magazine's Cost vs Value Report put a minor kitchen remodel at about 27,000 dollars and a major midrange remodel at about 77,000 dollars. Per square foot, that is roughly 150 dollars for minor cosmetic work, 225 dollars for midrange, 350 dollars for major, and 500+ dollars for luxury. A typical 150 sq ft kitchen at midrange runs 30,000 to 40,000 dollars; at major, 50,000 to 60,000; at luxury, 80,000+." },
+  { question: "What does minor vs major mean?", answer: "Minor (or cosmetic) refresh keeps the layout and cabinet boxes and replaces doors, hardware, counters, sink, faucet, and paint. Midrange replaces cabinets with stock or semi-custom, updates appliances to mid-quality, and typically keeps plumbing and electrical where they are. Major gut remodel removes everything to the studs, changes the layout, upgrades plumbing and electrical, adds an island, and installs higher-end finishes. Luxury uses custom cabinets, high-end appliances, stone counters, and premium tile." },
+  { question: "Where does the money go in a kitchen remodel?", answer: "Roughly: cabinets 35 percent, appliances 15 percent, countertops 15 percent, labor 20 percent, flooring 7 percent, lighting 5 percent, other 3 percent. Custom cabinets can push the cabinet percentage to 45+. Moving plumbing adds ~2,500 dollars; moving electrical adds ~1,500. The biggest line item is almost always cabinets — upgrading from stock to semi-custom alone can add 30 percent to the total." },
+  { question: "Is a kitchen remodel worth it?", answer: "Remodeling Magazine's 2024 Cost vs Value Report shows minor kitchen remodels recoup about 85 percent of cost at resale, midrange major remodels recoup about 50 percent, and luxury remodels about 35 percent. The ROI is best on minor cosmetic work. However, kitchen remodels are also the most impactful on day-to-day quality of life, and real estate value is only half the picture. If you plan to stay 5+ years, major renovations pay off in enjoyment even if not in resale price." },
+  { question: "How long does a kitchen remodel take?", answer: "A minor cosmetic refresh: 2-4 weeks. Midrange semi-custom remodel: 6-10 weeks. Major gut remodel: 12-20 weeks, with design and permit time adding 4-8 weeks before work starts. Custom cabinets alone take 8-12 weeks to build from order. Supply chain issues and permit delays regularly stretch projects by 4-8 weeks beyond the initial estimate." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Kitchen Remodel Cost Calculator",
+  description: "Estimate kitchen remodel cost by size, tier, and features with a component breakdown.",
+  url: construction_kitchen_remodel_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "kitchen-remodel-cost-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Kitchen Remodel Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Kitchen Remodel Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much will your kitchen remodel cost? Enter kitchen size, tier, and options to see a budget estimate with low/high range and component breakdown.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="kitchen-remodel-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Kitchen size (sq ft)</label>
+            <input type="number" inputmode="decimal" data-kitchen-remodel-calculator-target="size" data-action="input->kitchen-remodel-calculator#calculate" class="w-full" value="150" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tier</label>
+            <select data-kitchen-remodel-calculator-target="tier" data-action="change->kitchen-remodel-calculator#calculate" class="w-full">
+              <option value="minor">Minor (cosmetic refresh) — $150/sq ft</option>
+              <option value="midrange" selected>Midrange — $225/sq ft</option>
+              <option value="major">Major (full remodel) — $350/sq ft</option>
+              <option value="luxury">Luxury — $550/sq ft</option>
+            </select>
+          </div>
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            <input type="checkbox" data-kitchen-remodel-calculator-target="customCabinets" data-action="change->kitchen-remodel-calculator#calculate" class="rounded"> Custom cabinets (+20%)
+          </label>
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            <input type="checkbox" data-kitchen-remodel-calculator-target="movePlumbing" data-action="change->kitchen-remodel-calculator#calculate" class="rounded"> Move plumbing (+$2,500)
+          </label>
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            <input type="checkbox" data-kitchen-remodel-calculator-target="moveElectrical" data-action="change->kitchen-remodel-calculator#calculate" class="rounded"> Move electrical (+$1,500)
+          </label>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Estimated Budget</h2>
+          <div class="space-y-3">
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">Total estimate</span>
+              <span class="text-3xl font-extrabold text-orange-700 dark:text-orange-400" data-kitchen-remodel-calculator-target="resultTotal">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Low (−15%)</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-kitchen-remodel-calculator-target="resultLow">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">High (+15%)</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-kitchen-remodel-calculator-target="resultHigh">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-orange-200/50 dark:border-orange-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Base</span>
+              <span class="text-sm font-bold text-orange-700 dark:text-orange-400" data-kitchen-remodel-calculator-target="resultBase">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Add-ons</span>
+              <span class="text-sm font-bold text-orange-700 dark:text-orange-400" data-kitchen-remodel-calculator-target="resultAddOns">—</span>
+            </div>
+            <div class="pt-3 border-t border-orange-200/50 dark:border-orange-800/50">
+              <p class="text-xs uppercase font-semibold text-gray-500 dark:text-gray-400 mb-2">Breakdown</p>
+              <ul class="space-y-1 text-sm text-gray-700 dark:text-gray-300" data-kitchen-remodel-calculator-target="breakdownList"></ul>
+            </div>
+          </div>
+          <button data-action="click->kitchen-remodel-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "kitchen-remodel-cost-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Kitchen Remodel Costs Are Calculated</h2>
+      <p>
+        The calculator multiplies your kitchen size in square feet by a tier-specific cost per square foot, adds optional cost for custom cabinets and moving plumbing or electrical, and then shows a low/high range of plus or minus 15 percent. The cost-per-sqft tiers are calibrated to Remodeling Magazine's Cost vs Value Report and national averages from HomeAdvisor and Angi. Actual bids will vary by region — high-cost-of-living metros (Bay Area, NYC, Seattle) can run 40 to 80 percent above the calculator; low-cost rural areas can run 20 percent below.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Four Tiers Explained</h2>
+      <p>
+        Minor (cosmetic refresh) — keep layout, paint cabinets or reface, new counters, new hardware, new faucet, new lighting. Around 150 dollars per sq ft. Midrange — replace cabinets with stock or semi-custom, mid-quality appliances, new counters, new flooring, keep plumbing layout. Around 225 dollars per sq ft. Major — full gut, possibly new layout, new plumbing and electrical, semi-custom or high-end cabinets, premium counters and appliances. Around 350 dollars per sq ft. Luxury — custom cabinets, stone or engineered counters, high-end brand appliances (Sub-Zero, Wolf, Miele), designer lighting, often a completely reimagined layout with an island or peninsula. 500+ dollars per sq ft.
+      </p>
+
+      <h2>Where the Money Actually Goes</h2>
+      <p>
+        Cabinets are typically 35 percent of the total budget and the single largest line item. Appliances are about 15 percent; countertops 15 percent; labor 20 percent; flooring 7 percent; lighting 5 percent; miscellaneous 3 percent. If you are trying to control costs, focus on cabinets first: stock cabinets from IKEA, Home Depot, or Lowe's cost 60 to 80 percent less than custom, and modern semi-custom options look almost identical to custom to a casual eye. Reface your existing cabinet boxes if they are in good condition and save 8 to 12 thousand dollars on cabinets alone.
+      </p>
+
+      <h2>Hidden Costs and Unexpected Expenses</h2>
+      <p>
+        Every gut remodel finds something unexpected when walls come down — old plumbing that fails code, knob-and-tube electrical, water damage behind cabinets, lead paint, asbestos tile. Budget 10 to 20 percent contingency above the calculator estimate for these surprises. Also budget for eating out and temporary kitchen setup — a 10-week remodel easily adds 1,500 to 3,000 dollars in restaurant meals and meal delivery. Permit fees, design fees (for architects or designers), and appliance delivery fees can add another 1,000 to 5,000 dollars that the square-foot rate does not cover.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is 30,000 dollars enough for a kitchen remodel?</h3>
+      <p>Yes, for a minor cosmetic refresh or a midrange remodel of a small (80-120 sq ft) kitchen.</p>
+
+      <h3>Where do I save money without looking cheap?</h3>
+      <p>Stock cabinets from IKEA or Home Depot, quartz instead of marble, mid-tier appliance packages, DIY demo and painting.</p>
+
+      <h3>Do I need a designer or architect?</h3>
+      <p>For major remodels, yes — designer fees pay for themselves in avoided mistakes. For cosmetic work, no.</p>
+
+      <h3>How do I pay for a remodel?</h3>
+      <p>Cash, HELOC, home equity loan, or cash-out refinance. Personal loans and credit cards are expensive and last resort.</p>
+
+      <h3>Can I live in my home during the remodel?</h3>
+      <p>Yes for minor remodels. For gut remodels with extended no-kitchen periods, plan on eating out for 6-12 weeks.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Bathroom Remodel Cost Calculator", description: "Estimate your bathroom remodel budget.", path: construction_bathroom_remodel_path, icon_path: "M8 5a4 4 0 018 0v4" },
+      { name: "Sqft Cost Calculator", description: "Calculate cost per square foot for any project.", path: construction_sqft_cost_path, icon_path: "M4 6h16v12H4z" },
+      { name: "Cabinet Door Parts Calculator", description: "Calculate custom cabinet door parts for DIY builds.", path: construction_cabinet_door_path, icon_path: "M4 6h4v4H4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("kitchen-remodel-cost-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

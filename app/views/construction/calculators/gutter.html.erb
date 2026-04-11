@@ -1,0 +1,183 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Gutter Calculator - Linear Feet & Downspouts",
+  description: "Free gutter calculator. Enter eave lengths and gutter size to see linear feet of gutter, number of downspouts, and total material cost for 5, 6, or 7 inch K-style gutters.",
+  canonical: construction_gutter_url,
+  og: {
+    title: "Gutter Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate gutter material and downspouts for any roof.",
+    url: construction_gutter_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Gutter Calculator", url: construction_gutter_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many downspouts do I need?", answer: "IRC and gutter manufacturer tables limit one downspout per 35 linear feet of 5-inch K-style gutter, one per 50 feet of 6-inch, and one per 60 feet of 7-inch. For a 40 foot eave run with 5-inch gutter, you need 2 downspouts; with 6-inch gutter, just 1. Fewer downspouts lower cost and simplify drainage but require the larger gutter size." },
+  { question: "5-inch vs 6-inch gutters — which is better?", answer: "5-inch K-style is the residential default and handles most roofs up to about 2,000 sq ft of drainage area. 6-inch K-style handles roughly 50 percent more water and is recommended for larger homes, steep roofs, or areas with intense rainfall. 6-inch costs 20 to 30 percent more material-wise but requires fewer downspouts, which often cancels out the upcharge. Switch to 6-inch if any of: roof area over 2,000 sq ft per side, pitch over 6:12, or annual rainfall over 50 inches." },
+  { question: "How much do gutters cost?", answer: "Aluminum K-style gutters run 4 to 8 dollars per linear foot for materials, plus 3 to 6 dollars per foot for professional installation. Total installed cost is 7 to 14 dollars per linear foot for 5-inch aluminum, 9 to 16 dollars for 6-inch. Copper gutters are 3 to 5 times more expensive. For a 200 linear foot house with 8 downspouts, budget 1,500 to 3,500 dollars installed." },
+  { question: "Do I include downspout length in my total?", answer: "Yes — downspout drops run from the gutter to the ground. A typical single-story drop is 10 feet, a two-story 20 feet. The calculator multiplies your downspout count by the drop length and adds it to gutter linear feet for a total material estimate. Also add elbows, outlets, hangers, and splash blocks as separate line items." },
+  { question: "Can I install gutters myself?", answer: "Yes — seamless gutters require professional installation because the machine extrudes them on site, but sectional aluminum gutters are DIY-friendly. Expect to need a ladder, a tin snips, gutter seal, a drill, and hidden hangers (modern) or spike-and-ferrule (old-school). Measure eave lengths accurately, cut sections with small overlaps at seams, slope the run 1/4 inch per 10 linear feet toward downspouts, and seal every joint with gutter silicone." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Gutter Calculator",
+  description: "Calculate gutter linear feet, downspouts, and material cost.",
+  url: construction_gutter_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "gutter-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Gutter Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Gutter Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much gutter do you need? Enter up to four eave lengths, pick a gutter size, and see linear feet, downspout count, total material, and cost.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="gutter-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Eave 1 (ft)</label>
+              <input type="number" inputmode="decimal" data-gutter-calculator-target="eave1" data-action="input->gutter-calculator#calculate" class="w-full" value="40" step="any" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Eave 2 (ft)</label>
+              <input type="number" inputmode="decimal" data-gutter-calculator-target="eave2" data-action="input->gutter-calculator#calculate" class="w-full" value="40" step="any" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Eave 3 (ft)</label>
+              <input type="number" inputmode="decimal" data-gutter-calculator-target="eave3" data-action="input->gutter-calculator#calculate" class="w-full" value="30" step="any" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Eave 4 (ft)</label>
+              <input type="number" inputmode="decimal" data-gutter-calculator-target="eave4" data-action="input->gutter-calculator#calculate" class="w-full" value="30" step="any" min="0">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gutter size</label>
+            <select data-gutter-calculator-target="size" data-action="change->gutter-calculator#calculate" class="w-full">
+              <option value="5_inch" selected>5-inch K-style</option>
+              <option value="6_inch">6-inch K-style</option>
+              <option value="7_inch">7-inch K-style</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Downspout length (ft each)</label>
+            <input type="number" inputmode="decimal" data-gutter-calculator-target="downspoutLength" data-action="input->gutter-calculator#calculate" class="w-full" value="10" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Price / linear ft ($, optional)</label>
+            <input type="number" inputmode="decimal" data-gutter-calculator-target="price" data-action="input->gutter-calculator#calculate" class="w-full" value="6" step="0.01" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Gutter Material</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Size</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-gutter-calculator-target="resultSizeLabel">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Gutter feet</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-gutter-calculator-target="resultGutterFt">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Downspouts</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-gutter-calculator-target="resultDownspouts">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Downspout feet</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-gutter-calculator-target="resultDownspoutFt">—</span>
+            </div>
+            <div class="pt-3 border-t border-sky-200/50 dark:border-sky-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm block">Total material</span>
+              <span class="text-3xl font-extrabold text-sky-700 dark:text-sky-400" data-gutter-calculator-target="resultTotal">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-sky-200/50 dark:border-sky-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Total cost</span>
+              <span class="text-xl font-bold text-sky-700 dark:text-sky-400" data-gutter-calculator-target="resultCost">—</span>
+            </div>
+          </div>
+          <button data-action="click->gutter-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "gutter-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Measure Your Gutters</h2>
+      <p>
+        Walk each side of the house and measure the eave length (the horizontal bottom edge of the roof) in feet. Most houses have 2 to 4 eave runs — front, back, and possibly sides if the house has hip roofs. Enter each run separately; the calculator adds them. For each run, figure one downspout per 35 linear feet for 5-inch gutter, 50 feet for 6-inch, or 60 feet for 7-inch. A typical 2-story home has 120 to 200 linear feet of gutter and 4 to 8 downspouts.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Which Size Gutter to Pick</h2>
+      <p>
+        For most single-story and modest two-story homes in average-rainfall climates, 5-inch K-style is enough. Upgrade to 6-inch for any of: roof area over 2,000 sq ft draining to one gutter run, roof pitch over 6:12 (steeper pitches shed water faster into the gutter), heavy rainfall climates (above 50 inches per year), or long eave runs over 40 feet. 7-inch is for commercial buildings and exceptional cases. Larger gutters also handle leaves better because debris does not block flow as easily, which is a real benefit in wooded lots.
+      </p>
+
+      <h2>Seamless vs Sectional Gutters</h2>
+      <p>
+        Seamless gutters are extruded on site by a gutter machine to the exact length of each run, leaving only miters at corners and end caps. They leak less, last longer, and cost about the same installed as sectional. Sectional gutters are 10-foot aluminum sections joined with connectors and sealed. They are DIY-friendly but every joint is a potential leak point. For a first installation, pay a pro for seamless; for a small addition or shed, DIY sectional is fine.
+      </p>
+
+      <h2>Slope and Drainage</h2>
+      <p>
+        Gutters should slope 1/4 inch per 10 feet toward the downspout. Longer runs (over 40 feet) slope from the center down to a downspout at each end. Too much slope looks crooked; too little and water sits in the gutter, causing sag and algae. Downspouts should discharge at least 4 feet from the foundation — use splash blocks, extensions, or underground drain tiles connected to a pop-up emitter in the lawn. Never discharge gutter water directly at the foundation.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How often should I clean gutters?</h3>
+      <p>Twice a year — spring and fall — or more if your home is under trees.</p>
+
+      <h3>Are gutter guards worth it?</h3>
+      <p>Yes, in wooded areas. Micromesh designs are best; foam inserts trap debris inside the gutter.</p>
+
+      <h3>Can I add gutters to a porch?</h3>
+      <p>Yes — small porches usually take 10 to 20 linear feet with a single downspout.</p>
+
+      <h3>Do I need gutters on a metal roof?</h3>
+      <p>Yes — metal sheds more water, faster, than asphalt, so gutters are still important for foundation protection.</p>
+
+      <h3>How long do aluminum gutters last?</h3>
+      <p>20 to 25 years with maintenance. Copper gutters last 50+ years.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Siding Calculator", description: "Calculate squares of siding for walls and gables.", path: construction_siding_path, icon_path: "M4 4h16v4H4z" },
+      { name: "Roofing Calculator", description: "Calculate bundles and squares of shingles for your roof.", path: construction_roofing_path, icon_path: "M3 12l9-9 9 9" },
+      { name: "Paint Calculator", description: "Calculate gallons of exterior paint for siding and trim.", path: construction_paint_path, icon_path: "M12 2l3 7h7" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("gutter-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

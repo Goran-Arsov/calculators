@@ -25,5 +25,17 @@ module Construction
     def wood_weight; end
     def rip_cut; end
     def cabinet_door; end
+
+    # Home improvement
+    def grout; end
+    def carpet; end
+    def baseboard; end
+    def siding; end
+    def gutter; end
+    def water_heater_sizing; end
+    def pool_volume; end
+    def kitchen_remodel; end
+    def bathroom_remodel; end
+    def attic_ventilation; end
   end
 end

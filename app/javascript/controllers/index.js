@@ -276,6 +276,17 @@ import WoodShrinkageCalculatorController from "controllers/wood_shrinkage_calcul
 import WoodWeightCalculatorController from "controllers/wood_weight_calculator_controller"
 import RipCutCalculatorController from "controllers/rip_cut_calculator_controller"
 import CabinetDoorCalculatorController from "controllers/cabinet_door_calculator_controller"
+// Home improvement calculators
+import GroutCalculatorController from "controllers/grout_calculator_controller"
+import CarpetCalculatorController from "controllers/carpet_calculator_controller"
+import BaseboardCalculatorController from "controllers/baseboard_calculator_controller"
+import SidingCalculatorController from "controllers/siding_calculator_controller"
+import GutterCalculatorController from "controllers/gutter_calculator_controller"
+import WaterHeaterSizingCalculatorController from "controllers/water_heater_sizing_calculator_controller"
+import PoolVolumeCalculatorController from "controllers/pool_volume_calculator_controller"
+import KitchenRemodelCalculatorController from "controllers/kitchen_remodel_calculator_controller"
+import BathroomRemodelCalculatorController from "controllers/bathroom_remodel_calculator_controller"
+import AtticVentilationCalculatorController from "controllers/attic_ventilation_calculator_controller"
 // Textile calculators
 import FabricYardageCalculatorController from "controllers/fabric_yardage_calculator_controller"
 import SeamAllowanceCalculatorController from "controllers/seam_allowance_calculator_controller"
@@ -547,6 +558,17 @@ application.register("wood-shrinkage-calculator", WoodShrinkageCalculatorControl
 application.register("wood-weight-calculator", WoodWeightCalculatorController)
 application.register("rip-cut-calculator", RipCutCalculatorController)
 application.register("cabinet-door-calculator", CabinetDoorCalculatorController)
+// Home improvement
+application.register("grout-calculator", GroutCalculatorController)
+application.register("carpet-calculator", CarpetCalculatorController)
+application.register("baseboard-calculator", BaseboardCalculatorController)
+application.register("siding-calculator", SidingCalculatorController)
+application.register("gutter-calculator", GutterCalculatorController)
+application.register("water-heater-sizing-calculator", WaterHeaterSizingCalculatorController)
+application.register("pool-volume-calculator", PoolVolumeCalculatorController)
+application.register("kitchen-remodel-cost-calculator", KitchenRemodelCalculatorController)
+application.register("bathroom-remodel-cost-calculator", BathroomRemodelCalculatorController)
+application.register("attic-ventilation-calculator", AtticVentilationCalculatorController)
 // Textile calculators
 application.register("fabric-yardage-calculator", FabricYardageCalculatorController)
 application.register("seam-allowance-calculator", SeamAllowanceCalculatorController)

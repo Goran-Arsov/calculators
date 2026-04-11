@@ -1,0 +1,186 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Siding Calculator - Squares of Siding You Need",
+  description: "Free siding calculator. Enter wall dimensions, gable size, and number of windows and doors to see how many squares of vinyl, fiber cement, or wood siding you need.",
+  canonical: construction_siding_url,
+  og: {
+    title: "Siding Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate squares of siding for walls and gables minus openings.",
+    url: construction_siding_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Siding Calculator", url: construction_siding_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a square of siding?", answer: "A 'square' in the siding and roofing trades equals 100 square feet. Siding is priced per square, and most products come packaged in partial squares — 2 squares per box of vinyl, 1 square per box of fiber cement lap, and so on. For a 2,000 sq ft wall area, you need 20 squares plus waste. Always order in whole squares to avoid ending up short on the last wall." },
+  { question: "How do I measure wall area for siding?", answer: "Measure each wall length and multiply by wall height. Add gable areas as triangles (1/2 × base × height). Add up the totals for all walls. Subtract the area of windows (use 15 sq ft per standard window as a rule of thumb) and doors (21 sq ft for a standard entry door, 48 sq ft for a two-car garage door). Add 10 percent waste for cut-offs at corners and around openings." },
+  { question: "How much waste for siding?", answer: "10 percent is standard for a rectangular house with typical window and door count. Add 15 percent for complex rooflines, multiple dormers, bay windows, or steep gables. Lap siding at corners (without J-channel or corner posts) wastes more than flat panels. Fiber cement trim and soffit are not counted in siding waste; order those separately." },
+  { question: "Vinyl vs fiber cement siding cost?", answer: "Vinyl siding installed runs 5 to 12 dollars per square foot; fiber cement (like James Hardie) runs 8 to 15 dollars per square foot. For a 2,000 sq ft installation, vinyl is roughly 10,000 to 24,000 dollars, fiber cement 16,000 to 30,000 dollars. Fiber cement lasts longer (30 to 50 year warranty vs 20 to 30 for vinyl) but is heavier, harder to install, and needs repainting every 15 years. Vinyl is maintenance-free except for occasional washing." },
+  { question: "Do I need to add separate siding for gables?", answer: "Yes. Gables are the triangular wall areas at the ends of a sloped roof. Their area is 1/2 × base × height. Add gables to the wall area. The calculator has a separate gable input so you can enter both and see the combined total. If the gable is very large or uses a different material, calculate it as a separate job." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Siding Calculator",
+  description: "Calculate squares of siding needed for walls and gables minus windows and doors.",
+  url: construction_siding_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "siding-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Siding Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Siding Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much siding do you need? Enter wall dimensions, gable size, and openings to see gross area, net area, and squares of siding to order.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="siding-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wall length (ft)</label>
+              <input type="number" inputmode="decimal" data-siding-calculator-target="wallLength" data-action="input->siding-calculator#calculate" class="w-full" value="120" step="any" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wall height (ft)</label>
+              <input type="number" inputmode="decimal" data-siding-calculator-target="wallHeight" data-action="input->siding-calculator#calculate" class="w-full" value="9" step="any" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gable base (ft)</label>
+              <input type="number" inputmode="decimal" data-siding-calculator-target="gableLength" data-action="input->siding-calculator#calculate" class="w-full" value="30" step="any" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gable height (ft)</label>
+              <input type="number" inputmode="decimal" data-siding-calculator-target="gableHeight" data-action="input->siding-calculator#calculate" class="w-full" value="8" step="any" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Windows</label>
+              <input type="number" inputmode="numeric" data-siding-calculator-target="windows" data-action="input->siding-calculator#calculate" class="w-full" value="10" step="1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Doors</label>
+              <input type="number" inputmode="numeric" data-siding-calculator-target="doors" data-action="input->siding-calculator#calculate" class="w-full" value="2" step="1" min="0">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Waste %</label>
+            <input type="number" inputmode="decimal" data-siding-calculator-target="waste" data-action="input->siding-calculator#calculate" class="w-full" value="10" step="1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-slate-50 dark:from-blue-900/20 dark:to-slate-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Siding Needed</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Wall area</span>
+              <span class="text-base font-bold text-blue-700 dark:text-blue-400" data-siding-calculator-target="resultWall">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Gable area</span>
+              <span class="text-base font-bold text-blue-700 dark:text-blue-400" data-siding-calculator-target="resultGable">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Gross</span>
+              <span class="text-base font-bold text-blue-700 dark:text-blue-400" data-siding-calculator-target="resultGross">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Openings</span>
+              <span class="text-base font-bold text-blue-700 dark:text-blue-400" data-siding-calculator-target="resultOpenings">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Net</span>
+              <span class="text-base font-bold text-blue-700 dark:text-blue-400" data-siding-calculator-target="resultNet">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">With waste</span>
+              <span class="text-base font-bold text-blue-700 dark:text-blue-400" data-siding-calculator-target="resultWithWaste">—</span>
+            </div>
+            <div class="pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm block">Squares</span>
+              <span class="text-3xl font-extrabold text-blue-700 dark:text-blue-400" data-siding-calculator-target="resultSquares">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "siding-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Siding Is Measured and Sold</h2>
+      <p>
+        Siding is measured in squares, where 1 square equals 100 square feet of wall area. The calculator totals your wall area plus gable area (triangles at the ends of a sloped roof), subtracts the area of windows (default 15 sq ft each) and doors (default 21 sq ft each), applies a 10 percent waste factor, and divides by 100 to give squares. Order in whole squares because partial squares almost always come packaged as full boxes.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Vinyl, Fiber Cement, Wood, or Engineered Wood?</h2>
+      <p>
+        Vinyl is the cheapest, requires no painting, and lasts 20 to 30 years. Downsides: can fade in direct sun, warps in house fires, and looks plastic up close. Fiber cement (James Hardie, Allura) is made from cement and cellulose fiber. It costs more, needs periodic painting, and is heavy to install, but it resists rot, fire, and insects and lasts 30 to 50 years. Natural cedar wood siding looks best but costs the most to install and maintain. Engineered wood (LP SmartSide) is a middle ground — cheaper than fiber cement and paintable, with better impact resistance than vinyl.
+      </p>
+
+      <h2>Why Waste Factors Matter</h2>
+      <p>
+        Corners eat the most waste. A miter-cut lap siding corner loses 2 to 6 inches per course. Openings waste the cuts around windows and doors. Complex rooflines with multiple peaks and dormers waste the most — 15 percent is not unreasonable. A simple rectangular ranch with a shallow gable and 6 windows uses very close to 10 percent waste; a Victorian with 3 gables, bay windows, and 15 windows easily uses 20 percent. When in doubt, order an extra square and return it if you don't need it.
+      </p>
+
+      <h2>Planning Around Trim and Flashing</h2>
+      <p>
+        This calculator estimates only field siding. Trim (J-channel, corner posts, starter strip, window surrounds, soffit, fascia) is a separate order. For a 30 square field job, plan an additional 200 to 400 linear feet of J-channel, 60 to 120 feet of corner post, 60 to 120 feet of starter strip, and window trim sized to each opening. Flashing at windows, doors, and penetrations is critical for water management and must be installed before siding goes up — do not skip it.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much does siding cost per square?</h3>
+      <p>Vinyl: 500-1,200 dollars installed; fiber cement: 800-1,500 installed.</p>
+
+      <h3>Can I install siding myself?</h3>
+      <p>Vinyl yes — it's DIY-friendly. Fiber cement is heavy and needs 2 people minimum plus a carbide blade.</p>
+
+      <h3>How long does siding last?</h3>
+      <p>Vinyl 20-30 years, fiber cement 30-50 years, cedar 15-25 years with maintenance.</p>
+
+      <h3>Do I remove old siding first?</h3>
+      <p>Usually yes — it's the only way to inspect sheathing for rot and install house wrap properly.</p>
+
+      <h3>What's the best time of year to install siding?</h3>
+      <p>Spring and fall. Vinyl gets brittle below 40°F; fiber cement cuts produce silica dust that needs dry weather.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Roofing Calculator", description: "Calculate bundles and squares of shingles for your roof.", path: construction_roofing_path, icon_path: "M3 12l9-9 9 9" },
+      { name: "Paint Calculator", description: "Calculate gallons of exterior paint for siding and trim.", path: construction_paint_path, icon_path: "M12 2l3 7h7" },
+      { name: "Gutter Calculator", description: "Calculate linear feet of gutter and downspouts for your home.", path: construction_gutter_path, icon_path: "M4 6h16v4H4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("siding-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

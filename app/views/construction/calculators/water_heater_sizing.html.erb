@@ -1,0 +1,167 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Water Heater Sizing Calculator - Tank & Tankless",
+  description: "Free water heater sizing calculator. Enter people, bathrooms, and fixture use to see the right tank size in gallons or the tankless GPM flow rate your home needs.",
+  canonical: construction_water_heater_sizing_url,
+  og: {
+    title: "Water Heater Sizing Calculator - Free Online Tool | Calc Hammer",
+    description: "Size a tank or tankless water heater for your household.",
+    url: construction_water_heater_sizing_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Water Heater Sizing Calculator", url: construction_water_heater_sizing_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What size water heater do I need?", answer: "The rule of thumb is 1-2 people → 30 gal, 2-3 people → 40 gal, 3-4 people → 50 gal, 4+ people → 75 or 80 gal. But the better measure is peak-hour demand: add up gallons used in your busiest hour of the day and match it to the water heater's First-Hour Rating (FHR), which you can find on the EnergyGuide label. A 40 gallon tank with a 65 gallon FHR handles more than a 50 gallon tank with a 55 gallon FHR." },
+  { question: "Tank vs tankless?", answer: "Tank water heaters are cheaper (500 to 1,500 dollars installed) and easier to replace. They run out of hot water after sustained use and waste energy keeping 40-50 gallons hot 24/7. Tankless is 2,000 to 4,500 dollars installed but never runs out, lasts twice as long (20+ years), and cuts water heating energy by 20 to 30 percent. Tankless needs a properly sized gas line or 240V electric circuit — upgrading those can add 500 to 1,500 dollars to installation. For most households, a high-efficiency tank is the best cost-value choice unless you need the endless hot water." },
+  { question: "What's the First-Hour Rating?", answer: "FHR is the gallons of hot water a tank can supply in the first hour of use, starting full. It's a combination of tank capacity and recovery rate (how fast the element or burner can reheat cold water). A 50 gallon tank with a fast gas burner might have an FHR of 85; a 50 gallon electric tank might have only 60 because electric recovers more slowly. FHR is more important than tank size for matching real-world peak demand." },
+  { question: "How many GPM for a tankless water heater?", answer: "A tankless needs enough flow to serve the simultaneous fixtures running in your peak minute. Assume one shower (2.5 GPM) plus one other fixture (sink at 1.5 GPM, or dishwasher at 1.5 GPM) = 4 GPM minimum. For a 3+ bathroom home, plan on 5 to 7 GPM. For a 4+ bathroom home with laundry and dishwasher running simultaneously, 7 to 9 GPM. In cold climates, the same tankless has a lower effective GPM because incoming water is colder and needs more heat rise." },
+  { question: "Is electric or gas water heater better?", answer: "Gas is cheaper to operate in most US markets (roughly half the monthly cost of electric) and recovers faster, but costs 300 to 500 dollars more to install due to venting. Electric is cheaper upfront, quieter, and safer (no combustion), but slower to recover and more expensive to run. Heat pump water heaters are electric with 2-3x efficiency of standard electric and have become competitive with gas for total cost of ownership, especially with federal tax credits." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Water Heater Sizing Calculator",
+  description: "Size a tank or tankless water heater from household size and fixture use.",
+  url: construction_water_heater_sizing_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "water-heater-sizing-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Water Heater Sizing Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Water Heater Sizing Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">What size water heater do you need? Enter household size and fixture usage to see the right tank size or tankless flow rate.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="water-heater-sizing-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">People</label>
+              <input type="number" inputmode="numeric" data-water-heater-sizing-calculator-target="people" data-action="input->water-heater-sizing-calculator#calculate" class="w-full" value="4" step="1" min="1">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Bathrooms</label>
+              <input type="number" inputmode="numeric" data-water-heater-sizing-calculator-target="bathrooms" data-action="input->water-heater-sizing-calculator#calculate" class="w-full" value="2" step="1" min="1">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Showers / peak hour</label>
+              <input type="number" inputmode="numeric" data-water-heater-sizing-calculator-target="showers" data-action="input->water-heater-sizing-calculator#calculate" class="w-full" value="4" step="1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Baths / peak hour</label>
+              <input type="number" inputmode="numeric" data-water-heater-sizing-calculator-target="baths" data-action="input->water-heater-sizing-calculator#calculate" class="w-full" value="0" step="1" min="0">
+            </div>
+          </div>
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            <input type="checkbox" data-water-heater-sizing-calculator-target="dishwasher" data-action="change->water-heater-sizing-calculator#calculate" class="rounded"> Dishwasher running
+          </label>
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            <input type="checkbox" data-water-heater-sizing-calculator-target="clothesWasher" data-action="change->water-heater-sizing-calculator#calculate" class="rounded"> Clothes washer running
+          </label>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Your Water Heater</h2>
+          <div class="space-y-3">
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">Peak-hour demand</span>
+              <span class="text-2xl font-extrabold text-cyan-700 dark:text-cyan-400" data-water-heater-sizing-calculator-target="resultPeak">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-cyan-200/50 dark:border-cyan-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Recommended tank</span>
+              <span class="text-xl font-bold text-cyan-700 dark:text-cyan-400" data-water-heater-sizing-calculator-target="resultTank">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Required FHR</span>
+              <span class="text-base font-bold text-cyan-700 dark:text-cyan-400" data-water-heater-sizing-calculator-target="resultFhr">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Tankless GPM</span>
+              <span class="text-base font-bold text-cyan-700 dark:text-cyan-400" data-water-heater-sizing-calculator-target="resultTankless">—</span>
+            </div>
+          </div>
+          <button data-action="click->water-heater-sizing-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "water-heater-sizing-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Two Ways to Size a Water Heater</h2>
+      <p>
+        The rule-of-thumb method matches tank size to household size: 30 gal for 1-2 people, 40 gal for 3, 50 gal for 4, 75-80 gal for 5 or more. The peak-hour demand method totals the gallons used during your busiest hour — usually morning — and picks a tank with a First-Hour Rating (FHR) that meets or exceeds that number. Peak-hour demand is more accurate because it accounts for the real bottleneck: not average daily use but the one hour when everyone showers before school and work while the dishwasher runs.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Typical Fixture Usage Numbers</h2>
+      <p>
+        A standard shower uses about 10 gallons of hot water (20 gallons of mixed water at 50 percent hot). A full bathtub uses 20 gallons. Hand washing is about 2 gallons per person per hour. A kitchen sink cycle is 4 gallons. A dishwasher is 6 gallons per cycle. A clothes washer on hot is 7 gallons. For a family of 4 with everyone showering within one hour, plus kitchen and one laundry load, peak-hour demand is around 50 to 65 gallons. That maps to either a 50 gallon tank with a fast recovery rate or a 65-80 gallon tank with slower recovery.
+      </p>
+
+      <h2>Tankless Sizing Is Different</h2>
+      <p>
+        Tankless water heaters are sized by flow rate (gallons per minute, GPM) instead of storage volume. Add up the simultaneous fixtures that might run at once in your peak minute: 2 showers = 5 GPM, 2 showers + dishwasher = 6.5 GPM, 3 showers + kitchen sink = 9 GPM. Pick a tankless rated for at least that flow at your minimum incoming water temperature. In cold climates (incoming water 40-50°F), tankless units must heat the water more, which reduces effective GPM. Always check the manufacturer's flow chart for your climate zone.
+      </p>
+
+      <h2>Recovery Rate vs Tank Size</h2>
+      <p>
+        Recovery rate is how fast a tank can reheat cold water after it's been drained. Gas water heaters recover much faster than electric — a 40 gallon gas tank with a 40,000 BTU burner recovers around 40 gallons per hour, while a 50 gallon electric tank with dual 4,500 watt elements recovers only about 20 gallons per hour. That's why First-Hour Rating matters more than tank size for sizing: a 40 gallon gas unit often outperforms a 50 gallon electric unit in real-world peak demand. Heat pump water heaters are slow to recover but compensate with larger tank sizes (50 or 65 gallon standard).
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What size water heater for a family of 4?</h3>
+      <p>50 gallon gas or 65-80 gallon electric, or a 7-9 GPM tankless.</p>
+
+      <h3>Will a 40 gallon tank work for 4 people?</h3>
+      <p>Yes if it has a high FHR (over 65 gal/hr) from a gas burner; probably not for electric.</p>
+
+      <h3>How long do water heaters last?</h3>
+      <p>Tank: 8-12 years. Tankless: 20+ years. Heat pump: 10-15 years.</p>
+
+      <h3>Can I install a bigger tank than I need?</h3>
+      <p>Yes, but you'll waste energy keeping extra water hot. Right-sized is more efficient.</p>
+
+      <h3>Are heat pump water heaters worth it?</h3>
+      <p>In warm basements with federal tax credits, yes — 2-3× more efficient than electric resistance.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Plumbing Calculator", description: "Estimate plumbing pipe sizing and fitting counts.", path: construction_plumbing_path, icon_path: "M4 6h16v4H4z" },
+      { name: "HVAC BTU Calculator", description: "Size your heating and cooling system from room dimensions.", path: construction_hvac_btu_path, icon_path: "M12 2v2m0 16v2" },
+      { name: "Electrical Load Calculator", description: "Calculate total electrical load for a panel upgrade.", path: construction_electrical_load_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("water-heater-sizing-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

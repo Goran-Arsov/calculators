@@ -1,0 +1,162 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pool Volume Calculator - Gallons in Your Pool",
+  description: "Free pool volume calculator. Enter shape and dimensions to see how many gallons and liters are in your rectangular, round, oval, or kidney-shaped swimming pool.",
+  canonical: construction_pool_volume_url,
+  og: {
+    title: "Pool Volume Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate swimming pool volume in gallons and liters.",
+    url: construction_pool_volume_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Pool Volume Calculator", url: construction_pool_volume_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many gallons in a 16 x 32 pool?", answer: "For a 16 × 32 foot rectangular pool with an average depth of 5 feet, the volume is 16 × 32 × 5 × 7.48 = 19,148 gallons (about 72,500 liters). For a pool with 4 foot shallow end and 8 foot deep end, use the average depth of 6 feet, which gives 22,978 gallons. Always use the average depth, not the deepest point." },
+  { question: "How do I measure average depth for an irregular pool?", answer: "For a rectangular pool with a sloped bottom from shallow to deep, use (shallow + deep) / 2 as the average depth. For pools with a 'hopper' design (flat shallow area that drops to a flat deep end), use a weighted average based on the proportion of surface area at each depth. When in doubt, use 5 feet as a starting estimate for a typical backyard inground pool." },
+  { question: "How do I calculate pool volume for a round pool?", answer: "Round pool volume is π × (D/2)² × depth × 7.48 gallons per cubic foot, where D is the diameter in feet. Or equivalently D² × depth × 5.9 gallons. A 24 foot round pool at 4 foot depth is 24² × 4 × 5.9 = 13,594 gallons. The calculator uses the (π/4) fill-factor method applied to the bounding square, which gives the same answer." },
+  { question: "Why do I need to know my pool's volume?", answer: "For chemical dosing. Chlorine, algaecide, shock, pH balancers, and stabilizer are all dosed in ounces or ppm per 10,000 gallons. Overdose and you bleach liners and irritate swimmers; underdose and algae takes over. Also for heating calculations (1 BTU raises 1 lb of water 1°F, so 1,000 gallons is 8,340 BTU per degree) and for knowing how much water to drain before closing." },
+  { question: "What shape factor for a kidney or freeform pool?", answer: "Kidney pools use roughly 0.85 of the bounding box area, because the curve loses about 15 percent of the rectangle. Freeform pools vary but 0.80 to 0.85 is a safe range. The calculator uses 0.85 for kidney. For highly irregular shapes, sketch the pool on graph paper, count squares, and compute volume from the actual surface area." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Pool Volume Calculator",
+  description: "Calculate swimming pool volume in gallons and liters for common pool shapes.",
+  url: construction_pool_volume_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "pool-volume-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Pool Volume Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pool Volume Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How many gallons in your swimming pool? Pick a shape, enter length, width, and average depth, and see volume in gallons, liters, and cubic feet.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="pool-volume-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Shape</label>
+            <select data-pool-volume-calculator-target="shape" data-action="change->pool-volume-calculator#calculate" class="w-full">
+              <option value="rectangular" selected>Rectangular</option>
+              <option value="round">Round</option>
+              <option value="oval">Oval</option>
+              <option value="kidney">Kidney / freeform</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Length / diameter (ft)</label>
+            <input type="number" inputmode="decimal" data-pool-volume-calculator-target="length" data-action="input->pool-volume-calculator#calculate" class="w-full" value="32" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Width (ft)</label>
+            <input type="number" inputmode="decimal" data-pool-volume-calculator-target="width" data-action="input->pool-volume-calculator#calculate" class="w-full" value="16" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Average depth (ft)</label>
+            <input type="number" inputmode="decimal" data-pool-volume-calculator-target="depth" data-action="input->pool-volume-calculator#calculate" class="w-full" value="5" step="0.1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-900/20 dark:to-teal-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Pool Volume</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Surface area</span>
+              <span class="text-base font-bold text-cyan-700 dark:text-cyan-400" data-pool-volume-calculator-target="resultSurface">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Cubic feet</span>
+              <span class="text-base font-bold text-cyan-700 dark:text-cyan-400" data-pool-volume-calculator-target="resultCubicFeet">—</span>
+            </div>
+            <div class="pt-3 border-t border-cyan-200/50 dark:border-cyan-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm block">Gallons</span>
+              <span class="text-3xl font-extrabold text-cyan-700 dark:text-cyan-400" data-pool-volume-calculator-target="resultGallons">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Liters</span>
+              <span class="text-base font-bold text-cyan-700 dark:text-cyan-400" data-pool-volume-calculator-target="resultLiters">—</span>
+            </div>
+          </div>
+          <button data-action="click->pool-volume-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "pool-volume-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Pool Volume Is Calculated</h2>
+      <p>
+        For a rectangular pool, volume equals length × width × average depth × 7.48 gallons per cubic foot. For round pools, use π × (diameter/2)² × average depth × 7.48. Oval pools use (π/4) × length × width × depth × 7.48. Kidney-shaped pools use 0.85 × length × width × depth × 7.48, because the curves lose about 15 percent of the bounding rectangle. Always use average depth for pools with sloped bottoms, not maximum depth.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Measuring Average Depth</h2>
+      <p>
+        Most residential pools are deeper at one end than the other. For a simple sloped bottom, average depth is (shallow end + deep end) / 2. For a pool with a flat shallow area, then a slope, then a flat deep area, the math is: (shallow_area × shallow_depth + slope_area × average_slope_depth + deep_area × deep_depth) / total_area. For most purposes, the (shallow + deep) / 2 shortcut is within 10 percent of the true volume.
+      </p>
+
+      <h2>Why You Need Your Pool's Volume</h2>
+      <p>
+        Chemical dosing is the main reason. Every chlorine, algaecide, shock, pH balancer, and stabilizer product on the market lists dosing in ounces or pounds per 10,000 gallons. Get your volume wrong and you will either waste chemicals or fail to sanitize the pool. Volume also matters for heating — each 1°F rise in a 20,000 gallon pool requires about 167,000 BTU of heat input, which informs whether a 400,000 BTU gas heater or a 100,000 BTU heat pump is appropriate for your climate. Finally, volume tells you water cost for initial fill and refills after draining.
+      </p>
+
+      <h2>Typical Residential Pool Volumes</h2>
+      <p>
+        A 12 × 24 foot rectangular above-ground pool at 4 foot average depth holds 8,620 gallons. A 16 × 32 inground pool at 5 foot average holds 19,150 gallons. A 20 × 40 pool at 6 foot average holds 35,900 gallons. A 24 foot round above-ground at 4 foot depth holds about 13,600 gallons. Standard backyard inground pools are usually 15,000 to 30,000 gallons. Anything over 50,000 gallons is a commercial or large residential pool and usually warrants a larger pump, heater, and sanitation system.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many gallons per cubic foot of water?</h3>
+      <p>7.48 US gallons, or about 28.3 liters.</p>
+
+      <h3>Do I use average or max depth?</h3>
+      <p>Average depth — always. Max depth overstates volume by 20 to 40 percent for most residential pools.</p>
+
+      <h3>How long does it take to fill a pool?</h3>
+      <p>At a typical 10 GPM garden hose flow, a 20,000 gallon pool takes about 33 hours. Truck delivery is faster and often cheaper for the initial fill.</p>
+
+      <h3>Is my pool volume more or less after adding a hot tub?</h3>
+      <p>If the hot tub is plumbed to the pool pump, add the hot tub volume to the total for chemical dosing.</p>
+
+      <h3>How do I dose chlorine from volume?</h3>
+      <p>Liquid chlorine (12.5%): ~11 oz per 10,000 gallons to raise free chlorine by 1 ppm.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Concrete Calculator", description: "Calculate cubic yards of concrete for pool deck and coping.", path: construction_concrete_path, icon_path: "M4 6h16v12H4z" },
+      { name: "HVAC BTU Calculator", description: "Size a pool heater from volume and target temperature.", path: construction_hvac_btu_path, icon_path: "M12 2v2m0 16v2" },
+      { name: "Paint Calculator", description: "Calculate gallons of pool deck and coping paint.", path: construction_paint_path, icon_path: "M12 2l3 7h7" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("pool-volume-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

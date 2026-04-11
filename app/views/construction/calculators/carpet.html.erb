@@ -1,0 +1,171 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Carpet Calculator - Square Yards & Cost",
+  description: "Free carpet calculator. Enter room dimensions to see square yards needed, linear feet off a 12 ft roll, whether a seam is required, and total cost.",
+  canonical: construction_carpet_url,
+  og: {
+    title: "Carpet Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate square yards of carpet, seam requirements, and cost.",
+    url: construction_carpet_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Carpet Calculator", url: construction_carpet_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate carpet in square yards?", answer: "Carpet is sold by the square yard. Multiply the room length by width in feet to get square feet, divide by 9 to convert to square yards, then add 10 percent for waste and cut-in. A 12 × 15 foot room is 180 sq ft or 20 sq yd, plus 2 sq yd waste — order 22 sq yd. Always round up." },
+  { question: "How wide is a carpet roll?", answer: "The standard carpet roll width is 12 feet. Some manufacturers also make 15 foot rolls and less commonly 13'2\" (for Berber). If either dimension of your room exceeds the roll width, you will need a seam. Most rooms under 12 feet wide are seamless; larger rooms almost always have seams, which a good installer can make nearly invisible." },
+  { question: "How much waste should I add for carpet?", answer: "10 percent is standard for a rectangular room with minimal cuts. Add 15 percent for rooms with multiple doorways, alcoves, or irregular shapes. Patterned carpet requires 15 to 20 percent because the installer must match the pattern across seams, which wastes more material. Stairs require 20 to 25 percent waste." },
+  { question: "How much does carpet cost per square yard?", answer: "Builder-grade polyester and nylon run 15 to 25 dollars per square yard for the carpet itself, excluding pad and installation. Midrange nylon runs 25 to 45 dollars per sq yd. Wool and premium synthetic fiber runs 50 to 100+ dollars. Add 7 to 15 dollars per sq yd for padding plus 5 to 10 dollars per sq yd for installation. Total installed cost is usually 30 to 70 dollars per sq yd for most homeowners." },
+  { question: "Will my room need a seam?", answer: "If the shorter dimension of the room is more than 12 feet, yes. The calculator flags this automatically. Good seams run perpendicular to the main light source (not into a door) and are placed in low-traffic areas. Professional installers use heat-activated seam tape and a seam iron to make seams nearly invisible, especially in plush and textured carpets." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Carpet Calculator",
+  description: "Calculate square yards of carpet, seam requirements, and total cost for a room.",
+  url: construction_carpet_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "carpet-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Carpet Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Carpet Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much carpet do you need? Enter room dimensions to see square footage, square yards, linear feet off a 12 ft roll, seam requirement, and total cost.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="carpet-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Length (ft)</label>
+              <input type="number" inputmode="decimal" data-carpet-calculator-target="length" data-action="input->carpet-calculator#calculate" class="w-full" value="15" step="any" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Width (ft)</label>
+              <input type="number" inputmode="decimal" data-carpet-calculator-target="width" data-action="input->carpet-calculator#calculate" class="w-full" value="12" step="any" min="0">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Waste %</label>
+            <input type="number" inputmode="decimal" data-carpet-calculator-target="waste" data-action="input->carpet-calculator#calculate" class="w-full" value="10" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Roll width (ft)</label>
+            <input type="number" inputmode="decimal" data-carpet-calculator-target="rollWidth" data-action="input->carpet-calculator#calculate" class="w-full" value="12" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Price per sq yd ($, optional)</label>
+            <input type="number" inputmode="decimal" data-carpet-calculator-target="price" data-action="input->carpet-calculator#calculate" class="w-full" value="35" step="0.01" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-stone-50 dark:from-amber-900/20 dark:to-stone-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Carpet Needed</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Area</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-carpet-calculator-target="resultArea">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">With waste</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-carpet-calculator-target="resultWithWaste">—</span>
+            </div>
+            <div class="pt-3 border-t border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm block">Square yards</span>
+              <span class="text-3xl font-extrabold text-amber-700 dark:text-amber-400" data-carpet-calculator-target="resultSqyd">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Linear ft / roll</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-carpet-calculator-target="resultLinear">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Seam</span>
+              <span class="text-sm font-bold text-amber-700 dark:text-amber-400" data-carpet-calculator-target="resultSeam">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Total cost</span>
+              <span class="text-xl font-bold text-amber-700 dark:text-amber-400" data-carpet-calculator-target="resultCost">—</span>
+            </div>
+          </div>
+          <button data-action="click->carpet-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-stone-600 hover:from-amber-700 hover:to-stone-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "carpet-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Measure a Room for Carpet</h2>
+      <p>
+        Measure length and width wall-to-wall at the widest points, not at door openings. Include closets as part of the room if they will be carpeted. For irregular rooms, divide into rectangles, calculate each separately, and add the results. Multiply length by width to get square footage. Divide by 9 to convert to square yards, the unit carpet is sold in. Add 10 percent waste for a rectangular room, 15 percent for complex shapes, and 20 to 25 percent for stairs and patterned carpet.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The 12 Foot Roll Rule</h2>
+      <p>
+        Standard carpet rolls come in 12 foot widths. If the shorter dimension of your room is 12 feet or less, you can install the carpet from a single piece with no seam. If it exceeds 12 feet, you will need a seam somewhere — the installer will choose its location to minimize visibility. Rolls in 13'2" and 15 foot widths exist but are less common and more expensive per square yard. Always confirm the roll width with your retailer before ordering, because waste calculations change if the room dimensions and roll width do not match efficiently.
+      </p>
+
+      <h2>Carpet vs Pad Costs</h2>
+      <p>
+        Carpet is typically priced per square yard, but the total installed cost includes carpet, padding, and labor. Padding runs 7 to 15 dollars per square yard depending on density and thickness — 8 lb rebond is standard for living areas, 6 lb for bedrooms, and higher-density 10 lb for stairs and heavy traffic. Installation runs 5 to 10 dollars per square yard. For a 20 sq yd room, expect 300 to 700 dollars carpet, 140 to 300 dollars padding, 100 to 200 dollars install, plus 50 to 100 dollars for old carpet removal — roughly 600 to 1,400 dollars total.
+      </p>
+
+      <h2>Choosing a Carpet Fiber</h2>
+      <p>
+        Nylon is the most durable synthetic fiber, resistant to wear and crushing. It is the default for high-traffic homes and costs a bit more than polyester. Polyester (PET) is softer, stain-resistant, and cheaper but crushes faster. Triexta is a newer polyester variant with better crush resistance. Wool is the premium natural fiber — soft, durable, and expensive. For stairs and hallways, nylon or wool; for bedrooms, polyester is perfectly acceptable and saves money. Avoid olefin (polypropylene) for anything except low-traffic basement installations.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many square yards in a square foot?</h3>
+      <p>1 square yard = 9 square feet.</p>
+
+      <h3>What's a good waste percentage?</h3>
+      <p>10% for simple rooms, 15% for complex shapes, 20-25% for stairs and patterned carpet.</p>
+
+      <h3>Do I need to replace the pad?</h3>
+      <p>Yes — pad wears out with the carpet. Installing new carpet over old pad voids the warranty and feels flat.</p>
+
+      <h3>Can I install carpet myself?</h3>
+      <p>Technically yes, but it requires a power stretcher and a seam iron. Most warranties require professional installation.</p>
+
+      <h3>How long does carpet last?</h3>
+      <p>5 to 15 years depending on fiber, traffic, and quality. Nylon in a bedroom can last 20+ years.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Flooring Calculator", description: "Estimate materials for hardwood, laminate, and vinyl flooring.", path: construction_flooring_path, icon_path: "M4 6h16v12H4z" },
+      { name: "Baseboard Calculator", description: "Calculate linear feet of baseboard to match new flooring.", path: construction_baseboard_path, icon_path: "M3 20h18v2H3z" },
+      { name: "Tile Calculator", description: "Calculate how many tiles you need for any room including waste.", path: construction_tile_path, icon_path: "M4 4h4v4H4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("carpet-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

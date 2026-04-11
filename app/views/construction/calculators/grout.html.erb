@@ -1,0 +1,173 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Grout Calculator - How Much Grout Do I Need?",
+  description: "Free grout calculator. Enter tile size, joint width, depth, and square footage to see exactly how many pounds and 25 lb bags of grout you need for your tile job.",
+  canonical: construction_grout_url,
+  og: {
+    title: "Grout Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate how much grout you need in pounds and bags from tile size and joint width.",
+    url: construction_grout_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Grout Calculator", url: construction_grout_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much grout do I need for a 100 sq ft tile job?", answer: "For 12×12 inch tile with 1/8 inch joints at 1/4 inch depth, 100 sq ft needs about 23 pounds of grout — one 25 pound bag covers the job comfortably. With wider 1/4 inch joints and the same tile, coverage drops to about 53 sq ft per 25 lb bag, so 100 sq ft needs 2 bags. Smaller tiles and larger joints dramatically increase grout use because they add more joint length per square foot." },
+  { question: "How much grout per 25 lb bag?", answer: "For common combinations: 12×12 inch tile with 1/8 inch joints covers ~130 sq ft per 25 lb bag; 12×12 with 1/4 inch joints ~65 sq ft; 6×6 with 1/8 inch joints ~65 sq ft; subway tile (3×6) with 1/16 inch joints ~85 sq ft. Coverage varies by brand, so always check the bag label." },
+  { question: "Sanded vs unsanded grout — same coverage?", answer: "Coverage is nearly identical because both are cement-based and have similar density. The difference is application: unsanded is for joints under 1/8 inch (glass, polished stone, narrow-set subway), sanded is for joints 1/8 inch and wider. Using unsanded on wide joints leaves cracks; using sanded on glass can scratch it. Coverage calculations in pounds are the same either way." },
+  { question: "Do I need extra grout for waste?", answer: "Yes — add 10 percent for cutting, mixing waste, and touch-ups. The calculator includes a configurable waste percentage, defaulted to 10. If the job has many cuts at edges, narrow borders, or complex patterns, bump it to 15 percent." },
+  { question: "Is epoxy grout calculated the same way?", answer: "No. Epoxy grout is denser and comes in much smaller units — typically a 9 lb kit covers 40 to 60 sq ft of 12×12 tile with 1/8 inch joints. Always use the manufacturer's coverage chart for epoxy, not a cementitious grout calculator. This tool is calibrated for standard cement and polymer-modified cement grout." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Grout Calculator",
+  description: "Calculate pounds and bags of tile grout needed from area, tile size, joint width, and depth.",
+  url: construction_grout_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "grout-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Grout Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Grout Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much grout do you need? Enter tile size, joint width, depth, and area to see pounds, 25 lb and 10 lb bag counts, and coverage per bag.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="grout-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Area (sq ft)</label>
+            <input type="number" inputmode="decimal" data-grout-calculator-target="area" data-action="input->grout-calculator#calculate" class="w-full" value="100" step="any" min="0">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tile L (in)</label>
+              <input type="number" inputmode="decimal" data-grout-calculator-target="tileLength" data-action="input->grout-calculator#calculate" class="w-full" value="12" step="any" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tile W (in)</label>
+              <input type="number" inputmode="decimal" data-grout-calculator-target="tileWidth" data-action="input->grout-calculator#calculate" class="w-full" value="12" step="any" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Joint width (in)</label>
+              <input type="number" inputmode="decimal" data-grout-calculator-target="joint" data-action="input->grout-calculator#calculate" class="w-full" value="0.125" step="0.001" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Depth (in)</label>
+              <input type="number" inputmode="decimal" data-grout-calculator-target="thickness" data-action="input->grout-calculator#calculate" class="w-full" value="0.25" step="0.01" min="0">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Waste %</label>
+            <input type="number" inputmode="decimal" data-grout-calculator-target="waste" data-action="input->grout-calculator#calculate" class="w-full" value="10" step="1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-slate-50 to-stone-50 dark:from-slate-900/30 dark:to-stone-900/30 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Grout You Need</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Lb per sq ft</span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-grout-calculator-target="resultLbsPerSqft">—</span>
+            </div>
+            <div class="pt-3 border-t border-slate-200/50 dark:border-slate-700/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm block">Total pounds</span>
+              <span class="text-3xl font-extrabold text-slate-700 dark:text-slate-200" data-grout-calculator-target="resultPounds">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">25 lb bags</span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-grout-calculator-target="resultBags25">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">10 lb bags</span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-grout-calculator-target="resultBags10">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Coverage / 25 lb</span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-grout-calculator-target="resultCoverage">—</span>
+            </div>
+          </div>
+          <button data-action="click->grout-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-slate-600 to-stone-600 hover:from-slate-700 hover:to-stone-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "grout-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Grout Calculator Works</h2>
+      <p>
+        Grout volume depends on joint length per square foot, joint width, and joint depth. For a tile of length L and width W inches, the joint length per square foot is (L + W) / (L × W). Multiply that by the joint width and depth in inches, and by a density factor calibrated to cementitious grout, to get pounds per square foot. The calculator then multiplies by your area and adds a 10 percent waste factor. For a 12×12 inch tile with 1/8 inch joints at 1/4 inch depth, the result is roughly 0.19 lb per sq ft, or one 25 lb bag per ~130 sq ft.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Tile Size and Joint Width Matter Most</h2>
+      <p>
+        Small tiles have a lot of joint per area; large tiles have very little. Mosaic 1×1 inch tile has 96 inches of joint per square foot; 24×24 inch tile has just 8 inches. That is why subway tile and mosaics burn through grout while large format tile sips it. Joint width matters too — doubling the joint from 1/8 to 1/4 inch doubles the volume. Always match the joint width to the tile: rectified large format can take 1/16 inch, standard ceramic 1/8 inch, and natural stone or travertine up to 1/2 inch for a rustic look.
+      </p>
+
+      <h2>Sanded vs Unsanded Grout</h2>
+      <p>
+        Unsanded grout is cement plus polymer without aggregate. It shrinks less and is required for joints under 1/8 inch because sand grains would not fit. Use it for glass tile, polished marble, and narrow-set subway. Sanded grout adds silica sand to resist shrinkage and cracking in joints 1/8 inch and wider. It is the workhorse for floors, walls, and most residential tile. Coverage in pounds is nearly identical; the calculator handles both.
+      </p>
+
+      <h2>Tips for Accurate Estimating</h2>
+      <p>
+        Measure your actual job, then round up. A typical 25 lb bag mixes about 5 to 6 pounds of water per bag, so if you buy an extra bag, you can simply not mix it — unmixed grout stores for years in a sealed bag. Underestimating is worse: you risk running out mid-job, which leaves uneven color lines between old and new batches. For floors, always buy 1 extra bag beyond the calculator's result; for walls, the default 10 percent waste factor is sufficient.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many bags of grout for 200 sq ft?</h3>
+      <p>For 12×12 tile with 1/8 inch joints, 2 bags of 25 lb grout. For 6×6 with 1/4 joints, 6 bags.</p>
+
+      <h3>Does grout depth equal tile thickness?</h3>
+      <p>Close to it. Most grout fills the full depth of the tile, so use your tile's actual thickness for the depth input.</p>
+
+      <h3>What if the bag label says different coverage?</h3>
+      <p>Bag labels are accurate — use them. The calculator is an independent cross-check and gives coverage within 10 percent of most brands.</p>
+
+      <h3>Can I calculate epoxy grout the same way?</h3>
+      <p>No. Epoxy is denser and comes in kits. Use the manufacturer's chart for epoxy products.</p>
+
+      <h3>Do I need more grout for penny rounds or hex mosaic?</h3>
+      <p>Yes, significantly. Small, round, or irregular tiles have much more joint length per area — double the result for conservative estimating.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Tile Calculator", description: "Calculate how many tiles you need for any room including waste.", path: construction_tile_path, icon_path: "M4 4h4v4H4zM10 4h4v4h-4zM16 4h4v4h-4z" },
+      { name: "Flooring Calculator", description: "Estimate materials for hardwood, laminate, and vinyl flooring.", path: construction_flooring_path, icon_path: "M4 6h16v12H4z" },
+      { name: "Carpet Calculator", description: "Calculate square yards of carpet for any room.", path: construction_carpet_path, icon_path: "M4 6h16v12H4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("grout-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
