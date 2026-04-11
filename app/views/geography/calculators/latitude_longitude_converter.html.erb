@@ -1,0 +1,176 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Latitude Longitude Converter (DMS ↔ Decimal) - Free Online Tool",
+  description: "Convert coordinates between decimal degrees and degrees-minutes-seconds (DMS) in both directions. Supports N/S/E/W hemispheres and instantly formats results.",
+  canonical: geography_latitude_longitude_converter_url,
+  og: {
+    title: "Latitude Longitude Converter - Free Online Tool | Calc Hammer",
+    description: "Convert coordinates between decimal degrees and degrees-minutes-seconds (DMS) in both directions.",
+    url: geography_latitude_longitude_converter_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Geography", url: category_url("geography") },
+  { name: "Latitude Longitude Converter", url: geography_latitude_longitude_converter_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the difference between decimal degrees and DMS?", answer: "Decimal degrees express latitude and longitude as a single floating-point number per axis, for example 40.7128 for New York's latitude. Degrees-minutes-seconds (DMS) breaks the same angle into three components: whole degrees, arc minutes (sixtieths of a degree), and arc seconds (sixtieths of a minute), plus a hemisphere letter. Decimal degrees are easier to store and compute with, while DMS is the traditional format on navigation charts and older maps." },
+  { question: "How do I convert DMS to decimal degrees manually?", answer: "Take the degrees, add the minutes divided by 60, add the seconds divided by 3600, and apply a negative sign if the hemisphere is South or West. For example, 40°42'46\"N becomes 40 + 42/60 + 46/3600 = 40.7128 degrees. This calculator does the arithmetic for you and also does the reverse conversion from decimal back to DMS." },
+  { question: "Which format should I use?", answer: "Use decimal degrees for software, GPS devices, APIs, and spreadsheets, because every modern system accepts them as a single number and they are easier to sort and compare. Use DMS when reading nautical charts, USGS topographic maps, aviation sectionals, or older surveying documents, which still display coordinates in the traditional three-part format. Many apps let you switch between the two in their settings." },
+  { question: "What do the N, S, E, W letters mean?", answer: "N (North) and S (South) indicate whether a latitude is in the Northern or Southern Hemisphere, and E (East) and W (West) indicate whether a longitude is east or west of the prime meridian. In decimal form, northern latitudes are positive and southern latitudes are negative, while eastern longitudes are positive and western longitudes are negative. Hemisphere letters remove that sign convention from the number itself." },
+  { question: "How precise is one arc second?", answer: "One arc second of latitude is about 30.87 meters on the ground, and one arc second of longitude is about 30.87 × cos(latitude) meters, which shrinks as you move toward the poles. Six decimal places of decimal degrees give you roughly 0.11 meter resolution, which is enough for most surveying and all consumer mapping uses." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Latitude Longitude Converter",
+  description: "Convert coordinates between decimal degrees and degrees-minutes-seconds (DMS) formats.",
+  url: geography_latitude_longitude_converter_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "latitude-longitude-converter"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Geography", url: category_path("geography") },
+  { name: "Latitude Longitude Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Latitude Longitude Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert between decimal degrees and degrees-minutes-seconds (DMS) coordinate formats in both directions. Paste GPS coordinates or chart readings and get the other format instantly.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="latitude-longitude-converter ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="flex gap-2 mb-6">
+        <button type="button" data-latitude-longitude-converter-target="tabDms" data-action="click->latitude-longitude-converter#showDms" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold">DMS → Decimal</button>
+        <button type="button" data-latitude-longitude-converter-target="tabDec" data-action="click->latitude-longitude-converter#showDecimal" class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold">Decimal → DMS</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div data-latitude-longitude-converter-target="dmsInputs">
+            <p class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Latitude (DMS)</p>
+            <div class="grid grid-cols-4 gap-2">
+              <input type="number" step="any" min="0" max="90" value="40" data-latitude-longitude-converter-target="latDeg" data-action="input->latitude-longitude-converter#calculate" placeholder="°" class="w-full">
+              <input type="number" step="any" min="0" max="59.999999" value="42" data-latitude-longitude-converter-target="latMin" data-action="input->latitude-longitude-converter#calculate" placeholder="'" class="w-full">
+              <input type="number" step="any" min="0" max="59.999999" value="46" data-latitude-longitude-converter-target="latSec" data-action="input->latitude-longitude-converter#calculate" placeholder='"' class="w-full">
+              <select data-latitude-longitude-converter-target="latHemi" data-action="change->latitude-longitude-converter#calculate" class="w-full">
+                <option value="N" selected>N</option>
+                <option value="S">S</option>
+              </select>
+            </div>
+            <p class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 mt-4">Longitude (DMS)</p>
+            <div class="grid grid-cols-4 gap-2">
+              <input type="number" step="any" min="0" max="180" value="74" data-latitude-longitude-converter-target="lonDeg" data-action="input->latitude-longitude-converter#calculate" placeholder="°" class="w-full">
+              <input type="number" step="any" min="0" max="59.999999" value="0" data-latitude-longitude-converter-target="lonMin" data-action="input->latitude-longitude-converter#calculate" placeholder="'" class="w-full">
+              <input type="number" step="any" min="0" max="59.999999" value="21.6" data-latitude-longitude-converter-target="lonSec" data-action="input->latitude-longitude-converter#calculate" placeholder='"' class="w-full">
+              <select data-latitude-longitude-converter-target="lonHemi" data-action="change->latitude-longitude-converter#calculate" class="w-full">
+                <option value="E">E</option>
+                <option value="W" selected>W</option>
+              </select>
+            </div>
+          </div>
+
+          <div data-latitude-longitude-converter-target="decimalInputs" class="hidden">
+            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Decimal Latitude</label>
+            <input type="number" step="any" min="-90" max="90" value="40.7128" data-latitude-longitude-converter-target="decLat" data-action="input->latitude-longitude-converter#calculate" class="w-full">
+            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 mt-4">Decimal Longitude</label>
+            <input type="number" step="any" min="-180" max="180" value="-74.0060" data-latitude-longitude-converter-target="decLon" data-action="input->latitude-longitude-converter#calculate" class="w-full">
+          </div>
+        </div>
+
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">Decimal Latitude</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-latitude-longitude-converter-target="resultDecLat">0</span>
+            </div>
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">Decimal Longitude</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-latitude-longitude-converter-target="resultDecLon">0</span>
+            </div>
+            <div class="pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">DMS Latitude</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-latitude-longitude-converter-target="resultDmsLat">0</span>
+            </div>
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">DMS Longitude</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-latitude-longitude-converter-target="resultDmsLon">0</span>
+            </div>
+          </div>
+          <button data-action="click->latitude-longitude-converter#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "latitude-longitude-converter" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Latitude/Longitude Converter</h2>
+      <p>
+        Choose a direction at the top of the converter: DMS to Decimal if you have coordinates like 40°42'46"N that you want to paste into software, or Decimal to DMS if you have a number like 40.7128 that you want to show on a nautical chart or in a traditional map annotation. Enter the values and the calculator instantly displays the other format. Hemisphere letters (N/S for latitude, E/W for longitude) are handled automatically: a southern or western value in decimal form becomes negative, and the DMS form uses S or W without a minus sign.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Decimal Degrees vs DMS — Which Should You Use?</h2>
+      <p>
+        Decimal degrees are preferred by virtually all modern software, including GPS devices, smartphones, GIS systems, APIs, and spreadsheets. They are a single number per axis, easy to sort, easy to compute with, and they avoid the awkward sexagesimal arithmetic that DMS demands. Degrees-minutes-seconds remains the traditional format on printed nautical charts, aviation sectionals, USGS topographic maps, and older surveying documents. Many field users still prefer DMS because it is more human-readable: 40°42'46"N is immediately recognizable as "about two-thirds of the way between the 40th and 41st parallel, almost exactly on a specific minute," whereas 40.7128 takes a mental step to interpret.
+      </p>
+
+      <h2>Understanding Precision</h2>
+      <p>
+        One degree of latitude is approximately 111 kilometers on the ground, one arc minute is about 1.85 kilometers, and one arc second is roughly 31 meters. For longitude, the same values hold at the equator and shrink with the cosine of the latitude as you move toward the poles. If you need to pinpoint a location to the nearest meter, you need coordinates precise to about 5 decimal places in decimal degrees, or to hundredths of a second in DMS. Six decimal places is overkill for anything non-survey-grade; use fewer digits on casual maps to avoid implying false precision.
+      </p>
+
+      <h2>Common Pitfalls</h2>
+      <p>
+        The most common mistake when entering coordinates is forgetting the sign for the western and southern hemispheres. Decimal latitudes in the Southern Hemisphere must be negative, and decimal longitudes in the Western Hemisphere must be negative. Another common error is mixing up latitude and longitude: latitude always comes first in most formats, but some mapping systems, notably GeoJSON, reverse the order to longitude-latitude. When in doubt, remember that latitude is limited to the range -90 to 90, while longitude can span -180 to 180, so a value above 90 in the "latitude" field is a clear sign you have the two swapped.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the difference between decimal degrees and DMS?</h3>
+      <p>Decimal degrees use a single floating-point number per axis. DMS splits that angle into degrees, arc minutes, and arc seconds, plus a hemisphere letter. Decimal is easier for software; DMS is traditional on charts.</p>
+
+      <h3>How do I convert DMS to decimal degrees manually?</h3>
+      <p>Take the degrees, add the minutes divided by 60, add the seconds divided by 3600, and apply a negative sign for S or W hemispheres.</p>
+
+      <h3>Which format should I use?</h3>
+      <p>Use decimal degrees for GPS, software, APIs, and spreadsheets. Use DMS when reading nautical charts, aviation sectionals, and printed maps.</p>
+
+      <h3>What do N, S, E, W mean?</h3>
+      <p>They indicate the hemisphere. N and E are positive in decimal form, while S and W are negative. In DMS you keep the value positive and add the letter instead.</p>
+
+      <h3>How precise is one arc second?</h3>
+      <p>About 31 meters of latitude, and 31 × cos(latitude) meters of longitude. Six decimal places of decimal degrees give you roughly 0.11 meter resolution.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Coordinate Distance Calculator", description: "Calculate the great-circle distance between two latitude/longitude coordinates.", path: geography_coordinate_distance_path, icon_path: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m-6 3l6-3" },
+      { name: "Bearing Calculator", description: "Calculate initial compass bearing between two latitude/longitude points.", path: geography_bearing_path, icon_path: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" },
+      { name: "Map Scale Calculator", description: "Convert map distance to real-world distance using map scale ratios.", path: geography_map_scale_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "geography" %>
+
+    <% blog_posts = related_blog_posts("latitude-longitude-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

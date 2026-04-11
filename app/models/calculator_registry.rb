@@ -210,6 +210,15 @@ class CalculatorRegistry
     { name: "Cross-Stitch Fabric Calculator", slug: "cross-stitch-fabric-calculator", path: :textile_cross_stitch_fabric_path, description: "Calculate the finished size of a cross-stitch design on any Aida count (11, 14, 16, 18, 22) and the fabric size to buy.", icon_path: "M4 4h16v16H4zM8 8h8v8H8z" }
   ].freeze
 
+  GEOGRAPHY_CALCULATORS = [
+    { name: "Coordinate Distance Calculator", slug: "coordinate-distance-calculator", path: :geography_coordinate_distance_path, description: "Calculate the great-circle distance between two latitude/longitude coordinates in kilometers, miles, and nautical miles using the Haversine formula.", icon_path: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m-6 3l6-3" },
+    { name: "Latitude/Longitude Converter", slug: "latitude-longitude-converter", path: :geography_latitude_longitude_converter_path, description: "Convert coordinates between decimal degrees and degrees-minutes-seconds (DMS) formats in both directions, with hemisphere support.", icon_path: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" },
+    { name: "Bearing Calculator", slug: "bearing-calculator", path: :geography_bearing_path, description: "Calculate the initial compass bearing and back bearing between two latitude/longitude points in degrees and compass direction.", icon_path: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" },
+    { name: "Coordinate Midpoint Calculator", slug: "midpoint-calculator", path: :geography_midpoint_path, description: "Calculate the great-circle midpoint between two latitude/longitude coordinates for route planning and meet-in-the-middle trips.", icon_path: "M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01" },
+    { name: "Map Scale Calculator", slug: "map-scale-calculator", path: :geography_map_scale_path, description: "Convert map distance to real-world distance using map scale ratios like 1:50,000 or 1:25,000 with meters, kilometers, miles, and feet output.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+    { name: "Population Density Calculator", slug: "population-density-calculator", path: :geography_population_density_path, description: "Calculate population density per square kilometer and square mile from population and area, with density classification from rural to hyperdense.", icon_path: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" }
+  ].freeze
+
   ALCOHOL_CALCULATORS = [
     { name: "ABV Calculator", slug: "abv-calculator", path: :alcohol_abv_path, description: "Calculate alcohol by volume (ABV) for beer, wine, mead, and cider from original and final gravity readings.", icon_path: "M12 3v2m0 14v2M5 12H3m18 0h-2m-1.5-6.5l-1.4 1.4M7.9 16.1l-1.4 1.4m0-11l1.4 1.4m8.2 8.2l1.4 1.4M12 7a5 5 0 100 10 5 5 0 000-10z" },
     { name: "IBU Calculator", slug: "ibu-calculator", path: :alcohol_ibu_path, description: "Calculate International Bitterness Units (IBU) for your beer recipe using the Tinseth hop utilization formula.", icon_path: "M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" },
@@ -394,6 +403,11 @@ class CalculatorRegistry
       title: "Alcohol & Brewing Calculators",
       description: "Free calculators for the alcohol industry: brewing, winemaking, distilling, and bartending. Calculate ABV, IBU, SRM color, yeast pitch rates, priming sugar, pour cost, and more.",
       calculators: ALCOHOL_CALCULATORS
+    },
+    "geography" => {
+      title: "Geography Calculators",
+      description: "Free geography calculators and mapping tools for coordinate distance, bearing, midpoint, latitude/longitude conversion, map scale, and population density. Built for travelers, GIS users, hikers, students, and planners.",
+      calculators: GEOGRAPHY_CALCULATORS
     }
   }.freeze
 

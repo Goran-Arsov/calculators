@@ -86,6 +86,11 @@ Ad slots use a shared partial `_ad_slot.html.erb` with a `slot:` argument.
 Never hardcode ad markup in individual views. AdSense `<ins>` tags should
 be present but commented out by default.
 
+### Never do unnecessary refactoring
+
+Never remove code that is not an obstacle for your current task. If something which does not interfere with the essence of your task, do NOT remove it. For example, if you are tasked to make better metrics, do NOT remove metrics for 14 day, 28 days, which do not interfere with your task! Upgrade, enhance, do not remove. If in doubt, ask for confirmation!
+
+
 ---
 
 ## Directory Structure
@@ -213,3 +218,16 @@ Ads are additive — pages must render perfectly without them.
 - Do not stuff ads above the fold aggressively
 - Do not split categories into separate sites/domains
 - Do not add a database-backed calculator registry (keep it simple — routes + POROs)
+
+## After you've finished a task, do this:
+
+1) Analyze the changes you've done if they need variable extraction; if it's good practice, extract variables!
+2) Analyze the changes you've done if they need scope extraction; if it's good practice, extract scopes!
+3) Analyze the changes you've done if they need partial extraction; if it's good practice, extract partial!
+4) Analyze the changes you've done if they need code refactoring; if it's good practice, code refactor!
+5) Check if the changes you've done need tests written; if tests could be written, write them!
+6) Test!
+7) Use agent-browser to test the latest work (work done on this issue).
+
+
+

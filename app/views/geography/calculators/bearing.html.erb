@@ -1,0 +1,149 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Bearing Calculator - Great Circle Compass Bearing Tool",
+  description: "Calculate the initial compass bearing and back bearing between two latitude/longitude coordinates. Returns degrees and 16-point compass directions like NNE and WSW.",
+  canonical: geography_bearing_url,
+  og: {
+    title: "Bearing Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate the initial compass bearing and back bearing between two latitude/longitude coordinates.",
+    url: geography_bearing_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Geography", url: category_url("geography") },
+  { name: "Bearing Calculator", url: geography_bearing_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is an initial bearing?", answer: "The initial bearing is the compass direction you would point at the starting location of a great-circle route in order to end up at the destination. Because great circles curve on a flat map, the bearing changes continuously along the route, which is why it is called the initial bearing, not a constant bearing. Ship and aircraft navigators follow a series of short straight legs, updating the heading periodically to stay on the great-circle path." },
+  { question: "What is a back bearing?", answer: "A back bearing is the direction from the destination back to the origin. For short distances, it is simply the initial bearing plus 180 degrees, wrapping around at 360. For longer great-circle routes, however, the back bearing from the destination may differ significantly from the reverse of the initial bearing, because the great-circle route is curved and each end has its own tangent direction. The calculator computes the exact back bearing using the destination as the new start point." },
+  { question: "What does NNE or WSW mean?", answer: "Those are 16-point compass abbreviations that divide the horizon into slices of 22.5 degrees each. NNE means North-Northeast and corresponds to a bearing of 22.5 degrees. WSW is West-Southwest, at 247.5 degrees. The 16-point system is common in marine navigation and meteorology because it gives a readable direction without forcing you to speak in three-digit numbers." },
+  { question: "Why is the bearing different from a rhumb line?", answer: "A rhumb line is a path of constant compass bearing on a Mercator map, which is convenient to steer but generally longer than a great circle. Great-circle bearings change continuously, while rhumb-line bearings stay constant. For short distances the two are nearly identical, but over thousands of kilometers the great circle can save many hours of flight time, even though it curves on a flat map." },
+  { question: "How accurate is this bearing calculation?", answer: "The formula used here is the forward azimuth derived from spherical trigonometry, which assumes a perfectly spherical Earth. It is accurate to about 0.1 degrees for most practical uses. Professional aviation and maritime navigation use ellipsoidal models like Vincenty or Karney to compute azimuth on the WGS-84 ellipsoid for higher precision." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Bearing Calculator",
+  description: "Calculate the great-circle compass bearing and back bearing between two latitude/longitude coordinates.",
+  url: geography_bearing_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "bearing-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Geography", url: category_path("geography") },
+  { name: "Bearing Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Bearing Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the initial compass bearing and back bearing between two latitude/longitude coordinates. Results show both decimal degrees and a 16-point compass direction.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="bearing-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <p class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">From</p>
+            <label for="br-lat1" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Latitude (°)</label>
+            <input id="br-lat1" type="number" inputmode="decimal" data-bearing-calculator-target="lat1" data-action="input->bearing-calculator#calculate" class="w-full" value="40.7128" step="any" min="-90" max="90">
+            <label for="br-lon1" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5 mt-3">Longitude (°)</label>
+            <input id="br-lon1" type="number" inputmode="decimal" data-bearing-calculator-target="lon1" data-action="input->bearing-calculator#calculate" class="w-full" value="-74.0060" step="any" min="-180" max="180">
+          </div>
+          <div>
+            <p class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 mt-4">To</p>
+            <label for="br-lat2" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Latitude (°)</label>
+            <input id="br-lat2" type="number" inputmode="decimal" data-bearing-calculator-target="lat2" data-action="input->bearing-calculator#calculate" class="w-full" value="51.5074" step="any" min="-90" max="90">
+            <label for="br-lon2" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5 mt-3">Longitude (°)</label>
+            <input id="br-lon2" type="number" inputmode="decimal" data-bearing-calculator-target="lon2" data-action="input->bearing-calculator#calculate" class="w-full" value="-0.1278" step="any" min="-180" max="180">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">Initial Bearing</span>
+              <span class="text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-bearing-calculator-target="resultBearing">0°</span>
+              <span class="text-lg font-semibold text-blue-500 ml-2" data-bearing-calculator-target="resultCompass">N</span>
+            </div>
+            <div class="pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">Back Bearing</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-bearing-calculator-target="resultBack">0°</span>
+              <span class="text-base font-semibold text-blue-500 ml-2" data-bearing-calculator-target="resultBackCompass">N</span>
+            </div>
+          </div>
+          <button data-action="click->bearing-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "bearing-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Bearing Calculator</h2>
+      <p>
+        Enter the latitude and longitude of your starting point under "From" and the target point under "To". The calculator returns the initial bearing, which is the compass direction you would face at the starting point to begin a great-circle route toward the destination, and the back bearing from the destination to the origin. Each bearing is shown both as a decimal degrees value (0° is due North, 90° is East, 180° is South, 270° is West) and as a 16-point compass abbreviation like NNE, ESE, or WSW, which is a more natural way to express heading in marine and outdoor contexts.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Great-Circle Bearings Change Along the Route</h2>
+      <p>
+        A great-circle route is the shortest path between two points on a sphere, but it is not a constant bearing path. As you travel along a great circle, the compass direction you need to follow changes continuously. That is why the calculator returns only the initial bearing: the direction you should face at the very start of the route. In practice, long-haul pilots and ship navigators break the great-circle route into shorter segments and update their heading periodically. For distances under a few hundred kilometers, the change in bearing along the route is small enough that you can treat it as a single constant heading without any noticeable loss of accuracy.
+      </p>
+
+      <h2>Bearing vs Azimuth vs Heading</h2>
+      <p>
+        The words bearing, azimuth, and heading are often used interchangeably, but they have slightly different meanings. A bearing is the angle between a reference direction (usually true north) and the line to a point of interest, measured clockwise. An azimuth is the same idea but is more formally defined and is the term you will see in surveying and astronomy. A heading is the direction a vehicle is actually pointing, which may differ from its bearing to a destination if there is a crosswind or current. This calculator returns a true bearing measured from geographic north; it does not apply magnetic declination.
+      </p>
+
+      <h2>Converting to Magnetic Bearing</h2>
+      <p>
+        If you plan to follow the bearing on a magnetic compass, you need to correct for magnetic declination, which is the angle between true north and magnetic north at your location. Declination varies by region and slowly changes over time as Earth's magnetic field shifts. In the eastern United States declination is usually west (the compass needle points a few degrees west of true north), while in the western United States it is east. Look up the current declination for your area on a topographic map or the NOAA geomagnetic calculator, then subtract (or add) it from the true bearing to get a magnetic bearing you can follow in the field.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is an initial bearing?</h3>
+      <p>The compass direction to face at the start of a great-circle route. Because great circles curve, the bearing changes along the route, so this is only the starting heading.</p>
+
+      <h3>What is a back bearing?</h3>
+      <p>The bearing from the destination back to the origin. For long routes it is not simply 180 degrees different from the forward bearing, so the calculator computes it separately.</p>
+
+      <h3>What does NNE or WSW mean?</h3>
+      <p>They are 16-point compass abbreviations that divide the horizon into 22.5 degree slices. NNE is 22.5°, WSW is 247.5°.</p>
+
+      <h3>Why is this different from a rhumb line?</h3>
+      <p>A rhumb line follows a constant compass bearing, while a great circle takes the shortest path. Over long distances the two diverge significantly.</p>
+
+      <h3>Is this true or magnetic bearing?</h3>
+      <p>True bearing, measured from geographic north. To use it with a magnetic compass, apply your local magnetic declination.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Coordinate Distance Calculator", description: "Calculate the great-circle distance between two latitude/longitude coordinates.", path: geography_coordinate_distance_path, icon_path: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m-6 3l6-3" },
+      { name: "Coordinate Midpoint Calculator", description: "Calculate the great-circle midpoint between two latitude/longitude coordinates.", path: geography_midpoint_path, icon_path: "M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01" },
+      { name: "Latitude/Longitude Converter", description: "Convert coordinates between decimal degrees and DMS formats.", path: geography_latitude_longitude_converter_path, icon_path: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "geography" %>
+
+    <% blog_posts = related_blog_posts("bearing-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

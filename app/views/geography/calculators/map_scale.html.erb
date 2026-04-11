@@ -1,0 +1,161 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Map Scale Calculator - Convert Map Distance to Real Distance",
+  description: "Convert map distance to real-world distance using map scale ratios like 1:25,000 or 1:50,000. Returns meters, kilometers, miles, feet, and yards.",
+  canonical: geography_map_scale_url,
+  og: {
+    title: "Map Scale Calculator - Free Online Tool | Calc Hammer",
+    description: "Convert map distance to real-world distance using map scale ratios.",
+    url: geography_map_scale_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Geography", url: category_url("geography") },
+  { name: "Map Scale Calculator", url: geography_map_scale_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What does a scale like 1:50,000 mean?", answer: "A scale of 1:50,000 means that one unit of distance on the map represents 50,000 of the same units in the real world. So one centimeter on the map equals 50,000 centimeters, which is 500 meters, or 0.5 kilometers. A larger denominator means a smaller-scale map that shows more area with less detail, while a smaller denominator means a larger-scale map that shows less area with more detail." },
+  { question: "What's the difference between large scale and small scale?", answer: "Confusingly, the terminology is inverted. A large-scale map has a small denominator (for example 1:10,000) and shows a small area in great detail. A small-scale map has a large denominator (for example 1:5,000,000) and shows a large area such as a whole country or continent, with less detail. Think of it as the ratio itself being large or small, not the area covered." },
+  { question: "What are common map scales?", answer: "USGS topographic maps in the United States are typically 1:24,000 or 1:100,000. British Ordnance Survey maps use 1:25,000 and 1:50,000. Continental road atlases are commonly 1:500,000 to 1:1,000,000. World maps are usually 1:20,000,000 or smaller. Hiking and orienteering maps are usually 1:10,000 to 1:25,000 for the detail needed in the field." },
+  { question: "How does scale relate to distortion?", answer: "On a globe, the scale is constant everywhere. On a flat map, distortion stretches the scale depending on the projection, so the printed scale is only exactly accurate along certain lines, usually the central meridian or the standard parallels. For most casual use, the printed scale is close enough, but for precise measurements over long distances on a flat map, be aware that distortion grows with distance from the projection's center." },
+  { question: "Can I use this for digital maps?", answer: "Yes, if you know the scale of the screen display. Many digital maps display a scale bar that you can measure with a ruler on the screen, and then apply the scale as a ratio. Note that digital map zoom levels are not ratios but discrete steps, so you would need to compute the effective scale for each zoom level and screen DPI if you want exact values." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Map Scale Calculator",
+  description: "Convert map distance to real-world distance using a map scale ratio.",
+  url: geography_map_scale_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "map-scale-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Geography", url: category_path("geography") },
+  { name: "Map Scale Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Map Scale Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert a distance measured on a map to the real-world distance using any map scale ratio. Enter the scale (like 50000 for 1:50,000), the map distance, and the unit, and get meters, kilometers, miles, feet, and yards instantly.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="map-scale-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Scale Ratio 1 :</label>
+            <input type="number" inputmode="numeric" data-map-scale-calculator-target="scaleRatio" data-action="input->map-scale-calculator#calculate" class="w-full" value="50000" step="1" min="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Map Distance</label>
+            <input type="number" inputmode="decimal" data-map-scale-calculator-target="mapDistance" data-action="input->map-scale-calculator#calculate" class="w-full" value="5" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Map Unit</label>
+            <select data-map-scale-calculator-target="mapUnit" data-action="change->map-scale-calculator#calculate" class="w-full">
+              <option value="cm" selected>Centimeters</option>
+              <option value="mm">Millimeters</option>
+              <option value="in">Inches</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Real Distance</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Meters</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-map-scale-calculator-target="resultMeters">0</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Kilometers</span>
+              <span class="text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-map-scale-calculator-target="resultKm">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Miles</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-map-scale-calculator-target="resultMiles">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Feet</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-map-scale-calculator-target="resultFeet">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Yards</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-map-scale-calculator-target="resultYards">0</span>
+            </div>
+          </div>
+          <button data-action="click->map-scale-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "map-scale-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Map Scale Calculator</h2>
+      <p>
+        Enter the denominator of your map's scale ratio. For a map labeled 1:50,000 you would type 50000. Enter the distance you measured on the map and pick the unit you used (centimeters are most common on metric maps, inches on US maps). The calculator instantly returns the real-world distance that corresponds to what you measured, in meters, kilometers, miles, feet, and yards so you can use whichever unit suits the job. You can measure with a ruler, a piece of string laid along a curving trail, or the scale bar provided on the map itself.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>What a Scale Ratio Really Means</h2>
+      <p>
+        A scale ratio of 1:N means that one unit of length on the map corresponds to N units of the same length on the ground. So on a 1:25,000 map, 1 centimeter equals 25,000 centimeters, which is 250 meters, or a quarter of a kilometer. On a 1:100,000 map, 1 centimeter equals 1 kilometer. Memorizing a few common ratios saves time in the field: 1:25,000 → 1 cm = 250 m, 1:50,000 → 1 cm = 500 m, 1:100,000 → 1 cm = 1 km. Imperial maps follow the same rule: on a 1:24,000 USGS quad sheet, 1 inch equals 2000 feet, because 24,000 inches divided by 12 is 2000 feet.
+      </p>
+
+      <h2>Choosing the Right Scale</h2>
+      <p>
+        The right map scale depends entirely on the task. For hiking and orienteering, 1:10,000 to 1:25,000 gives enough detail to distinguish individual trails, boulders, and fences. For cycling and car touring, 1:50,000 to 1:250,000 strikes a good balance between coverage and legibility. For road trips and regional planning, 1:500,000 to 1:1,000,000 is more practical. For country- or continent-wide views, 1:5,000,000 and smaller is appropriate. Remember that larger-scale maps (smaller denominators) show less area in more detail, while smaller-scale maps (larger denominators) show more area with less detail.
+      </p>
+
+      <h2>Measuring Curvy Paths</h2>
+      <p>
+        When a trail, river, or road curves on a map, a straight ruler underestimates the true length. Use a flexible item such as a piece of string, lay it along the path, mark the end, and then measure the string with a ruler. Or use a map wheel (also called a curvimeter), a small tool with a wheel on the bottom that you roll along the line to accumulate distance. Either way, apply the scale ratio to convert the measured length to the real-world distance. For digital measurement, most GIS and outdoor apps provide a polyline measurement tool that computes the real distance along a drawn path automatically.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What does a scale like 1:50,000 mean?</h3>
+      <p>One unit on the map equals 50,000 units in the real world. So 1 cm on the map is 500 m on the ground.</p>
+
+      <h3>What's the difference between large and small scale?</h3>
+      <p>A large-scale map has a small denominator and shows less area in more detail. A small-scale map has a large denominator and covers more area with less detail.</p>
+
+      <h3>What are common map scales?</h3>
+      <p>1:24,000 and 1:100,000 for USGS topographic maps. 1:25,000 and 1:50,000 for UK Ordnance Survey. 1:500,000 to 1:1,000,000 for road atlases.</p>
+
+      <h3>How does scale relate to distortion?</h3>
+      <p>On a globe, scale is constant. On a flat map the scale is only exactly accurate along the projection's central lines, and distortion grows outward.</p>
+
+      <h3>Can I use this for digital maps?</h3>
+      <p>Yes, if you know the effective scale of the display. Many digital maps show a scale bar you can measure with a ruler on the screen.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Coordinate Distance Calculator", description: "Calculate the great-circle distance between two latitude/longitude coordinates.", path: geography_coordinate_distance_path, icon_path: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m-6 3l6-3" },
+      { name: "Latitude/Longitude Converter", description: "Convert coordinates between decimal degrees and DMS formats.", path: geography_latitude_longitude_converter_path, icon_path: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" },
+      { name: "Population Density Calculator", description: "Calculate population density per square kilometer and square mile.", path: geography_population_density_path, icon_path: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "geography" %>
+
+    <% blog_posts = related_blog_posts("map-scale-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

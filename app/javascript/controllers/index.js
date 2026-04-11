@@ -305,6 +305,14 @@ import DistillerProofingCalculatorController from "controllers/distiller_proofin
 import CocktailAbvCalculatorController from "controllers/cocktail_abv_calculator_controller"
 import PourCostCalculatorController from "controllers/pour_cost_calculator_controller"
 
+// Geography calculators
+import CoordinateDistanceCalculatorController from "controllers/coordinate_distance_calculator_controller"
+import LatitudeLongitudeConverterController from "controllers/latitude_longitude_converter_controller"
+import BearingCalculatorController from "controllers/bearing_calculator_controller"
+import MidpointCalculatorController from "controllers/midpoint_calculator_controller"
+import MapScaleCalculatorController from "controllers/map_scale_calculator_controller"
+import PopulationDensityCalculatorController from "controllers/population_density_calculator_controller"
+
 // Everyday calculators
 import TipCalculatorController from "controllers/tip_calculator_controller"
 import DiscountCalculatorController from "controllers/discount_calculator_controller"
@@ -545,6 +553,14 @@ application.register("keg-force-carbonation-calculator", KegForceCarbonationCalc
 application.register("distiller-proofing-calculator", DistillerProofingCalculatorController)
 application.register("cocktail-abv-calculator", CocktailAbvCalculatorController)
 application.register("pour-cost-calculator", PourCostCalculatorController)
+
+// Geography
+application.register("coordinate-distance-calculator", CoordinateDistanceCalculatorController)
+application.register("latitude-longitude-converter", LatitudeLongitudeConverterController)
+application.register("bearing-calculator", BearingCalculatorController)
+application.register("midpoint-calculator", MidpointCalculatorController)
+application.register("map-scale-calculator", MapScaleCalculatorController)
+application.register("population-density-calculator", PopulationDensityCalculatorController)
 
 // Everyday
 application.register("tip-calculator", TipCalculatorController)
