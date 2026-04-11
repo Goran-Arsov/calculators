@@ -89,10 +89,10 @@ module Alcohol
       lager = @beer_type.include?("lager")
       high_grav = @og >= 1.06
       key = if lager && high_grav then "high_gravity_lager"
-            elsif lager then "lager"
-            elsif high_grav then "high_gravity_ale"
-            else "ale"
-            end
+      elsif lager then "lager"
+      elsif high_grav then "high_gravity_ale"
+      else "ale"
+      end
       PITCH_RATES[key]
     end
 

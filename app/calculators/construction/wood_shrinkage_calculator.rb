@@ -40,8 +40,8 @@ module Construction
       species_data = SPECIES[@species]
       shrinkage_coefficient = species_data[@direction.to_sym]
 
-      effective_initial = [@initial_mc, FIBER_SATURATION_POINT].min
-      effective_final = [@final_mc, FIBER_SATURATION_POINT].min
+      effective_initial = [ @initial_mc, FIBER_SATURATION_POINT ].min
+      effective_final = [ @final_mc, FIBER_SATURATION_POINT ].min
       mc_change = effective_initial - effective_final
 
       shrinkage_fraction = (shrinkage_coefficient / 100.0) * (mc_change / FIBER_SATURATION_POINT)

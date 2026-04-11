@@ -33,7 +33,7 @@ module Construction
       num_strips = ((@board_width + @kerf_width) / (@rip_width + @kerf_width)).floor
       num_strips = 0 if num_strips.negative?
 
-      cuts = [num_strips - 1, 0].max
+      cuts = [ num_strips - 1, 0 ].max
       material_used = num_strips * @rip_width + cuts * @kerf_width
       kerf_waste = cuts * @kerf_width
       leftover = @board_width - material_used
