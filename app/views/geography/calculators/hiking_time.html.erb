@@ -1,0 +1,162 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Hiking Time Calculator (Naismith's Rule) - Estimate Trek Duration",
+  description: "Estimate hiking time from distance, ascent, and descent using Naismith's rule with fitness adjustments. Used for trek and trail planning by hikers, climbers, and walkers.",
+  canonical: geography_hiking_time_url,
+  og: {
+    title: "Hiking Time Calculator - Free Online Tool | Calc Hammer",
+    description: "Estimate hiking time from distance, ascent, and descent using Naismith's rule.",
+    url: geography_hiking_time_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Geography", url: category_url("geography") },
+  { name: "Hiking Time Calculator", url: geography_hiking_time_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is Naismith's rule?", answer: "Naismith's rule is a simple formula devised in 1892 by Scottish mountaineer William W. Naismith to estimate hiking time: allow one hour for every 5 kilometers (3 miles) of distance on flat ground, plus an additional hour for every 600 meters (2000 feet) of ascent. It is the most widely used rough hiking time estimator in the English-speaking world and is the default baseline for route cards in Scottish Mountain Leader training, British Duke of Edinburgh's Award expeditions, and many outdoor guidebooks." },
+  { question: "Does Naismith's rule account for descent?", answer: "Original Naismith does not adjust for descent. Descent on gentle slopes actually speeds you up slightly, but descent on steep or slippery ground slows you down considerably due to the care required to stay safe. This calculator adds a simple descent adjustment based on Langmuir's correction: 10 minutes added per 300 meters of descent. For rough or rocky descents, you should add even more time, because Langmuir's correction underestimates the effort of steep descents." },
+  { question: "Should I trust Naismith's estimate?", answer: "Naismith's rule is a planning baseline, not a precision tool. It assumes you are reasonably fit, carrying a light pack, walking on a good path in good weather. Heavy packs, bad weather, difficult terrain, group travel, rest breaks, photography, and navigation all slow you down. For conservative planning, multiply Naismith time by 1.25 to 1.5. Experienced mountaineers sometimes divide by 0.8 for fast-and-light alpine trips. Always compare against your own times on similar routes to build a personal correction factor." },
+  { question: "What fitness levels does the calculator support?", answer: "The calculator offers four fitness levels: fast (0.80× multiplier, for experienced fit hikers on easy ground), normal (1.00×, standard Naismith), moderate (1.25×, for less experienced hikers or heavier loads), and slow (1.50×, for leisurely pace or difficult conditions). These multipliers are applied to the base Naismith calculation after adding ascent and descent adjustments, giving you a realistic range for planning purposes." },
+  { question: "How does terrain affect hiking time?", answer: "Terrain can dramatically change your actual time. Paved paths and wide trails let you move at full Naismith speed. Rooty or rocky paths slow you by 10 to 20 percent. Scrambling sections can double your time. Snow, ice, mud, thick brush, and off-trail bushwhacking all add significant delays. As a rule of thumb, add 20 percent for moderately rough terrain, 50 percent for rough terrain, and 100 percent or more for very rough or technical terrain." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Hiking Time Calculator",
+  description: "Estimate hiking time from distance, ascent, and descent using Naismith's rule with fitness adjustments.",
+  url: geography_hiking_time_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "hiking-time-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Geography", url: category_path("geography") },
+  { name: "Hiking Time Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Hiking Time Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your hiking time using Naismith's rule with ascent, descent, and fitness level adjustments. Essential for trail planning, route cards, and expedition logistics.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="hiking-time-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance (km)</label>
+            <input type="number" inputmode="decimal" data-hiking-time-calculator-target="distance" data-action="input->hiking-time-calculator#calculate" class="w-full" value="12" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Ascent (m)</label>
+            <input type="number" inputmode="decimal" data-hiking-time-calculator-target="ascent" data-action="input->hiking-time-calculator#calculate" class="w-full" value="600" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Descent (m)</label>
+            <input type="number" inputmode="decimal" data-hiking-time-calculator-target="descent" data-action="input->hiking-time-calculator#calculate" class="w-full" value="600" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fitness Level</label>
+            <select data-hiking-time-calculator-target="fitness" data-action="change->hiking-time-calculator#calculate" class="w-full">
+              <option value="fast">Fast (experienced, light pack)</option>
+              <option value="normal" selected>Normal (standard Naismith)</option>
+              <option value="moderate">Moderate (beginner or heavy pack)</option>
+              <option value="slow">Slow (leisurely or difficult)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Time Estimate</h2>
+          <div class="space-y-3">
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">Total Time</span>
+              <span class="text-3xl font-extrabold text-blue-600 dark:text-blue-400" data-hiking-time-calculator-target="resultFormatted">0h 0m</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Base walking</span>
+              <span class="text-base font-bold text-blue-600 dark:text-blue-400" data-hiking-time-calculator-target="resultBase">0h</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Ascent penalty</span>
+              <span class="text-base font-bold text-blue-600 dark:text-blue-400" data-hiking-time-calculator-target="resultAscent">0h</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Descent penalty</span>
+              <span class="text-base font-bold text-blue-600 dark:text-blue-400" data-hiking-time-calculator-target="resultDescent">0h</span>
+            </div>
+          </div>
+          <button data-action="click->hiking-time-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "hiking-time-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Hiking Time Calculator</h2>
+      <p>
+        Enter the total horizontal distance of your hike in kilometers, the total ascent and descent in meters, and select your fitness level. The calculator applies Naismith's rule — one hour per 5 km plus one hour per 600 m of ascent — then adds a descent penalty and multiplies by a fitness factor to estimate how long your hike will take. The default example is a 12 km trail with 600 m of ascent and 600 m of descent, which is a moderate day hike that takes roughly four hours for a normal fit hiker.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Naismith's Rule Explained</h2>
+      <p>
+        William Naismith was a Victorian-era Scottish mountaineer who proposed his rule in 1892 after decades of hiking the Scottish Highlands. His original formulation is elegantly simple: add one hour for every 3 miles (5 km) of distance, and add one hour for every 2000 feet (roughly 600 m) of climbing. Naismith's rule is rough but consistent, which is its greatest strength — if you apply it the same way every time, you build a personal calibration that lets you predict route times with reasonable accuracy. Mountain leaders in the UK still use Naismith's rule as the basis for route cards on guided walks and teaching trips.
+      </p>
+
+      <h2>Corrections and Limitations</h2>
+      <p>
+        The original rule ignores descent, which is a serious omission for routes with significant down-hill sections. Langmuir's correction adds 10 minutes per 300 m of descent, or roughly 2 minutes per 100 m, to account for steep or technical descending. Tranter's correction adjusts for fitness based on a time-to-climb-1000-feet benchmark. This calculator uses a simpler fitness multiplier system with four levels: fast, normal, moderate, and slow. None of these corrections account for terrain quality: snow, scree, root-infested trails, bogs, and trackless ground can all add significant time.
+      </p>
+
+      <h2>Planning a Safe Day in the Mountains</h2>
+      <p>
+        Always plan conservatively. Add buffer for rest stops, food breaks, navigation, map reading, and photography. Always include extra time for descent in case conditions are worse than expected. Leave well before first light if your hike is near the edge of daylight hours, and carry a headlamp in case you are slower than planned. Share your route card with someone who will notice if you do not return. And build your personal correction factor by comparing your actual times against the Naismith estimate on familiar routes, so you know how to adjust the numbers for yourself. A personal calibration is the single biggest improvement you can make over the textbook rule.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is Naismith's rule?</h3>
+      <p>One hour per 5 km of distance plus one hour per 600 m of ascent. It is the classic hiking time formula from 1892 and is still the baseline for UK mountain leader training.</p>
+
+      <h3>Does Naismith account for descent?</h3>
+      <p>Original Naismith does not. This calculator adds a Langmuir-style correction of 10 minutes per 300 m of descent. For rough ground, add even more.</p>
+
+      <h3>Should I trust Naismith's estimate?</h3>
+      <p>Use it as a planning baseline, not an exact answer. Build a personal correction factor by comparing with your real times on familiar routes.</p>
+
+      <h3>What fitness levels does the calculator support?</h3>
+      <p>Fast (0.80×), normal (1.00×), moderate (1.25×), and slow (1.50×). These multipliers cover most real-world hikers and loads.</p>
+
+      <h3>How does terrain affect hiking time?</h3>
+      <p>Rough terrain can double your time; paved trails can shave 10–20 percent. Snow, scree, thick brush, and off-trail travel all add significant time.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Coordinate Distance Calculator", description: "Calculate the great-circle distance between two latitude/longitude coordinates.", path: geography_coordinate_distance_path, icon_path: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m-6 3l6-3" },
+      { name: "Map Scale Calculator", description: "Convert map distance to real-world distance using map scale ratios.", path: geography_map_scale_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Bearing Calculator", description: "Calculate the initial compass bearing between two latitude/longitude points.", path: geography_bearing_path, icon_path: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "geography" %>
+
+    <% blog_posts = related_blog_posts("hiking-time-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

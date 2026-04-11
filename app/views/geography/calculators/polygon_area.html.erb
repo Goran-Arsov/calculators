@@ -1,0 +1,158 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Polygon Area Calculator - Area from Latitude/Longitude Vertices",
+  description: "Calculate the area and perimeter of a polygon defined by latitude and longitude vertices using spherical geometry. Returns km², mi², hectares, and acres.",
+  canonical: geography_polygon_area_url,
+  og: {
+    title: "Polygon Area Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate the area of a polygon from latitude/longitude vertices using spherical geometry.",
+    url: geography_polygon_area_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Geography", url: category_url("geography") },
+  { name: "Polygon Area Calculator", url: geography_polygon_area_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is polygon area calculated on a sphere?", answer: "For polygons defined by latitude and longitude vertices, the area cannot be computed using the simple flat shoelace formula because the Earth is a sphere. Instead, a spherical excess formula is used: the area is proportional to how much the sum of polygon angles exceeds the equivalent flat polygon sum, multiplied by the square of Earth's radius. This calculator uses a simpler and widely adopted summation formula that works well for polygons that do not span large fractions of the globe, returning area in square kilometers, square miles, hectares, and acres." },
+  { question: "What is a vertex order I should use?", answer: "Enter vertices in order around the polygon, either clockwise or counterclockwise. The absolute value is taken so direction does not affect the reported area. Do not repeat the first vertex at the end — the calculator automatically closes the polygon from the last vertex back to the first. For most accurate results, provide vertices at reasonable spacing and avoid crossing edges (a non-self-intersecting polygon)." },
+  { question: "How accurate is the result?", answer: "For polygons a few hundred kilometers across or less, the result is accurate to better than 0.1 percent, which is fine for land parcels, national parks, farm fields, and urban neighborhoods. For continental or global polygons, the spherical-Earth assumption (instead of the WGS-84 ellipsoid) introduces additional error, up to about 0.5 percent. For geodetic-grade work, use a GIS library like PROJ or a surveying package." },
+  { question: "What can I use this for?", answer: "The polygon area calculator is useful for measuring a plot of land, estimating the footprint of a building or development, calculating coverage of a hike, computing the area of a national park or lake, assessing agricultural land, or checking watershed and conservation areas. It is also valuable for GIS students, remote sensing analysts, and anyone working with geographic polygons who needs a fast area check without opening a full GIS application." },
+  { question: "How do I get coordinates for my polygon?", answer: "Most mapping services such as Google Maps, Apple Maps, or OpenStreetMap let you right-click a point to copy its latitude and longitude. Click around the edge of your shape, copy each coordinate, and paste them into this calculator one per line. Alternatively, export a polygon from a GIS tool as a list of lat/lon pairs and paste them here for a quick area check." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Polygon Area Calculator",
+  description: "Calculate polygon area and perimeter from latitude/longitude vertices using spherical geometry.",
+  url: geography_polygon_area_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "polygon-area-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Geography", url: category_path("geography") },
+  { name: "Polygon Area Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Polygon Area Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the area and perimeter of a polygon defined by latitude/longitude vertices using spherical geometry. Returns km², mi², hectares, acres, and a perimeter measurement.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="polygon-area-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Vertices (one lat,lon per line)</label>
+          <textarea rows="10" data-polygon-area-calculator-target="vertices" data-action="input->polygon-area-calculator#calculate" class="w-full font-mono text-sm" placeholder="40.7128, -74.0060
+40.7589, -73.9851
+40.7484, -73.9857
+40.7128, -74.0060">40.7128, -74.0060
+40.7589, -73.9851
+40.7484, -73.9857
+40.7061, -74.0087</textarea>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Enter 3 or more vertices. Lat and lon separated by comma or space. The polygon closes automatically.</p>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Vertices</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-polygon-area-calculator-target="resultCount">0</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 font-semibold">Area (km²)</span>
+              <span class="text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-polygon-area-calculator-target="resultKm2">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Area (mi²)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-polygon-area-calculator-target="resultMi2">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Hectares</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-polygon-area-calculator-target="resultHa">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Acres</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-polygon-area-calculator-target="resultAcre">0</span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-600 dark:text-gray-400">Perimeter</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-polygon-area-calculator-target="resultPerimeter">0 km</span>
+            </div>
+          </div>
+          <button data-action="click->polygon-area-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "polygon-area-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Polygon Area Calculator</h2>
+      <p>
+        Enter the vertices of your polygon as a list of latitude/longitude pairs, one pair per line, separated by a comma or whitespace. The polygon should have at least three vertices and does not need to be explicitly closed — the calculator automatically draws an edge from the last vertex back to the first. The area and perimeter are computed using spherical geometry on a sphere with Earth's mean radius, so results stay accurate even for polygons that span several degrees of latitude or longitude.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Spherical Area, Not Flat Shoelace</h2>
+      <p>
+        The classic shoelace formula that works for flat polygons — multiply each pair of coordinates, sum them, halve the result — gives wrong answers when the vertices are latitude/longitude pairs, because Earth is curved. Instead, this calculator uses a spherical summation over the edges that accounts for the Earth's curvature and returns the area of the polygon as projected onto the sphere. The result is accurate to a small fraction of a percent for polygons a few hundred kilometers across, and to within about half a percent for much larger polygons.
+      </p>
+
+      <h2>Common Use Cases</h2>
+      <p>
+        Land parcel measurement is the most common use, whether for real estate, farming, forestry, or construction. Environmental scientists use polygon area calculations to measure the footprint of protected areas, watersheds, glaciers, and wildfires. Urban planners measure neighborhood boundaries, zoning districts, and public parks. GIS students use it to learn spherical geometry. Hikers and cyclists occasionally calculate the area enclosed by a looped route. And drone operators use it to estimate mapping coverage. Any polygon that can be described as a sequence of latitude/longitude points can be measured with this tool.
+      </p>
+
+      <h2>Tips for Accurate Results</h2>
+      <p>
+        Use as many vertices as needed to accurately describe the polygon's shape, especially where edges curve. For polygons with straight edges, three or four vertices are enough. For irregular shapes like coastlines, more vertices improve accuracy. Do not self-intersect the polygon, because crossing edges cause the area to be double-counted incorrectly. If your polygon includes a hole (an inner boundary) or is multi-part (several disconnected regions), measure each piece separately and add or subtract as needed. And always sanity-check the output against a second method for critical applications: an approximate bounding box area, a GIS measurement, or a simple on-the-ground pace count for small fields.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is polygon area calculated on a sphere?</h3>
+      <p>With a spherical summation formula that accounts for Earth's curvature. The flat shoelace formula gives wrong answers for lat/lon polygons.</p>
+
+      <h3>What vertex order should I use?</h3>
+      <p>Clockwise or counterclockwise — either works. The calculator takes the absolute value. Do not repeat the first vertex at the end.</p>
+
+      <h3>How accurate is the result?</h3>
+      <p>Better than 0.1 percent for polygons under a few hundred kilometers across. Larger polygons can have up to 0.5 percent error from the spherical approximation.</p>
+
+      <h3>What can I use this for?</h3>
+      <p>Land parcels, farms, parks, watersheds, building footprints, hike loops, drone mapping coverage, and any geographic polygon you need a quick area for.</p>
+
+      <h3>Where do I get vertex coordinates?</h3>
+      <p>From Google Maps or OpenStreetMap right-click, from GPS tracks, or from GIS exports. Any source that provides lat/lon pairs will work.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Coordinate Distance Calculator", description: "Calculate the great-circle distance between two latitude/longitude coordinates.", path: geography_coordinate_distance_path, icon_path: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m-6 3l6-3" },
+      { name: "Population Density Calculator", description: "Calculate population density per square kilometer and square mile.", path: geography_population_density_path, icon_path: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Map Scale Calculator", description: "Convert map distance to real-world distance using map scale ratios.", path: geography_map_scale_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "geography" %>
+
+    <% blog_posts = related_blog_posts("polygon-area-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

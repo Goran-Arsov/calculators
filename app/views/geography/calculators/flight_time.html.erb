@@ -1,0 +1,174 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Flight Time Calculator - Estimate Flight Duration from Coordinates or Distance",
+  description: "Estimate flight duration from start and end coordinates, or from a distance, using cruise speed and taxi time. Supports commercial jets, regional jets, turboprops, and more.",
+  canonical: geography_flight_time_url,
+  og: {
+    title: "Flight Time Calculator - Free Online Tool | Calc Hammer",
+    description: "Estimate flight duration from coordinates or distance with cruise speed and taxi time.",
+    url: geography_flight_time_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Geography", url: category_url("geography") },
+  { name: "Flight Time Calculator", url: geography_flight_time_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is flight time calculated?", answer: "Flight time is calculated as the great-circle distance between two coordinates divided by the aircraft's cruise speed, plus taxi and ground time. This calculator uses the Haversine formula to compute the great-circle distance between the start and end coordinates, divides by the cruise speed you select, and adds a taxi time to approximate total gate-to-gate duration. The result is a rough estimate: real flight times also depend on winds, air traffic control routing, weather diversions, holding patterns, and approach procedures." },
+  { question: "Why is my real flight time different?", answer: "Several factors cause real flight times to differ from the theoretical great-circle time. Winds are the biggest factor: headwinds slow you down, tailwinds speed you up, and the jet stream can add or subtract over an hour on a transatlantic flight. Air traffic control routing often requires longer paths than the great circle. Weather diversions, traffic delays, holds at busy airports, and approach patterns all add time. And gate time, taxi time, and boarding are rarely included in published flight times. For real planning, check a live flight tracker for historical durations on your specific route." },
+  { question: "What cruise speeds should I use?", answer: "Typical cruise speeds for common aircraft classes: commercial jet (Boeing 737, Airbus A320, etc.) ~900 km/h (485 kn), large wide-body (Boeing 777, Airbus A350) ~900 km/h, regional jet (Embraer E-jets, CRJ) ~780 km/h, turboprop (ATR 72, Dash 8) ~520 km/h, private jet (Gulfstream, Citation) ~780 to 900 km/h, Cessna 172 ~230 km/h, typical helicopter ~260 km/h. Cruise speed is lower than max speed; aircraft trade speed for fuel efficiency during cruise." },
+  { question: "Does it include taxi time?", answer: "Yes. The calculator adds a default taxi time of 20 minutes, which is typical for most commercial airports — about 10 minutes for push-back and taxi out, plus 10 minutes for taxi in and gate arrival. Busy hubs can add 30 minutes or more. You can adjust the taxi time to match the airport if you know it. Small general aviation airports often have under 5 minutes of taxi time, while hubs like JFK or Heathrow can exceed 45 minutes during peak periods." },
+  { question: "Is great-circle distance accurate enough?", answer: "Great-circle distance is the minimum distance a flight can cover, and is usually within a few percent of the real flight distance. For long-haul transoceanic flights, the difference between the great-circle route and the actual flown route is typically under 3 percent, dominated by wind-optimal routing. For short-haul flights under an hour, the difference is negligible. Use this calculator as a planning tool, not a precise flight time oracle." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Flight Time Calculator",
+  description: "Estimate flight duration from start and end coordinates with cruise speed and taxi time.",
+  url: geography_flight_time_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "flight-time-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Geography", url: category_path("geography") },
+  { name: "Flight Time Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Flight Time Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate flight duration from two coordinates using great-circle distance, cruise speed, and taxi time. Useful for travelers, pilots, and planners.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="flight-time-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <p class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">From</p>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Latitude (°)</label>
+            <input type="number" inputmode="decimal" data-flight-time-calculator-target="lat1" data-action="input->flight-time-calculator#calculate" class="w-full" value="40.6413" step="any" min="-90" max="90">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5 mt-3">Longitude (°)</label>
+            <input type="number" inputmode="decimal" data-flight-time-calculator-target="lon1" data-action="input->flight-time-calculator#calculate" class="w-full" value="-73.7781" step="any" min="-180" max="180">
+          </div>
+          <div>
+            <p class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 mt-4">To</p>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Latitude (°)</label>
+            <input type="number" inputmode="decimal" data-flight-time-calculator-target="lat2" data-action="input->flight-time-calculator#calculate" class="w-full" value="51.4700" step="any" min="-90" max="90">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5 mt-3">Longitude (°)</label>
+            <input type="number" inputmode="decimal" data-flight-time-calculator-target="lon2" data-action="input->flight-time-calculator#calculate" class="w-full" value="-0.4543" step="any" min="-180" max="180">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5 mt-4">Aircraft / Cruise Speed</label>
+            <select data-flight-time-calculator-target="aircraft" data-action="change->flight-time-calculator#calculate" class="w-full">
+              <option value="commercial_jet" selected>Commercial Jet (900 km/h)</option>
+              <option value="regional_jet">Regional Jet (780 km/h)</option>
+              <option value="turboprop">Turboprop (520 km/h)</option>
+              <option value="private_jet">Private Jet (780 km/h)</option>
+              <option value="cessna">Cessna 172 (230 km/h)</option>
+              <option value="helicopter">Helicopter (260 km/h)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Taxi + Ground Time (min)</label>
+            <input type="number" inputmode="numeric" data-flight-time-calculator-target="taxi" data-action="input->flight-time-calculator#calculate" class="w-full" value="20" step="1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Flight Estimate</h2>
+          <div class="space-y-3">
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">Total Duration</span>
+              <span class="text-3xl font-extrabold text-blue-600 dark:text-blue-400" data-flight-time-calculator-target="resultFormatted">0h 0m</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Air Time</span>
+              <span class="text-base font-bold text-blue-600 dark:text-blue-400" data-flight-time-calculator-target="resultAir">0h</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Distance</span>
+              <span class="text-base font-bold text-blue-600 dark:text-blue-400" data-flight-time-calculator-target="resultKm">0 km</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Miles</span>
+              <span class="text-base font-bold text-blue-600 dark:text-blue-400" data-flight-time-calculator-target="resultMi">0 mi</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Nautical Miles</span>
+              <span class="text-base font-bold text-blue-600 dark:text-blue-400" data-flight-time-calculator-target="resultNm">0 nm</span>
+            </div>
+          </div>
+          <button data-action="click->flight-time-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "flight-time-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Flight Time Calculator</h2>
+      <p>
+        Enter the latitude and longitude of your departure airport and destination airport in decimal degrees. Pick an aircraft class — the calculator fills in a typical cruise speed automatically — and set the taxi/ground time (the default of 20 minutes is a good starting point for typical commercial airports). The calculator returns the great-circle distance in kilometers, miles, and nautical miles, the air time at cruise speed, and the total duration including taxi. The default example is JFK (40.6413, -73.7781) to London Heathrow (51.4700, -0.4543), a classic transatlantic route.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How Airlines Actually Compute Flight Time</h2>
+      <p>
+        Real flight time is computed differently by different airlines and flight planning systems. Planners start with the great-circle distance between the two airports, then add wind, ATC routing constraints, weather diversions, and expected approach and climb times. Some routes are padded for block time to improve on-time statistics. Jet stream effects can add or subtract an hour across the Atlantic, which is why westbound flights are typically longer than eastbound ones on the same pair of airports. Short-haul flights have proportionally more taxi and approach time, so padding them by 30 percent of cruise time is a reasonable rule of thumb.
+      </p>
+
+      <h2>Typical Cruise Speeds by Aircraft Class</h2>
+      <p>
+        Modern commercial jets such as the Boeing 737, Airbus A320, Boeing 777, and Airbus A350 cruise at roughly 900 kilometers per hour (485 knots, Mach 0.78 to 0.85). Regional jets like the Embraer E-jets and the Bombardier CRJ cruise at about 780 km/h. Turboprops such as the ATR 72 and Dash 8 cruise at about 520 km/h. Business jets range from 780 to 900 km/h depending on the model. A Cessna 172, the classic trainer aircraft, cruises at about 230 km/h. A typical helicopter cruises at around 260 km/h. Cruise speed is always lower than maximum speed because aircraft trade speed for fuel efficiency and engine longevity.
+      </p>
+
+      <h2>Limitations of the Estimate</h2>
+      <p>
+        The number this calculator returns should be treated as a rough planning estimate, not a precise arrival time. Real flights are subject to headwinds and tailwinds that can shift the duration by 10 percent or more on long-haul routes, air traffic control routing that adds miles, weather diversions that add time, holding patterns at busy destinations that add further delays, and taxi times that vary wildly by airport. For serious planning, check a flight tracker service that shows real historical durations on your specific route, and trust that data over any theoretical calculation. This tool is most useful for quick sanity checks, travel planning, and teaching the fundamentals of flight duration math.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is flight time calculated?</h3>
+      <p>Great-circle distance divided by cruise speed, plus taxi and ground time. This gives a theoretical minimum that real flights approach but rarely match exactly.</p>
+
+      <h3>Why is my real flight time different?</h3>
+      <p>Winds, ATC routing, weather, holding patterns, and taxi time all add to the theoretical great-circle time. Westbound transatlantic flights are typically longer because of headwinds.</p>
+
+      <h3>What cruise speeds should I use?</h3>
+      <p>~900 km/h for commercial jets, ~780 km/h for regional jets and bizjets, ~520 km/h for turboprops, ~230 km/h for Cessna 172, ~260 km/h for helicopters.</p>
+
+      <h3>Does it include taxi time?</h3>
+      <p>Yes, 20 minutes by default. Busy hubs like JFK or Heathrow can have 30+ minutes. Small GA airports often have under 5 minutes.</p>
+
+      <h3>Is great-circle distance accurate enough?</h3>
+      <p>For planning, yes. Real routes are within a few percent of great-circle, mostly due to wind-optimal routing.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Coordinate Distance Calculator", description: "Calculate the great-circle distance between two latitude/longitude coordinates.", path: geography_coordinate_distance_path, icon_path: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m-6 3l6-3" },
+      { name: "Bearing Calculator", description: "Calculate the initial compass bearing between two latitude/longitude points.", path: geography_bearing_path, icon_path: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" },
+      { name: "Antipode Calculator", description: "Find the point on the opposite side of the Earth from any coordinate.", path: geography_antipode_path, icon_path: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "geography" %>
+
+    <% blog_posts = related_blog_posts("flight-time-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

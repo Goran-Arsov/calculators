@@ -312,6 +312,14 @@ import BearingCalculatorController from "controllers/bearing_calculator_controll
 import MidpointCalculatorController from "controllers/midpoint_calculator_controller"
 import MapScaleCalculatorController from "controllers/map_scale_calculator_controller"
 import PopulationDensityCalculatorController from "controllers/population_density_calculator_controller"
+import DestinationPointCalculatorController from "controllers/destination_point_calculator_controller"
+import AntipodeCalculatorController from "controllers/antipode_calculator_controller"
+import RhumbLineCalculatorController from "controllers/rhumb_line_calculator_controller"
+import PolygonAreaCalculatorController from "controllers/polygon_area_calculator_controller"
+import HikingTimeCalculatorController from "controllers/hiking_time_calculator_controller"
+import GeohashConverterController from "controllers/geohash_converter_controller"
+import DegreesToKilometersConverterController from "controllers/degrees_to_kilometers_converter_controller"
+import FlightTimeCalculatorController from "controllers/flight_time_calculator_controller"
 
 // Everyday calculators
 import TipCalculatorController from "controllers/tip_calculator_controller"
@@ -561,6 +569,14 @@ application.register("bearing-calculator", BearingCalculatorController)
 application.register("midpoint-calculator", MidpointCalculatorController)
 application.register("map-scale-calculator", MapScaleCalculatorController)
 application.register("population-density-calculator", PopulationDensityCalculatorController)
+application.register("destination-point-calculator", DestinationPointCalculatorController)
+application.register("antipode-calculator", AntipodeCalculatorController)
+application.register("rhumb-line-calculator", RhumbLineCalculatorController)
+application.register("polygon-area-calculator", PolygonAreaCalculatorController)
+application.register("hiking-time-calculator", HikingTimeCalculatorController)
+application.register("geohash-converter", GeohashConverterController)
+application.register("degrees-to-kilometers-converter", DegreesToKilometersConverterController)
+application.register("flight-time-calculator", FlightTimeCalculatorController)
 
 // Everyday
 application.register("tip-calculator", TipCalculatorController)

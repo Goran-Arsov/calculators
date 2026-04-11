@@ -1,0 +1,156 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Rhumb Line Calculator - Constant Bearing Distance and Direction",
+  description: "Calculate rhumb line distance and constant compass bearing between two latitude/longitude coordinates. Used in maritime navigation and Mercator map plotting.",
+  canonical: geography_rhumb_line_url,
+  og: {
+    title: "Rhumb Line Calculator - Free Online Tool | Calc Hammer",
+    description: "Calculate rhumb line distance and constant bearing between two coordinates.",
+    url: geography_rhumb_line_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Geography", url: category_url("geography") },
+  { name: "Rhumb Line Calculator", url: geography_rhumb_line_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a rhumb line?", answer: "A rhumb line, also called a loxodrome, is a path on the surface of the Earth that crosses every meridian at the same angle. In other words, it is a line of constant compass bearing. Unlike a great circle, which is the shortest path between two points, a rhumb line is generally longer but far easier to navigate because the compass heading never changes. On a Mercator projection map, rhumb lines appear as straight lines, which is one of the main reasons Mercator maps have been used for navigation for centuries." },
+  { question: "How does a rhumb line differ from a great circle?", answer: "A great circle is the shortest distance between two points on a sphere; a rhumb line is a path of constant bearing. For short distances, the two are nearly identical. For long distances, especially over high latitudes, they can differ significantly. A great circle between New York and London arcs northward over Iceland and Greenland, while the rhumb line goes more or less straight east and is about 3 percent longer. Airlines and modern ships follow great circles to save fuel, but older navigation methods and small vessels often use rhumb lines for their simplicity." },
+  { question: "When should I use rhumb lines?", answer: "Rhumb lines are the right choice any time constant bearing matters more than shortest distance: small-craft sailing in calm waters, land surveying, simple autopilot routes, drawing straight lines on a Mercator map, or any situation where you cannot easily change heading during the journey. Traditional marine navigation used rhumb lines almost exclusively, plotting them with parallel rulers on a Mercator chart, because a constant compass course was far more practical before GPS and electronic navigation." },
+  { question: "Why does rhumb line distance differ from straight line on a globe?", answer: "On a globe, a rhumb line spirals slightly toward the pole unless it runs exactly east-west or north-south. That spiral makes it longer than the corresponding great circle. On a Mercator map, the rhumb line looks straight because Mercator projection stretches distances near the poles in a way that exactly compensates for the spiral, preserving bearings but distorting areas and distances." },
+  { question: "What happens at the equator and along meridians?", answer: "Along the equator, a rhumb line and a great circle are identical, because the equator is itself both a great circle and a line of constant easting. Along a meridian (a north-south line), the two are also identical. The biggest differences between rhumb lines and great circles occur on long east-west routes at high latitudes, where the spherical geometry curves most aggressively." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Rhumb Line Calculator",
+  description: "Calculate rhumb line (constant bearing) distance and bearing between two latitude/longitude coordinates.",
+  url: geography_rhumb_line_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "rhumb-line-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Geography", url: category_path("geography") },
+  { name: "Rhumb Line Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Rhumb Line Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the rhumb line distance and constant compass bearing between two latitude/longitude coordinates. A rhumb line is the path of constant direction used in traditional maritime navigation.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="rhumb-line-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <p class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">From</p>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Latitude (°)</label>
+            <input type="number" inputmode="decimal" data-rhumb-line-calculator-target="lat1" data-action="input->rhumb-line-calculator#calculate" class="w-full" value="40.7128" step="any" min="-90" max="90">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5 mt-3">Longitude (°)</label>
+            <input type="number" inputmode="decimal" data-rhumb-line-calculator-target="lon1" data-action="input->rhumb-line-calculator#calculate" class="w-full" value="-74.0060" step="any" min="-180" max="180">
+          </div>
+          <div>
+            <p class="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 mt-4">To</p>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Latitude (°)</label>
+            <input type="number" inputmode="decimal" data-rhumb-line-calculator-target="lat2" data-action="input->rhumb-line-calculator#calculate" class="w-full" value="51.5074" step="any" min="-90" max="90">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5 mt-3">Longitude (°)</label>
+            <input type="number" inputmode="decimal" data-rhumb-line-calculator-target="lon2" data-action="input->rhumb-line-calculator#calculate" class="w-full" value="-0.1278" step="any" min="-180" max="180">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Rhumb Line</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Distance</span>
+              <span class="text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-rhumb-line-calculator-target="resultKm">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Miles</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-rhumb-line-calculator-target="resultMiles">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Nautical Miles</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-rhumb-line-calculator-target="resultNm">0</span>
+            </div>
+            <div class="pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">Constant Bearing</span>
+              <span class="text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-rhumb-line-calculator-target="resultBearing">0°</span>
+              <span class="text-lg font-semibold text-blue-500 ml-2" data-rhumb-line-calculator-target="resultCompass">N</span>
+            </div>
+          </div>
+          <button data-action="click->rhumb-line-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "rhumb-line-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Rhumb Line Calculator</h2>
+      <p>
+        Enter the start and end latitudes and longitudes. The calculator returns the rhumb line distance in kilometers, miles, and nautical miles, along with the constant compass bearing that you would steer to travel the rhumb line from start to finish. The default example runs from New York to London, a classic transatlantic pairing, showing a rhumb line distance of about 5790 km at a roughly east-northeast constant bearing — slightly longer than the great-circle path of 5570 km.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Rhumb Line vs Great Circle</h2>
+      <p>
+        A great circle is the shortest path between two points on a sphere, while a rhumb line is a path of constant compass bearing. For short distances, the two are indistinguishable. Over long distances at high latitudes, they diverge dramatically. A great circle from New York to Tokyo curves high over the Arctic, crossing eastern Alaska and the Bering Sea, while a rhumb line would point roughly west and south, crossing the Pacific more directly. The rhumb line is about 1500 km longer — a substantial fuel cost for aircraft and ships, which is why modern vessels use great-circle routes optimized by autopilot systems.
+      </p>
+
+      <h2>Why Rhumb Lines Still Matter</h2>
+      <p>
+        Rhumb lines remain essential for several practical reasons. First, they are extremely simple to steer: you set one compass bearing and hold it. Second, they draw as straight lines on a Mercator map, which is the traditional navigation chart format. Third, small craft without modern instrumentation are easier to keep on course with a constant heading than with a continuously updating great-circle bearing. Fourth, surveyors and land planners use rhumb-line geometry when laying out baselines and boundaries on flat projections. Finally, rhumb lines are the natural choice for routes between nearby waypoints where the small savings from a great circle are not worth the complexity.
+      </p>
+
+      <h2>Mercator Projection and the Loxodrome</h2>
+      <p>
+        The rhumb line is also known by its mathematical name, the loxodrome. It was named by the Portuguese mathematician Pedro Nunes in the 16th century, who was the first to show rigorously that a line of constant bearing spirals toward the poles without ever reaching them. A few decades later, Gerardus Mercator published his famous projection, which was designed specifically so that loxodromes appear as straight lines. That property made the Mercator map the dominant navigation tool for four centuries, even though it badly distorts polar areas. Today, modern electronic charts still use Mercator projections in navigation modes for exactly this reason.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a rhumb line?</h3>
+      <p>A line of constant compass bearing on the surface of the Earth. It crosses every meridian at the same angle and appears as a straight line on a Mercator map.</p>
+
+      <h3>How does it differ from a great circle?</h3>
+      <p>A great circle is the shortest path; a rhumb line holds a constant bearing and is generally longer. For short distances they are nearly identical.</p>
+
+      <h3>When should I use rhumb lines?</h3>
+      <p>When constant bearing matters more than shortest distance — small-craft sailing, simple autopilots, Mercator map plotting, surveying, and traditional navigation.</p>
+
+      <h3>Why does the rhumb line look like a spiral on a globe?</h3>
+      <p>Because it holds a constant angle with every meridian, a rhumb line slowly spirals toward the pole. The spiral is what makes the rhumb line longer than the great circle.</p>
+
+      <h3>When are rhumb line and great circle the same?</h3>
+      <p>Along the equator, along any meridian, and over short distances anywhere on Earth. Long east-west routes at high latitudes show the biggest difference.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Coordinate Distance Calculator", description: "Calculate the great-circle distance between two latitude/longitude coordinates.", path: geography_coordinate_distance_path, icon_path: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m-6 3l6-3" },
+      { name: "Bearing Calculator", description: "Calculate the initial great-circle compass bearing between two points.", path: geography_bearing_path, icon_path: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" },
+      { name: "Destination Point Calculator", description: "Find the destination coordinate from a start point, bearing, and distance.", path: geography_destination_point_path, icon_path: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "geography" %>
+
+    <% blog_posts = related_blog_posts("rhumb-line-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
