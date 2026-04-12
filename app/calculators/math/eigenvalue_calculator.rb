@@ -26,7 +26,7 @@ module Math
     def parse_matrix(input)
       case input
       when Array
-        input.map { |row| row.is_a?(Array) ? row.map(&:to_f) : [row.to_f] }
+        input.map { |row| row.is_a?(Array) ? row.map(&:to_f) : [ row.to_f ] }
       when String
         input.strip.split(";").map { |row| row.strip.split(/[\s,]+/).map(&:to_f) }
       else
@@ -39,7 +39,7 @@ module Math
       return if @matrix.empty?
 
       n = @matrix.length
-      @errors << "Matrix must be 2x2 or 3x3" unless [2, 3].include?(n)
+      @errors << "Matrix must be 2x2 or 3x3" unless [ 2, 3 ].include?(n)
       @matrix.each_with_index do |row, i|
         @errors << "Row #{i + 1} must have #{n} elements" unless row.length == n
       end
@@ -92,11 +92,11 @@ module Math
         r2 = b
 
         if r2.abs > 1e-12
-          vec = [-r2, r1]
+          vec = [ -r2, r1 ]
         elsif c.abs > 1e-12
-          vec = [d - lam, -c]
+          vec = [ d - lam, -c ]
         else
-          vec = [1, 0]
+          vec = [ 1, 0 ]
         end
 
         # Normalize
@@ -170,7 +170,7 @@ module Math
         if disc.abs < 1e-10
           # All real, at least two equal
           root2 = -(s + t) / 2.0 - p / 3.0
-          [real_root, root2, root2]
+          [ real_root, root2, root2 ]
         else
           real_part = -(s + t) / 2.0 - p / 3.0
           imag_part = (s - t) * ::Math.sqrt(3) / 2.0
@@ -207,7 +207,7 @@ module Math
       # Try cross products of pairs of rows
       best = nil
       best_mag = 0
-      [[0, 1], [0, 2], [1, 2]].each do |i, j|
+      [ [ 0, 1 ], [ 0, 2 ], [ 1, 2 ] ].each do |i, j|
         v = cross3(rows[i], rows[j])
         mag = ::Math.sqrt(v.map { |c| c**2 }.sum)
         if mag > best_mag
@@ -220,7 +220,7 @@ module Math
         best.map { |c| c / best_mag }
       else
         # Fallback: find a non-zero column from the cofactor matrix
-        [1.0, 0.0, 0.0]
+        [ 1.0, 0.0, 0.0 ]
       end
     end
 

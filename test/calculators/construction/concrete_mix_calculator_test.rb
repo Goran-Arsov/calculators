@@ -67,7 +67,7 @@ class Construction::ConcreteMixCalculatorTest < ActiveSupport::TestCase
   end
 
   test "all PSI grades produce valid results" do
-    [2500, 3000, 3500, 4000, 4500, 5000].each do |psi|
+    [ 2500, 3000, 3500, 4000, 4500, 5000 ].each do |psi|
       result = Construction::ConcreteMixCalculator.new(
         target_psi: psi, volume_cubic_yards: 1
       ).call

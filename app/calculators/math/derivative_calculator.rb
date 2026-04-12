@@ -41,50 +41,50 @@ module Math
     def differentiate(node)
       case node[0]
       when :num
-        [:num, 0]
+        [ :num, 0 ]
       when :var
-        [:num, 1]
+        [ :num, 1 ]
       when :neg
-        [:neg, differentiate(node[1])]
+        [ :neg, differentiate(node[1]) ]
       when :binop
         op = node[1]
         u = node[2]
         v = node[3]
         case op
         when "+"
-          [:binop, "+", differentiate(u), differentiate(v)]
+          [ :binop, "+", differentiate(u), differentiate(v) ]
         when "-"
-          [:binop, "-", differentiate(u), differentiate(v)]
+          [ :binop, "-", differentiate(u), differentiate(v) ]
         when "*"
           # Product rule: u'v + uv'
-          [:binop, "+",
-            [:binop, "*", differentiate(u), v],
-            [:binop, "*", u, differentiate(v)]]
+          [ :binop, "+",
+            [ :binop, "*", differentiate(u), v ],
+            [ :binop, "*", u, differentiate(v) ] ]
         when "/"
           # Quotient rule: (u'v - uv') / v^2
-          [:binop, "/",
-            [:binop, "-",
-              [:binop, "*", differentiate(u), v],
-              [:binop, "*", u, differentiate(v)]],
-            [:binop, "^", v, [:num, 2]]]
+          [ :binop, "/",
+            [ :binop, "-",
+              [ :binop, "*", differentiate(u), v ],
+              [ :binop, "*", u, differentiate(v) ] ],
+            [ :binop, "^", v, [ :num, 2 ] ] ]
         when "^"
           if constant?(v) && !constant?(u)
             # Power rule: n * u^(n-1) * u'
             n = v
-            [:binop, "*",
-              [:binop, "*", n, [:binop, "^", u, [:binop, "-", n, [:num, 1]]]],
-              differentiate(u)]
+            [ :binop, "*",
+              [ :binop, "*", n, [ :binop, "^", u, [ :binop, "-", n, [ :num, 1 ] ] ] ],
+              differentiate(u) ]
           elsif constant?(u) && !constant?(v)
             # a^v = a^v * ln(a) * v'
-            [:binop, "*",
-              [:binop, "*", node, [:func, "ln", u]],
-              differentiate(v)]
+            [ :binop, "*",
+              [ :binop, "*", node, [ :func, "ln", u ] ],
+              differentiate(v) ]
           else
             # General: d/dx(u^v) = u^v * (v' * ln(u) + v * u'/u)
-            [:binop, "*", node,
-              [:binop, "+",
-                [:binop, "*", differentiate(v), [:func, "ln", u]],
-                [:binop, "*", v, [:binop, "/", differentiate(u), u]]]]
+            [ :binop, "*", node,
+              [ :binop, "+",
+                [ :binop, "*", differentiate(v), [ :func, "ln", u ] ],
+                [ :binop, "*", v, [ :binop, "/", differentiate(u), u ] ] ] ]
           end
         end
       when :func
@@ -92,25 +92,25 @@ module Math
         u = node[2]
         du = differentiate(u)
         inner = case name
-                when "sin"
-                  [:func, "cos", u]
-                when "cos"
-                  [:neg, [:func, "sin", u]]
-                when "tan"
+        when "sin"
+                  [ :func, "cos", u ]
+        when "cos"
+                  [ :neg, [ :func, "sin", u ] ]
+        when "tan"
                   # sec^2(u) = 1/cos^2(u)
-                  [:binop, "/", [:num, 1], [:binop, "^", [:func, "cos", u], [:num, 2]]]
-                when "exp"
-                  [:func, "exp", u]
-                when "ln", "log"
-                  [:binop, "/", [:num, 1], u]
-                when "sqrt"
+                  [ :binop, "/", [ :num, 1 ], [ :binop, "^", [ :func, "cos", u ], [ :num, 2 ] ] ]
+        when "exp"
+                  [ :func, "exp", u ]
+        when "ln", "log"
+                  [ :binop, "/", [ :num, 1 ], u ]
+        when "sqrt"
                   # 1/(2*sqrt(u))
-                  [:binop, "/", [:num, 1], [:binop, "*", [:num, 2], [:func, "sqrt", u]]]
-                else
-                  [:num, 0]
-                end
+                  [ :binop, "/", [ :num, 1 ], [ :binop, "*", [ :num, 2 ], [ :func, "sqrt", u ] ] ]
+        else
+                  [ :num, 0 ]
+        end
         # Chain rule: f'(u) * u'
-        [:binop, "*", inner, du]
+        [ :binop, "*", inner, du ]
       end
     end
 
@@ -133,9 +133,9 @@ module Math
         node
       when :neg
         inner = simplify(node[1])
-        return [:num, 0] if inner == [:num, 0]
-        return [:num, -inner[1]] if inner[0] == :num
-        [:neg, inner]
+        return [ :num, 0 ] if inner == [ :num, 0 ]
+        return [ :num, -inner[1] ] if inner[0] == :num
+        [ :neg, inner ]
       when :binop
         op = node[1]
         left = simplify(node[2])
@@ -144,36 +144,36 @@ module Math
         # Constant folding
         if left[0] == :num && right[0] == :num
           val = eval_const(op, left[1], right[1])
-          return [:num, val] if val
+          return [ :num, val ] if val
         end
 
         case op
         when "+"
-          return right if left == [:num, 0]
-          return left if right == [:num, 0]
+          return right if left == [ :num, 0 ]
+          return left if right == [ :num, 0 ]
         when "-"
-          return [:neg, right] if left == [:num, 0]
-          return left if right == [:num, 0]
-          return [:num, 0] if left == right
+          return [ :neg, right ] if left == [ :num, 0 ]
+          return left if right == [ :num, 0 ]
+          return [ :num, 0 ] if left == right
         when "*"
-          return [:num, 0] if left == [:num, 0] || right == [:num, 0]
-          return right if left == [:num, 1]
-          return left if right == [:num, 1]
-          return [:neg, right] if left == [:num, -1]
-          return [:neg, left] if right == [:num, -1]
+          return [ :num, 0 ] if left == [ :num, 0 ] || right == [ :num, 0 ]
+          return right if left == [ :num, 1 ]
+          return left if right == [ :num, 1 ]
+          return [ :neg, right ] if left == [ :num, -1 ]
+          return [ :neg, left ] if right == [ :num, -1 ]
         when "/"
-          return [:num, 0] if left == [:num, 0]
-          return left if right == [:num, 1]
+          return [ :num, 0 ] if left == [ :num, 0 ]
+          return left if right == [ :num, 1 ]
         when "^"
-          return [:num, 1] if right == [:num, 0]
-          return left if right == [:num, 1]
-          return [:num, 0] if left == [:num, 0]
+          return [ :num, 1 ] if right == [ :num, 0 ]
+          return left if right == [ :num, 1 ]
+          return [ :num, 0 ] if left == [ :num, 0 ]
         end
 
-        [:binop, op, left, right]
+        [ :binop, op, left, right ]
       when :func
         inner = simplify(node[2])
-        [:func, node[1], inner]
+        [ :func, node[1], inner ]
       else
         node
       end
@@ -277,7 +277,7 @@ module Math
         while peek[:type] == :op && %w[+ -].include?(peek[:value])
           op = consume[:value]
           right = parse_term
-          node = [:binop, op, node, right]
+          node = [ :binop, op, node, right ]
         end
         node
       end
@@ -287,7 +287,7 @@ module Math
         while peek[:type] == :op && %w[* /].include?(peek[:value])
           op = consume[:value]
           right = parse_unary
-          node = [:binop, op, node, right]
+          node = [ :binop, op, node, right ]
         end
         node
       end
@@ -295,7 +295,7 @@ module Math
       def parse_unary
         if peek[:type] == :op && peek[:value] == "-"
           consume
-          return [:neg, parse_unary]
+          return [ :neg, parse_unary ]
         end
         if peek[:type] == :op && peek[:value] == "+"
           consume
@@ -309,7 +309,7 @@ module Math
         if peek[:type] == :op && peek[:value] == "^"
           consume
           exponent = parse_unary
-          return [:binop, "^", base, exponent]
+          return [ :binop, "^", base, exponent ]
         end
         base
       end
@@ -319,7 +319,7 @@ module Math
         case tok[:type]
         when :number
           consume
-          [:num, tok[:value].to_f]
+          [ :num, tok[:value].to_f ]
         when :ident
           consume
           name = tok[:value]
@@ -329,12 +329,12 @@ module Math
             arg = parse_expression
             raise ParseError, "missing closing parenthesis" unless peek[:type] == :rparen
             consume
-            [:func, name, arg]
+            [ :func, name, arg ]
           else
             case name
-            when @variable then [:var]
-            when "pi" then [:num, ::Math::PI]
-            when "e" then [:num, ::Math::E]
+            when @variable then [ :var ]
+            when "pi" then [ :num, ::Math::PI ]
+            when "e" then [ :num, ::Math::E ]
             else
               raise ParseError, "unknown identifier '#{name}'"
             end

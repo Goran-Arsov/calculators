@@ -33,7 +33,7 @@ class Everyday::GraphqlBuilderCalculatorTest < ActiveSupport::TestCase
     result = Everyday::GraphqlBuilderCalculator.new(
       operation_type: "query", type_name: "user",
       fields: %w[id name],
-      arguments: [{ name: "id", value: "123", type: "int" }]
+      arguments: [ { name: "id", value: "123", type: "int" } ]
     ).call
     assert_equal true, result[:valid]
     assert_includes result[:query], "user(id: 123)"

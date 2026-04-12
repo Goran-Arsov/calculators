@@ -155,7 +155,7 @@ module Math
       while peek[:type] == :or
         consume
         right = parse_xor
-        node = [:or, node, right]
+        node = [ :or, node, right ]
       end
       node
     end
@@ -165,7 +165,7 @@ module Math
       while peek[:type] == :xor
         consume
         right = parse_and
-        node = [:xor, node, right]
+        node = [ :xor, node, right ]
       end
       node
     end
@@ -175,7 +175,7 @@ module Math
       while peek[:type] == :and
         consume
         right = parse_not
-        node = [:and, node, right]
+        node = [ :and, node, right ]
       end
       node
     end
@@ -184,7 +184,7 @@ module Math
       if peek[:type] == :not
         consume
         operand = parse_not
-        return [:not, operand]
+        return [ :not, operand ]
       end
       parse_primary
     end
@@ -194,19 +194,19 @@ module Math
       case tok[:type]
       when :literal
         consume
-        node = [:literal, tok[:value]]
+        node = [ :literal, tok[:value] ]
         # Handle postfix NOT (e.g., A')
         while peek[:type] == :not_postfix
           consume
-          node = [:not, node]
+          node = [ :not, node ]
         end
         node
       when :var
         consume
-        node = [:var, tok[:value]]
+        node = [ :var, tok[:value] ]
         while peek[:type] == :not_postfix
           consume
-          node = [:not, node]
+          node = [ :not, node ]
         end
         node
       when :lparen
@@ -216,7 +216,7 @@ module Math
         consume
         while peek[:type] == :not_postfix
           consume
-          node = [:not, node]
+          node = [ :not, node ]
         end
         node
       else
@@ -262,46 +262,46 @@ module Math
         # Double negation: NOT(NOT(x)) = x
         return inner[1] if inner[0] == :not
         # NOT(0) = 1, NOT(1) = 0
-        return [:literal, !inner[1]] if inner[0] == :literal
-        [:not, inner]
+        return [ :literal, !inner[1] ] if inner[0] == :literal
+        [ :not, inner ]
       when :and
         left = simplify(node[1])
         right = simplify(node[2])
         # Identity: A AND 1 = A
-        return left if right == [:literal, true]
-        return right if left == [:literal, true]
+        return left if right == [ :literal, true ]
+        return right if left == [ :literal, true ]
         # Annihilation: A AND 0 = 0
-        return [:literal, false] if left == [:literal, false] || right == [:literal, false]
+        return [ :literal, false ] if left == [ :literal, false ] || right == [ :literal, false ]
         # Idempotent: A AND A = A
         return left if left == right
         # Complement: A AND NOT(A) = 0
-        return [:literal, false] if complement?(left, right)
-        [:and, left, right]
+        return [ :literal, false ] if complement?(left, right)
+        [ :and, left, right ]
       when :or
         left = simplify(node[1])
         right = simplify(node[2])
         # Identity: A OR 0 = A
-        return left if right == [:literal, false]
-        return right if left == [:literal, false]
+        return left if right == [ :literal, false ]
+        return right if left == [ :literal, false ]
         # Annihilation: A OR 1 = 1
-        return [:literal, true] if left == [:literal, true] || right == [:literal, true]
+        return [ :literal, true ] if left == [ :literal, true ] || right == [ :literal, true ]
         # Idempotent: A OR A = A
         return left if left == right
         # Complement: A OR NOT(A) = 1
-        return [:literal, true] if complement?(left, right)
-        [:or, left, right]
+        return [ :literal, true ] if complement?(left, right)
+        [ :or, left, right ]
       when :xor
         left = simplify(node[1])
         right = simplify(node[2])
         # A XOR 0 = A
-        return left if right == [:literal, false]
-        return right if left == [:literal, false]
+        return left if right == [ :literal, false ]
+        return right if left == [ :literal, false ]
         # A XOR 1 = NOT(A)
-        return simplify([:not, left]) if right == [:literal, true]
-        return simplify([:not, right]) if left == [:literal, true]
+        return simplify([ :not, left ]) if right == [ :literal, true ]
+        return simplify([ :not, right ]) if left == [ :literal, true ]
         # A XOR A = 0
-        return [:literal, false] if left == right
-        [:xor, left, right]
+        return [ :literal, false ] if left == right
+        [ :xor, left, right ]
       else
         node
       end
@@ -352,7 +352,7 @@ module Math
     def extract_variables(node)
       case node[0]
       when :literal then []
-      when :var then [node[1]]
+      when :var then [ node[1] ]
       when :not then extract_variables(node[1])
       when :and, :or, :xor
         (extract_variables(node[1]) + extract_variables(node[2])).uniq

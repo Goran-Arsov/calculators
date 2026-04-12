@@ -25,15 +25,15 @@ module Everyday
       requests_per_hour = requests_per_second * SECONDS_PER_HOUR
       requests_per_day = requests_per_second * SECONDS_PER_DAY
 
-      remaining = [@rate_limit - @current_usage, 0].max
+      remaining = [ @rate_limit - @current_usage, 0 ].max
       usage_percent = (@current_usage.to_f / @rate_limit * 100).round(1)
       time_per_request_ms = (@window_seconds.to_f / @rate_limit * 1000).round(2)
 
       time_until_reset = if @current_usage >= @rate_limit
                            @window_seconds
-                         else
+      else
                            0
-                         end
+      end
 
       safe_requests_per_second = (requests_per_second * 0.8).round(4)
 

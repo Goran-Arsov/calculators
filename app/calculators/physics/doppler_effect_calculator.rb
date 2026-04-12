@@ -47,11 +47,11 @@ module Physics
 
       shift_direction = if frequency_shift > 0.001
                           "Blueshift (higher frequency)"
-                        elsif frequency_shift < -0.001
+      elsif frequency_shift < -0.001
                           "Redshift (lower frequency)"
-                        else
+      else
                           "No shift"
-                        end
+      end
 
       {
         valid: true,

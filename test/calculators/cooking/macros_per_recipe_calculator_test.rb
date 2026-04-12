@@ -55,7 +55,7 @@ class Cooking::MacrosPerRecipeCalculatorTest < ActiveSupport::TestCase
   test "zero servings returns error" do
     calc = Cooking::MacrosPerRecipeCalculator.new(
       servings: 0,
-      ingredients: [{ name: "Item", calories: 100, protein_g: 10, carbs_g: 10, fat_g: 5, quantity: 1 }]
+      ingredients: [ { name: "Item", calories: 100, protein_g: 10, carbs_g: 10, fat_g: 5, quantity: 1 } ]
     )
     result = calc.call
 
@@ -74,7 +74,7 @@ class Cooking::MacrosPerRecipeCalculatorTest < ActiveSupport::TestCase
   test "negative calories returns error" do
     calc = Cooking::MacrosPerRecipeCalculator.new(
       servings: 4,
-      ingredients: [{ name: "Bad", calories: -100, protein_g: 10, carbs_g: 10, fat_g: 5, quantity: 1 }]
+      ingredients: [ { name: "Bad", calories: -100, protein_g: 10, carbs_g: 10, fat_g: 5, quantity: 1 } ]
     )
     result = calc.call
 
@@ -85,7 +85,7 @@ class Cooking::MacrosPerRecipeCalculatorTest < ActiveSupport::TestCase
   test "quantity defaults to 1 when zero" do
     calc = Cooking::MacrosPerRecipeCalculator.new(
       servings: 1,
-      ingredients: [{ name: "Item", calories: 100, protein_g: 10, carbs_g: 10, fat_g: 5, quantity: 0 }]
+      ingredients: [ { name: "Item", calories: 100, protein_g: 10, carbs_g: 10, fat_g: 5, quantity: 0 } ]
     )
     result = calc.call
 

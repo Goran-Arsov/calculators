@@ -36,7 +36,7 @@ class Everyday::TimezoneMeetingPlannerCalculatorTest < ActiveSupport::TestCase
   end
 
   test "error when fewer than two timezones" do
-    result = Everyday::TimezoneMeetingPlannerCalculator.new(timezones: ["EST"]).call
+    result = Everyday::TimezoneMeetingPlannerCalculator.new(timezones: [ "EST" ]).call
     assert_equal false, result[:valid]
     assert_includes result[:errors], "At least two timezones are required"
   end

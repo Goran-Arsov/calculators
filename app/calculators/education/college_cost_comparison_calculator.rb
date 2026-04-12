@@ -68,7 +68,7 @@ module Education
         year_room_board = (room_board * inflation_factor).round(2)
         year_fees = (fees * inflation_factor).round(2)
         year_gross = year_tuition + year_room_board + year_fees
-        year_net = [year_gross - aid, 0].max
+        year_net = [ year_gross - aid, 0 ].max
 
         yearly_costs << {
           year: year + 1,

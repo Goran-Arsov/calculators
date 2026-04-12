@@ -48,7 +48,7 @@ module Education
       validate!
       return { valid: false, errors: @errors } if @errors.any?
 
-      content_pages = @has_references ? [@page_count - @reference_pages, 0].max : @page_count
+      content_pages = @has_references ? [ @page_count - @reference_pages, 0 ].max : @page_count
       base_wpp = WORDS_PER_PAGE.dig(@font, @spacing) || 250
       margin_factor = MARGIN_FACTORS.fetch(@margins, 1.0)
       size_factor = FONT_SIZE_FACTORS.fetch(@font_size, 1.0)

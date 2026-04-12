@@ -101,11 +101,11 @@ module Health
       FRAME_SIZES[@gender].map do |size, data|
         range = if data[:max_wrist_cm] && data[:min_wrist_cm]
                   "#{data[:min_wrist_cm]} - #{data[:max_wrist_cm]} cm"
-                elsif data[:max_wrist_cm]
+        elsif data[:max_wrist_cm]
                   "< #{data[:max_wrist_cm]} cm"
-                else
+        else
                   "> #{data[:min_wrist_cm]} cm"
-                end
+        end
         { size: size, label: data[:label], range: range }
       end
     end

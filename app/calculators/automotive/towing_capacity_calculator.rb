@@ -31,7 +31,7 @@ module Automotive
       # remaining_payload >= tongue_weight
       # trailer_weight <= remaining_payload / tongue_weight_pct
       max_towing = @tongue_weight_pct > 0 ? remaining_payload / @tongue_weight_pct : 0
-      max_towing = [max_towing, 0].max
+      max_towing = [ max_towing, 0 ].max
 
       # Tongue weight for max towing
       max_tongue_weight = max_towing * @tongue_weight_pct

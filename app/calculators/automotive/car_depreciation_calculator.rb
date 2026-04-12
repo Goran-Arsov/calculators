@@ -21,7 +21,7 @@ module Automotive
       current_value = @purchase_price
       if @vehicle_age_years > 0
         current_value *= (1.0 - first_year_rate) if @vehicle_age_years >= 1
-        remaining_years = [@vehicle_age_years - 1, 0].max
+        remaining_years = [ @vehicle_age_years - 1, 0 ].max
         current_value *= (1.0 - @annual_depreciation_rate) ** remaining_years if remaining_years > 0
       end
 

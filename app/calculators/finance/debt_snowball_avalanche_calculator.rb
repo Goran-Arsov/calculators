@@ -51,11 +51,11 @@ module Finance
     end
 
     def sort_snowball
-      @debts.sort_by { |d| [d[:balance], -d[:rate]] }
+      @debts.sort_by { |d| [ d[:balance], -d[:rate] ] }
     end
 
     def sort_avalanche
-      @debts.sort_by { |d| [-d[:rate], d[:balance]] }
+      @debts.sort_by { |d| [ -d[:rate], d[:balance] ] }
     end
 
     def simulate_payoff(ordered_debts)
@@ -84,7 +84,7 @@ module Finance
         balances.each_with_index do |bal, i|
           next if bal <= 0
 
-          payment = [minimums[i], bal].min
+          payment = [ minimums[i], bal ].min
           balances[i] -= payment
         end
 
@@ -93,7 +93,7 @@ module Finance
           break if extra_remaining <= 0
           next if balances[i] <= 0
 
-          payment = [extra_remaining, balances[i]].min
+          payment = [ extra_remaining, balances[i] ].min
           balances[i] -= payment
           extra_remaining -= payment
         end

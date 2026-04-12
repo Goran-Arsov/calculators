@@ -34,7 +34,7 @@ class Cooking::MealPrepCostCalculatorTest < ActiveSupport::TestCase
   test "zero servings returns error" do
     calc = Cooking::MealPrepCostCalculator.new(
       servings: 0,
-      ingredients: [{ name: "Flour", cost: 3, quantity_used: 1, quantity_purchased: 1 }]
+      ingredients: [ { name: "Flour", cost: 3, quantity_used: 1, quantity_purchased: 1 } ]
     )
     result = calc.call
 
@@ -53,7 +53,7 @@ class Cooking::MealPrepCostCalculatorTest < ActiveSupport::TestCase
   test "zero cost ingredient returns error" do
     calc = Cooking::MealPrepCostCalculator.new(
       servings: 4,
-      ingredients: [{ name: "Water", cost: 0, quantity_used: 1, quantity_purchased: 1 }]
+      ingredients: [ { name: "Water", cost: 0, quantity_used: 1, quantity_purchased: 1 } ]
     )
     result = calc.call
 

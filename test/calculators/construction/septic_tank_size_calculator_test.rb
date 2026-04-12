@@ -13,7 +13,7 @@ class Construction::SepticTankSizeCalculatorTest < ActiveSupport::TestCase
   end
 
   test "1-3 bedrooms returns 1000 gallon base" do
-    [1, 2, 3].each do |beds|
+    [ 1, 2, 3 ].each do |beds|
       result = Construction::SepticTankSizeCalculator.new(
         bedrooms: beds
       ).call
@@ -97,7 +97,7 @@ class Construction::SepticTankSizeCalculatorTest < ActiveSupport::TestCase
       bedrooms: 3
     ).call
     assert result[:recommended_tank_gallons] >= result[:required_gallons]
-    assert_includes [1000, 1250, 1500, 1750, 2000, 2500, 3000, 3500, 4000, 5000], result[:recommended_tank_gallons]
+    assert_includes [ 1000, 1250, 1500, 1750, 2000, 2500, 3000, 3500, 4000, 5000 ], result[:recommended_tank_gallons]
   end
 
   test "drain field estimate is positive" do

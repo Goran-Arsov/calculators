@@ -37,7 +37,7 @@ class Cooking::RecipeScalerCalculatorTest < ActiveSupport::TestCase
     calc = Cooking::RecipeScalerCalculator.new(
       original_servings: 4,
       desired_servings: 4,
-      ingredients: [{ name: "Salt", amount: 1, unit: "tsp" }]
+      ingredients: [ { name: "Salt", amount: 1, unit: "tsp" } ]
     )
     result = calc.call
 
@@ -74,7 +74,7 @@ class Cooking::RecipeScalerCalculatorTest < ActiveSupport::TestCase
     calc = Cooking::RecipeScalerCalculator.new(
       original_servings: "4",
       desired_servings: "12",
-      ingredients: [{ name: "Butter", amount: "0.5", unit: "cup" }]
+      ingredients: [ { name: "Butter", amount: "0.5", unit: "cup" } ]
     )
     result = calc.call
 

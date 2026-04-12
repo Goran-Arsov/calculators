@@ -158,7 +158,7 @@ module Math
     def compute_limit_at_infinity(ast, target)
       sign = target > 0 ? 1.0 : -1.0
       values = []
-      [1e2, 1e4, 1e6, 1e8, 1e10].each do |n|
+      [ 1e2, 1e4, 1e6, 1e8, 1e10 ].each do |n|
         x = sign * n
         begin
           val = Evaluator.evaluate(ast, x)
@@ -181,7 +181,7 @@ module Math
     def close_enough?(a, b)
       return true if a == b
       diff = (a - b).abs
-      magnitude = [a.abs, b.abs, 1.0].max
+      magnitude = [ a.abs, b.abs, 1.0 ].max
       diff / magnitude < 1e-6
     end
 
@@ -220,7 +220,7 @@ module Math
         while peek[:type] == :op && %w[+ -].include?(peek[:value])
           op = consume[:value]
           right = parse_term
-          node = [:binop, op, node, right]
+          node = [ :binop, op, node, right ]
         end
         node
       end
@@ -230,7 +230,7 @@ module Math
         while peek[:type] == :op && %w[* /].include?(peek[:value])
           op = consume[:value]
           right = parse_unary
-          node = [:binop, op, node, right]
+          node = [ :binop, op, node, right ]
         end
         node
       end
@@ -238,7 +238,7 @@ module Math
       def parse_unary
         if peek[:type] == :op && peek[:value] == "-"
           consume
-          return [:neg, parse_unary]
+          return [ :neg, parse_unary ]
         end
         if peek[:type] == :op && peek[:value] == "+"
           consume
@@ -252,7 +252,7 @@ module Math
         if peek[:type] == :op && peek[:value] == "^"
           consume
           exponent = parse_unary
-          return [:binop, "^", base, exponent]
+          return [ :binop, "^", base, exponent ]
         end
         base
       end
@@ -262,7 +262,7 @@ module Math
         case tok[:type]
         when :number
           consume
-          [:num, tok[:value].to_f]
+          [ :num, tok[:value].to_f ]
         when :ident
           consume
           name = tok[:value]
@@ -272,12 +272,12 @@ module Math
             arg = parse_expression
             raise ParseError, "missing closing parenthesis" unless peek[:type] == :rparen
             consume
-            [:func, name, arg]
+            [ :func, name, arg ]
           else
             case name
-            when "x" then [:var]
-            when "pi" then [:num, ::Math::PI]
-            when "e" then [:num, ::Math::E]
+            when "x" then [ :var ]
+            when "pi" then [ :num, ::Math::PI ]
+            when "e" then [ :num, ::Math::E ]
             else raise ParseError, "unknown identifier '#{name}'"
             end
           end

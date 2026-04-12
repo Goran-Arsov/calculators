@@ -66,7 +66,7 @@ module Everyday
       filter = where_str ? parse_where(where_str) : "{}"
       sort = order_str ? parse_order(order_str) : nil
 
-      parts = ["db.#{table}.find(#{filter}"]
+      parts = [ "db.#{table}.find(#{filter}" ]
       parts[0] += ", #{projection}" unless projection == "{}"
       parts[0] += ")"
       parts << ".sort(#{sort})" if sort

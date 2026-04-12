@@ -71,7 +71,7 @@ class Construction::DrainageSlopeCalculatorTest < ActiveSupport::TestCase
   end
 
   test "all pipe diameters produce valid results" do
-    [2, 3, 4, 6, 8].each do |dia|
+    [ 2, 3, 4, 6, 8 ].each do |dia|
       result = Construction::DrainageSlopeCalculator.new(
         run_length_ft: 50, pipe_diameter_in: dia
       ).call

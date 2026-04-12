@@ -70,7 +70,7 @@ module Finance
 
     def us_deductions
       federal_tax = us_federal_tax
-      social_security = [@gross_salary * 0.062, 168_600 * 0.062].min
+      social_security = [ @gross_salary * 0.062, 168_600 * 0.062 ].min
       medicare = @gross_salary * 0.0145
       medicare += (@gross_salary - 200_000) * 0.009 if @gross_salary > 200_000
 
@@ -84,22 +84,22 @@ module Finance
     def us_federal_tax
       # 2024 simplified brackets for single
       brackets = if @filing_status == "married"
-        [[23_200, 0], [23_200, 0.10], [94_300 - 23_200, 0.12],
-         [201_050 - 94_300, 0.22], [383_900 - 201_050, 0.24],
-         [487_450 - 383_900, 0.32], [731_200 - 487_450, 0.35],
-         [Float::INFINITY, 0.37]]
+        [ [ 23_200, 0 ], [ 23_200, 0.10 ], [ 94_300 - 23_200, 0.12 ],
+         [ 201_050 - 94_300, 0.22 ], [ 383_900 - 201_050, 0.24 ],
+         [ 487_450 - 383_900, 0.32 ], [ 731_200 - 487_450, 0.35 ],
+         [ Float::INFINITY, 0.37 ] ]
       else
-        [[11_600, 0], [11_600, 0.10], [47_150 - 11_600, 0.12],
-         [100_525 - 47_150, 0.22], [191_950 - 100_525, 0.24],
-         [243_725 - 191_950, 0.32], [609_350 - 243_725, 0.35],
-         [Float::INFINITY, 0.37]]
+        [ [ 11_600, 0 ], [ 11_600, 0.10 ], [ 47_150 - 11_600, 0.12 ],
+         [ 100_525 - 47_150, 0.22 ], [ 191_950 - 100_525, 0.24 ],
+         [ 243_725 - 191_950, 0.32 ], [ 609_350 - 243_725, 0.35 ],
+         [ Float::INFINITY, 0.37 ] ]
       end
 
       tax = 0.0
       remaining = @gross_salary
 
       brackets.each do |width, rate|
-        taxable = [remaining, width].min
+        taxable = [ remaining, width ].min
         tax += taxable * rate
         remaining -= taxable
         break if remaining <= 0
@@ -121,14 +121,14 @@ module Finance
 
     def uk_income_tax
       personal_allowance = 12_570
-      taxable = [@gross_salary - personal_allowance, 0].max
+      taxable = [ @gross_salary - personal_allowance, 0 ].max
 
-      brackets = [[37_700, 0.20], [99_730, 0.40], [Float::INFINITY, 0.45]]
+      brackets = [ [ 37_700, 0.20 ], [ 99_730, 0.40 ], [ Float::INFINITY, 0.45 ] ]
       tax = 0.0
       remaining = taxable
 
       brackets.each do |width, rate|
-        amount = [remaining, width].min
+        amount = [ remaining, width ].min
         tax += amount * rate
         remaining -= amount
         break if remaining <= 0
@@ -154,9 +154,9 @@ module Finance
 
     def ca_deductions
       federal_tax = ca_federal_tax
-      cpp = [(@gross_salary - 3_500) * 0.0595, 3_867.50].min
-      cpp = [cpp, 0].max
-      ei = [@gross_salary * 0.0166, 1_049.12].min
+      cpp = [ (@gross_salary - 3_500) * 0.0595, 3_867.50 ].min
+      cpp = [ cpp, 0 ].max
+      ei = [ @gross_salary * 0.0166, 1_049.12 ].min
 
       {
         federal_tax: federal_tax,
@@ -167,16 +167,16 @@ module Finance
 
     def ca_federal_tax
       personal_amount = 15_705
-      taxable = [@gross_salary - personal_amount, 0].max
+      taxable = [ @gross_salary - personal_amount, 0 ].max
 
-      brackets = [[55_867, 0.15], [111_733 - 55_867, 0.205],
-                  [154_906 - 111_733, 0.26], [220_000 - 154_906, 0.29],
-                  [Float::INFINITY, 0.33]]
+      brackets = [ [ 55_867, 0.15 ], [ 111_733 - 55_867, 0.205 ],
+                  [ 154_906 - 111_733, 0.26 ], [ 220_000 - 154_906, 0.29 ],
+                  [ Float::INFINITY, 0.33 ] ]
       tax = 0.0
       remaining = taxable
 
       brackets.each do |width, rate|
-        amount = [remaining, width].min
+        amount = [ remaining, width ].min
         tax += amount * rate
         remaining -= amount
         break if remaining <= 0
@@ -197,14 +197,14 @@ module Finance
 
     def au_income_tax
       # Australia 2024/25
-      brackets = [[18_200, 0], [45_000 - 18_200, 0.16],
-                  [135_000 - 45_000, 0.30], [190_000 - 135_000, 0.37],
-                  [Float::INFINITY, 0.45]]
+      brackets = [ [ 18_200, 0 ], [ 45_000 - 18_200, 0.16 ],
+                  [ 135_000 - 45_000, 0.30 ], [ 190_000 - 135_000, 0.37 ],
+                  [ Float::INFINITY, 0.45 ] ]
       tax = 0.0
       remaining = @gross_salary
 
       brackets.each do |width, rate|
-        amount = [remaining, width].min
+        amount = [ remaining, width ].min
         tax += amount * rate
         remaining -= amount
         break if remaining <= 0

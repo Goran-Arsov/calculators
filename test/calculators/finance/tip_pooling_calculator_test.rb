@@ -51,7 +51,7 @@ class Finance::TipPoolingCalculatorTest < ActiveSupport::TestCase
   end
 
   test "fewer than two staff returns error" do
-    staff = [{ name: "Alice", hours: 8 }]
+    staff = [ { name: "Alice", hours: 8 } ]
     calc = Finance::TipPoolingCalculator.new(staff: staff, total_tips: 100, method: "hours")
     result = calc.call
 

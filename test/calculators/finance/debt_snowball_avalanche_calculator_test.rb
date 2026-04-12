@@ -50,7 +50,7 @@ class Finance::DebtSnowballAvalancheCalculatorTest < ActiveSupport::TestCase
   end
 
   test "negative extra payment returns error" do
-    debts = [{ name: "Debt", balance: 1_000, rate: 10, minimum_payment: 50 }]
+    debts = [ { name: "Debt", balance: 1_000, rate: 10, minimum_payment: 50 } ]
     calc = Finance::DebtSnowballAvalancheCalculator.new(debts: debts, extra_payment: -100)
     result = calc.call
 
@@ -59,7 +59,7 @@ class Finance::DebtSnowballAvalancheCalculatorTest < ActiveSupport::TestCase
   end
 
   test "debt with zero balance returns error" do
-    debts = [{ name: "Debt", balance: 0, rate: 10, minimum_payment: 50 }]
+    debts = [ { name: "Debt", balance: 0, rate: 10, minimum_payment: 50 } ]
     calc = Finance::DebtSnowballAvalancheCalculator.new(debts: debts, extra_payment: 0)
     result = calc.call
 
@@ -68,7 +68,7 @@ class Finance::DebtSnowballAvalancheCalculatorTest < ActiveSupport::TestCase
   end
 
   test "debt with zero minimum payment returns error" do
-    debts = [{ name: "Debt", balance: 1_000, rate: 10, minimum_payment: 0 }]
+    debts = [ { name: "Debt", balance: 1_000, rate: 10, minimum_payment: 0 } ]
     calc = Finance::DebtSnowballAvalancheCalculator.new(debts: debts, extra_payment: 0)
     result = calc.call
 

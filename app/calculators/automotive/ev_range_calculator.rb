@@ -34,10 +34,10 @@ module Automotive
         1.0
       elsif @temperature_f < 60
         # Cold weather reduces range
-        1.0 - [((60 - @temperature_f) * 0.005), 0.40].min
+        1.0 - [ ((60 - @temperature_f) * 0.005), 0.40 ].min
       else
         # Hot weather slightly reduces range
-        1.0 - [((@temperature_f - 80) * 0.003), 0.15].min
+        1.0 - [ ((@temperature_f - 80) * 0.003), 0.15 ].min
       end
 
       # HVAC adjustment
@@ -45,7 +45,7 @@ module Automotive
 
       # Cargo weight adjustment (roughly 1% range loss per 100 lbs)
       cargo_factor = 1.0 - (@cargo_weight_lbs / 100.0 * 0.01)
-      cargo_factor = [cargo_factor, 0.70].max
+      cargo_factor = [ cargo_factor, 0.70 ].max
 
       adjusted_range = base_range * speed_factor * temp_factor * hvac_factor * cargo_factor
       adjusted_efficiency = @battery_capacity_kwh * 1000.0 / adjusted_range

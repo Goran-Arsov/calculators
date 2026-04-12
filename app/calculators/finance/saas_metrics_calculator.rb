@@ -43,7 +43,7 @@ module Finance
       expansion_mrr = 0 # Would need expansion data
       churned_mrr = @churned_subscriptions > 0 && @total_customers > 0 ? (mrr / @total_customers) * @churned_subscriptions : 0.0
       beginning_mrr = mrr + churned_mrr - (arpu * @new_customers)
-      beginning_mrr = [beginning_mrr, 0.01].max
+      beginning_mrr = [ beginning_mrr, 0.01 ].max
       nrr = ((mrr - churned_mrr + expansion_mrr) / beginning_mrr) * 100.0
 
       # SaaS Quick Ratio = (New MRR + Expansion MRR) / (Churned MRR + Contraction MRR)

@@ -67,7 +67,7 @@ module Everyday
       HTML
 
       if @job_title.present? || @company.present?
-        title_parts = [@job_title, @company].reject(&:empty?).join(" | ")
+        title_parts = [ @job_title, @company ].reject(&:empty?).join(" | ")
         html += "            <tr><td style=\"font-size: 13px; color: #666666; padding-bottom: 8px;\">#{title_parts}</td></tr>\n"
       end
 
@@ -92,7 +92,7 @@ module Everyday
     end
 
     def minimal_template
-      parts = [@full_name]
+      parts = [ @full_name ]
       parts << @job_title if @job_title.present?
       parts << @company if @company.present?
 
@@ -102,7 +102,7 @@ module Everyday
       HTML
 
       if @job_title.present? || @company.present?
-        html += "  <tr><td style=\"color: #888888;\">#{[@job_title, @company].reject(&:empty?).join(', ')}</td></tr>\n"
+        html += "  <tr><td style=\"color: #888888;\">#{[ @job_title, @company ].reject(&:empty?).join(', ')}</td></tr>\n"
       end
 
       contact_parts = []
@@ -151,7 +151,7 @@ module Everyday
       HTML
 
       if @job_title.present? || @company.present?
-        html += "  <tr><td style=\"font-size: 14px; font-style: italic; color: #777777;\">#{[@job_title, @company].reject(&:empty?).join(' at ')}</td></tr>\n"
+        html += "  <tr><td style=\"font-size: 14px; font-style: italic; color: #777777;\">#{[ @job_title, @company ].reject(&:empty?).join(' at ')}</td></tr>\n"
       end
 
       html += "  <tr><td style=\"padding-top: 8px; font-size: 12px;\">\n"

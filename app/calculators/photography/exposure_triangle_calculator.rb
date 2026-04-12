@@ -43,13 +43,13 @@ module Photography
 
       result = if @new_iso && @new_aperture
                  solve_for_shutter(exposure_constant, @new_iso, @new_aperture)
-               elsif @new_iso && @new_shutter
+      elsif @new_iso && @new_shutter
                  solve_for_aperture(exposure_constant, @new_iso, @new_shutter)
-               elsif @new_aperture && @new_shutter
+      elsif @new_aperture && @new_shutter
                  solve_for_iso(exposure_constant, @new_aperture, @new_shutter)
-               else
-                 { valid: false, errors: ["Provide exactly two of the three new values (ISO, aperture, shutter)"] }
-               end
+      else
+                 { valid: false, errors: [ "Provide exactly two of the three new values (ISO, aperture, shutter)" ] }
+      end
 
       result.merge!(current_ev: current_ev.round(2)) if result[:valid]
       result
@@ -125,7 +125,7 @@ module Photography
       @errors << "Current aperture must be positive" unless @current_aperture > 0
       @errors << "Current shutter speed must be positive" unless @current_shutter > 0
 
-      new_count = [@new_iso, @new_aperture, @new_shutter].count(&:itself)
+      new_count = [ @new_iso, @new_aperture, @new_shutter ].count(&:itself)
       @errors << "Provide exactly two of the three new values" unless new_count == 2
     end
   end

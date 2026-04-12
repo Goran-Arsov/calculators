@@ -7,75 +7,75 @@ module Everyday
     SUPPORTED_SERVICES = {
       "postgres" => {
         image: "postgres:16-alpine",
-        ports: ["5432:5432"],
+        ports: [ "5432:5432" ],
         environment: { "POSTGRES_USER" => "app", "POSTGRES_PASSWORD" => "password", "POSTGRES_DB" => "app_development" },
-        volumes: ["postgres_data:/var/lib/postgresql/data"],
+        volumes: [ "postgres_data:/var/lib/postgresql/data" ],
         healthcheck: { test: "pg_isready -U app", interval: "10s", timeout: "5s", retries: 5 }
       },
       "mysql" => {
         image: "mysql:8.0",
-        ports: ["3306:3306"],
+        ports: [ "3306:3306" ],
         environment: { "MYSQL_ROOT_PASSWORD" => "password", "MYSQL_DATABASE" => "app_development" },
-        volumes: ["mysql_data:/var/lib/mysql"],
+        volumes: [ "mysql_data:/var/lib/mysql" ],
         healthcheck: { test: "mysqladmin ping -h localhost", interval: "10s", timeout: "5s", retries: 5 }
       },
       "redis" => {
         image: "redis:7-alpine",
-        ports: ["6379:6379"],
-        volumes: ["redis_data:/data"],
+        ports: [ "6379:6379" ],
+        volumes: [ "redis_data:/data" ],
         healthcheck: { test: "redis-cli ping", interval: "10s", timeout: "5s", retries: 5 }
       },
       "mongodb" => {
         image: "mongo:7",
-        ports: ["27017:27017"],
+        ports: [ "27017:27017" ],
         environment: { "MONGO_INITDB_ROOT_USERNAME" => "root", "MONGO_INITDB_ROOT_PASSWORD" => "password" },
-        volumes: ["mongo_data:/data/db"]
+        volumes: [ "mongo_data:/data/db" ]
       },
       "nginx" => {
         image: "nginx:alpine",
-        ports: ["80:80", "443:443"],
-        volumes: ["./nginx.conf:/etc/nginx/nginx.conf:ro"]
+        ports: [ "80:80", "443:443" ],
+        volumes: [ "./nginx.conf:/etc/nginx/nginx.conf:ro" ]
       },
       "node" => {
         image: "node:20-alpine",
-        ports: ["3000:3000"],
-        volumes: [".:/app"],
+        ports: [ "3000:3000" ],
+        volumes: [ ".:/app" ],
         working_dir: "/app",
         command: "npm start"
       },
       "rails" => {
         image: "ruby:3.3-slim",
-        ports: ["3000:3000"],
-        volumes: [".:/app"],
+        ports: [ "3000:3000" ],
+        volumes: [ ".:/app" ],
         working_dir: "/app",
         command: "bundle exec rails server -b 0.0.0.0",
-        depends_on: ["postgres", "redis"]
+        depends_on: [ "postgres", "redis" ]
       },
       "elasticsearch" => {
         image: "elasticsearch:8.12.0",
-        ports: ["9200:9200"],
+        ports: [ "9200:9200" ],
         environment: { "discovery.type" => "single-node", "xpack.security.enabled" => "false", "ES_JAVA_OPTS" => "-Xms512m -Xmx512m" },
-        volumes: ["es_data:/usr/share/elasticsearch/data"]
+        volumes: [ "es_data:/usr/share/elasticsearch/data" ]
       },
       "rabbitmq" => {
         image: "rabbitmq:3-management-alpine",
-        ports: ["5672:5672", "15672:15672"],
+        ports: [ "5672:5672", "15672:15672" ],
         environment: { "RABBITMQ_DEFAULT_USER" => "guest", "RABBITMQ_DEFAULT_PASS" => "guest" },
-        volumes: ["rabbitmq_data:/var/lib/rabbitmq"]
+        volumes: [ "rabbitmq_data:/var/lib/rabbitmq" ]
       },
       "memcached" => {
         image: "memcached:alpine",
-        ports: ["11211:11211"]
+        ports: [ "11211:11211" ]
       },
       "mailhog" => {
         image: "mailhog/mailhog",
-        ports: ["1025:1025", "8025:8025"]
+        ports: [ "1025:1025", "8025:8025" ]
       },
       "minio" => {
         image: "minio/minio",
-        ports: ["9000:9000", "9001:9001"],
+        ports: [ "9000:9000", "9001:9001" ],
         environment: { "MINIO_ROOT_USER" => "minioadmin", "MINIO_ROOT_PASSWORD" => "minioadmin" },
-        volumes: ["minio_data:/data"],
+        volumes: [ "minio_data:/data" ],
         command: "server /data --console-address ':9001'"
       }
     }.freeze

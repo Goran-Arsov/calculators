@@ -54,9 +54,9 @@ module Everyday
         (1..n).each do |j|
           table[i][j] = if lines_a[i - 1] == lines_b[j - 1]
                           table[i - 1][j - 1] + 1
-                        else
-                          [table[i - 1][j], table[i][j - 1]].max
-                        end
+          else
+                          [ table[i - 1][j], table[i][j - 1] ].max
+          end
         end
       end
 

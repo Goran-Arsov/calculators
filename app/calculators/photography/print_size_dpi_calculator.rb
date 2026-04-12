@@ -33,7 +33,7 @@ module Photography
       when "find_dpi"
         calculate_dpi
       else
-        { valid: false, errors: ["Unknown mode: #{@mode}"] }
+        { valid: false, errors: [ "Unknown mode: #{@mode}" ] }
       end
     end
 

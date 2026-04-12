@@ -4,7 +4,7 @@ class Math::EigenvalueCalculatorTest < ActiveSupport::TestCase
   # --- 2x2 identity matrix ---
 
   test "2x2 identity matrix has eigenvalues 1, 1" do
-    result = Math::EigenvalueCalculator.new(matrix: [[1, 0], [0, 1]]).call
+    result = Math::EigenvalueCalculator.new(matrix: [ [ 1, 0 ], [ 0, 1 ] ]).call
     assert result[:valid]
     assert_equal "2x2", result[:size]
     result[:eigenvalues].each { |lam| assert_in_delta 1.0, lam, 0.01 }
@@ -13,7 +13,7 @@ class Math::EigenvalueCalculatorTest < ActiveSupport::TestCase
   # --- 2x2 diagonal matrix ---
 
   test "2x2 diagonal matrix has eigenvalues equal to diagonal entries" do
-    result = Math::EigenvalueCalculator.new(matrix: [[3, 0], [0, 5]]).call
+    result = Math::EigenvalueCalculator.new(matrix: [ [ 3, 0 ], [ 0, 5 ] ]).call
     assert result[:valid]
     eigenvalues = result[:eigenvalues].sort
     assert_in_delta 3.0, eigenvalues[0], 0.01
@@ -23,7 +23,7 @@ class Math::EigenvalueCalculatorTest < ActiveSupport::TestCase
   # --- 2x2 general matrix ---
 
   test "2x2 matrix [[2,1],[1,2]] has eigenvalues 3 and 1" do
-    result = Math::EigenvalueCalculator.new(matrix: [[2, 1], [1, 2]]).call
+    result = Math::EigenvalueCalculator.new(matrix: [ [ 2, 1 ], [ 1, 2 ] ]).call
     assert result[:valid]
     eigenvalues = result[:eigenvalues].sort
     assert_in_delta 1.0, eigenvalues[0], 0.01
@@ -31,7 +31,7 @@ class Math::EigenvalueCalculatorTest < ActiveSupport::TestCase
   end
 
   test "trace and determinant are computed" do
-    result = Math::EigenvalueCalculator.new(matrix: [[2, 1], [1, 2]]).call
+    result = Math::EigenvalueCalculator.new(matrix: [ [ 2, 1 ], [ 1, 2 ] ]).call
     assert result[:valid]
     assert_in_delta 4.0, result[:trace], 0.01
     assert_in_delta 3.0, result[:determinant], 0.01
@@ -40,7 +40,7 @@ class Math::EigenvalueCalculatorTest < ActiveSupport::TestCase
   # --- Complex eigenvalues ---
 
   test "2x2 rotation matrix has complex eigenvalues" do
-    result = Math::EigenvalueCalculator.new(matrix: [[0, -1], [1, 0]]).call
+    result = Math::EigenvalueCalculator.new(matrix: [ [ 0, -1 ], [ 1, 0 ] ]).call
     assert result[:valid]
     assert result[:eigenvalues].any? { |lam| lam.is_a?(Hash) }
   end
@@ -48,14 +48,14 @@ class Math::EigenvalueCalculatorTest < ActiveSupport::TestCase
   # --- 3x3 matrix ---
 
   test "3x3 identity matrix has eigenvalues 1, 1, 1" do
-    result = Math::EigenvalueCalculator.new(matrix: [[1, 0, 0], [0, 1, 0], [0, 0, 1]]).call
+    result = Math::EigenvalueCalculator.new(matrix: [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]).call
     assert result[:valid]
     assert_equal "3x3", result[:size]
     result[:eigenvalues].each { |lam| assert_in_delta 1.0, lam, 0.01 unless lam.is_a?(Hash) }
   end
 
   test "3x3 diagonal matrix returns diagonal as eigenvalues" do
-    result = Math::EigenvalueCalculator.new(matrix: [[2, 0, 0], [0, 3, 0], [0, 0, 7]]).call
+    result = Math::EigenvalueCalculator.new(matrix: [ [ 2, 0, 0 ], [ 0, 3, 0 ], [ 0, 0, 7 ] ]).call
     assert result[:valid]
     eigenvalues = result[:eigenvalues].reject { |l| l.is_a?(Hash) }.sort
     assert_in_delta 2.0, eigenvalues[0], 0.1
@@ -74,7 +74,7 @@ class Math::EigenvalueCalculatorTest < ActiveSupport::TestCase
   # --- Eigenvectors ---
 
   test "eigenvectors are returned" do
-    result = Math::EigenvalueCalculator.new(matrix: [[2, 1], [1, 2]]).call
+    result = Math::EigenvalueCalculator.new(matrix: [ [ 2, 1 ], [ 1, 2 ] ]).call
     assert result[:valid]
     assert result[:eigenvectors].length == 2
   end
@@ -82,7 +82,7 @@ class Math::EigenvalueCalculatorTest < ActiveSupport::TestCase
   # --- Characteristic polynomial ---
 
   test "characteristic polynomial is formatted" do
-    result = Math::EigenvalueCalculator.new(matrix: [[2, 1], [1, 2]]).call
+    result = Math::EigenvalueCalculator.new(matrix: [ [ 2, 1 ], [ 1, 2 ] ]).call
     assert result[:valid]
     assert result[:characteristic_polynomial].is_a?(String)
     assert result[:characteristic_polynomial].length > 0
@@ -97,19 +97,19 @@ class Math::EigenvalueCalculatorTest < ActiveSupport::TestCase
   end
 
   test "1x1 matrix returns error" do
-    result = Math::EigenvalueCalculator.new(matrix: [[5]]).call
+    result = Math::EigenvalueCalculator.new(matrix: [ [ 5 ] ]).call
     refute result[:valid]
     assert_includes result[:errors], "Matrix must be 2x2 or 3x3"
   end
 
   test "non-square matrix returns error" do
-    result = Math::EigenvalueCalculator.new(matrix: [[1, 2, 3], [4, 5]]).call
+    result = Math::EigenvalueCalculator.new(matrix: [ [ 1, 2, 3 ], [ 4, 5 ] ]).call
     refute result[:valid]
     assert result[:errors].any? { |e| e.include?("elements") }
   end
 
   test "errors accessor returns empty array before call" do
-    calc = Math::EigenvalueCalculator.new(matrix: [[1, 0], [0, 1]])
+    calc = Math::EigenvalueCalculator.new(matrix: [ [ 1, 0 ], [ 0, 1 ] ])
     assert_equal [], calc.errors
   end
 end

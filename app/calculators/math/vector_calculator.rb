@@ -98,7 +98,7 @@ module Math
       angle_rad = nil
       angle_deg = nil
       if mag1 > 0 && mag2 > 0
-        cos_theta = [[-1.0, result / (mag1 * mag2)].max, 1.0].min
+        cos_theta = [ [ -1.0, result / (mag1 * mag2) ].max, 1.0 ].min
         angle_rad = ::Math.acos(cos_theta)
         angle_deg = angle_rad * 180.0 / ::Math::PI
       end

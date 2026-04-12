@@ -31,7 +31,7 @@ module Automotive
       recommended_interval_months = (base_interval_months * condition_factor).round(0)
 
       miles_since_change = @current_mileage - @last_change_mileage
-      miles_remaining = [recommended_interval_miles - miles_since_change, 0].max
+      miles_remaining = [ recommended_interval_miles - miles_since_change, 0 ].max
 
       days_since_change = @last_change_date ? (Date.today - @last_change_date).to_i : 0
       months_since_change = days_since_change / 30.0
@@ -57,7 +57,7 @@ module Automotive
                 (next_change_date_by_time && Date.today > next_change_date_by_time)
 
       oil_life_remaining_pct = recommended_interval_miles > 0 ?
-        ([(1.0 - miles_since_change.to_f / recommended_interval_miles) * 100.0, 0].max) : 0.0
+        ([ (1.0 - miles_since_change.to_f / recommended_interval_miles) * 100.0, 0 ].max) : 0.0
 
       {
         valid: true,

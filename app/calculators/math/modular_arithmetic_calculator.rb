@@ -119,9 +119,9 @@ module Math
 
     # Extended Euclidean Algorithm: returns [gcd, x, y] where a*x + b*y = gcd
     def extended_gcd(a, b)
-      return [a, 1, 0] if b.zero?
+      return [ a, 1, 0 ] if b.zero?
       g, x, y = extended_gcd(b, a % b)
-      [g, y, x - (a / b) * y]
+      [ g, y, x - (a / b) * y ]
     end
   end
 end

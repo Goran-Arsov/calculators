@@ -81,7 +81,7 @@ module Everyday
       g = clean[2..3].to_i(16)
       b = clean[4..5].to_i(16)
 
-      [r, g, b]
+      [ r, g, b ]
     end
 
     # WCAG 2.1 relative luminance formula
@@ -103,8 +103,8 @@ module Everyday
     # Contrast ratio = (L1 + 0.05) / (L2 + 0.05)
     # where L1 is the lighter luminance
     def contrast_ratio(l1, l2)
-      lighter = [l1, l2].max
-      darker = [l1, l2].min
+      lighter = [ l1, l2 ].max
+      darker = [ l1, l2 ].min
       ((lighter + 0.05) / (darker + 0.05)).round(2)
     end
   end

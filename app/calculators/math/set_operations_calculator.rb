@@ -147,9 +147,9 @@ module Math
     end
 
     def compute_power_set(set)
-      result = [[]]
+      result = [ [] ]
       set.each do |element|
-        result += result.map { |subset| subset + [element] }
+        result += result.map { |subset| subset + [ element ] }
       end
       result
     end

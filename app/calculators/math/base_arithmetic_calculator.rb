@@ -23,10 +23,10 @@ module Math
       num2_decimal = to_decimal(@number2_str, @base)
 
       result_decimal = case @operation
-                       when "add" then num1_decimal + num2_decimal
-                       when "subtract" then num1_decimal - num2_decimal
-                       when "multiply" then num1_decimal * num2_decimal
-                       end
+      when "add" then num1_decimal + num2_decimal
+      when "subtract" then num1_decimal - num2_decimal
+      when "multiply" then num1_decimal * num2_decimal
+      end
 
       result_in_base = from_decimal(result_decimal, @base)
 

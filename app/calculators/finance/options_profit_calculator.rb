@@ -21,10 +21,10 @@ module Finance
       total_premium_paid = @premium * total_shares
 
       if @option_type == "call"
-        intrinsic_value = [@underlying_price - @strike_price, 0].max
+        intrinsic_value = [ @underlying_price - @strike_price, 0 ].max
         break_even = @strike_price + @premium
       else
-        intrinsic_value = [@strike_price - @underlying_price, 0].max
+        intrinsic_value = [ @strike_price - @underlying_price, 0 ].max
         break_even = @strike_price - @premium
       end
 
@@ -37,7 +37,7 @@ module Finance
         max_profit = Float::INFINITY
       else
         max_profit = ((@strike_price - @premium) * total_shares).round(2)
-        max_profit = [max_profit, 0].max
+        max_profit = [ max_profit, 0 ].max
       end
 
       {

@@ -128,11 +128,11 @@ module Physics
                      turns_ratio:, primary_current:, secondary_current:, primary_power:, secondary_power:)
       transformer_type = if turns_ratio > 1.001
                            "Step-down"
-                         elsif turns_ratio < 0.999
+      elsif turns_ratio < 0.999
                            "Step-up"
-                         else
+      else
                            "Isolation (1:1)"
-                         end
+      end
 
       result = {
         valid: true,

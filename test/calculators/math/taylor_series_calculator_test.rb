@@ -13,14 +13,14 @@ class Math::TaylorSeriesCalculatorTest < ActiveSupport::TestCase
     result = Math::TaylorSeriesCalculator.new(function: "sin", num_terms: 3).call
     assert result[:valid]
     powers = result[:terms].map { |t| t[:power] }
-    assert_equal [1, 3, 5], powers
+    assert_equal [ 1, 3, 5 ], powers
   end
 
   test "cos series first 3 terms are even powers" do
     result = Math::TaylorSeriesCalculator.new(function: "cos", num_terms: 3).call
     assert result[:valid]
     powers = result[:terms].map { |t| t[:power] }
-    assert_equal [0, 2, 4], powers
+    assert_equal [ 0, 2, 4 ], powers
   end
 
   test "ln(1+x) series first 3 terms" do
@@ -45,21 +45,21 @@ class Math::TaylorSeriesCalculatorTest < ActiveSupport::TestCase
     result = Math::TaylorSeriesCalculator.new(function: "sinh", num_terms: 3).call
     assert result[:valid]
     powers = result[:terms].map { |t| t[:power] }
-    assert_equal [1, 3, 5], powers
+    assert_equal [ 1, 3, 5 ], powers
   end
 
   test "cosh series has even powers only" do
     result = Math::TaylorSeriesCalculator.new(function: "cosh", num_terms: 3).call
     assert result[:valid]
     powers = result[:terms].map { |t| t[:power] }
-    assert_equal [0, 2, 4], powers
+    assert_equal [ 0, 2, 4 ], powers
   end
 
   test "atan series has odd powers only" do
     result = Math::TaylorSeriesCalculator.new(function: "atan", num_terms: 3).call
     assert result[:valid]
     powers = result[:terms].map { |t| t[:power] }
-    assert_equal [1, 3, 5], powers
+    assert_equal [ 1, 3, 5 ], powers
   end
 
   test "blank function returns error" do

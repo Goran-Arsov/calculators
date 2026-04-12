@@ -34,9 +34,9 @@ module Physics
 
       fluid_density = if @fluid == "custom"
                         @custom_fluid_density
-                      else
+      else
                         FLUIDS[@fluid][:density]
-                      end
+      end
 
       # Buoyant force: Fb = rho_fluid * V_object * g
       buoyant_force = fluid_density * @object_volume * @gravity
@@ -56,11 +56,11 @@ module Physics
       # Determine float/sink status
       status = if buoyant_force > weight
                  "Floats"
-               elsif buoyant_force < weight
+      elsif buoyant_force < weight
                  "Sinks"
-               else
+      else
                  "Neutrally buoyant"
-               end
+      end
 
       # Apparent weight when submerged
       apparent_weight = weight - buoyant_force

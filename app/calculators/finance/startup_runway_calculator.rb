@@ -81,8 +81,8 @@ module Finance
     end
 
     def build_projection(runway_months)
-      months_to_show = [runway_months || 24, 24].min
-      months_to_show = [months_to_show, 1].max
+      months_to_show = [ runway_months || 24, 24 ].min
+      months_to_show = [ months_to_show, 1 ].max
 
       cash = @cash_balance
       revenue = @monthly_revenue

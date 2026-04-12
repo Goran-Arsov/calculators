@@ -64,14 +64,14 @@ module Education
 
     def idr_monthly_payment
       annual_income = @monthly_income * 12
-      discretionary = [annual_income - poverty_line * 1.5, 0].max
+      discretionary = [ annual_income - poverty_line * 1.5, 0 ].max
       (discretionary * 0.10 / 12.0)
     end
 
     # PSLF: forgiveness after 120 qualifying payments (10 years)
     def calculate_pslf
       total_required = 120
-      remaining_payments = [total_required - @payments_made, 0].max
+      remaining_payments = [ total_required - @payments_made, 0 ].max
       monthly_rate = @annual_rate / 12.0
       payment = idr_monthly_payment
 
@@ -81,7 +81,7 @@ module Education
 
       remaining_payments.times do
         interest = balance * monthly_rate
-        actual = [payment, balance + interest].min
+        actual = [ payment, balance + interest ].min
 
         if actual < interest
           balance += (interest - actual)
@@ -95,7 +95,7 @@ module Education
         break if balance <= 0.01
       end
 
-      forgiven = [balance, 0].max
+      forgiven = [ balance, 0 ].max
       standard_total = calculate_standard_total
 
       {
@@ -105,7 +105,7 @@ module Education
         remaining_payments: remaining_payments,
         months_until_forgiveness: months,
         total_with_standard: standard_total.round(2),
-        savings: [(standard_total - total_paid), 0].max.round(2),
+        savings: [ (standard_total - total_paid), 0 ].max.round(2),
         tax_on_forgiveness: 0.0
       }
     end
@@ -113,7 +113,7 @@ module Education
     # IDR forgiveness after 20 or 25 years
     def calculate_idr(years)
       total_required = years * 12
-      remaining_payments = [total_required - @payments_made, 0].max
+      remaining_payments = [ total_required - @payments_made, 0 ].max
       monthly_rate = @annual_rate / 12.0
       payment = idr_monthly_payment
 
@@ -123,7 +123,7 @@ module Education
 
       remaining_payments.times do
         interest = balance * monthly_rate
-        actual = [payment, balance + interest].min
+        actual = [ payment, balance + interest ].min
 
         if actual < interest
           balance += (interest - actual)
@@ -137,7 +137,7 @@ module Education
         break if balance <= 0.01
       end
 
-      forgiven = [balance, 0].max
+      forgiven = [ balance, 0 ].max
       # IDR forgiveness is currently taxable (unlike PSLF)
       estimated_tax_rate = 0.22
       tax_on_forgiveness = (forgiven * estimated_tax_rate).round(2)
@@ -150,7 +150,7 @@ module Education
         remaining_payments: remaining_payments,
         months_until_forgiveness: months,
         total_with_standard: standard_total.round(2),
-        savings: [(standard_total - total_paid - tax_on_forgiveness), 0].max.round(2),
+        savings: [ (standard_total - total_paid - tax_on_forgiveness), 0 ].max.round(2),
         tax_on_forgiveness: tax_on_forgiveness
       }
     end

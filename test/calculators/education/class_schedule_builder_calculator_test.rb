@@ -118,7 +118,7 @@ class Education::ClassScheduleBuilderCalculatorTest < ActiveSupport::TestCase
   end
 
   test "missing class name returns error" do
-    classes = [{ name: "", day: "monday", start_time: "09:00", end_time: "10:00", credits: 3 }]
+    classes = [ { name: "", day: "monday", start_time: "09:00", end_time: "10:00", credits: 3 } ]
     calc = Education::ClassScheduleBuilderCalculator.new(classes: classes)
     result = calc.call
 
@@ -127,7 +127,7 @@ class Education::ClassScheduleBuilderCalculatorTest < ActiveSupport::TestCase
   end
 
   test "invalid day returns error" do
-    classes = [{ name: "Test", day: "funday", start_time: "09:00", end_time: "10:00", credits: 3 }]
+    classes = [ { name: "Test", day: "funday", start_time: "09:00", end_time: "10:00", credits: 3 } ]
     calc = Education::ClassScheduleBuilderCalculator.new(classes: classes)
     result = calc.call
 
@@ -136,7 +136,7 @@ class Education::ClassScheduleBuilderCalculatorTest < ActiveSupport::TestCase
   end
 
   test "end time before start time returns error" do
-    classes = [{ name: "Test", day: "monday", start_time: "10:00", end_time: "09:00", credits: 3 }]
+    classes = [ { name: "Test", day: "monday", start_time: "10:00", end_time: "09:00", credits: 3 } ]
     calc = Education::ClassScheduleBuilderCalculator.new(classes: classes)
     result = calc.call
 
@@ -145,7 +145,7 @@ class Education::ClassScheduleBuilderCalculatorTest < ActiveSupport::TestCase
   end
 
   test "zero credits returns error" do
-    classes = [{ name: "Test", day: "monday", start_time: "09:00", end_time: "10:00", credits: 0 }]
+    classes = [ { name: "Test", day: "monday", start_time: "09:00", end_time: "10:00", credits: 0 } ]
     calc = Education::ClassScheduleBuilderCalculator.new(classes: classes)
     result = calc.call
 

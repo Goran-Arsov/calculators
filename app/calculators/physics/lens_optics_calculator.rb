@@ -95,19 +95,19 @@ module Physics
 
       image_type = if real_image
                      "Real (forms on opposite side of lens)"
-                   else
+      else
                      "Virtual (forms on same side as object)"
-                   end
+      end
 
       orientation = upright ? "Upright" : "Inverted"
 
       size_description = if abs_mag > 1.001
                            "Enlarged (#{abs_mag.round(2)}x)"
-                         elsif abs_mag < 0.999
+      elsif abs_mag < 0.999
                            "Reduced (#{abs_mag.round(2)}x)"
-                         else
+      else
                            "Same size (1x)"
-                         end
+      end
 
       lens_type = focal_length > 0 ? "Converging (convex)" : "Diverging (concave)"
 

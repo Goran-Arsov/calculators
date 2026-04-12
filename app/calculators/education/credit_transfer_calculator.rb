@@ -19,7 +19,7 @@ module Education
       return { valid: false, errors: @errors } if @errors.any?
 
       credits_lost = @total_credits_earned - @transferable_credits
-      remaining_credits = [@degree_credits_required - @transferable_credits, 0].max
+      remaining_credits = [ @degree_credits_required - @transferable_credits, 0 ].max
       remaining_semesters = @credits_per_semester > 0 ? (remaining_credits.to_f / @credits_per_semester).ceil : 0
       remaining_years = (remaining_semesters / 2.0).ceil
 

@@ -15,7 +15,7 @@ class Education::CollegeCostComparisonCalculatorTest < ActiveSupport::TestCase
     assert result[:college_a][:total_cost] > 0
     assert result[:college_b][:total_cost] > 0
     assert result[:difference] >= 0
-    assert_includes ["College A", "College B"], result[:cheaper]
+    assert_includes [ "College A", "College B" ], result[:cheaper]
     assert_equal 4, result[:years]
   end
 

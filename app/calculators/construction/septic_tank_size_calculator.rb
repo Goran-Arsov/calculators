@@ -11,7 +11,7 @@ module Construction
     MINIMUM_TANK_GALLONS = 1000
 
     # Standard tank sizes available (gallons)
-    STANDARD_TANK_SIZES = [1000, 1250, 1500, 1750, 2000, 2500, 3000, 3500, 4000, 5000].freeze
+    STANDARD_TANK_SIZES = [ 1000, 1250, 1500, 1750, 2000, 2500, 3000, 3500, 4000, 5000 ].freeze
 
     def initialize(bedrooms:, occupants: nil, daily_water_gallons: nil, has_garbage_disposal: false, has_hot_tub: false)
       @bedrooms = bedrooms.to_i
@@ -41,7 +41,7 @@ module Construction
       flow_based_gallons = (daily_flow * 2).ceil
 
       # Use the larger of the two methods
-      required_gallons = [bedroom_based_gallons, flow_based_gallons, MINIMUM_TANK_GALLONS].max
+      required_gallons = [ bedroom_based_gallons, flow_based_gallons, MINIMUM_TANK_GALLONS ].max
 
       # Add capacity for special fixtures
       required_gallons = (required_gallons * 1.10).ceil if @has_garbage_disposal

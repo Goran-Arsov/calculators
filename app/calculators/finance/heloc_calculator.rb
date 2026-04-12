@@ -17,7 +17,7 @@ module Finance
       return { valid: false, errors: @errors } if @errors.any?
 
       available_equity = (@home_value * @credit_limit_percent) - @mortgage_balance
-      available_equity = [available_equity, 0].max
+      available_equity = [ available_equity, 0 ].max
 
       monthly_rate = @annual_rate / 12.0
       num_payments = @repayment_years * 12

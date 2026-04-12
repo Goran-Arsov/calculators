@@ -2,7 +2,7 @@ require "test_helper"
 
 class Everyday::DockerComposeGeneratorCalculatorTest < ActiveSupport::TestCase
   test "generates compose with single service" do
-    result = Everyday::DockerComposeGeneratorCalculator.new(services: ["postgres"]).call
+    result = Everyday::DockerComposeGeneratorCalculator.new(services: [ "postgres" ]).call
     assert_equal true, result[:valid]
     assert_includes result[:compose], "postgres:"
     assert_includes result[:compose], "postgres:16-alpine"
@@ -19,7 +19,7 @@ class Everyday::DockerComposeGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "includes volumes section for services with named volumes" do
-    result = Everyday::DockerComposeGeneratorCalculator.new(services: ["postgres"]).call
+    result = Everyday::DockerComposeGeneratorCalculator.new(services: [ "postgres" ]).call
     assert_equal true, result[:valid]
     assert_includes result[:compose], "volumes:"
     assert_includes result[:compose], "postgres_data:"
@@ -32,7 +32,7 @@ class Everyday::DockerComposeGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "includes healthcheck for postgres" do
-    result = Everyday::DockerComposeGeneratorCalculator.new(services: ["postgres"]).call
+    result = Everyday::DockerComposeGeneratorCalculator.new(services: [ "postgres" ]).call
     assert_equal true, result[:valid]
     assert_includes result[:compose], "healthcheck:"
     assert_includes result[:compose], "pg_isready"
@@ -57,12 +57,12 @@ class Everyday::DockerComposeGeneratorCalculatorTest < ActiveSupport::TestCase
   end
 
   test "error when only unsupported services" do
-    result = Everyday::DockerComposeGeneratorCalculator.new(services: ["nonexistent"]).call
+    result = Everyday::DockerComposeGeneratorCalculator.new(services: [ "nonexistent" ]).call
     assert_equal false, result[:valid]
   end
 
   test "errors accessor returns empty array before call" do
-    calc = Everyday::DockerComposeGeneratorCalculator.new(services: ["postgres"])
+    calc = Everyday::DockerComposeGeneratorCalculator.new(services: [ "postgres" ])
     assert_equal [], calc.errors
   end
 end

@@ -149,7 +149,7 @@ module Everyday
     end
 
     def center_text(text, width)
-      padding = [(width - text.length) / 2, 0].max
+      padding = [ (width - text.length) / 2, 0 ].max
       " " * padding + text
     end
 

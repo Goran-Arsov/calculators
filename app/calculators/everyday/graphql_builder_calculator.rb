@@ -124,15 +124,15 @@ module Everyday
       type = arg[:type].to_s
 
       formatted_value = case type.downcase
-                         when "int", "integer", "float", "number"
+      when "int", "integer", "float", "number"
                            value
-                         when "boolean", "bool"
+      when "boolean", "bool"
                            value.downcase
-                         when "enum"
+      when "enum"
                            value
-                         else
+      else
                            value =~ /\A-?\d+(\.\d+)?\z/ || %w[true false null].include?(value.downcase) ? value : "\"#{value}\""
-                         end
+      end
 
       "#{name}: #{formatted_value}"
     end
