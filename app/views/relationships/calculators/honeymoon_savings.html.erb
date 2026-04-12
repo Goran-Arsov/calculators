@@ -1,0 +1,145 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Honeymoon Savings Calculator - Monthly Savings Plan",
+  description: "Free honeymoon savings calculator. Enter your honeymoon budget, current savings, and months available — see exactly how much to save each month, week, and day.",
+  canonical: relationships_honeymoon_savings_url,
+  og: {
+    title: "Honeymoon Savings Calculator - Free Online Tool | Calc Hammer",
+    description: "Plan your honeymoon savings with a monthly, weekly, and daily breakdown.",
+    url: relationships_honeymoon_savings_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Relationships", url: category_url("relationships") },
+  { name: "Honeymoon Savings Calculator", url: relationships_honeymoon_savings_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much does an average honeymoon cost?", answer: "The Knot's 2024 survey put the average honeymoon cost at about $5,000 for US couples, with significant variation by destination. Domestic honeymoons average $2,500–$4,000, Caribbean and Mexico trips average $4,000–$7,000, European honeymoons average $6,000–$10,000, and Asia or Pacific Island honeymoons (Bali, Thailand, Maldives) average $7,000–$15,000. Luxury all-inclusive resorts and over-water bungalows can push budgets to $20,000+." },
+  { question: "Should I save for the honeymoon separately from the wedding?", answer: "Yes, almost always. Wedding expenses balloon and the honeymoon is the first thing to get cut when something goes over budget. Set up a dedicated honeymoon savings account from the moment you get engaged, contribute a fixed amount every month, and treat it as untouchable until the trip. Couples who don't separate honeymoon savings often end up using credit cards for the trip, which turns a $5,000 honeymoon into $7,000 in debt." },
+  { question: "What's the cheapest way to honeymoon?", answer: "Domestic road trips are by far the cheapest — gas, lodging, and food for a week is often under $1,500. National park honeymoons (Yellowstone, Glacier, Zion, the coast highway) are popular and inexpensive. International budget options include Mexico, Costa Rica, and Portugal, where $3,000–$4,000 covers flights, lodging, and most meals for two for a week. Skip resorts in favor of small hotels or Airbnb to save 30–50%." },
+  { question: "When should I book the honeymoon?", answer: "Book international honeymoons 6–9 months out for the best prices on flights and resorts. Domestic honeymoons can be booked 3–4 months out. If you're targeting a popular spot during peak season (Maldives in winter, Greece in summer), book 9–12 months out to lock in availability and prices. Last-minute deals exist but are unreliable — most couples don't have flexibility on dates because of post-wedding work obligations." },
+  { question: "Can we ask for honeymoon money instead of wedding gifts?", answer: "Yes. Honeymoon registries (Honeyfund, Wanderable, Zola's honeymoon registry) let guests contribute to specific honeymoon experiences — flights, dinners, excursions, hotel nights — instead of physical gifts. Most modern couples use honeymoon registries alongside or instead of traditional registries, and guests usually appreciate knowing their gift contributes to memories rather than another set of dishes." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Honeymoon Savings Calculator",
+  description: "Calculate how much to save each month for your honeymoon by your wedding date.",
+  url: relationships_honeymoon_savings_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "honeymoon-savings-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Relationships", url: category_path("relationships") },
+  { name: "Honeymoon Savings Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Honeymoon Savings Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much do you need to save for your honeymoon? Enter your target cost, current savings, and how many months until your wedding to see exactly how much to put aside each month, week, and day.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="honeymoon-savings-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target cost ($)</label>
+            <input type="number" inputmode="decimal" data-honeymoon-savings-calculator-target="target" data-action="input->honeymoon-savings-calculator#calculate" class="w-full" value="5000" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current savings ($)</label>
+            <input type="number" inputmode="decimal" data-honeymoon-savings-calculator-target="current" data-action="input->honeymoon-savings-calculator#calculate" class="w-full" value="500" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Months available</label>
+            <input type="number" inputmode="numeric" data-honeymoon-savings-calculator-target="months" data-action="input->honeymoon-savings-calculator#calculate" class="w-full" value="12" step="1" min="1">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Savings Plan</h2>
+          <div class="space-y-3">
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm block">Save per month</span>
+              <span class="text-3xl font-extrabold text-teal-700 dark:text-teal-400" data-honeymoon-savings-calculator-target="resultMonthly">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-teal-200/50 dark:border-teal-800/50 text-sm"><span class="text-gray-600 dark:text-gray-400">Per week</span><span class="font-bold text-teal-700 dark:text-teal-400" data-honeymoon-savings-calculator-target="resultWeekly">—</span></div>
+            <div class="flex justify-between items-center text-sm"><span class="text-gray-600 dark:text-gray-400">Per day</span><span class="font-bold text-teal-700 dark:text-teal-400" data-honeymoon-savings-calculator-target="resultDaily">—</span></div>
+            <div class="flex justify-between items-center text-sm"><span class="text-gray-600 dark:text-gray-400">Gap to goal</span><span class="font-bold text-teal-700 dark:text-teal-400" data-honeymoon-savings-calculator-target="resultGap">—</span></div>
+            <div class="text-sm font-semibold text-teal-700 dark:text-teal-400 pt-2 border-t border-teal-200/50 dark:border-teal-800/50" data-honeymoon-savings-calculator-target="resultStatus">—</div>
+          </div>
+          <button data-action="click->honeymoon-savings-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "honeymoon-savings-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Honeymoon Savings Calculator Works</h2>
+      <p>
+        Enter your honeymoon budget, what you've already saved, and how many months you have until the wedding. The calculator subtracts current savings from the target to find your gap, then divides that gap by the months available to give you a fixed monthly savings target. It also shows weekly and daily equivalents so you can pace yourself however works best — some people prefer auto-transfers monthly, others stash $20 a day in a savings jar. Either approach hits the same target by the wedding day.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How Much Honeymoons Cost in 2025</h2>
+      <p>
+        The Knot's 2024 survey put the US average at around $5,000, but the range is enormous. A 5-day domestic road trip can cost $1,500. A week in Cancún at an all-inclusive runs $4,000–$6,000. Two weeks in Italy or France averages $7,000–$10,000. The Maldives or Bora Bora in over-water bungalows starts at $12,000 and runs into the $20,000s. Most couples land between $4,000 and $7,000 once they've added flights, lodging, food, excursions, and the inevitable "let's splurge for the honeymoon" upgrades.
+      </p>
+
+      <h2>Set Up a Dedicated Savings Account</h2>
+      <p>
+        Open a separate high-yield savings account just for the honeymoon. Name it "Honeymoon" so you see the goal every time you check. Set up an automatic transfer the day after each payday for the calculated monthly amount. Don't touch it for any other expense — not the wedding, not an emergency, not a vacation. Treat it as if it doesn't exist until it's time to book the trip. Couples who set up automatic transfers hit their target 4x more reliably than couples who try to save manually.
+      </p>
+
+      <h2>Fund the Honeymoon With a Registry</h2>
+      <p>
+        Honeymoon registries are now offered by most major wedding registry services (Zola, Honeyfund, Wanderable, even Amazon). Instead of asking for physical gifts, you list specific honeymoon experiences — a beachfront dinner, a snorkeling excursion, a hotel night, a flight upgrade — and guests "buy" them. The money goes to you and you book the experience. Modern guests actually prefer this; surveys show 70%+ of guests would rather contribute to a memory than buy another set of plates. Combine a honeymoon registry with personal savings to hit your target faster.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Should we delay the honeymoon to save more?</h3>
+      <p>Absolutely fine. "Mini-moons" right after the wedding plus a bigger trip a year later is increasingly common.</p>
+
+      <h3>Can I use credit card points for the honeymoon?</h3>
+      <p>Yes — many couples open a travel rewards card 12 months out, hit the bonus, and book flights with points.</p>
+
+      <h3>What if our budget changes?</h3>
+      <p>Re-run the calculator. Adjust the monthly amount up or down to keep on track for the new target.</p>
+
+      <h3>How much should we save in an emergency fund first?</h3>
+      <p>Always have 1 month of expenses saved first. Honeymoon money should never come at the expense of basic financial safety.</p>
+
+      <h3>Can we honeymoon on $2,000?</h3>
+      <p>Yes — domestic road trips, cabins, or cheap international destinations can fit a $2,000 budget.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Wedding Budget Planner Calculator", description: "Plan your wedding budget with a 10-category breakdown.", path: relationships_wedding_budget_path, icon_path: "M12 8c-1.657 0-3 .895-3 2" },
+      { name: "Days Until Wedding Calculator", description: "Countdown to your wedding day with planning checkpoints.", path: relationships_days_until_wedding_path, icon_path: "M8 7V3m8 4V3" },
+      { name: "Engagement Ring Budget Calculator", description: "Calculate an engagement ring budget based on salary.", path: relationships_engagement_ring_path, icon_path: "M12 2l3.09 6.26L22 9.27" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "relationships" %>
+
+    <% blog_posts = related_blog_posts("honeymoon-savings-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

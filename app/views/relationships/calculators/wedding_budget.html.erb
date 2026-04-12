@@ -1,0 +1,136 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Wedding Budget Planner Calculator - 10-Category Breakdown",
+  description: "Free wedding budget planner with a 10-category breakdown — venue, catering, photography, attire, flowers, music, rings, invitations, transport, and favors. Plus per-guest cost analysis.",
+  canonical: relationships_wedding_budget_url,
+  og: {
+    title: "Wedding Budget Planner Calculator - Free Online Tool | Calc Hammer",
+    description: "Plan your wedding budget with a detailed 10-category breakdown.",
+    url: relationships_wedding_budget_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Relationships", url: category_url("relationships") },
+  { name: "Wedding Budget Planner Calculator", url: relationships_wedding_budget_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much does the average wedding cost?", answer: "The Knot's 2024 Real Weddings Study put the US average at $33,000, with significant variation by region — Manhattan averages $74,000 while many Midwest counties average $19,000. The average guest count is 117, which works out to roughly $282 per guest. Couples paying themselves often target $20,000 to $30,000; parents-funded weddings average closer to $40,000 to $50,000. The luxury market starts at $75,000 and runs into seven figures." },
+  { question: "What percentage of a wedding budget goes to venue?", answer: "Venue and catering combined typically eat 50–60% of a wedding budget. The Knot's national breakdown puts venue at 37%, catering at 22%, photography at 10%, attire at 5%, flowers at 8%, music/entertainment at 6%, rings at 3%, invitations at 2%, transportation at 2%, and favors/miscellaneous at 5%. These add to 100% as a planning starting point — actual splits vary." },
+  { question: "How can I save money on a wedding?", answer: "The biggest single lever is guest count. Cutting from 150 to 80 guests typically saves $8,000–$15,000 because catering and venue are mostly per-person. After that: choose a Friday or Sunday wedding (20–30% off venue), have a brunch reception instead of dinner (40% cheaper food), use real photographers instead of videographers, and DIY flowers from Costco or Trader Joe's. Skip favors entirely — most guests throw them out." },
+  { question: "Do I need to hire a wedding planner?", answer: "Not for small weddings. For weddings under 50 guests, day-of coordination ($800–$1,500) is usually enough. For weddings over 100 guests, full-service planning ($4,000–$10,000) typically pays for itself in vendor discounts and avoided mistakes. Couples who DIY a 100+ guest wedding without help report spending 200+ hours on logistics, which is the equivalent of 5 weeks of full-time work." },
+  { question: "Should we budget for unexpected costs?", answer: "Yes — add a 10–15% contingency on top of your planned budget. Common surprise costs include vendor gratuities (15–20% of vendor totals), marriage license fees, dress alterations (often 10% of dress price), beauty trial sessions, transportation upgrades, and weather-related changes (tents, heaters). Couples who don't budget contingency typically end up spending 8–12% more than planned." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Wedding Budget Planner Calculator",
+  description: "Plan a wedding budget with a 10-category breakdown including venue, catering, attire, photography, and per-guest costs.",
+  url: relationships_wedding_budget_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "wedding-budget-planner-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Relationships", url: category_path("relationships") },
+  { name: "Wedding Budget Planner Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Wedding Budget Planner Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How will your wedding budget break down? Enter your total budget and guest count to see exactly how much to spend on venue, catering, photography, flowers, and every other category — plus your cost per guest.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="wedding-budget-planner-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total budget ($)</label>
+            <input type="number" inputmode="decimal" data-wedding-budget-planner-calculator-target="total" data-action="input->wedding-budget-planner-calculator#calculate" class="w-full" value="33000" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Guest count</label>
+            <input type="number" inputmode="numeric" data-wedding-budget-planner-calculator-target="guests" data-action="input->wedding-budget-planner-calculator#calculate" class="w-full" value="117" step="1" min="1">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-rose-50 to-fuchsia-50 dark:from-rose-900/20 dark:to-fuchsia-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Budget Breakdown</h2>
+          <div class="flex justify-between items-center mb-4 pb-3 border-b border-rose-200/50 dark:border-rose-800/50">
+            <span class="text-gray-600 dark:text-gray-400 text-sm">Cost per guest</span>
+            <span class="text-2xl font-extrabold text-rose-700 dark:text-rose-400" data-wedding-budget-planner-calculator-target="resultCostPerGuest">—</span>
+          </div>
+          <ul class="space-y-1 text-sm text-gray-700 dark:text-gray-300" data-wedding-budget-planner-calculator-target="breakdownList"></ul>
+          <button data-action="click->wedding-budget-planner-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-rose-600 to-fuchsia-600 hover:from-rose-700 hover:to-fuchsia-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "wedding-budget-planner-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Wedding Budget Planner Works</h2>
+      <p>
+        The calculator takes your total budget and applies the Knot's national average percentage allocation to each of 10 categories: venue (37%), catering (22%), photography (10%), attire (5%), flowers (8%), music (6%), rings (3%), invitations (2%), transportation (2%), and favors/miscellaneous (5%). These add to 100% as a planning starting point. It also divides your total by guest count to show cost per guest, which is the single most important number for understanding whether your budget is realistic for the wedding you're imagining.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Average Wedding by the Numbers</h2>
+      <p>
+        The Knot's 2024 Real Weddings Study reports an average US wedding cost of $33,000 with 117 guests, giving an average cost per guest of $282. Regional variation is huge — Manhattan averages $74,000, San Francisco $43,000, and many rural counties under $20,000. Couples paying themselves typically target $20,000–$30,000; parent-funded weddings run higher. The luxury bracket (above $75,000) accounts for about 8% of all weddings but generates a disproportionate share of media coverage, which is why most couples assume their plans are more expensive than they actually need to be.
+      </p>
+
+      <h2>Where Most Couples Overspend</h2>
+      <p>
+        The biggest budget killer is creep, not any single line item. Couples start with a $25,000 plan, see something they love that's "only $1,500 extra", do that 10 times, and end up at $40,000. Specific traps include the venue upgrade trap (a slightly nicer venue for "only $5K more"), photographer add-ons (engagement shoots, second shooter, albums), florist embellishments (ceremony arches, cake florals, bridesmaid bouquets), and bridal accessories (veil, shoes, jewelry, alterations, hair trial, makeup trial). The fix is to set a hard cap per category and refuse to move money between categories without removing something else first.
+      </p>
+
+      <h2>How to Cut a Wedding Budget by 30%</h2>
+      <p>
+        The fastest cuts are guest count (each removed guest saves about $250), venue choice (off-peak day or non-Saturday saves 20–30%), reception meal (brunch or lunch is 40% cheaper than dinner), flowers (DIY from Costco or use seasonal blooms instead of imported), and music (Spotify playlist plus speaker rental for $200 vs DJ for $1,500). Skip wedding party gifts above $50, skip welcome bags entirely, skip favors, and write your own invitation graphics on Canva. Couples who execute on all of these typically cut 30–40% off the average without anyone noticing the difference.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is $20,000 enough for a wedding?</h3>
+      <p>Yes — for 50–80 guests, a Friday or Sunday venue, and a buffet meal. Many couples pull off beautiful weddings at this number.</p>
+
+      <h3>How much should I spend on a wedding ring?</h3>
+      <p>The 3% rule of the wedding budget is a starting point — for a $33,000 wedding, that's around $1,000. Match what feels right.</p>
+
+      <h3>Should I include the honeymoon in the budget?</h3>
+      <p>No — honeymoon is typically tracked separately. Use a honeymoon savings calculator for that.</p>
+
+      <h3>What's the most underrated wedding cost?</h3>
+      <p>Vendor gratuities. Plan 15–20% of vendor totals (not the whole budget) for tips, and have envelopes ready the day-of.</p>
+
+      <h3>Should I splurge on photography?</h3>
+      <p>Most planners say yes. Photos and videos are the only things you keep when the day is over.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Wedding Cost Splitter", description: "Split wedding costs between the couple and families.", path: relationships_wedding_splitter_path, icon_path: "M17 20h5v-2a3 3 0 00-5.356-1.857" },
+      { name: "Honeymoon Savings Calculator", description: "Save monthly to reach your honeymoon budget by your wedding date.", path: relationships_honeymoon_savings_path, icon_path: "M3 12l2-2m0 0l7-7" },
+      { name: "Engagement Ring Budget Calculator", description: "Calculate an engagement ring budget based on salary.", path: relationships_engagement_ring_path, icon_path: "M12 2l3.09 6.26L22 9.27" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "relationships" %>
+
+    <% blog_posts = related_blog_posts("wedding-budget-planner-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

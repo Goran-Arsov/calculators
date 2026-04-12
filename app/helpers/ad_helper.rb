@@ -6,6 +6,11 @@ module AdHelper
   # Ad provider: "adsense" (default) or "gam" (Google Ad Manager / header bidding)
   AD_PROVIDER = ENV.fetch("AD_PROVIDER", "adsense").freeze
 
+  # Auto Ads: when true, includes ?client= in the adsbygoogle.js script URL,
+  # enabling Google to automatically place additional ads on the page.
+  # Controlled separately from manual ad units. Requires dashboard opt-in too.
+  AUTO_ADS_ENABLED = ENV.fetch("AUTO_ADS_ENABLED", "true") == "true"
+
   # Slot IDs — replace after creating ad units in AdSense dashboard
   AD_SLOTS = {
     "leaderboard"  => ENV.fetch("AD_SLOT_LEADERBOARD", ""),
@@ -34,6 +39,15 @@ module AdHelper
 
   def ad_slot_id(position)
     AD_SLOTS[position.to_s] || ""
+  end
+
+  def auto_ads_enabled?
+    AUTO_ADS_ENABLED
+  end
+
+  def adsense_script_url
+    base = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+    auto_ads_enabled? ? "#{base}?client=#{adsense_pub_id}" : base
   end
 
   def ad_slot(position)

@@ -25,6 +25,12 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", /Gardening/
   end
 
+  test "should get relationships category" do
+    get category_url("relationships")
+    assert_response :success
+    assert_select "h1", /Relationship/
+  end
+
   test "should return 404 for unknown category" do
     assert_raises(ActionController::UrlGenerationError) do
       get category_url("unknown")

@@ -1,0 +1,154 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Dating Pool Calculator - How Many Eligible Singles Match You?",
+  description: "Free dating pool calculator. Estimate how many singles in your city match your age, gender, and compatibility preferences using demographic filters.",
+  canonical: relationships_dating_pool_url,
+  og: {
+    title: "Dating Pool Calculator - Free Online Tool | Calc Hammer",
+    description: "Estimate how many eligible singles match your preferences in your city.",
+    url: relationships_dating_pool_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Relationships", url: category_url("relationships") },
+  { name: "Dating Pool Calculator", url: relationships_dating_pool_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many people are eligible for me to date?", answer: "It depends on your filters, your city, and your age range. A common back-of-envelope calculation: take your city's population, multiply by 0.015 per year of your age range (so a 5-year range covers about 7.5% of the adult population), apply your gender preference (typically 50%), the local single rate (~45% of adults), the compatibility rate (shared values, lifestyle, etc., ~20%), and the mutual attraction rate (~10%). For most singles in mid-sized cities, this comes out to a few hundred to a few thousand realistic matches." },
+  { question: "Is the dating pool actually small?", answer: "Numerically, no — even with strict filters, most singles in mid-to-large cities have hundreds of compatible potential partners. The challenge isn't the pool size, it's exposure. You need to actually meet those people, and most people only encounter dozens of new singles per year through normal life. Online dating apps exist precisely to solve this — they expose you to thousands of profiles, dramatically increasing the pool you can actually filter through. The 'no one I like' feeling is usually a discovery problem, not a population problem." },
+  { question: "Why does it feel like there's no one to date?", answer: "Three reasons. First, you only encounter people in your daily routine (work, gym, hobbies), which is tiny compared to your city. Second, your filters rule out most encounters before they happen. Third, mutual interest is a probability — even when you meet someone compatible, there's only about a 10% chance they're equally interested. The combination of these three factors makes it feel like there's no one, even when the numbers say otherwise." },
+  { question: "Should I move to a bigger city to date?", answer: "Cities multiply your dating pool, but they also create the paradox of choice — too many options often makes commitment harder. Empirical research from OkCupid and Pew Research suggests that cities give you faster initial matches but slower transitions to serious relationships. Smaller towns produce slower starts but stronger commitment once a match happens. There's no universally 'better' option — moving to a bigger city helps if your problem is meeting people, not if your problem is choosing or committing." },
+  { question: "What's the realistic dating pool for someone over 40?", answer: "Smaller, but still meaningful. The single rate for 40+ adults is similar to younger adults, but the compatibility filter is stricter (life stage, kids, career) and the mutual interest rate is lower because everyone has more 'no thanks' triggers. A 45-year-old in a mid-sized city might have a few dozen to a few hundred realistic matches, compared to thousands at 25. The trade-off: 40+ daters tend to be more intentional, which raises hit rates per encounter." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Dating Pool Calculator",
+  description: "Estimate how many singles match your preferences in your city using demographic filters.",
+  url: relationships_dating_pool_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "dating-pool-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Relationships", url: category_path("relationships") },
+  { name: "Dating Pool Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Dating Pool Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How big is your dating pool? Enter your city's population and your dating preferences to see roughly how many eligible singles in your area might be a match — from raw numbers down to mutually-attracted potentials.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="dating-pool-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">City population</label>
+            <input type="number" inputmode="numeric" data-dating-pool-calculator-target="population" data-action="input->dating-pool-calculator#calculate" class="w-full" value="500000" step="any" min="0">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Min age</label>
+              <input type="number" inputmode="numeric" data-dating-pool-calculator-target="ageMin" data-action="input->dating-pool-calculator#calculate" class="w-full" value="25" step="1" min="18">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Max age</label>
+              <input type="number" inputmode="numeric" data-dating-pool-calculator-target="ageMax" data-action="input->dating-pool-calculator#calculate" class="w-full" value="35" step="1" min="18">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gender preference (% of population)</label>
+            <select data-dating-pool-calculator-target="gender" data-action="change->dating-pool-calculator#calculate" class="w-full">
+              <option value="0.5" selected>One gender (~50%)</option>
+              <option value="1.0">Any gender (100%)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Funnel</h2>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">In age range</span><span class="font-bold text-blue-700 dark:text-blue-400" data-dating-pool-calculator-target="resultAge">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Of preferred gender</span><span class="font-bold text-blue-700 dark:text-blue-400" data-dating-pool-calculator-target="resultGender">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Single</span><span class="font-bold text-blue-700 dark:text-blue-400" data-dating-pool-calculator-target="resultSingle">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Compatible</span><span class="font-bold text-blue-700 dark:text-blue-400" data-dating-pool-calculator-target="resultCompatible">—</span></div>
+            <div class="flex justify-between items-center pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Mutually attracted</span>
+              <span class="text-2xl font-extrabold text-blue-700 dark:text-blue-400" data-dating-pool-calculator-target="resultMutual">—</span>
+            </div>
+          </div>
+          <button data-action="click->dating-pool-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "dating-pool-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Dating Pool Calculator Works</h2>
+      <p>
+        The calculator builds a funnel from your city's total population down to "mutually attracted potential matches" by applying demographic filters at each step. Step 1: take the population and apply ~1.5% per year of your age range (a rough US census distribution). Step 2: apply gender preference. Step 3: apply the local single rate (~45% of adults, per Pew). Step 4: apply compatibility rate (~20%, accounting for shared values, lifestyle, and core preferences). Step 5: apply mutual attraction rate (~10%). The final number is your realistic top-of-funnel pool of people who might actually become a match.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why the Numbers Feel Wrong</h2>
+      <p>
+        Most people are surprised by the calculator output in either direction. If it says you have 5,000 potential matches and you've never met any of them, the math feels off — but the math is right; the problem is exposure. You only see a handful of new singles per week through your daily routine. Apps fix this by exposing you to hundreds per session. On the other hand, if the calculator says you have 50 matches and that feels too small, you may have over-tightened your filters. Try widening the age range or relaxing the gender filter to see how quickly the pool grows.
+      </p>
+
+      <h2>The Exposure Problem</h2>
+      <p>
+        A single 30-year-old in a city of 500,000 has thousands of theoretical matches but encounters maybe 30–50 new single people in a typical month through normal life — work, gym, friends-of-friends, events. That's why dating apps are dominant: they expose you to thousands per session and let you pre-filter. The downside is that the filtering happens on shallow signals (photos, age, height, brief profile). The fix is to use apps for volume and offline events for higher-quality first impressions, ideally combining both.
+      </p>
+
+      <h2>Filters Compound Multiplicatively</h2>
+      <p>
+        Each filter cuts the pool. A 5-year age range cuts to about 7.5% of adult population. Gender preference cuts that in half. Single rate cuts to 45%. Compatibility filters (similar education, religion, politics, kid plans, lifestyle) typically cut to 10–20%. Each additional filter halves what's left. Stacking 5–6 strict filters can reduce a pool of 100,000 down to 50–200 realistic matches. The math is unforgiving — every "must have" cuts the pool. The most successful daters keep filters tight on values and loose on surface traits.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How accurate is the calculator?</h3>
+      <p>It's a rough demographic estimate, not a personalized prediction. Use it as an order-of-magnitude guide.</p>
+
+      <h3>Why is my dating pool so small?</h3>
+      <p>Tight filters compound. Try widening the age range or relaxing one or two non-essential preferences.</p>
+
+      <h3>Should I use online or offline dating?</h3>
+      <p>Both. Apps for volume, offline events for quality. The combination beats either alone.</p>
+
+      <h3>Does the calculator account for sexual orientation?</h3>
+      <p>Use the gender preference field — for same-sex preferences, it estimates the same way.</p>
+
+      <h3>Can I improve my mutual attraction rate?</h3>
+      <p>Yes — better photos, clearer profile, working on confidence and conversation skills all raise the rate measurably.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "When Will I Meet Someone Calculator", description: "Fun estimator for when you'll meet someone new.", path: relationships_when_meet_path, icon_path: "M12 8v4l3 3" },
+      { name: "Online Dating ROI Calculator", description: "Calculate hours and messages needed to find a relationship.", path: relationships_online_dating_roi_path, icon_path: "M13 7h8m0 0v8" },
+      { name: "Half Your Age Plus Seven Calculator", description: "Find the socially acceptable dating age range for any age.", path: relationships_half_plus_seven_path, icon_path: "M8 7V3m8 4V3" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "relationships" %>
+
+    <% blog_posts = related_blog_posts("dating-pool-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,149 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Divorce Cost Calculator - Uncontested vs Mediated vs Contested",
+  description: "Free divorce cost calculator. Estimate the total cost of divorce by path — uncontested, mediated, collaborative, or contested — with extras for children, property, and businesses.",
+  canonical: relationships_divorce_cost_url,
+  og: {
+    title: "Divorce Cost Calculator - Free Online Tool | Calc Hammer",
+    description: "Estimate divorce costs by uncontested, mediated, or contested path.",
+    url: relationships_divorce_cost_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Relationships", url: category_url("relationships") },
+  { name: "Divorce Cost Calculator", url: relationships_divorce_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much does a divorce cost in the US?", answer: "Cost depends almost entirely on whether the divorce is contested (couples disagree and litigate) or uncontested (couples agree). Nolo and FindLaw surveys put uncontested divorces at $1,000–$4,500, mediated divorces at $3,000–$12,000, collaborative divorces at $7,500–$25,000, and contested litigation at $15,000–$60,000+ per spouse. Children, complex property, and family businesses can add tens of thousands more in valuation, custody evaluations, and expert witness fees." },
+  { question: "What's the difference between mediated and contested divorce?", answer: "Mediation uses a neutral third party (a mediator, often a retired judge or family lawyer) to help both spouses agree on terms outside of court. It's collaborative, faster, and far cheaper than litigation. Contested divorce means the couple disagrees on something — usually custody, support, or property — and a judge has to decide. Litigation requires both spouses to hire attorneys, file motions, attend hearings, and sometimes go to trial, which is where the costs balloon." },
+  { question: "How can I keep divorce costs low?", answer: "The single biggest cost saver is reaching agreement before lawyers get involved. If you and your spouse can agree on division of assets, custody, and support, an uncontested divorce can cost under $2,000 total. Hire one mediator instead of two attorneys for the most contested points. Use online divorce services (Wevorce, It's Over Easy, Hello Divorce) for the paperwork. Avoid email wars between attorneys — every email is billable time." },
+  { question: "Who pays for the divorce?", answer: "Each spouse typically pays their own attorney fees in the US, though courts can order one spouse to contribute to the other's fees if there's a large income disparity. In some states, marital assets can be used to pay both attorneys before the divorce is finalized. Filing fees ($100–$500 depending on the state) are usually paid by whoever files the paperwork, but those costs are minor compared to attorney fees." },
+  { question: "Is divorce always expensive?", answer: "No. Couples without children, property, or significant assets can divorce for under $1,000 using uncontested filings or DIY divorce websites. The cost is driven by complexity and conflict, not by the divorce itself. A 5-minute Las Vegas marriage between two college students with no shared assets can be undone for the price of filing fees plus a notary. A 25-year marriage with three kids, two houses, and a family business can cost $100,000+." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Divorce Cost Calculator",
+  description: "Estimate the total cost of divorce by path with extras for children, property, and businesses.",
+  url: relationships_divorce_cost_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "divorce-cost-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Relationships", url: category_path("relationships") },
+  { name: "Divorce Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Divorce Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much does a divorce cost? Pick the divorce path — uncontested, mediated, collaborative, or contested — and add complicating factors to see low, mid, and high cost estimates.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="divorce-cost-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Divorce path</label>
+            <select data-divorce-cost-calculator-target="path" data-action="change->divorce-cost-calculator#calculate" class="w-full">
+              <option value="uncontested">Uncontested (you agree on everything)</option>
+              <option value="mediated" selected>Mediated (neutral third party)</option>
+              <option value="collaborative">Collaborative (lawyers but no court)</option>
+              <option value="contested">Contested (litigation)</option>
+            </select>
+          </div>
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            <input type="checkbox" data-divorce-cost-calculator-target="children" data-action="change->divorce-cost-calculator#calculate" class="rounded"> Custody dispute (+$3,500)
+          </label>
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            <input type="checkbox" data-divorce-cost-calculator-target="property" data-action="change->divorce-cost-calculator#calculate" class="rounded"> Property/real estate (+$4,500)
+          </label>
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            <input type="checkbox" data-divorce-cost-calculator-target="business" data-action="change->divorce-cost-calculator#calculate" class="rounded"> Business valuation (+$8,000)
+          </label>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-slate-50 to-zinc-50 dark:from-slate-900/20 dark:to-zinc-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Cost Estimate</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Low</span><span class="text-xl font-bold text-slate-700 dark:text-slate-300" data-divorce-cost-calculator-target="resultLow">—</span></div>
+            <div class="flex justify-between items-center pt-3 border-t border-slate-200/50 dark:border-slate-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Mid</span>
+              <span class="text-3xl font-extrabold text-slate-700 dark:text-slate-300" data-divorce-cost-calculator-target="resultMid">—</span>
+            </div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">High</span><span class="text-xl font-bold text-slate-700 dark:text-slate-300" data-divorce-cost-calculator-target="resultHigh">—</span></div>
+          </div>
+          <button data-action="click->divorce-cost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-slate-700 to-zinc-700 hover:from-slate-800 hover:to-zinc-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "divorce-cost-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>The Four Paths to Divorce</h2>
+      <p>
+        <strong>Uncontested</strong> is the cheapest and fastest — both spouses agree on division of assets, custody, and support, fill out paperwork, and submit it to a court. Costs run $1,000–$4,500 total. <strong>Mediated</strong> uses a neutral third party to help spouses agree on contested points without going to court. Cost: $3,000–$12,000. <strong>Collaborative</strong> divorce involves both spouses hiring attorneys who agree upfront not to litigate, working together to reach a settlement. Cost: $7,500–$25,000. <strong>Contested</strong> divorce means at least one major point goes to court. Cost: $15,000–$60,000+ per spouse, sometimes much more.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>What Drives Divorce Costs</h2>
+      <p>
+        The single biggest driver is conflict. A divorce where both spouses agree on everything costs almost nothing in attorney time. A divorce where the spouses fight about every small decision can cost six figures, because attorneys bill in 6-minute increments and every email, phone call, and motion adds up. Children add complexity through custody evaluations ($2,000–$7,000), guardian ad litem fees ($1,500–$5,000), and the simple fact that custody disputes are emotionally charged. Real estate adds appraisal fees and complex division arguments. Family businesses are the worst — business valuations alone can cost $5,000–$25,000.
+      </p>
+
+      <h2>How to Reduce Divorce Costs</h2>
+      <p>
+        Talk to your spouse before talking to a lawyer. Reach as much agreement as possible — division of assets, custody schedule, support amounts — and write it down. Take that agreement to a mediator (one mediator for both of you, not two attorneys), and only consult separate attorneys for legal review of the final paperwork. Avoid using attorneys as therapists. Don't waste billable time on emotional venting — that's what therapists are for, and they're 1/3 the cost. Document everything yourself rather than asking attorneys to compile records.
+      </p>
+
+      <h2>What's Not Included in This Estimate</h2>
+      <p>
+        The calculator covers attorney and mediator fees plus filing fees, but doesn't include the long-term financial impact of divorce: division of retirement accounts (no fee, just division), spousal support obligations (ongoing), child support obligations (ongoing), the cost of maintaining two households instead of one (often the biggest hidden cost), refinancing or buying out a spouse on a mortgage, and the emotional/health costs that often translate into therapy bills, missed work, and lower productivity for years after the divorce. Plan for the full picture, not just the legal bill.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Can I divorce without a lawyer?</h3>
+      <p>Yes — uncontested divorces with no kids and minimal assets can be filed pro se for under $500 in most states.</p>
+
+      <h3>How long does a divorce take?</h3>
+      <p>Uncontested: 2–6 months. Mediated: 4–9 months. Contested: 1–3 years, sometimes longer.</p>
+
+      <h3>What's the cheapest state to divorce in?</h3>
+      <p>Filing fees vary by state ($75 in some, $500+ in others), but attorney rates matter far more than location.</p>
+
+      <h3>Should I use an online divorce service?</h3>
+      <p>For simple uncontested cases, yes — services like Hello Divorce and Wevorce can save thousands.</p>
+
+      <h3>Who keeps the engagement ring after a divorce?</h3>
+      <p>In most US states the ring is considered a completed gift and stays with the recipient. State laws vary.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Alimony Calculator", description: "Estimate spousal support from income difference and marriage length.", path: relationships_alimony_path, icon_path: "M12 8c-1.657 0-3 .895-3 2" },
+      { name: "Child Support Calculator", description: "Estimate child support from both parents' income.", path: relationships_child_support_path, icon_path: "M17 20h5v-2" },
+      { name: "Breakup Recovery Calculator", description: "Estimate emotional recovery time from a breakup or divorce.", path: relationships_breakup_recovery_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "relationships" %>
+
+    <% blog_posts = related_blog_posts("divorce-cost-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

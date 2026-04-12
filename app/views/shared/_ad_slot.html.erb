@@ -5,6 +5,9 @@
 <% is_sidebar = slot == "sidebar" %>
 <% is_in_results = slot == "in_results" %>
 <% is_in_content = slot == "in_content" %>
+<%# Hide in_content ads on mobile to prevent excessive ad density
+    (leaderboard + in_results already visible in a short scroll) %>
+<% mobile_hidden = is_in_content ? "hidden md:block" : "" %>
 
 <%# CLS fix: reserve space for ads before they load %>
 <%
@@ -24,7 +27,7 @@
 %>
 
 <% if adsense_enabled? %>
-  <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>" data-ad-provider="<%= ad_provider %>" style="<%= cls_style unless is_anchor %>" role="complementary" aria-label="Advertisement">
+  <div class="ad-slot ad-slot--<%= slot %> <%= mobile_hidden %>" data-ad-slot="<%= slot %>" data-ad-provider="<%= ad_provider %>" style="<%= cls_style unless is_anchor %>" role="complementary" aria-label="Advertisement">
     <% unless is_anchor %>
       <span class="block text-[10px] text-gray-400 dark:text-gray-600 mb-0.5">Advertisement</span>
     <% end %>
@@ -62,7 +65,7 @@
 <% else %>
   <%# Placeholder for development — mimics real ad sizes to test layout %>
   <% unless is_anchor %>
-    <div class="ad-slot ad-slot--<%= slot %>" data-ad-slot="<%= slot %>" data-ad-provider="<%= ad_provider %>" style="<%= cls_style %>">
+    <div class="ad-slot ad-slot--<%= slot %> <%= mobile_hidden %>" data-ad-slot="<%= slot %>" data-ad-provider="<%= ad_provider %>" style="<%= cls_style %>">
       <div class="bg-gray-100/50 dark:bg-gray-800/30 rounded-xl text-center text-xs text-gray-300 dark:text-gray-600 flex items-center justify-center border border-dashed border-gray-200/60 dark:border-gray-700/60 h-full
         <%= 'p-4 min-h-[90px]' unless is_sidebar || is_multiplex %>
         <%= 'p-4 min-h-[250px]' if is_sidebar %>

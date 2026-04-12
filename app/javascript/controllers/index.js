@@ -346,6 +346,30 @@ import TreeAgeCalculatorController from "controllers/tree_age_calculator_control
 import GreenhouseHeaterCalculatorController from "controllers/greenhouse_heater_calculator_controller"
 import CompostRatioCalculatorController from "controllers/compost_ratio_calculator_controller"
 
+// Relationships calculators
+import LoveCompatibilityCalculatorController from "controllers/love_compatibility_calculator_controller"
+import ZodiacCompatibilityCalculatorController from "controllers/zodiac_compatibility_calculator_controller"
+import AgeGapCalculatorController from "controllers/age_gap_calculator_controller"
+import WhenMeetCalculatorController from "controllers/when_meet_calculator_controller"
+import FlamesCalculatorController from "controllers/flames_calculator_controller"
+import WeddingBudgetPlannerCalculatorController from "controllers/wedding_budget_planner_calculator_controller"
+import WeddingSplitterCalculatorController from "controllers/wedding_splitter_calculator_controller"
+import HoneymoonSavingsCalculatorController from "controllers/honeymoon_savings_calculator_controller"
+import EngagementRingCalculatorController from "controllers/engagement_ring_calculator_controller"
+import ChildCostCalculatorController from "controllers/child_cost_calculator_controller"
+import DateNightBudgetCalculatorController from "controllers/date_night_budget_calculator_controller"
+import AnniversaryCalculatorController from "controllers/anniversary_calculator_controller"
+import DatingDurationCalculatorController from "controllers/dating_duration_calculator_controller"
+import DaysUntilWeddingCalculatorController from "controllers/days_until_wedding_calculator_controller"
+import MilestonesCalculatorController from "controllers/milestones_calculator_controller"
+import BreakupRecoveryCalculatorController from "controllers/breakup_recovery_calculator_controller"
+import DivorceCostCalculatorController from "controllers/divorce_cost_calculator_controller"
+import AlimonyCalculatorController from "controllers/alimony_calculator_controller"
+import ChildSupportCalculatorController from "controllers/child_support_calculator_controller"
+import DatingPoolCalculatorController from "controllers/dating_pool_calculator_controller"
+import HalfPlusSevenCalculatorController from "controllers/half_plus_seven_calculator_controller"
+import OnlineDatingRoiCalculatorController from "controllers/online_dating_roi_calculator_controller"
+
 // Everyday calculators
 import TipCalculatorController from "controllers/tip_calculator_controller"
 import DiscountCalculatorController from "controllers/discount_calculator_controller"
@@ -627,6 +651,30 @@ application.register("growing-degree-days-calculator", GrowingDegreeDaysCalculat
 application.register("tree-age-calculator", TreeAgeCalculatorController)
 application.register("greenhouse-heater-calculator", GreenhouseHeaterCalculatorController)
 application.register("compost-ratio-calculator", CompostRatioCalculatorController)
+
+// Relationships
+application.register("love-compatibility-calculator", LoveCompatibilityCalculatorController)
+application.register("zodiac-compatibility-calculator", ZodiacCompatibilityCalculatorController)
+application.register("age-gap-calculator", AgeGapCalculatorController)
+application.register("when-meet-calculator", WhenMeetCalculatorController)
+application.register("flames-calculator", FlamesCalculatorController)
+application.register("wedding-budget-planner-calculator", WeddingBudgetPlannerCalculatorController)
+application.register("wedding-splitter-calculator", WeddingSplitterCalculatorController)
+application.register("honeymoon-savings-calculator", HoneymoonSavingsCalculatorController)
+application.register("engagement-ring-calculator", EngagementRingCalculatorController)
+application.register("child-cost-calculator", ChildCostCalculatorController)
+application.register("date-night-budget-calculator", DateNightBudgetCalculatorController)
+application.register("anniversary-calculator", AnniversaryCalculatorController)
+application.register("dating-duration-calculator", DatingDurationCalculatorController)
+application.register("days-until-wedding-calculator", DaysUntilWeddingCalculatorController)
+application.register("milestones-calculator", MilestonesCalculatorController)
+application.register("breakup-recovery-calculator", BreakupRecoveryCalculatorController)
+application.register("divorce-cost-calculator", DivorceCostCalculatorController)
+application.register("alimony-calculator", AlimonyCalculatorController)
+application.register("child-support-calculator", ChildSupportCalculatorController)
+application.register("dating-pool-calculator", DatingPoolCalculatorController)
+application.register("half-plus-seven-calculator", HalfPlusSevenCalculatorController)
+application.register("online-dating-roi-calculator", OnlineDatingRoiCalculatorController)
 
 // Everyday
 application.register("tip-calculator", TipCalculatorController)

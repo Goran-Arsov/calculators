@@ -7,7 +7,11 @@ module SeoHelper
     "health" => "/images/og/health.png",
     "construction" => "/images/og/construction.png",
     "textile" => "/images/og/textile.png",
-    "everyday" => "/images/og/everyday.png"
+    "everyday" => "/images/og/everyday.png",
+    "alcohol" => "/images/og/alcohol.png",
+    "geography" => "/images/og/geography.png",
+    "gardening" => "/images/og/gardening.png",
+    "relationships" => "/images/og/relationships.png"
   }.freeze
 
   OG_DEFAULT_IMAGE = "/images/og/default.png"

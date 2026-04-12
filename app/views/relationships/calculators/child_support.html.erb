@@ -1,0 +1,143 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Child Support Calculator - Income Shares Model Estimator",
+  description: "Free child support calculator. Estimate monthly child support using the income shares model from both parents' income and number of children — used by ~40 US states.",
+  canonical: relationships_child_support_url,
+  og: {
+    title: "Child Support Calculator - Free Online Tool | Calc Hammer",
+    description: "Estimate monthly child support using the income shares model.",
+    url: relationships_child_support_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Relationships", url: category_url("relationships") },
+  { name: "Child Support Calculator", url: relationships_child_support_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is child support calculated?", answer: "About 40 US states use the income shares model: combine both parents' incomes, find the percentage of combined income that the child(ren) would 'cost' based on state schedules (typically 17% for one child, 25% for two, 29% for three), and divide the total support obligation between the parents proportional to their income share. The non-custodial parent pays the custodial parent. The other 10 states use the percentage-of-income model (a flat percentage of the non-custodial parent's income only) or a hybrid Melson formula." },
+  { question: "Who pays child support?", answer: "In most cases, the non-custodial parent (the one with less parenting time) pays the custodial parent. In joint custody arrangements where both parents have roughly equal parenting time, the higher-earning parent typically pays the lower-earning parent based on income disparity. Child support is for the children's expenses — it's not optional and it's not negotiable down based on the recipient's spending habits, though in extreme cases courts can intervene." },
+  { question: "How long does child support last?", answer: "In most US states, until the child turns 18 (or 19 if still in high school). A few states extend it through college: New York to 21, Massachusetts to 23 if the child is enrolled in college, Illinois has discretionary college support. Most states do not require parents to pay for college. Special needs children may be entitled to lifetime support. Child support generally ends automatically when the child reaches the age of majority — no court order needed." },
+  { question: "Can child support be modified?", answer: "Yes — most states allow modification when there's a substantial change in circumstances: job loss, significant income change (typically 15%+ either way), change in custody arrangement, or change in the child's needs. Modifications require going back to court. Some states have automatic review every 3 years. Voluntary income reductions (taking a lower-paying job) typically don't qualify and can result in 'imputed income' calculations based on what you should be earning." },
+  { question: "Does child support cover everything?", answer: "No — base child support typically covers food, shelter, clothing, and transportation. Things often calculated separately or as add-ons: health insurance premiums, uninsured medical expenses, childcare for working parents, extracurricular activities, private school tuition, and college expenses. Most states require both parents to contribute to these add-ons proportional to income, on top of base support. The calculator estimates only base support — actual orders include more line items." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Child Support Calculator",
+  description: "Estimate child support using the income shares model from both parents' income.",
+  url: relationships_child_support_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "child-support-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Relationships", url: category_path("relationships") },
+  { name: "Child Support Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Child Support Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much child support? Enter both parents' annual income and number of children to see an estimated monthly child support payment using the income shares model used by ~40 US states.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="child-support-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Payor income ($/yr)</label>
+            <input type="number" inputmode="decimal" data-child-support-calculator-target="payor" data-action="input->child-support-calculator#calculate" class="w-full" value="80000" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Other parent income ($/yr)</label>
+            <input type="number" inputmode="decimal" data-child-support-calculator-target="other" data-action="input->child-support-calculator#calculate" class="w-full" value="40000" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of children</label>
+            <input type="number" inputmode="numeric" data-child-support-calculator-target="kids" data-action="input->child-support-calculator#calculate" class="w-full" value="2" step="1" min="1" max="5">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-900/20 dark:to-cyan-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Estimated Support</h2>
+          <div>
+            <span class="text-gray-600 dark:text-gray-400 text-sm block">Per month</span>
+            <span class="text-3xl font-extrabold text-emerald-700 dark:text-emerald-400" data-child-support-calculator-target="resultMonthly">—</span>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50 text-sm mt-3">
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Annual</span><span class="font-bold text-emerald-700 dark:text-emerald-400" data-child-support-calculator-target="resultAnnual">—</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Payor income share</span><span class="font-bold text-emerald-700 dark:text-emerald-400" data-child-support-calculator-target="resultShare">—</span></div>
+          </div>
+          <button data-action="click->child-support-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "child-support-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Income Shares Model Works</h2>
+      <p>
+        The income shares model (used by about 40 US states) starts from the principle that children should receive the same proportion of parental income they would have received if the parents lived together. The calculator combines both parents' incomes, applies a state-derived percentage based on number of children (17% for one, 25% for two, 29% for three, 31% for four, 33% for five), and calculates the total annual support obligation for the children. Each parent then pays their proportional share — so if the payor earns 67% of combined income, they pay 67% of the obligation.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Three Main Models</h2>
+      <p>
+        <strong>Income Shares</strong> is the most common (40 states). It's the model this calculator uses. <strong>Percentage of Obligor Income</strong> (used by about 6 states including Texas and Mississippi) takes a flat percentage of the non-custodial parent's income only — typically 20% for one child, 25% for two, 30% for three. <strong>Melson Formula</strong> (Delaware, Hawaii, Montana) is a hybrid that ensures both parents retain a minimum self-support reserve before calculating the obligation. Each model produces different results for the same family, sometimes by hundreds of dollars per month.
+      </p>
+
+      <h2>What's Not in the Base Calculation</h2>
+      <p>
+        Base child support covers the basics — food, shelter, clothing, transportation. Most state guidelines add separate line items for: health insurance premiums (split proportionally), uninsured medical expenses (deductibles, copays, out-of-pocket), work-related childcare costs, mandatory school fees, and sometimes private school or extracurricular activities. These add-ons can increase the actual order by 30–60% beyond the calculator's estimate. If you want a complete picture, ask a family law attorney to run the full state worksheet.
+      </p>
+
+      <h2>Custody Time Affects Child Support</h2>
+      <p>
+        Most states adjust child support based on parenting time. If the non-custodial parent has the children more than ~30% of overnights, support typically reduces (sometimes called a "shared parenting adjustment"). At true 50/50 custody, support often becomes purely a function of income disparity rather than parenting time. The calculator doesn't account for custody schedule, so its estimate is closest to a primary-custody arrangement (one parent has the children most nights). For shared parenting, expect the actual amount to be lower.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Can we agree to no child support?</h3>
+      <p>Most states require minimum support regardless of parental agreement, especially if either parent receives public assistance.</p>
+
+      <h3>Does child support count as income for taxes?</h3>
+      <p>No — child support is neither taxable to the recipient nor deductible to the payor at the federal level.</p>
+
+      <h3>What happens if I can't pay?</h3>
+      <p>File for modification immediately. Don't fall behind — back payments accrue interest and can lead to wage garnishment.</p>
+
+      <h3>Does remarriage affect child support?</h3>
+      <p>Generally no — a new spouse's income doesn't directly count, though it may be considered indirectly.</p>
+
+      <h3>How do I enforce a child support order?</h3>
+      <p>Through your state's child support enforcement office. Wage garnishment is the most common enforcement tool.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Cost of Raising a Child Calculator", description: "Estimate the total cost of raising a child from birth to 18.", path: relationships_child_cost_path, icon_path: "M9 12l2 2 4-4" },
+      { name: "Alimony Calculator", description: "Estimate spousal support from income difference and marriage length.", path: relationships_alimony_path, icon_path: "M12 8c-1.657 0-3 .895-3 2" },
+      { name: "Divorce Cost Calculator", description: "Estimate the total cost of divorce by path.", path: relationships_divorce_cost_path, icon_path: "M9 12h6m-6 4h6m2 5H7" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "relationships" %>
+
+    <% blog_posts = related_blog_posts("child-support-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

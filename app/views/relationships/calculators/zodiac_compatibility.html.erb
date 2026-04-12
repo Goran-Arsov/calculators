@@ -1,0 +1,148 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Zodiac Compatibility Calculator - Astrological Love Match",
+  description: "Free zodiac compatibility calculator. Pick two star signs to see love, friendship, and overall compatibility scores based on element pairings and astrological tradition.",
+  canonical: relationships_zodiac_compatibility_url,
+  og: {
+    title: "Zodiac Compatibility Calculator - Free Online Tool | Calc Hammer",
+    description: "Find astrological compatibility between any two zodiac signs.",
+    url: relationships_zodiac_compatibility_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Relationships", url: category_url("relationships") },
+  { name: "Zodiac Compatibility Calculator", url: relationships_zodiac_compatibility_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What zodiac signs are most compatible?", answer: "In Western astrology, the most compatible pairings come from complementary elements: fire signs (Aries, Leo, Sagittarius) match well with air signs (Gemini, Libra, Aquarius), and earth signs (Taurus, Virgo, Capricorn) match well with water signs (Cancer, Scorpio, Pisces). Same-element pairings also work — two fire signs share passion, two water signs share emotional depth — but they can intensify each other's worst traits too." },
+  { question: "Are zodiac compatibility tests accurate?", answer: "There is no scientific evidence that astrological signs predict relationship success. A 1985 Nature study by Shawn Carlson found astrologers performed no better than chance at matching personality profiles to birth charts. That said, millions of people enjoy astrology as a personality framework and conversation tool, and using sun sign compatibility as a starting point for getting to know someone is harmless — and often fun." },
+  { question: "Why do opposite signs sometimes attract?", answer: "Signs that sit directly across the zodiac wheel — Aries/Libra, Taurus/Scorpio, Gemini/Sagittarius — share a dynamic of complementary opposites. Each completes what the other lacks: Aries' boldness balances Libra's diplomacy; Taurus' stability balances Scorpio's intensity. In real relationship research, complementary traits also predict satisfaction more than identical traits do, so the astrological intuition has some loose grounding in psychology." },
+  { question: "Should I use sun sign or rising sign?", answer: "Sun sign (your basic 'I'm a Leo') is what most compatibility tests use, but full astrological compatibility (synastry) considers the whole chart — sun, moon, rising, Venus, and Mars all interact. Sun sign compatibility is the most popular and easiest entry point. For deeper readings, look up a synastry calculator or visit a professional astrologer." },
+  { question: "Can two incompatible signs make it work?", answer: "Absolutely. Sun sign 'incompatibility' is just a starting hint, not destiny. Couples with low astrological scores marry, build great families, and stay together for decades. Personality, communication, shared values, and effort matter far more. If your sign pairing scores low, it just means the simple element formula doesn't favor you — it has nothing to do with your real bond." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Zodiac Compatibility Calculator",
+  description: "Check astrological compatibility between any two zodiac signs with love, friendship, and overall scores.",
+  url: relationships_zodiac_compatibility_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "zodiac-compatibility-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Relationships", url: category_path("relationships") },
+  { name: "Zodiac Compatibility Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Zodiac Compatibility Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How well do your zodiac signs match? Pick yours and theirs to see love, friendship, communication, and overall compatibility scores based on classic astrological pairings.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="zodiac-compatibility-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Your sign</label>
+            <select data-zodiac-compatibility-calculator-target="sign1" data-action="change->zodiac-compatibility-calculator#calculate" class="w-full">
+              <% %w[aries taurus gemini cancer leo virgo libra scorpio sagittarius capricorn aquarius pisces].each do |s| %>
+                <option value="<%= s %>" <%= "selected" if s == "leo" %>><%= s.capitalize %></option>
+              <% end %>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Their sign</label>
+            <select data-zodiac-compatibility-calculator-target="sign2" data-action="change->zodiac-compatibility-calculator#calculate" class="w-full">
+              <% %w[aries taurus gemini cancer leo virgo libra scorpio sagittarius capricorn aquarius pisces].each do |s| %>
+                <option value="<%= s %>" <%= "selected" if s == "libra" %>><%= s.capitalize %></option>
+              <% end %>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Compatibility Scores</h2>
+          <div class="text-center mb-4">
+            <div class="text-5xl font-extrabold text-purple-700 dark:text-purple-400" data-zodiac-compatibility-calculator-target="resultOverall">—</div>
+            <div class="text-base font-semibold text-gray-700 dark:text-gray-300 mt-2" data-zodiac-compatibility-calculator-target="resultLabel">—</div>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-purple-200/50 dark:border-purple-800/50">
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Love</span><span class="font-bold text-purple-700 dark:text-purple-400" data-zodiac-compatibility-calculator-target="resultLove">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Friendship</span><span class="font-bold text-purple-700 dark:text-purple-400" data-zodiac-compatibility-calculator-target="resultFriendship">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Communication</span><span class="font-bold text-purple-700 dark:text-purple-400" data-zodiac-compatibility-calculator-target="resultCommunication">—</span></div>
+          </div>
+          <button data-action="click->zodiac-compatibility-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "zodiac-compatibility-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Zodiac Compatibility Is Calculated</h2>
+      <p>
+        The calculator groups the 12 zodiac signs into four elements — fire (Aries, Leo, Sagittarius), earth (Taurus, Virgo, Capricorn), air (Gemini, Libra, Aquarius), and water (Cancer, Scorpio, Pisces) — and pairs them by traditional rules. Same-element pairings score 85, complementary elements (fire+air, earth+water) score 90, and other combinations start at 55. Same-sign pairings get a small bonus, and direct opposites (signs six apart on the wheel) get an "opposites attract" bonus of 10. The result is split into love, friendship, and communication scores so you can see where the pairing is strongest.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Four Elements Explained</h2>
+      <p>
+        Fire signs are passionate, direct, and energetic — they jump in and worry about consequences later. Earth signs are grounded, practical, and reliable — they build long-term stability. Air signs are intellectual, social, and curious — they thrive on conversation and ideas. Water signs are emotional, intuitive, and nurturing — they prioritize feelings and depth. Element compatibility is the simplest astrological rule: fire needs air to breathe, earth needs water to grow, and same-element pairings amplify each other for better and worse.
+      </p>
+
+      <h2>Best and Worst Pairings</h2>
+      <p>
+        Classic high-compatibility pairings include Leo + Aquarius (passion plus intellect), Taurus + Cancer (stability plus emotion), Gemini + Libra (mutual curiosity), and Sagittarius + Aries (shared adventure). Pairings to watch out for include Capricorn + Aries (clashing speeds), Pisces + Sagittarius (different needs for security), and Cancer + Aquarius (different emotional styles). None of these are deal-breakers — every pairing has been proven by real-world long-term couples, and your sun sign is only the surface layer of your astrological profile anyway.
+      </p>
+
+      <h2>Beyond Sun Signs: Synastry</h2>
+      <p>
+        Real astrological compatibility analysis (called synastry) looks at the moon (emotions), Venus (love), Mars (desire), and rising sign (outer self) — not just the sun. A "low" sun sign match can become high once you add a strong Venus aspect or matching moons. If you're curious, look up your full birth chart on a free synastry site, or visit a professional astrologer for an interpretation. Sun-sign-only compatibility is meant as a fun first impression, nothing more.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What if we're the same sign?</h3>
+      <p>Same-sign pairings score around 90 — you understand each other deeply but can amplify each other's flaws.</p>
+
+      <h3>Are opposite signs really "opposites attract"?</h3>
+      <p>The classic six-apart pairings (Aries+Libra, etc.) get a bonus because they balance each other in real and meaningful ways.</p>
+
+      <h3>What's the worst zodiac pairing?</h3>
+      <p>Astrologers disagree, but Capricorn + Aries and Cancer + Aquarius come up most often for "challenging" pairings.</p>
+
+      <h3>Can the score change over time?</h3>
+      <p>Sun sign compatibility doesn't change — but real relationship satisfaction depends on effort, not signs.</p>
+
+      <h3>Should I break up if we're "incompatible"?</h3>
+      <p>No — sun sign incompatibility predicts nothing about real relationships. Trust your bond, not the calculator.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Love Compatibility Calculator", description: "Calculate love compatibility from two names using numerology.", path: relationships_love_compatibility_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364" },
+      { name: "FLAMES Calculator", description: "Classic name game — Friends, Love, Affection, Marriage, Enemies, Siblings.", path: relationships_flames_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Age Gap Calculator", description: "Find the age difference between two people in years, months, and days.", path: relationships_age_gap_path, icon_path: "M8 7V3m8 4V3m-9 8h10" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "relationships" %>
+
+    <% blog_posts = related_blog_posts("zodiac-compatibility-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

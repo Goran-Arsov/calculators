@@ -1,0 +1,144 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Alimony Calculator - Spousal Support Estimator",
+  description: "Free alimony calculator. Estimate monthly spousal support payments from both spouses' income and length of marriage using common American Academy of Matrimonial Lawyers formulas.",
+  canonical: relationships_alimony_url,
+  og: {
+    title: "Alimony Calculator - Free Online Tool | Calc Hammer",
+    description: "Estimate monthly alimony payments using AAML formulas.",
+    url: relationships_alimony_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Relationships", url: category_url("relationships") },
+  { name: "Alimony Calculator", url: relationships_alimony_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is alimony calculated?", answer: "Alimony formulas vary widely by US state. The most common approach (the 'AAML formula' from the American Academy of Matrimonial Lawyers) takes 30% of the higher-earning spouse's income, subtracts 20% of the lower-earning spouse's income, and caps the result so the total payments don't push the recipient above 40% of combined income. Other states use percentage-of-marriage-length formulas, judicial discretion, or income-shares models. This calculator uses the AAML formula as a national approximation; your actual state may differ significantly." },
+  { question: "How long does alimony last?", answer: "Duration depends on marriage length. For marriages under 5 years, alimony typically lasts 0–25% of the marriage length (so a 4-year marriage might get 1 year of alimony). For marriages 5–10 years, 30–50% of the marriage length. For marriages 10–20 years, 50–70%. For marriages over 20 years, alimony can be indefinite or last 80%+ of the marriage length. These are approximations — every state has its own statutory or judicial guidelines, and individual circumstances heavily influence outcomes." },
+  { question: "Do men ever get alimony?", answer: "Yes — about 3% of US alimony payments go to men (US Census Bureau, 2010s data). The law is gender-neutral; courts award alimony based on income disparity, not gender. The reason men receive alimony less often is mostly historical income gap — in marriages where the wife is the higher earner, courts award alimony to the husband. The number is rising as more women out-earn their husbands, and is expected to continue climbing." },
+  { question: "Can alimony be modified?", answer: "Yes, in most states. Modifications usually require a 'substantial change in circumstances' — job loss, disability, retirement, or remarriage of the recipient. Some states automatically end alimony when the recipient remarries; others require a motion. Voluntary income reductions (quitting a job to lower payments) generally don't qualify as a change in circumstance and can result in contempt charges. Both spouses can petition for modification; it requires going back to court." },
+  { question: "Is alimony taxable?", answer: "For divorces finalized after January 1, 2019, no — under the 2017 Tax Cuts and Jobs Act, alimony is no longer tax-deductible for the payor or taxable to the recipient. For divorces finalized before 2019, the old rules still apply (deductible/taxable). This change shifted billions in tax liability and dramatically reduced incentives to negotiate larger alimony amounts. State tax treatment varies and may differ from federal." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Alimony Calculator",
+  description: "Estimate spousal support from income difference and length of marriage using AAML formulas.",
+  url: relationships_alimony_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "alimony-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Relationships", url: category_path("relationships") },
+  { name: "Alimony Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Alimony Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much alimony would you pay or receive? Enter both spouses' annual income and the length of the marriage to see an estimated monthly spousal support payment using the AAML formula.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="alimony-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Payor (higher earner) income ($/yr)</label>
+            <input type="number" inputmode="decimal" data-alimony-calculator-target="payor" data-action="input->alimony-calculator#calculate" class="w-full" value="120000" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Recipient (lower earner) income ($/yr)</label>
+            <input type="number" inputmode="decimal" data-alimony-calculator-target="recipient" data-action="input->alimony-calculator#calculate" class="w-full" value="40000" step="any" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Years married</label>
+            <input type="number" inputmode="decimal" data-alimony-calculator-target="years" data-action="input->alimony-calculator#calculate" class="w-full" value="12" step="any" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Estimated Alimony</h2>
+          <div>
+            <span class="text-gray-600 dark:text-gray-400 text-sm block">Per month</span>
+            <span class="text-3xl font-extrabold text-amber-700 dark:text-amber-400" data-alimony-calculator-target="resultMonthly">—</span>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-amber-200/50 dark:border-amber-800/50 text-sm mt-3">
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Annual</span><span class="font-bold text-amber-700 dark:text-amber-400" data-alimony-calculator-target="resultAnnual">—</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Duration</span><span class="font-bold text-amber-700 dark:text-amber-400" data-alimony-calculator-target="resultDuration">—</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Total payments</span><span class="font-bold text-amber-700 dark:text-amber-400" data-alimony-calculator-target="resultTotal">—</span></div>
+          </div>
+          <button data-action="click->alimony-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "alimony-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Alimony Calculator Works</h2>
+      <p>
+        The calculator uses the most widely-cited national alimony formula, sometimes called the AAML formula (American Academy of Matrimonial Lawyers): 30% of the payor's gross income minus 20% of the recipient's gross income, capped so the total doesn't push the recipient above 40% of combined income. Duration is estimated based on marriage length using a graduated scale: shorter marriages get shorter alimony as a percentage, longer marriages get longer durations. This is a simplified national approximation — your actual state may use a completely different formula or leave it entirely up to judicial discretion.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>State-by-State Variation Is Massive</h2>
+      <p>
+        Alimony is one of the least standardized areas of US family law. Texas has very limited alimony, capped at $5,000/month and 10 years maximum, and only available after 10+ year marriages. Massachusetts uses a strict formula with set durations. Florida has guidelines but heavy judicial discretion. California uses a complex formula plus 10+ statutory factors. New York has formulas but allows huge deviations. Some states (Mississippi, North Carolina) have no formula at all and leave everything to judges. This calculator is a starting point — for actual planning, consult a family law attorney in your state.
+      </p>
+
+      <h2>Types of Alimony</h2>
+      <p>
+        Most states recognize several types: <strong>temporary</strong> (during the divorce proceedings), <strong>rehabilitative</strong> (helps the recipient become self-supporting through education or training, usually 2–5 years), <strong>permanent</strong> (until death or remarriage of recipient, mostly for long marriages or older spouses), <strong>reimbursement</strong> (compensates for sacrifices made during the marriage, like supporting a spouse through medical school), and <strong>lump sum</strong> (a one-time payment instead of monthly). The calculator estimates monthly amounts under the most common type — durational or rehabilitative — but doesn't distinguish between forms.
+      </p>
+
+      <h2>Factors Courts Consider Beyond the Formula</h2>
+      <p>
+        Even in formula states, judges weigh many factors: standard of living during the marriage, age and health of both spouses, ability to earn, contributions to the marriage (including stay-at-home parenting), tax consequences, child custody arrangements, and any prenuptial agreements. A spouse who gave up a career to raise children may receive longer alimony than the formula suggests. A spouse who has significant separate property may receive less. None of this shows up in a simple calculator — but it's the human element that often dominates real cases.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is alimony guaranteed in a divorce?</h3>
+      <p>No — alimony is awarded only if there's significant income disparity and the marriage was long enough.</p>
+
+      <h3>What if both spouses earn the same?</h3>
+      <p>Then alimony is usually $0. Some states require minimum income gaps to even consider alimony.</p>
+
+      <h3>Can alimony be waived in a prenup?</h3>
+      <p>Yes, in most states. Properly drafted prenups can waive alimony entirely.</p>
+
+      <h3>Does cohabitation end alimony?</h3>
+      <p>In many states, yes — the recipient living with a new partner can reduce or end payments.</p>
+
+      <h3>Should I hire an attorney for an alimony dispute?</h3>
+      <p>Yes — alimony has long-term financial implications. Don't negotiate it alone.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Divorce Cost Calculator", description: "Estimate the total cost of divorce by path.", path: relationships_divorce_cost_path, icon_path: "M9 12h6m-6 4h6m2 5H7" },
+      { name: "Child Support Calculator", description: "Estimate child support from both parents' income.", path: relationships_child_support_path, icon_path: "M17 20h5v-2" },
+      { name: "Cost of Raising a Child Calculator", description: "Estimate the cost of raising a child from birth to 18.", path: relationships_child_cost_path, icon_path: "M9 12l2 2 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "relationships" %>
+
+    <% blog_posts = related_blog_posts("alimony-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

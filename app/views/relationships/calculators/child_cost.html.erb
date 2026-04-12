@@ -1,0 +1,155 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cost of Raising a Child Calculator - Birth to Age 18",
+  description: "Free cost of raising a child calculator. Estimate the total cost of raising a child from birth to 18 based on income tier, cost of living, and number of kids — with USDA breakdown.",
+  canonical: relationships_child_cost_url,
+  og: {
+    title: "Cost of Raising a Child Calculator - Free Online Tool | Calc Hammer",
+    description: "Estimate the total cost of raising a child from birth to age 18.",
+    url: relationships_child_cost_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Relationships", url: category_url("relationships") },
+  { name: "Cost of Raising a Child Calculator", url: relationships_child_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much does it cost to raise a child to 18?", answer: "The USDA's most-cited estimate from its 2015 Expenditures on Children by Families report puts the total at about $233,610 for a middle-income family — and that figure has only grown with inflation. Adjusted to 2026 dollars, the comparable number is roughly $310,000 for a middle-income family in a mid-cost area. Lower-income families spend around $215,000 and higher-income families around $455,000. These figures cover housing, food, transportation, healthcare, childcare/education, clothing, and miscellaneous expenses, but exclude college." },
+  { question: "What is the biggest expense in raising a child?", answer: "Housing is consistently the largest line item at about 29% of the total — bigger homes, additional bedrooms, and family-friendly neighborhoods all cost more. Childcare and education come second at 16%, especially during the first 5 years of life when daycare averages $10,000–$25,000 per year per child in many US metros. Transportation (15%), food (18%), and healthcare (9%) round out the top categories. Clothing (6%) and miscellaneous (7%) are minor by comparison." },
+  { question: "Do additional children cost less?", answer: "Yes — the USDA estimates a 'multi-child discount' of about 24% per additional child due to shared housing, hand-me-downs, bulk buying, and economies of scale. A family with two children doesn't spend twice as much as a family with one; it spends roughly 1.76x. A family with three children spends about 2.5x. The biggest savings come from sharing bedrooms and reusing baby gear, clothes, toys, and books across siblings." },
+  { question: "How much does college add?", answer: "College is on top of the $233K–$310K. The College Board's 2024 report puts the average cost of a 4-year public in-state college at about $108,000, and a 4-year private at about $235,000 — including tuition, room, board, and books. State universities for in-state students are the cheapest path; private and out-of-state schools double or triple the cost. 529 plans, scholarships, and financial aid can dramatically reduce out-of-pocket spending." },
+  { question: "Is it really that expensive to have a kid?", answer: "The USDA totals look terrifying but they're spread over 18 years — $310,000 / 18 / 12 = about $1,435 per month per child, on average. That's less than the average mortgage payment. Most parents adjust by living in slightly bigger homes, driving slightly older cars, eating out a little less, and accepting a slower retirement savings rate. The real challenge isn't any single year — it's the long-term compounding of small daily decisions." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Cost of Raising a Child Calculator",
+  description: "Estimate the total cost of raising a child from birth to 18 based on income, cost of living, and number of kids.",
+  url: relationships_child_cost_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "cost-of-raising-a-child-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Relationships", url: category_path("relationships") },
+  { name: "Cost of Raising a Child Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cost of Raising a Child Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How much does it cost to raise a child? Pick your income tier, cost of living, and number of kids to see the total cost from birth to 18, with a USDA-style category breakdown.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="child-cost-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Income tier</label>
+            <select data-child-cost-calculator-target="income" data-action="change->child-cost-calculator#calculate" class="w-full">
+              <option value="low">Lower (under $60K)</option>
+              <option value="middle" selected>Middle ($60K–$130K)</option>
+              <option value="high">Higher (over $130K)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Cost of living</label>
+            <select data-child-cost-calculator-target="col" data-action="change->child-cost-calculator#calculate" class="w-full">
+              <option value="lcol">Lower (rural / Midwest / South)</option>
+              <option value="mcol" selected>Average (most US areas)</option>
+              <option value="hcol">Higher (NYC, SF, Boston, LA)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of children</label>
+            <input type="number" inputmode="numeric" data-child-cost-calculator-target="kids" data-action="input->child-cost-calculator#calculate" class="w-full" value="1" step="1" min="1">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Total Cost</h2>
+          <div class="text-center mb-4">
+            <div class="text-3xl font-extrabold text-emerald-700 dark:text-emerald-400" data-child-cost-calculator-target="resultTotal">—</div>
+            <div class="text-xs text-gray-500 mt-1">total to age 18</div>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50">
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Per child</span><span class="font-bold text-emerald-700 dark:text-emerald-400" data-child-cost-calculator-target="resultPerChild">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Monthly per child</span><span class="font-bold text-emerald-700 dark:text-emerald-400" data-child-cost-calculator-target="resultMonthly">—</span></div>
+          </div>
+          <div class="pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50 mt-3">
+            <p class="text-xs uppercase font-semibold text-gray-500 dark:text-gray-400 mb-2">Per child breakdown</p>
+            <ul class="space-y-1 text-sm text-gray-700 dark:text-gray-300" data-child-cost-calculator-target="breakdownList"></ul>
+          </div>
+          <button data-action="click->child-cost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "cost-of-raising-a-child-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Where the Money Goes</h2>
+      <p>
+        The calculator uses USDA category percentages: housing (29%), food (18%), childcare and education (16%), transportation (15%), healthcare (9%), clothing (6%), and miscellaneous (7%). Housing is the biggest line because most families upsize when they have kids — adding a bedroom, moving to a better school district, or buying a yard. Childcare is the most painful short-term expense, especially during the 0–5 age range when daycare runs $10,000–$25,000 per child per year in most US metros. Once kids hit kindergarten, childcare drops sharply but extracurriculars and education costs creep in.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How Income and Location Change the Numbers</h2>
+      <p>
+        Lower-income families spend less in absolute dollars but more as a share of income. The USDA's lower-income tier averages around $215,000 over 18 years (about $12,000 per year per child), while the higher-income tier averages around $455,000 (about $25,000 per year). The biggest gap is housing and childcare — wealthier families spend disproportionately more on bigger homes, private schools, and after-school programs. Cost of living adds another 28% on top in expensive metros (NYC, SF, Boston) and saves about 18% in low-cost rural areas. The calculator multiplies the base figure by both factors.
+      </p>
+
+      <h2>The Multi-Child Discount</h2>
+      <p>
+        Each additional child costs about 76% of the first child, not 100%. Hand-me-down clothes, shared bedrooms, bulk grocery savings, and reused baby gear all add up. A family with three kids spends roughly 2.5x what a family with one kid spends — not 3x. The savings are most dramatic when siblings are close in age and the same gender (clothes pass down faster). Wide age gaps and different genders eat into the multi-child discount because gear has to be replaced more often and bedrooms can't be shared as long.
+      </p>
+
+      <h2>What's Not Included</h2>
+      <p>
+        The USDA figures explicitly exclude college, which is the biggest single missing cost. A 4-year public in-state college runs about $108,000 today; private 4-year colleges average $235,000. Add another $50,000 for private K–12 if you go that route, plus weddings (some families pay), down payments on first homes (some families help), and occasional emergencies. A realistic "all-in" cost from birth to financial independence is closer to $400,000–$700,000 per child for middle-income families. Plan accordingly — and use a 529 plan for college if you can.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much per month does a child cost?</h3>
+      <p>Around $1,400 per month for a middle-income family in average COL — that includes everything except college.</p>
+
+      <h3>What's the cheapest age?</h3>
+      <p>Ages 6–11. School covers childcare, kids are still happy with hand-me-downs, and food costs are moderate.</p>
+
+      <h3>What's the most expensive age?</h3>
+      <p>0–5 (childcare) and 16–18 (driving, college prep, food intake) are the two peaks.</p>
+
+      <h3>Does insurance offset healthcare costs?</h3>
+      <p>Yes — the 9% category assumes employer or marketplace insurance. Without insurance, the figure would be much higher.</p>
+
+      <h3>Can I really afford a kid on a tight budget?</h3>
+      <p>Yes — millions of families do. The lower-income tier shows it's possible at every income level.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Child Support Calculator", description: "Estimate monthly child support using the income shares model.", path: relationships_child_support_path, icon_path: "M17 20h5v-2" },
+      { name: "Date Night Budget Calculator", description: "Calculate a monthly date night budget for couples.", path: relationships_date_night_budget_path, icon_path: "M17 9V7a2 2 0 00-2-2" },
+      { name: "Wedding Budget Planner Calculator", description: "Plan your wedding budget with a 10-category breakdown.", path: relationships_wedding_budget_path, icon_path: "M12 8c-1.657 0-3 .895-3 2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "relationships" %>
+
+    <% blog_posts = related_blog_posts("cost-of-raising-a-child-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

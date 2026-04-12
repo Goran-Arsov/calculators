@@ -1,0 +1,157 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "When Will I Meet Someone Calculator - Dating Time Estimator",
+  description: "Free fun calculator that estimates when you'll meet someone new based on dating effort, city size, and how selective you are. A lighthearted look at single life math.",
+  canonical: relationships_when_meet_url,
+  og: {
+    title: "When Will I Meet Someone Calculator - Free Online Tool | Calc Hammer",
+    description: "Estimate when you'll meet someone based on effort and selectivity.",
+    url: relationships_when_meet_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Relationships", url: category_url("relationships") },
+  { name: "When Will I Meet Someone Calculator", url: relationships_when_meet_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How long does it take to meet someone?", answer: "There's no one answer — Pew Research surveys suggest the average single adult takes 6 to 18 months of active effort to enter a serious relationship. People in larger cities meet potential partners faster (more options) but take longer to commit (paradox of choice). Active daters who go on 2 to 4 dates per month find someone meaningful in roughly 6 to 12 months. Highly selective daters can take 2 to 5 years." },
+  { question: "Is the calculator accurate?", answer: "It's a fun heuristic, not a prediction. The math uses three inputs — effort (how many dates per month), city size (dating pool), and selectivity (your hit rate). It multiplies them to estimate a timeline, which is consistent with general dating advice but not personalized. Real outcomes depend on luck, timing, where you look, and what you're looking for. Treat the result as a rough order of magnitude, not a calendar entry." },
+  { question: "What if I haven't met anyone in years?", answer: "If you've been actively dating for 2+ years without success, look at three things: your dating pool (are you fishing in the right pond?), your selectivity (are you ruling people out too fast or too slow?), and your dating habits (are you actually going on dates, or just swiping?). Many long-term singles benefit from a 'meet 5 people in 2 weeks' challenge, which forces volume and breaks pattern paralysis." },
+  { question: "Does effort really matter that much?", answer: "Yes — it's the single biggest variable. Going from 1 date a month to 4 dates a month doesn't just 4x your chances, it compounds them, because each date generates referrals, learning, and confidence. Studies of online dating show that the top 10% of users (by message volume and date frequency) match into relationships 5x faster than the bottom 50%. Effort beats almost everything." },
+  { question: "Should I lower my standards to meet someone?", answer: "Not your standards — your filters. Standards are the things that genuinely matter: kindness, honesty, shared values. Filters are arbitrary preferences (height, profession, exact age). Lowering filters opens you up to great matches you'd otherwise rule out; lowering standards leads to relationships you regret. Most dating coaches recommend keeping the top 3 standards and dropping every other filter for the first few dates." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "When Will I Meet Someone Calculator",
+  description: "Fun estimator for when you'll meet someone based on dating effort, city size, and selectivity.",
+  url: relationships_when_meet_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "when-will-i-meet-someone-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Relationships", url: category_path("relationships") },
+  { name: "When Will I Meet Someone Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">When Will I Meet Someone Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">A fun estimator that turns your dating effort, city size, and how picky you are into a rough timeline for meeting someone new. For entertainment — your real love story is up to you.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="when-meet-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">City size</label>
+            <select data-when-meet-calculator-target="city" data-action="change->when-meet-calculator#calculate" class="w-full">
+              <option value="small">Small town (under 100K)</option>
+              <option value="medium" selected>Mid-sized city (100K – 500K)</option>
+              <option value="large">Large city (500K – 2M)</option>
+              <option value="metro">Metro (2M+)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Dating effort</label>
+            <select data-when-meet-calculator-target="effort" data-action="change->when-meet-calculator#calculate" class="w-full">
+              <option value="low">Low (~1 date/month)</option>
+              <option value="medium" selected>Medium (~3 dates/month)</option>
+              <option value="high">High (~6 dates/month)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Selectivity</label>
+            <select data-when-meet-calculator-target="selectivity" data-action="change->when-meet-calculator#calculate" class="w-full">
+              <option value="very_picky">Very picky</option>
+              <option value="picky">Picky</option>
+              <option value="average" selected>Average</option>
+              <option value="open">Open</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-pink-50 dark:from-amber-900/20 dark:to-pink-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Your Estimate</h2>
+          <div class="text-center mb-4">
+            <div class="text-4xl font-extrabold text-amber-700 dark:text-amber-400" data-when-meet-calculator-target="resultMonths">—</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400 mt-2" data-when-meet-calculator-target="resultWeeks">—</div>
+          </div>
+          <div class="space-y-2 pt-3 border-t border-amber-200/50 dark:border-amber-800/50">
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Dates needed</span><span class="font-bold text-amber-700 dark:text-amber-400" data-when-meet-calculator-target="resultDates">—</span></div>
+            <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400">Hit rate</span><span class="font-bold text-amber-700 dark:text-amber-400" data-when-meet-calculator-target="resultHit">—</span></div>
+          </div>
+          <button data-action="click->when-meet-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-pink-600 hover:from-amber-700 hover:to-pink-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "when-will-i-meet-someone-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>The Math Behind Meeting Someone</h2>
+      <p>
+        The calculator uses a simple model: how often you go on dates, how big your dating pool is, and how often a date turns into something real. Multiply those together and you get a rough timeline. A medium-effort dater (3 dates a month) in a mid-sized city with average selectivity will hit a meaningful match in about 2 months on average. Crank effort up to 6 dates a month and that drops to a month. Drop to 1 date a month and it takes 6 months. The math is consistent with general dating coach advice and large-scale online dating studies.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why City Size Matters</h2>
+      <p>
+        Cities give you more potential partners per square mile, which compounds in your favor — but they also create the paradox of choice, where having too many options makes commitment harder. Empirical findings from OkCupid and Pew Research confirm both effects. Small towns have fewer matches but higher commitment rates once a match happens. Large cities have faster initial meeting rates but slower transitions from "we're dating" to "we're a couple". The calculator weights city size as a multiplier on your dating pool, ignoring the commitment-paradox effect — which means it understates city dating times slightly.
+      </p>
+
+      <h2>Effort Is the Biggest Variable</h2>
+      <p>
+        Out of all three inputs, effort matters most. Doubling effort more than doubles your match rate because dates generate momentum — each date teaches you something, gives you confidence, creates referrals, and updates your "type". Dating coaches almost universally recommend volume early on: meet a lot of people, even ones you're not sure about, to calibrate. The "5 dates in 2 weeks" challenge is a popular reset for stalled daters. If you've been single for years and the calculator says you should have met someone by now, the answer is almost always "increase effort."
+      </p>
+
+      <h2>The Selectivity Trap</h2>
+      <p>
+        Being too selective is the second most common reason people don't meet anyone. Filters that feel reasonable individually (height, age, profession, education, lifestyle, religion, politics) compound multiplicatively — each one cuts your pool by 30–60%, and stacking five of them leaves you with under 5% of the original pool. The calculator's "very picky" hit rate is 4%, which models stacking many filters; "open" is 30%, which models a few core values and almost nothing else. Most successful long-term couples have at least one mismatch that would have ruled them out on paper.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is this calculator scientific?</h3>
+      <p>No — it's a fun heuristic. The numbers are calibrated to general dating research but they aren't a personalized prediction.</p>
+
+      <h3>Why does the calculator cap at 60 months?</h3>
+      <p>Estimates beyond 5 years aren't useful — that long means something else is going on, and a calculator can't help.</p>
+
+      <h3>Should I use online or offline dating?</h3>
+      <p>Both. Online generates volume; offline generates higher conversion rates per first meeting.</p>
+
+      <h3>What if I'm in a small town?</h3>
+      <p>Travel, expand your radius on apps, join interest groups that draw from a wider area, or make peace with a longer timeline.</p>
+
+      <h3>How do I increase my hit rate?</h3>
+      <p>Pre-screen for shared values, not surface traits. Optimize your profile or photos. Ask better questions on dates.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Dating Pool Calculator", description: "Estimate how many singles match your preferences in your city.", path: relationships_dating_pool_path, icon_path: "M17 20h5v-2a3 3 0 00-5.356-1.857" },
+      { name: "Online Dating ROI Calculator", description: "Calculate hours, messages, and dates needed to find a relationship.", path: relationships_online_dating_roi_path, icon_path: "M13 7h8m0 0v8" },
+      { name: "Half Your Age Plus Seven Calculator", description: "Find the socially acceptable dating age range for any age.", path: relationships_half_plus_seven_path, icon_path: "M8 7V3m8 4V3m-9 8h10" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "relationships" %>
+
+    <% blog_posts = related_blog_posts("when-will-i-meet-someone-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
