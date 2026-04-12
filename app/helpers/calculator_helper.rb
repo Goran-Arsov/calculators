@@ -142,7 +142,7 @@ module CalculatorHelper
   end
 
   def embed_script_for(category_slug, calculator_slug)
-    domain = ENV.fetch("DOMAIN", "https://calcwise.com")
+    domain = ENV.fetch("DOMAIN", "https://calchammer.com")
     %(<script src="#{domain}/embed.js" data-calculator="#{calculator_slug}" data-category="#{category_slug}"></script>)
   end
 

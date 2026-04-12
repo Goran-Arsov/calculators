@@ -51,7 +51,7 @@ Rails.application.configure do
   config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # Default URL options — used by _url helpers in sitemap, schemas, OG tags.
-  domain = ENV.fetch("DOMAIN", "https://calcwise.com")
+  domain = ENV.fetch("DOMAIN", "https://calchammer.com")
   parsed = URI.parse(domain)
   config.action_controller.default_url_options = { host: parsed.host, protocol: parsed.scheme }
   config.action_mailer.default_url_options = { host: parsed.host, protocol: parsed.scheme }

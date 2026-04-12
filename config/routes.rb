@@ -55,6 +55,10 @@ Rails.application.routes.draw do
   delete "admin/logout", to: "admin/ratings#logout", as: :admin_logout
   get "admin/ratings", to: "admin/ratings#index", as: :admin_ratings
 
+  namespace :admin do
+    resources :photos, only: [ :index, :new, :create, :show, :destroy ]
+  end
+
   # API
   namespace :api, defaults: { format: :json } do
     get "ratings/:slug", to: "ratings#show"

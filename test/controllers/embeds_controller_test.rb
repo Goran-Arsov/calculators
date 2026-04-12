@@ -7,8 +7,8 @@ class EmbedsControllerTest < ActionDispatch::IntegrationTest
     # Should use embed layout (no main site nav or footer)
     assert_select "[data-controller='navbar']", false, "Embed should not render site navigation"
     assert_select "footer", false, "Embed should not render footer"
-    # Should include Powered by CalcWise link
-    assert_select "a[target='_blank']", /Powered by CalcWise/
+    # Should include Powered by Calc Hammer link
+    assert_select "a[target='_blank']", /Powered by Calc Hammer/
     # Should include noindex meta
     assert_select "meta[name='robots'][content='noindex']"
   end

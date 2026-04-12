@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_08_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_12_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,6 +61,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_08_200000) do
     t.datetime "updated_at", null: false
     t.index ["confirmed"], name: "index_newsletter_subscribers_on_confirmed"
     t.index ["email"], name: "index_newsletter_subscribers_on_email", unique: true
+  end
+
+  create_table "photos", force: :cascade do |t|
+    t.integer "byte_size", null: false
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.integer "height"
+    t.integer "jpg_quality"
+    t.integer "max_dimension"
+    t.string "original_filename"
+    t.datetime "updated_at", null: false
+    t.integer "width"
+    t.index ["created_at"], name: "index_photos_on_created_at"
+    t.index ["filename"], name: "index_photos_on_filename", unique: true
   end
 
   create_table "user_formulas", force: :cascade do |t|

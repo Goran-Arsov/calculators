@@ -22,7 +22,7 @@ module SeoHelper
   OG_DEFAULT_IMAGE = "/images/og/default.png"
 
   def default_domain
-    ENV.fetch("DOMAIN", "https://calcwise.com")
+    ENV.fetch("DOMAIN", "https://calchammer.com")
   end
 
   def og_image_url(category = nil)
@@ -267,6 +267,16 @@ module SeoHelper
 
   TRANSLATABLE_CONTROLLER_PATHS = %w[everyday/calculators finance/calculators health/calculators].freeze
 
+  # These lists MUST stay in sync with the localized route scopes in
+  # config/routes.rb — only actions that actually have translations should
+  # emit hreflang tags, otherwise Google follows the alternate links to
+  # non-existent URLs and reports "Not found (404)" in Search Console.
+  TRANSLATABLE_EVERYDAY_ACTIONS = %w[
+    base64_encoder url_encoder html_formatter css_formatter js_formatter
+    json_validator json_to_yaml curl_to_code json_to_typescript html_to_jsx
+    hex_ascii http_status_reference robots_txt htaccess_generator regex_explainer
+    og_preview svg_to_png
+  ].freeze
   TRANSLATABLE_FINANCE_ACTIONS = %w[mortgage compound_interest loan investment retirement invoice_generator detailed_invoice_generator].freeze
   TRANSLATABLE_HEALTH_ACTIONS = %w[bmi calorie body_fat tdee macro].freeze
 
@@ -275,7 +285,7 @@ module SeoHelper
 
     case controller_path
     when "everyday/calculators"
-      true
+      TRANSLATABLE_EVERYDAY_ACTIONS.include?(params[:action])
     when "finance/calculators"
       TRANSLATABLE_FINANCE_ACTIONS.include?(params[:action])
     when "health/calculators"

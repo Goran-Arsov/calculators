@@ -1,0 +1,73 @@
+<% content_for :title, "My Photos" %>
+
+<div class="max-w-6xl mx-auto py-10 px-4">
+  <div class="flex items-center justify-between mb-2">
+    <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white">My Photos</h1>
+    <div class="flex gap-2">
+      <%= link_to "Upload Photo", new_admin_photo_path, class: "px-4 py-2 text-sm font-medium bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white rounded-lg shadow-sm transition-colors" %>
+      <%= button_to "Log Out", admin_logout_path, method: :delete, class: "px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 border border-gray-300 dark:border-gray-700 rounded-lg hover:border-red-300 dark:hover:border-red-700 transition-colors" %>
+    </div>
+  </div>
+  <p class="text-gray-500 dark:text-gray-400 mb-8">
+    <%= pluralize(@total, "photo") %> · all converted to JPG, max 2000 px<% if @total_pages > 1 %> · page <%= @page %> of <%= @total_pages %><% end %>.
+  </p>
+
+  <% if flash[:notice] %>
+    <div class="mb-4 p-3 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg text-sm"><%= flash[:notice] %></div>
+  <% end %>
+  <% if flash[:alert] %>
+    <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-sm"><%= flash[:alert] %></div>
+  <% end %>
+
+  <% if @photos.any? %>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="photos-grid">
+      <% @photos.each do |photo| %>
+        <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+          <%= link_to admin_photo_path(photo), target: "_blank", rel: "noopener", class: "block aspect-square bg-gray-100 dark:bg-gray-800" do %>
+            <img src="<%= admin_photo_path(photo) %>" alt="<%= photo.original_filename %>" class="w-full h-full object-cover" loading="lazy">
+          <% end %>
+          <div class="p-3">
+            <p class="text-xs font-medium text-gray-900 dark:text-white truncate" title="<%= photo.original_filename %>">
+              <%= photo.original_filename.presence || photo.filename %>
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <%= photo.width %>×<%= photo.height %> · <%= number_to_human_size(photo.byte_size) %>
+            </p>
+            <% if photo.jpg_quality.present? || photo.max_dimension.present? %>
+              <p class="text-xs text-gray-400 dark:text-gray-500">
+                <% if photo.jpg_quality.present? %>q<%= photo.jpg_quality %><% end %><% if photo.jpg_quality.present? && photo.max_dimension.present? %> · <% end %><% if photo.max_dimension.present? %>max <%= photo.max_dimension %>px<% end %>
+              </p>
+            <% end %>
+            <p class="text-xs text-gray-400 dark:text-gray-500"><%= photo.created_at.strftime("%Y-%m-%d %H:%M") %></p>
+            <%= button_to "Delete", admin_photo_path(photo), method: :delete,
+                  data: { turbo_confirm: "Delete this photo?" },
+                  class: "mt-2 w-full px-2 py-1 text-xs text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @total_pages > 1 %>
+      <nav class="mt-8 flex items-center justify-between">
+        <% if @page > 1 %>
+          <%= link_to "← Previous", admin_photos_path(page: @page - 1), class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+        <% else %>
+          <span class="px-4 py-2 text-sm font-medium text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-lg cursor-not-allowed">← Previous</span>
+        <% end %>
+
+        <span class="text-sm text-gray-500 dark:text-gray-400">Page <%= @page %> of <%= @total_pages %></span>
+
+        <% if @page < @total_pages %>
+          <%= link_to "Next →", admin_photos_path(page: @page + 1), class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+        <% else %>
+          <span class="px-4 py-2 text-sm font-medium text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-lg cursor-not-allowed">Next →</span>
+        <% end %>
+      </nav>
+    <% end %>
+  <% else %>
+    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-12 text-center">
+      <p class="text-gray-500 dark:text-gray-400">No photos yet.</p>
+      <%= link_to "Upload your first one", new_admin_photo_path, class: "inline-block mt-3 text-blue-600 dark:text-blue-400 font-medium hover:underline" %>
+    </div>
+  <% end %>
+</div>
