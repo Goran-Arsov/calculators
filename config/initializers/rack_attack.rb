@@ -1,10 +1,37 @@
 class Rack::Attack
+  # Safelist well-known search engine and social media crawlers so they are never
+  # throttled or blocked. Google Search Console was reporting pages as "Blocked due
+  # to other 4xx issue" because Googlebot's crawl rate was tripping the 300 req / 5 min
+  # throttle below and receiving 429 Too Many Requests. User-Agent matching is the
+  # standard mitigation — malicious bots spoofing these UAs are still caught by the
+  # malicious-pattern blocklist and fail2ban further down in this file.
+  CRAWLER_USER_AGENTS = %r{
+    Googlebot | AdsBot-Google | Mediapartners-Google | Google-InspectionTool |
+    bingbot   | BingPreview   | msnbot |
+    DuckDuckBot |
+    Slurp     | Yahoo! |
+    Baiduspider |
+    YandexBot | YandexImages |
+    Applebot  |
+    facebookexternalhit | Facebot |
+    Twitterbot |
+    LinkedInBot |
+    Pinterest |
+    WhatsApp  |
+    TelegramBot |
+    SemrushBot | AhrefsBot
+  }xi
+
+  safelist("allow search engine crawlers") do |req|
+    req.user_agent.to_s.match?(CRAWLER_USER_AGENTS)
+  end
+
   # Throttle API rating submissions
   throttle("api/ratings", limit: 3, period: 60) do |req|
     req.ip if req.path.start_with?("/api/ratings") && req.post?
   end
 
-  # Throttle general requests
+  # Throttle general requests (safelisted crawlers bypass this)
   throttle("req/ip", limit: 300, period: 5.minutes) do |req|
     req.ip unless req.path.start_with?("/assets")
   end
