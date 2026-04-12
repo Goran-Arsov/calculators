@@ -97,7 +97,12 @@ class SeoHelperTest < ActionView::TestCase
     assert_equal 1, parsed["itemListElement"][0]["position"]
     assert_equal "Home", parsed["itemListElement"][0]["name"]
     assert_equal "https://calcwise.com/", parsed["itemListElement"][0]["item"]
-    assert_nil parsed["itemListElement"][2]["item"], "Last breadcrumb item should not have a URL"
+    # Every itemListElement must have an "item" field — Google Search Console flags missing
+    # "item" as a critical Breadcrumbs structured data issue. When a caller doesn't provide a
+    # URL for the last (current) breadcrumb, the helper falls back to the current request URL.
+    assert parsed["itemListElement"].all? { |el| el["item"].present? },
+      "Every breadcrumb itemListElement must have an item (URL)"
+    assert_equal "http://test.host", parsed["itemListElement"][2]["item"]
   end
 
   test "faq_schema returns valid JSON-LD with FAQPage type" do

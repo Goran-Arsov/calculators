@@ -77,17 +77,17 @@ module SeoHelper
   end
 
   def breadcrumb_schema(items)
+    fallback_url = request.original_url
     schema = {
       "@context" => "https://schema.org",
       "@type" => "BreadcrumbList",
       "itemListElement" => items.each_with_index.map do |item, index|
-        element = {
+        {
           "@type" => "ListItem",
           "position" => index + 1,
-          "name" => item[:name]
+          "name" => item[:name],
+          "item" => item[:url] || fallback_url
         }
-        element["item"] = item[:url] if item[:url]
-        element
       end
     }
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
