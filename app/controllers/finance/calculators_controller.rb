@@ -72,5 +72,16 @@ module Finance
     def side_hustle; end
     def emergency_fund; end
     def lease_vs_buy; end
+    def heloc; end
+    def debt_snowball_avalanche; end
+    def bond_yield; end
+    def options_profit; end
+    def freelance_rate; end
+    def sales_tax; end
+    def vat; end
+    def tip_pooling; end
+    def net_pay; end
+    def startup_runway; end
+    def saas_metrics; end
   end
 end

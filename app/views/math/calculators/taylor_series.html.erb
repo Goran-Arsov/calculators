@@ -1,0 +1,141 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Taylor Series Calculator - Series Expansion Online | CalcWise",
+  description: "Compute Taylor and Maclaurin series expansions for e^x, sin(x), cos(x), ln(1+x), 1/(1-x), and more. Choose the number of terms and see each coefficient.",
+  canonical: math_taylor_series_url,
+  og: {
+    title: "Taylor Series Calculator - Series Expansion Online | CalcWise",
+    description: "Compute Taylor and Maclaurin series expansions for common functions. Free and instant.",
+    url: math_taylor_series_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Math", url: category_url("math") },
+  { name: "Taylor Series Calculator", url: math_taylor_series_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a Taylor series?", answer: "A Taylor series is an infinite sum of terms expressed as f(a) + f'(a)(x-a)/1! + f''(a)(x-a)^2/2! + ... that approximates a function f(x) near a point x = a. When the center a = 0, it is called a Maclaurin series. The more terms you include, the more accurate the approximation within the radius of convergence." },
+  { question: "What is the difference between Taylor and Maclaurin series?", answer: "A Maclaurin series is simply a Taylor series centered at a = 0. Every Maclaurin series is a Taylor series, but not every Taylor series is a Maclaurin series. This calculator focuses on Maclaurin series (a = 0) for the supported functions." },
+  { question: "Which functions does this calculator support?", answer: "The calculator supports e^x, sin(x), cos(x), ln(1+x), 1/(1-x), sinh(x), cosh(x), and atan(x). These cover the most common functions encountered in calculus courses." },
+  { question: "How many terms can I compute?", answer: "You can compute between 1 and 20 terms. For most practical purposes, 5 to 10 terms provide an excellent approximation near the center point." },
+  { question: "What is the radius of convergence?", answer: "The radius of convergence depends on the function: e^x, sin(x), cos(x), sinh(x), and cosh(x) converge for all x (infinite radius). ln(1+x) converges for -1 < x <= 1. 1/(1-x) converges for |x| < 1. atan(x) converges for |x| <= 1." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Taylor Series Calculator",
+  description: "Compute Taylor and Maclaurin series expansions for common functions up to N terms.",
+  url: math_taylor_series_url,
+  category: "MathApplication",
+  calculator_slug: "taylor_series"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Math", url: category_path("math") },
+  { name: "Taylor Series Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Taylor Series Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Compute Taylor and Maclaurin series expansions for common mathematical functions. Select a function, choose the number of terms, and see the polynomial expansion with individual coefficients.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="taylor-series-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">&Sigma;</div>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Taylor / Maclaurin Series Expansion</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="taylor-func" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Function</label>
+            <select id="taylor-func" data-taylor-series-calculator-target="func" data-action="change->taylor-series-calculator#calculate" class="w-full">
+              <option value="exp">e^x</option>
+              <option value="sin">sin(x)</option>
+              <option value="cos">cos(x)</option>
+              <option value="ln_1_plus_x">ln(1+x)</option>
+              <option value="one_over_1_minus_x">1/(1-x)</option>
+              <option value="sinh">sinh(x)</option>
+              <option value="cosh">cosh(x)</option>
+              <option value="atan">atan(x)</option>
+            </select>
+          </div>
+          <div>
+            <label for="taylor-terms" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of terms</label>
+            <input id="taylor-terms" type="number" inputmode="numeric" min="1" max="20" value="5" data-taylor-series-calculator-target="numTerms" data-action="input->taylor-series-calculator#calculate" class="w-full">
+          </div>
+          <div data-taylor-series-calculator-target="termsList" class="space-y-1 max-h-48 overflow-y-auto"></div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Series Expansion</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">f(x) = <span data-taylor-series-calculator-target="funcDisplay"></span></p>
+          <div>
+            <span class="text-lg font-bold text-green-600 dark:text-green-400 break-all leading-relaxed" data-taylor-series-calculator-target="result">&mdash;</span>
+          </div>
+          <div><span class="text-xs text-red-600 dark:text-red-400" data-taylor-series-calculator-target="error"></span></div>
+          <button data-action="click->taylor-series-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "taylor_series" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Taylor Series Calculator</h2>
+      <p>Select the function you want to expand from the dropdown menu, then choose how many terms to include in the expansion (1 to 20). The calculator instantly displays the polynomial approximation along with each individual term and its coefficient. The expansion is centred at x = 0 (Maclaurin series).</p>
+
+      <p>For example, selecting <strong>sin(x)</strong> with 4 terms produces: x &minus; x<sup>3</sup>/6 + x<sup>5</sup>/120 &minus; x<sup>7</sup>/5040 + ... This corresponds to the well-known power series for sine.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Taylor Series</h2>
+      <p>The Taylor series of a function f(x) about a point a is the infinite sum: f(a) + f&prime;(a)(x&minus;a) + f&Prime;(a)(x&minus;a)<sup>2</sup>/2! + f&prime;&prime;&prime;(a)(x&minus;a)<sup>3</sup>/3! + ... Each term involves successively higher derivatives of f evaluated at a. This provides a polynomial approximation that matches the function and all its derivatives at the centre point.</p>
+
+      <h3>Convergence</h3>
+      <p>Not all Taylor series converge everywhere. The <strong>radius of convergence</strong> determines the interval where the series gives a valid approximation. For e<sup>x</sup>, sin(x), and cos(x), the series converges for all real numbers. For ln(1+x), convergence is limited to &minus;1 &lt; x &le; 1. For 1/(1&minus;x), convergence requires |x| &lt; 1.</p>
+
+      <h3>Applications</h3>
+      <p>Taylor series are used extensively in numerical methods (approximating functions by polynomials), physics (perturbation theory, small-angle approximations), engineering (linearisation around operating points), and computer science (efficient function evaluation in hardware). The series for e<sup>x</sup>, sin, and cos are computed by CPUs and math libraries to evaluate these functions efficiently.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a Taylor series?</h3>
+      <p>An infinite polynomial expansion of a function centred at a point, using successively higher derivatives to match the function more closely.</p>
+
+      <h3>What is the difference between Taylor and Maclaurin series?</h3>
+      <p>A Maclaurin series is a Taylor series centred at a = 0. This calculator computes Maclaurin series for supported functions.</p>
+
+      <h3>Which functions are supported?</h3>
+      <p>e<sup>x</sup>, sin(x), cos(x), ln(1+x), 1/(1&minus;x), sinh(x), cosh(x), and atan(x).</p>
+
+      <h3>How many terms should I use?</h3>
+      <p>For most purposes, 5 to 10 terms give excellent accuracy near the centre. More terms extend the accurate range.</p>
+
+      <h3>What is the radius of convergence?</h3>
+      <p>e<sup>x</sup>, sin, cos, sinh, cosh converge for all x. ln(1+x) converges for &minus;1 &lt; x &le; 1. 1/(1&minus;x) converges for |x| &lt; 1. atan(x) converges for |x| &le; 1.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Derivative Calculator", description: "Calculate derivatives symbolically with step-by-step solutions.", path: math_derivative_path, icon_path: "M4 4l7 7m0 0l7 7M11 11l7-7m0 0l-7 7" },
+      { name: "Integral Calculator", description: "Compute definite integrals numerically.", path: math_integral_path, icon_path: "M7 4c0 0 0 8 0 12s4 4 4 4M17 20c0 0 0-8 0-12s-4-4-4-4" },
+      { name: "Limit Calculator", description: "Evaluate limits as x approaches any value.", path: math_limit_path, icon_path: "M13 7l5 5m0 0l-5 5m5-5H6" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "math" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

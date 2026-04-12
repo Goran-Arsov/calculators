@@ -1,0 +1,170 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Zero to Sixty Calculator - 0-60 & Quarter Mile Time Estimator",
+  description: "Estimate your vehicle's 0-60 mph time, 0-30 time, and quarter mile performance from horsepower, weight, drivetrain, and tire type. Free performance calculator.",
+  canonical: automotive_zero_to_sixty_url,
+  og: {
+    title: "Zero to Sixty Calculator - 0-60 & Quarter Mile Time Estimator | CalcWise",
+    description: "Estimate your vehicle's 0-60 mph time and quarter mile performance from horsepower and weight.",
+    url: automotive_zero_to_sixty_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Automotive", url: category_url("automotive") },
+  { name: "Zero to Sixty Calculator", url: automotive_zero_to_sixty_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is 0-60 mph time calculated?", answer: "The 0-60 mph time is estimated using the power-to-weight ratio (vehicle weight divided by horsepower). The formula uses an empirical model where time = (weight/hp)^0.75 * 0.95, adjusted for drivetrain type and tire grip. AWD vehicles are typically 10% faster than RWD, and performance tires improve times by up to 10% compared to all-season tires." },
+  { question: "What is the quarter mile time formula?", answer: "The quarter mile time is estimated using the Roger Huntington formula: ET = 6.290 * (weight/hp)^(1/3). The trap speed at the end of the quarter mile is calculated as Speed = 224 / (weight/hp)^(1/3). These formulas provide good estimates for naturally aspirated vehicles and are reasonably accurate for modern turbocharged cars as well." },
+  { question: "How does drivetrain affect 0-60 time?", answer: "Drivetrain significantly affects launch performance. AWD vehicles can put power down more effectively from a standstill, typically achieving 0-60 times about 10% faster than equivalent RWD vehicles. FWD vehicles are about 5% slower due to weight transfer lifting the driven wheels during hard acceleration, causing wheelspin." },
+  { question: "What is a good power-to-weight ratio?", answer: "For passenger cars, a power-to-weight ratio under 10 lbs/hp is considered sports car territory (sub-5 second 0-60). A ratio of 10-15 lbs/hp is sporty, 15-20 is average, and above 20 is considered slow. Supercars achieve ratios of 4-6 lbs/hp, while economy cars are typically 20-30 lbs/hp." },
+  { question: "Why do real 0-60 times differ from calculated estimates?", answer: "Calculated estimates cannot account for all variables. Real-world performance depends on launch technique, transmission type and shift speed, turbo lag, traction control settings, road surface condition, altitude and air temperature, and vehicle-specific power delivery characteristics. These estimates are most accurate for naturally aspirated rear-wheel-drive vehicles with manual transmissions." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Zero to Sixty Calculator",
+  description: "Estimate 0-60 mph time, 0-30 time, and quarter mile performance from horsepower and weight.",
+  url: automotive_zero_to_sixty_url,
+  category: "AutomotiveApplication",
+  calculator_slug: "zero-to-sixty"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Automotive", url: category_path("automotive") },
+  { name: "Zero to Sixty Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Zero to Sixty Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your vehicle's 0-60 mph time, 0-30 mph time, and quarter mile performance based on horsepower, weight, drivetrain, and tires.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="zero-to-sixty-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="zts-hp" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Horsepower (HP)</label>
+            <input id="zts-hp" type="number" inputmode="decimal" data-zero-to-sixty-calculator-target="horsepower" data-action="input->zero-to-sixty-calculator#calculate" class="w-full" placeholder="300" step="5" min="0">
+          </div>
+          <div>
+            <label for="zts-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Curb Weight (lbs)</label>
+            <input id="zts-weight" type="number" inputmode="decimal" data-zero-to-sixty-calculator-target="curbWeight" data-action="input->zero-to-sixty-calculator#calculate" class="w-full" placeholder="3500" step="50" min="0">
+          </div>
+          <div>
+            <label for="zts-drivetrain" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Drivetrain</label>
+            <select id="zts-drivetrain" data-zero-to-sixty-calculator-target="drivetrain" data-action="change->zero-to-sixty-calculator#calculate" class="w-full">
+              <option value="rwd">Rear-Wheel Drive (RWD)</option>
+              <option value="fwd">Front-Wheel Drive (FWD)</option>
+              <option value="awd">All-Wheel Drive (AWD)</option>
+            </select>
+          </div>
+          <div>
+            <label for="zts-tires" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tire Type</label>
+            <select id="zts-tires" data-zero-to-sixty-calculator-target="tireType" data-action="change->zero-to-sixty-calculator#calculate" class="w-full">
+              <option value="all_season">All-Season</option>
+              <option value="summer">Summer</option>
+              <option value="performance">Performance</option>
+              <option value="winter">Winter</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Performance Estimates</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">0-60 mph</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-zero-to-sixty-calculator-target="zeroToSixty">0.00s</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">0-30 mph</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-zero-to-sixty-calculator-target="zeroToThirty">0.00s</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">1/4 Mile Time</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-zero-to-sixty-calculator-target="quarterMileTime">0.00s</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">1/4 Mile Speed</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-zero-to-sixty-calculator-target="quarterMileSpeed">0.0 mph</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Power-to-Weight</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-zero-to-sixty-calculator-target="powerToWeight">0.00 lbs/hp</span>
+            </div>
+          </div>
+          <button data-action="click->zero-to-sixty-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "zero-to-sixty" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Zero to Sixty Calculator</h2>
+      <p>
+        Our zero to sixty calculator estimates your vehicle's acceleration performance using physics-based models. Enter your vehicle's horsepower, curb weight in pounds, drivetrain type, and tire type. The calculator computes the estimated 0-60 mph time, 0-30 mph time, quarter mile elapsed time, quarter mile trap speed, and power-to-weight ratio. These estimates give you a solid baseline for comparing vehicles or understanding your car's performance potential.
+      </p>
+      <p>
+        The estimates use empirical formulas refined against real-world performance data. The 0-60 calculation factors in power-to-weight ratio with adjustments for drivetrain traction advantages and tire grip levels. The quarter mile estimates use the respected Roger Huntington formula used by automotive engineers and enthusiasts for decades.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Vehicle Performance</h2>
+      <p>
+        Vehicle acceleration is fundamentally determined by the relationship between power and weight. A lightweight car with moderate horsepower can outperform a heavy car with more power. The power-to-weight ratio, measured in pounds per horsepower, is the single most important predictor of straight-line acceleration. Lower numbers mean better performance, with supercars typically achieving 4-6 lbs/hp and economy cars sitting at 20-30 lbs/hp.
+      </p>
+
+      <h3>The Role of Drivetrain</h3>
+      <p>
+        Drivetrain configuration significantly impacts how effectively a vehicle puts its power to the ground during acceleration. All-wheel drive distributes torque to all four tires, maximizing traction and reducing wheelspin during launch. This is why AWD vehicles typically achieve faster 0-60 times than equivalent RWD or FWD models, especially in less-than-ideal conditions. However, AWD systems add weight, which can offset some of the traction advantage at higher speeds.
+      </p>
+
+      <h3>Tire Grip Matters</h3>
+      <p>
+        Tires are the only contact point between your vehicle and the road, making them crucial for acceleration performance. Performance tires with soft, sticky compounds can shave significant time off 0-60 runs by reducing wheelspin. The difference between winter tires and performance summer tires on a powerful car can be over a full second in 0-60 time. Even switching from all-season to summer tires typically improves launch performance by 5-10%.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is 0-60 mph time calculated?</h3>
+      <p>The 0-60 mph time is estimated using the power-to-weight ratio. The formula uses time = (weight/hp)^0.75 * 0.95, adjusted for drivetrain type and tire grip. AWD vehicles are typically 10% faster than RWD.</p>
+
+      <h3>What is the quarter mile time formula?</h3>
+      <p>The quarter mile time uses the Roger Huntington formula: ET = 6.290 * (weight/hp)^(1/3). The trap speed is Speed = 224 / (weight/hp)^(1/3).</p>
+
+      <h3>How does drivetrain affect 0-60 time?</h3>
+      <p>AWD vehicles achieve 0-60 times about 10% faster than equivalent RWD vehicles. FWD vehicles are about 5% slower due to weight transfer during hard acceleration.</p>
+
+      <h3>What is a good power-to-weight ratio?</h3>
+      <p>Under 10 lbs/hp is sports car territory, 10-15 is sporty, 15-20 is average, and above 20 is considered slow.</p>
+
+      <h3>Why do real 0-60 times differ from estimates?</h3>
+      <p>Real-world performance depends on launch technique, transmission type, turbo lag, traction control, road surface, altitude, air temperature, and vehicle-specific power delivery characteristics.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Engine Horsepower Calculator", description: "Calculate HP from torque and RPM or torque from HP and RPM.", path: automotive_engine_horsepower_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Tire Size Comparison Calculator", description: "Compare two tire sizes and see the differences.", path: automotive_tire_size_comparison_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Towing Capacity Calculator", description: "Calculate safe towing weight from GVWR and payload.", path: automotive_towing_capacity_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "automotive" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

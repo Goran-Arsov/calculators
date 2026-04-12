@@ -1,0 +1,190 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Radioactive Decay Calculator - Free Half-Life Tool",
+  description: "Calculate remaining radioactive material, elapsed time, or half-life using N(t) = N0*(1/2)^(t/t1/2). Get decay constant and activity instantly.",
+  canonical: physics_radioactive_decay_url,
+  og: {
+    title: "Radioactive Decay Calculator - Free Half-Life Tool | CalcWise",
+    description: "Calculate remaining amount, elapsed time, or half-life for radioactive decay. Real-time results with decay constant and activity.",
+    url: physics_radioactive_decay_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Radioactive Decay Calculator", url: physics_radioactive_decay_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is radioactive decay?", answer: "Radioactive decay is the spontaneous process by which an unstable atomic nucleus loses energy by emitting radiation. The rate of decay is characterized by the half-life, which is the time required for half of the radioactive atoms in a sample to decay. The remaining amount at time t is given by N(t) = N0 * (1/2)^(t/t_half), where N0 is the initial amount and t_half is the half-life. This process is random for individual atoms but statistically predictable for large numbers." },
+  { question: "What is a half-life?", answer: "A half-life is the time required for exactly half of the radioactive atoms in a sample to decay. After one half-life, 50% remains; after two, 25%; after three, 12.5%; and so on. Half-lives range from fractions of a second (like polonium-214 at 164 microseconds) to billions of years (like uranium-238 at 4.47 billion years). The half-life is constant for each isotope and cannot be changed by temperature, pressure, or chemical reactions." },
+  { question: "What is the decay constant?", answer: "The decay constant (lambda) is the probability per unit time that a given atom will decay. It is related to the half-life by lambda = ln(2) / t_half. The activity (rate of decay) of a sample is A = lambda * N, where N is the number of remaining atoms. Activity is measured in becquerels (1 decay per second) or curies (3.7 * 10^10 decays per second). As atoms decay and N decreases, the activity decreases proportionally." },
+  { question: "What is carbon-14 dating?", answer: "Carbon-14 dating uses the known half-life of carbon-14 (5,730 years) to determine the age of organic materials. Living organisms maintain a constant ratio of C-14 to C-12 through metabolism. After death, C-14 decays without being replenished. By measuring the remaining C-14 fraction, scientists calculate how many half-lives have passed and thus the age of the sample. The method is effective for materials up to about 50,000 years old (roughly 8-9 half-lives)." },
+  { question: "Can you speed up or slow down radioactive decay?", answer: "Under normal conditions, radioactive decay rates cannot be significantly altered by temperature, pressure, chemical reactions, or electromagnetic fields. The decay process is governed by nuclear forces, which are unaffected by the electronic or chemical environment of the atom. However, electron capture decay rates can be very slightly affected by extreme pressure or by stripping all electrons from the atom, and some nuclear isomers can be stimulated to decay faster by high-energy photons." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Radioactive Decay Calculator",
+  description: "Calculate remaining amount, elapsed time, or half-life for radioactive decay using N(t) = N0 * (1/2)^(t/t_half).",
+  url: physics_radioactive_decay_url,
+  category: "EducationalApplication",
+  calculator_slug: "radioactive-decay"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Radioactive Decay Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Radioactive Decay Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the remaining amount of a radioactive substance, the time elapsed, or the half-life. Get decay constant and activity in real time.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="radioactive-decay-calculator ad-engagement" class="space-y-5 mb-8">
+      <div data-card="Radioactive Decay" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">N</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Exponential Decay</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">N(t) = N<sub>0</sub>&middot;(&frac12;)<sup>t/t&frac12;</sup></span>
+        </div>
+
+        <div class="mb-4">
+          <label for="decay-mode" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Solve for</label>
+          <select id="decay-mode" data-radioactive-decay-calculator-target="mode" data-action="change->radioactive-decay-calculator#updateFields" class="w-full">
+            <option value="find_remaining">Remaining Amount</option>
+            <option value="find_time">Time Elapsed</option>
+            <option value="find_half_life">Half-Life</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div data-radioactive-decay-calculator-target="initialAmountGroup">
+            <label for="decay-initial" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Initial Amount</label>
+            <input id="decay-initial" type="number" inputmode="decimal" data-radioactive-decay-calculator-target="initialAmount" data-action="input->radioactive-decay-calculator#calculate" class="w-full" placeholder="1000" step="any" min="0">
+          </div>
+          <div data-radioactive-decay-calculator-target="halfLifeGroup">
+            <label for="decay-half-life" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Half-Life (time units)</label>
+            <input id="decay-half-life" type="number" inputmode="decimal" data-radioactive-decay-calculator-target="halfLife" data-action="input->radioactive-decay-calculator#calculate" class="w-full" placeholder="5730" step="any" min="0">
+          </div>
+          <div data-radioactive-decay-calculator-target="timeGroup">
+            <label for="decay-time" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Time Elapsed (same units)</label>
+            <input id="decay-time" type="number" inputmode="decimal" data-radioactive-decay-calculator-target="time" data-action="input->radioactive-decay-calculator#calculate" class="w-full" placeholder="11460" step="any" min="0">
+          </div>
+          <div data-radioactive-decay-calculator-target="remainingAmountGroup" class="hidden">
+            <label for="decay-remaining" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Remaining Amount</label>
+            <input id="decay-remaining" type="number" inputmode="decimal" data-radioactive-decay-calculator-target="remainingAmount" data-action="input->radioactive-decay-calculator#calculate" class="w-full" placeholder="250" step="any" min="0">
+          </div>
+        </div>
+
+        <div data-radioactive-decay-calculator-target="results" class="hidden">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-3">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Remaining</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-radioactive-decay-calculator-target="resultRemaining" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Decayed</span>
+              <span class="text-lg font-bold text-red-600 dark:text-red-400" data-radioactive-decay-calculator-target="resultDecayed" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">% Remaining</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-radioactive-decay-calculator-target="resultPercentRemaining" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Half-Lives Elapsed</span>
+              <span class="text-lg font-bold text-amber-600 dark:text-amber-400" data-radioactive-decay-calculator-target="resultHalfLivesElapsed" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Decay Constant (&lambda;)</span>
+              <span class="text-sm font-bold text-violet-600 dark:text-violet-400" data-radioactive-decay-calculator-target="resultDecayConstant" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-cyan-50 to-sky-50 dark:from-cyan-900/20 dark:to-sky-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Activity (&lambda;N)</span>
+              <span class="text-sm font-bold text-cyan-600 dark:text-cyan-400" data-radioactive-decay-calculator-target="resultActivity" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Time</span>
+              <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400" data-radioactive-decay-calculator-target="resultTime" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Half-Life</span>
+              <span class="text-sm font-bold text-rose-600 dark:text-rose-400" data-radioactive-decay-calculator-target="resultHalfLife" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button data-action="click->radioactive-decay-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "radioactive-decay" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Radioactive Decay</h2>
+      <p><strong>Radioactive decay</strong> is the spontaneous transformation of an unstable atomic nucleus into a more stable configuration, accompanied by the emission of particles or electromagnetic radiation. The rate of decay follows an exponential law: N(t) = N<sub>0</sub> &times; (&frac12;)<sup>t/t&frac12;</sup>, where N<sub>0</sub> is the initial quantity, t is the elapsed time, and t&frac12; is the half-life. This mathematical relationship means the decay rate is always proportional to the amount remaining, producing the characteristic exponential curve.</p>
+
+      <p>This calculator lets you solve for the remaining amount, the time elapsed, or the half-life, given the other two values. It also computes the decay constant (&lambda; = ln(2)/t&frac12;), the activity (A = &lambda;N), the number of half-lives elapsed, and the percentage remaining. Units are flexible — use years, days, seconds, or any consistent time unit for both half-life and elapsed time.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Half-Life and Decay Constant</h2>
+      <p>The <strong>half-life</strong> is the most intuitive measure of decay rate: it is the time for exactly half the atoms to decay. After n half-lives, the fraction remaining is (1/2)<sup>n</sup>. The <strong>decay constant</strong> &lambda; gives the probability per unit time that any individual atom will decay. Activity A = &lambda;N measures the total number of decays per second in the sample, expressed in becquerels (Bq) or curies (Ci). As atoms decay and N decreases, activity decreases proportionally.</p>
+
+      <h3>Types of Radioactive Decay</h3>
+      <p>The three main types are <strong>alpha decay</strong> (emission of a helium-4 nucleus), <strong>beta decay</strong> (conversion of a neutron to a proton with electron emission, or vice versa), and <strong>gamma decay</strong> (emission of high-energy photons). Each type changes the nucleus differently: alpha decay reduces atomic number by 2 and mass number by 4, beta-minus decay increases atomic number by 1, and gamma decay changes neither. Many isotopes undergo decay chains, passing through several intermediate isotopes before reaching stability.</p>
+
+      <h3>Applications</h3>
+      <p><strong>Carbon-14 dating</strong> uses the 5,730-year half-life of C-14 to date organic materials up to about 50,000 years old. <strong>Nuclear medicine</strong> uses short-lived isotopes like technetium-99m (6-hour half-life) for diagnostic imaging. <strong>Nuclear power</strong> harnesses the energy from fission of uranium-235 and plutonium-239. <strong>Geological dating</strong> uses isotopes like potassium-40 (1.25 billion year half-life) and uranium-238 (4.47 billion year half-life) to date rocks and determine the age of the Earth.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is radioactive decay?</h3>
+      <p>The spontaneous transformation of unstable nuclei, emitting radiation. Governed by N(t) = N<sub>0</sub>(&frac12;)<sup>t/t&frac12;</sup>, where the rate is proportional to the remaining amount.</p>
+
+      <h3>What is a half-life?</h3>
+      <p>The time for half the atoms to decay. After n half-lives, (1/2)<sup>n</sup> of the original amount remains. Half-lives range from microseconds to billions of years.</p>
+
+      <h3>What is the decay constant?</h3>
+      <p>&lambda; = ln(2)/t&frac12; is the probability per unit time of an atom decaying. Activity A = &lambda;N gives total decays per second.</p>
+
+      <h3>What is carbon-14 dating?</h3>
+      <p>A method using C-14's 5,730-year half-life to date organic materials. The remaining C-14 fraction reveals how many half-lives have passed since the organism died.</p>
+
+      <h3>Can radioactive decay be changed?</h3>
+      <p>Under normal conditions, no. Decay rates are governed by nuclear forces unaffected by temperature, pressure, or chemistry. Only extreme conditions can produce tiny changes.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Wavelength & Frequency Calculator", description: "Calculate wavelength, frequency, or wave speed for electromagnetic and mechanical waves.", path: physics_wavelength_frequency_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Heat Transfer Calculator", description: "Calculate heat transfer rate, thermal resistance, and heat flux using Fourier's law.", path: physics_heat_transfer_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Planet Weight Calculator", description: "Calculate your weight on different planets and moons in our solar system.", path: physics_planet_weight_path, icon_path: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "physics" %>
+
+    <% blog_posts = related_blog_posts("radioactive-decay-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

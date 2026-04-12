@@ -38,4 +38,14 @@ namespace :health do
   get "pregnancy-weight-calculator", to: "calculators#pregnancy_weight", as: :pregnancy_weight
   get "alcohol-burnoff-calculator", to: "calculators#alcohol_burnoff", as: :alcohol_burnoff
   get "biological-age-calculator", to: "calculators#biological_age", as: :biological_age
+  get "caffeine-half-life-calculator", to: "calculators#caffeine_half_life", as: :caffeine_half_life
+  get "medication-dosage-calculator", to: "calculators#medication_dosage_weight", as: :medication_dosage_weight
+  get "wheelchair-ramp-calculator", to: "calculators#wheelchair_ramp", as: :wheelchair_ramp
+  get "hearing-loss-exposure-calculator", to: "calculators#hearing_loss_exposure", as: :hearing_loss_exposure
+  get "running-pace-zone-calculator", to: "calculators#running_pace_zone", as: :running_pace_zone
+  get "cycling-ftp-zone-calculator", to: "calculators#cycling_ftp", as: :cycling_ftp
+  get "swim-pace-calculator", to: "calculators#swim_pace", as: :swim_pace
+  get "blood-type-compatibility-calculator", to: "calculators#blood_type_compatibility", as: :blood_type_compatibility
+  get "ivf-due-date-calculator", to: "calculators#pregnancy_ivf_due_date", as: :pregnancy_ivf_due_date
+  get "wrist-height-ratio-calculator", to: "calculators#wrist_height_ratio", as: :wrist_height_ratio
 end

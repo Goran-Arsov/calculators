@@ -1,0 +1,186 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cycling FTP Power Zone Calculator - Coggan 7-Zone System",
+  description: "Calculate 7 cycling power zones from your FTP using the Coggan power zone system. Includes 20-minute test, 8-minute test, and ramp test estimations.",
+  canonical: health_cycling_ftp_url,
+  og: {
+    title: "Cycling FTP Power Zone Calculator - Coggan Zones | CalcWise",
+    description: "Calculate your 7 cycling power zones from FTP. Includes watts per kg, rider category classification, and multiple FTP estimation methods.",
+    url: health_cycling_ftp_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Cycling FTP Zone Calculator", url: health_cycling_ftp_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is FTP in cycling?", answer: "FTP (Functional Threshold Power) is the highest power output a cyclist can sustain for approximately one hour. It is measured in watts and represents the boundary between sustainable and unsustainable exercise intensity. FTP is the cornerstone of power-based training because all seven Coggan training zones are defined as percentages of this value." },
+  { question: "How do I test my FTP?", answer: "The most common FTP test is the 20-minute test: warm up, ride as hard as you can sustain for 20 minutes, and multiply your average power by 0.95. Other methods include the 8-minute test (average power x 0.90) and the ramp test (75% of highest 1-minute power). A true 60-minute test is the gold standard but is extremely demanding and rarely done." },
+  { question: "What are the Coggan power zones?", answer: "The Coggan system defines 7 power zones: Zone 1 Active Recovery (less than 55% FTP), Zone 2 Endurance (56-75%), Zone 3 Tempo (76-90%), Zone 4 Lactate Threshold (91-105%), Zone 5 VO2max (106-120%), Zone 6 Anaerobic Capacity (121-150%), and Zone 7 Neuromuscular Power (above 150%). Each zone targets different energy systems and physiological adaptations." },
+  { question: "What is a good watts per kg for cycling?", answer: "Watts per kg (W/kg) is FTP divided by body weight in kilograms. Cat 5 recreational riders are typically 2.0-2.8 W/kg, Cat 4 riders 2.8-3.4, Cat 3 riders 3.4-4.0, Cat 2 riders 4.0-4.6, Cat 1/Elite riders 4.6-5.5, and World Tour professionals exceed 5.5 W/kg. These values apply to 1-hour power output." },
+  { question: "How often should I retest my FTP?", answer: "Most coaches recommend retesting FTP every 6-8 weeks, or whenever you notice your training zones no longer feel appropriate. After a training block focused on threshold work, you may see significant FTP improvements. Consistently update your zones to ensure training remains at the correct intensity for continued adaptation." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Cycling FTP Power Zone Calculator",
+  description: "Calculate 7 cycling power zones from FTP using the Coggan classification system.",
+  url: health_cycling_ftp_url,
+  category: "HealthApplication",
+  calculator_slug: "cycling-ftp"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Cycling FTP Zone Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cycling FTP Power Zone Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your seven Coggan power training zones from your FTP, with rider category classification and multiple test methods.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="cycling-ftp-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">FTP Input Method</label>
+            <select data-cycling-ftp-calculator-target="mode" data-action="change->cycling-ftp-calculator#toggleMode" class="w-full">
+              <option value="direct">Known FTP (watts)</option>
+              <option value="twenty_minute">20-Minute Test</option>
+              <option value="eight_minute">8-Minute Test</option>
+              <option value="ramp">Ramp Test</option>
+            </select>
+          </div>
+          <div data-cycling-ftp-calculator-target="directFields">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">FTP (watts)</label>
+            <input type="number" inputmode="numeric" data-cycling-ftp-calculator-target="ftpDirect" data-action="input->cycling-ftp-calculator#calculate" class="w-full" placeholder="250" min="1" max="600">
+          </div>
+          <div data-cycling-ftp-calculator-target="testFields" class="hidden">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Average Test Power (watts)</label>
+            <input type="number" inputmode="numeric" data-cycling-ftp-calculator-target="testPower" data-action="input->cycling-ftp-calculator#calculate" class="w-full" placeholder="270" min="1" max="800">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Body Weight (optional)</label>
+            <div class="flex gap-2">
+              <input type="number" inputmode="decimal" data-cycling-ftp-calculator-target="weight" data-action="input->cycling-ftp-calculator#calculate" class="flex-1" placeholder="75" min="1">
+              <select data-cycling-ftp-calculator-target="weightUnit" data-action="change->cycling-ftp-calculator#calculate" class="w-20">
+                <option value="kg">kg</option>
+                <option value="lbs">lbs</option>
+              </select>
+            </div>
+          </div>
+          <div class="pt-2 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Estimated FTP</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cycling-ftp-calculator-target="ftp">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Watts/kg</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cycling-ftp-calculator-target="wattsPerKg">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Rider Category</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-cycling-ftp-calculator-target="riderCategory">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Power Zones</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Z1 – Recovery</span><span class="text-base font-bold text-gray-400" data-cycling-ftp-calculator-target="zone1">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Z2 – Endurance</span><span class="text-base font-bold text-blue-500" data-cycling-ftp-calculator-target="zone2">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Z3 – Tempo</span><span class="text-base font-bold text-green-500" data-cycling-ftp-calculator-target="zone3">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Z4 – Threshold</span><span class="text-base font-bold text-yellow-500" data-cycling-ftp-calculator-target="zone4">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Z5 – VO2max</span><span class="text-base font-bold text-orange-500" data-cycling-ftp-calculator-target="zone5">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Z6 – Anaerobic</span><span class="text-base font-bold text-red-500" data-cycling-ftp-calculator-target="zone6">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Z7 – Neuromuscular</span><span class="text-base font-bold text-purple-500" data-cycling-ftp-calculator-target="zone7">—</span></div>
+          </div>
+          <button data-action="click->cycling-ftp-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "cycling-ftp" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Cycling FTP Zone Calculator Works</h2>
+      <p>
+        This calculator generates seven power training zones using the Coggan power zone classification system, the most widely used framework in cycling training. Enter your FTP directly or estimate it from a 20-minute test (multiply by 0.95), 8-minute test (multiply by 0.90), or ramp test (75% of peak 1-minute power). Optionally enter your body weight to see your watts per kilogram ratio and rider category classification.
+      </p>
+      <p>
+        Power-based training has revolutionized cycling because power is an objective, instantaneous measure of how hard you are working. Unlike heart rate, which is influenced by temperature, fatigue, hydration, and caffeine, power output directly measures the work being done. Training with power zones ensures every workout targets the correct physiological system for maximum adaptation.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Seven Coggan Power Zones</h2>
+      <p>
+        <strong>Zone 1 - Active Recovery (below 55% FTP):</strong> Very easy spinning for recovery days. Heart rate and breathing are barely elevated. Sessions of 30-90 minutes promote blood flow and recovery without adding training stress.
+      </p>
+      <p>
+        <strong>Zone 2 - Endurance (56-75% FTP):</strong> The foundation of cycling fitness. Sustainable for 2-6 hours, this zone builds aerobic base, improves fat metabolism, and increases mitochondrial density. Most long rides should be in Zone 2.
+      </p>
+      <p>
+        <strong>Zone 3 - Tempo (76-90% FTP):</strong> Moderate effort sustainable for 1-3 hours. Useful for building muscular endurance and improving the body's ability to utilize lactate. Sometimes called the "no man's land" because it is too hard for easy riding but not hard enough for threshold benefits.
+      </p>
+      <p>
+        <strong>Zone 4 - Threshold (91-105% FTP):</strong> At or near your FTP, sustainable for 20-60 minutes. This is the most time-efficient zone for improving your FTP and is the focus of structured training programs.
+      </p>
+      <p>
+        <strong>Zones 5-7</strong> target VO2max (3-8 minute efforts), anaerobic capacity (30 seconds to 3 minutes), and neuromuscular power (under 30 seconds) respectively. These zones are used in structured interval workouts.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is FTP in cycling?</h3>
+      <p>FTP is the highest power you can sustain for approximately one hour, measured in watts. All Coggan power zones are percentages of FTP.</p>
+
+      <h3>How do I test my FTP?</h3>
+      <p>The most common method is a 20-minute all-out effort, multiplied by 0.95. Other options include the 8-minute test (x0.90) and the ramp test (75% of peak 1-minute power).</p>
+
+      <h3>What is a good watts per kg?</h3>
+      <p>Recreational riders are 2.0-2.8 W/kg, Cat 3 racers 3.4-4.0, Cat 1/Elite 4.6-5.5, and World Tour pros exceed 5.5 W/kg at threshold.</p>
+
+      <h3>How often should I retest?</h3>
+      <p>Every 6-8 weeks, or when your zones no longer feel appropriate. Regular retesting ensures training intensity stays optimal.</p>
+
+      <h3>What zone should most of my riding be in?</h3>
+      <p>Like running, cycling benefits from a polarized approach: about 80% in Zone 1-2 and 20% in Zone 4 and above.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Heart Rate Zone Calculator", description: "Calculate heart rate training zones using the Karvonen method.", path: health_heart_rate_zone_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "TDEE Calculator", description: "Calculate your Total Daily Energy Expenditure based on activity level.", path: health_tdee_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <% blog_posts = related_blog_posts("cycling-ftp-zone-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

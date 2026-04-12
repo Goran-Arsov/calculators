@@ -1,0 +1,210 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Medication Dosage by Weight Calculator - mg/kg Dose Tool",
+  description: "Calculate medication dosage based on body weight using mg/kg dosing. Get recommended single and daily doses for common medications with safety caps.",
+  canonical: health_medication_dosage_weight_url,
+  og: {
+    title: "Medication Dosage by Weight Calculator - mg/kg Dose Tool | CalcWise",
+    description: "Calculate weight-based medication doses for common medications. Includes safety maximums and dosing frequency guidance.",
+    url: health_medication_dosage_weight_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Medication Dosage Calculator", url: health_medication_dosage_weight_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is mg/kg dosing?", answer: "Mg/kg dosing means prescribing a medication dose based on a patient's body weight in milligrams per kilogram. For example, if a medication is dosed at 10 mg/kg and the patient weighs 70 kg, the calculated dose would be 700 mg. This method ensures the dose is proportional to body size, which is especially important for children and for medications with a narrow therapeutic window." },
+  { question: "Why are there maximum dose limits?", answer: "Maximum dose limits exist because beyond a certain amount, the risks of side effects and toxicity increase without proportional therapeutic benefit. For example, acetaminophen has a maximum daily dose of 4000 mg for adults because higher doses can cause liver damage. These limits apply regardless of body weight and serve as a safety cap on calculated doses." },
+  { question: "Is this calculator safe to use for children?", answer: "This calculator provides educational estimates only and should never replace professional medical advice, especially for children. Pediatric dosing requires careful consideration of age, weight, organ maturity, and specific formulations. Always consult a pediatrician or pharmacist for children's medication dosing." },
+  { question: "How do I convert between kg and lbs?", answer: "To convert pounds to kilograms, multiply by 0.4536. To convert kilograms to pounds, multiply by 2.2046. For example, a 150 lb person weighs approximately 68 kg, and a 70 kg person weighs approximately 154 lbs. This calculator handles the conversion automatically when you select your weight unit." },
+  { question: "Why might my doctor prescribe a different dose?", answer: "Doctors consider many factors beyond weight when prescribing doses, including age, kidney and liver function, other medications being taken, severity of the condition, and individual patient history. The mg/kg calculation provides a starting point, but the actual prescribed dose may be adjusted up or down based on these clinical factors." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Medication Dosage by Weight Calculator",
+  description: "Calculate medication dosage based on body weight using standard mg/kg dosing for common medications.",
+  url: health_medication_dosage_weight_url,
+  category: "HealthApplication",
+  calculator_slug: "medication-dosage-weight"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Medication Dosage Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Medication Dosage by Weight Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Calculate weight-based medication doses using standard mg/kg dosing for common over-the-counter medications.</p>
+    <div class="mb-8 px-4 py-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl text-sm text-red-800 dark:text-red-300">
+      <strong>Important:</strong> This calculator is for educational purposes only. Always consult a healthcare provider or pharmacist before taking any medication. Do not use this tool to self-prescribe or adjust doses without medical supervision.
+    </div>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="medication-dosage-weight-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="med-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Body Weight</label>
+            <div class="flex gap-2">
+              <input id="med-weight" type="number" inputmode="decimal" data-medication-dosage-weight-calculator-target="weight" data-action="input->medication-dosage-weight-calculator#calculate" class="flex-1" placeholder="70" min="1">
+              <select data-medication-dosage-weight-calculator-target="weightUnit" data-action="change->medication-dosage-weight-calculator#calculate" class="w-20">
+                <option value="kg">kg</option>
+                <option value="lbs">lbs</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="med-medication" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Medication</label>
+            <select id="med-medication" data-medication-dosage-weight-calculator-target="medication" data-action="change->medication-dosage-weight-calculator#toggleCustomFields" class="w-full">
+              <option value="ibuprofen">Ibuprofen (10 mg/kg)</option>
+              <option value="acetaminophen">Acetaminophen / Paracetamol (15 mg/kg)</option>
+              <option value="amoxicillin">Amoxicillin (25 mg/kg)</option>
+              <option value="cetirizine">Cetirizine / Zyrtec (0.25 mg/kg)</option>
+              <option value="diphenhydramine">Diphenhydramine / Benadryl (1.25 mg/kg)</option>
+              <option value="custom">Custom Medication</option>
+            </select>
+          </div>
+          <div data-medication-dosage-weight-calculator-target="customFields" class="hidden space-y-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Dose (mg/kg)</label>
+              <input type="number" inputmode="decimal" data-medication-dosage-weight-calculator-target="customDose" data-action="input->medication-dosage-weight-calculator#calculate" class="w-full" placeholder="10" step="0.1">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Doses Per Day</label>
+              <input type="number" inputmode="numeric" data-medication-dosage-weight-calculator-target="customDosesPerDay" data-action="input->medication-dosage-weight-calculator#calculate" class="w-full" placeholder="3" value="3">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Max Single Dose (mg, optional)</label>
+              <input type="number" inputmode="decimal" data-medication-dosage-weight-calculator-target="customMaxSingle" data-action="input->medication-dosage-weight-calculator#calculate" class="w-full" placeholder="Optional">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Max Daily Dose (mg, optional)</label>
+              <input type="number" inputmode="decimal" data-medication-dosage-weight-calculator-target="customMaxDaily" data-action="input->medication-dosage-weight-calculator#calculate" class="w-full" placeholder="Optional">
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Dosage Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Medication</span>
+              <span class="text-sm font-bold text-green-600 dark:text-green-400" data-medication-dosage-weight-calculator-target="medName">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Single Dose</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-medication-dosage-weight-calculator-target="singleDose">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Frequency</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-medication-dosage-weight-calculator-target="dosesPerDay">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Daily Total</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-medication-dosage-weight-calculator-target="dailyDose">—</span>
+            </div>
+            <div class="border-t border-green-200 dark:border-green-800 my-3"></div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Single</span>
+              <span class="text-sm font-semibold text-gray-600 dark:text-gray-400" data-medication-dosage-weight-calculator-target="maxSingle">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Daily</span>
+              <span class="text-sm font-semibold text-gray-600 dark:text-gray-400" data-medication-dosage-weight-calculator-target="maxDaily">—</span>
+            </div>
+            <div data-medication-dosage-weight-calculator-target="cappedNote" class="hidden text-sm text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2"></div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 mt-2" data-medication-dosage-weight-calculator-target="notes">—</div>
+          </div>
+          <button data-action="click->medication-dosage-weight-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "medication-dosage-weight" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Medication Dosage Calculator Works</h2>
+      <p>
+        This calculator computes medication doses using the standard mg/kg method, which scales the dose to a patient's body weight. Enter your weight and select a medication to see the recommended single dose, daily frequency, and total daily dose. The calculator also applies maximum dose limits to ensure the calculated amount does not exceed established safety thresholds, regardless of body weight.
+      </p>
+      <p>
+        Weight-based dosing is the standard approach in clinical medicine for many medications because the required therapeutic concentration in the blood depends on body size. A larger person needs a proportionally larger dose to achieve the same drug concentration as a smaller person. This is especially important in pediatric medicine, where children's weights vary dramatically and adult doses would be inappropriate.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding mg/kg Dosing</h2>
+      <p>
+        The mg/kg unit means milligrams of medication per kilogram of body weight. For example, ibuprofen dosed at 10 mg/kg for a 70 kg adult would yield a calculated dose of 700 mg. However, since the maximum single dose for ibuprofen is 400 mg, the calculator caps the recommendation at 400 mg. This safety mechanism prevents overdosing even when the weight-based calculation exceeds known safe limits.
+      </p>
+
+      <h3>Common Medication Doses</h3>
+      <p>
+        Ibuprofen is typically dosed at 10 mg/kg up to 400 mg per dose, taken 3 times daily for a maximum of 1200 mg per day. Acetaminophen (paracetamol) uses 15 mg/kg per dose up to 1000 mg, taken 4 times daily with a maximum of 4000 mg per day. Amoxicillin, a common antibiotic, is dosed at 25 mg/kg per dose up to 500 mg, taken 3 times daily.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is mg/kg dosing?</h3>
+      <p>
+        Mg/kg dosing prescribes a medication amount based on body weight in milligrams per kilogram. This ensures the dose is proportional to body size, which is especially important for children and medications with a narrow therapeutic window.
+      </p>
+
+      <h3>Why are there maximum dose limits?</h3>
+      <p>
+        Beyond certain amounts, risks of side effects and toxicity increase without proportional benefit. For example, acetaminophen has a maximum of 4000 mg per day because higher doses can cause liver damage.
+      </p>
+
+      <h3>Is this safe for children?</h3>
+      <p>
+        This tool is for educational purposes only. Pediatric dosing requires professional oversight considering age, weight, organ maturity, and specific formulations. Always consult a pediatrician.
+      </p>
+
+      <h3>Why might my doctor prescribe a different dose?</h3>
+      <p>
+        Doctors consider age, kidney and liver function, other medications, severity of condition, and patient history. The mg/kg calculation is a starting point that may be adjusted based on clinical factors.
+      </p>
+
+      <h3>How accurate are these dose calculations?</h3>
+      <p>
+        The calculations use standard dosing guidelines from medical references. However, individual needs vary and this tool cannot replace the judgment of a healthcare professional who knows your complete medical history.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Water Intake Calculator", description: "Calculate your recommended daily water intake based on weight and activity.", path: health_water_intake_path, icon_path: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" },
+      { name: "Ideal Weight Calculator", description: "Calculate your ideal body weight based on height, gender, and frame size.", path: health_ideal_weight_path, icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <% blog_posts = related_blog_posts("medication-dosage-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

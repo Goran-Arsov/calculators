@@ -1,0 +1,195 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pet Medication Dosage Calculator - Safe Doses by Weight",
+  description: "Calculate safe medication doses for dogs and cats by weight. Covers common OTC medications including Benadryl, Pepcid, aspirin, glucosamine, fish oil, melatonin, and probiotics.",
+  canonical: pets_pet_medication_dosage_url,
+  og: {
+    title: "Pet Medication Dosage Calculator - Safe Doses by Weight | CalcWise",
+    description: "Calculate safe medication doses for dogs and cats based on weight for common OTC pet medications.",
+    url: pets_pet_medication_dosage_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Pets", url: category_url("pets") },
+  { name: "Pet Medication Dosage Calculator", url: pets_pet_medication_dosage_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much Benadryl can I give my dog?", answer: "The standard veterinary dosage for Benadryl (diphenhydramine) in dogs is 2-4 mg per kilogram of body weight, given every 8-12 hours. For a 50-pound (22.7 kg) dog, that is approximately 45-91 mg per dose. Standard Benadryl tablets are 25 mg, so a 50-pound dog would take 2-3 tablets. Always use plain diphenhydramine without added decongestants or alcohol, and consult your vet before giving any medication." },
+  { question: "Can I give my cat human medication?", answer: "Some human medications can be given to cats at veterinarian-approved doses, but many are extremely dangerous. Cats lack certain liver enzymes that break down common drugs. For example, acetaminophen (Tylenol) is lethal to cats even in small doses. Benadryl and Pepcid can be given to cats at specific doses, but always verify with your veterinarian first. Never assume a human medication is safe for cats." },
+  { question: "How do I calculate medication dosage by pet weight?", answer: "Medication dosages are typically expressed in milligrams per kilogram (mg/kg) of body weight. To calculate: convert your pet's weight from pounds to kilograms by multiplying by 0.4536. Then multiply the weight in kg by the mg/kg dosage. For example, a 30-pound dog weighs 13.6 kg. At a dosage of 2 mg/kg, the dose would be 27.2 mg." },
+  { question: "What is the difference between minimum and maximum dose?", answer: "The minimum dose is the lowest effective amount, typically recommended for starting treatment or for mild symptoms. The maximum dose is the highest safe amount per administration. Veterinarians usually recommend starting at the lower end of the range and only increasing if needed and tolerated. Never exceed the maximum dose without veterinary guidance, as overdoses can cause serious side effects." },
+  { question: "Should I consult a vet before giving my pet medication?", answer: "Yes, always consult your veterinarian before giving any medication, even over-the-counter supplements. Your vet can account for your pet's specific health conditions, other medications they are taking, and potential drug interactions. Some conditions (like liver or kidney disease) require dose adjustments. This calculator provides general guidelines based on standard veterinary dosing, but individual pets may have different needs." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Pet Medication Dosage Calculator",
+  description: "Calculate safe medication doses for dogs and cats by weight, covering common OTC medications with dosage ranges and frequency guidelines.",
+  url: pets_pet_medication_dosage_url,
+  category: "HealthApplication",
+  calculator_slug: "pet-medication-dosage"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Pets", url: category_path("pets") },
+  { name: "Pet Medication Dosage Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pet Medication Dosage Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate safe medication doses for dogs and cats based on body weight. Covers common over-the-counter medications and supplements.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="pet-medication-dosage-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="pet-med-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pet Type</label>
+            <select id="pet-med-type" data-pet-medication-dosage-calculator-target="petType" data-action="change->pet-medication-dosage-calculator#calculate" class="w-full" aria-label="Pet Type">
+              <option value="dog" selected>Dog</option>
+              <option value="cat">Cat</option>
+            </select>
+          </div>
+          <div>
+            <label for="pet-med-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pet's Weight (lbs)</label>
+            <input id="pet-med-weight" type="number" inputmode="decimal" data-pet-medication-dosage-calculator-target="weight" data-action="input->pet-medication-dosage-calculator#calculate" class="w-full" placeholder="50" step="0.5" min="0" max="250">
+          </div>
+          <div>
+            <label for="pet-med-medication" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Medication</label>
+            <select id="pet-med-medication" data-pet-medication-dosage-calculator-target="medication" data-action="change->pet-medication-dosage-calculator#calculate" class="w-full" aria-label="Medication">
+              <option value="benadryl">Benadryl (Diphenhydramine)</option>
+              <option value="pepcid">Pepcid (Famotidine)</option>
+              <option value="bayer_aspirin">Aspirin (Buffered)</option>
+              <option value="glucosamine">Glucosamine</option>
+              <option value="fish_oil">Fish Oil (EPA + DHA)</option>
+              <option value="melatonin">Melatonin</option>
+              <option value="probiotics">Probiotics</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Dosage Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Medication</span>
+              <span class="font-bold text-green-600 dark:text-green-400 text-right text-sm" data-pet-medication-dosage-calculator-target="medicationName">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Dose Range</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-pet-medication-dosage-calculator-target="doseRange">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Min Dose</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-pet-medication-dosage-calculator-target="minDose">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Dose</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-pet-medication-dosage-calculator-target="maxDose">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Frequency</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-pet-medication-dosage-calculator-target="frequency">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->pet-medication-dosage-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+
+      <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200/80 dark:border-amber-800/80">
+        <p class="text-sm text-amber-800 dark:text-amber-200"><strong>Important:</strong> Always consult your veterinarian before administering any medication to your pet. This calculator provides general dosage guidelines and is not a substitute for professional veterinary advice.</p>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "pet-medication-dosage" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Pet Medication Dosage Calculator</h2>
+      <p>
+        Our free pet medication dosage calculator helps you determine safe dosage ranges for common over-the-counter medications and supplements for dogs and cats. Select your pet type, enter their weight in pounds, and choose the medication. The calculator instantly displays the minimum and maximum safe doses in milligrams, the recommended dosing frequency, and the per-kilogram dosage range used in the calculation. Results update in real time as you change any input.
+      </p>
+      <p>
+        Accurate dosing is critical for pet safety. Underdosing may be ineffective, while overdosing can cause serious side effects or toxicity. This calculator uses standard veterinary dosing guidelines, but individual pets may require different amounts based on their health conditions, other medications, and veterinary assessment.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Pet Medication Dosing</h2>
+      <p>
+        Veterinary medication doses are calculated in milligrams per kilogram (mg/kg) of body weight. This weight-based approach ensures that smaller animals receive proportionally smaller doses. To convert your pet's weight from pounds to kilograms, multiply by 0.4536. The calculator handles this conversion automatically.
+      </p>
+
+      <h3>Common OTC Medications for Pets</h3>
+      <p>
+        <strong>Benadryl (Diphenhydramine)</strong> is commonly used for allergies, itching, and mild anxiety in both dogs and cats. <strong>Pepcid (Famotidine)</strong> helps with acid reflux and stomach upset. <strong>Buffered aspirin</strong> provides pain relief for dogs but must be used cautiously in cats due to their slow metabolism of salicylates. <strong>Glucosamine</strong> and <strong>fish oil</strong> are popular joint and coat supplements. <strong>Melatonin</strong> helps with anxiety and sleep disorders. <strong>Probiotics</strong> support digestive health.
+      </p>
+
+      <h3>Safety Considerations</h3>
+      <p>
+        Never give your pet any medication containing xylitol, as it is highly toxic to dogs. Avoid combination products (like cold medicine with multiple active ingredients) unless specifically approved by your vet. Cats metabolize many drugs differently than dogs — some medications safe for dogs are toxic to cats. Always start at the lower end of the dosage range and monitor your pet for adverse reactions.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much Benadryl can I give my dog?</h3>
+      <p>
+        The standard dosage for Benadryl in dogs is 2-4 mg per kilogram of body weight, given every 8-12 hours. For a 50-pound dog, that is approximately 45-91 mg per dose. Always use plain diphenhydramine and consult your vet first.
+      </p>
+
+      <h3>Can I give my cat human medication?</h3>
+      <p>
+        Some human medications can be given to cats at vet-approved doses, but many are dangerous. Cats lack certain liver enzymes, making drugs like acetaminophen lethal even in small doses. Always verify with your veterinarian first.
+      </p>
+
+      <h3>How do I calculate medication dosage by pet weight?</h3>
+      <p>
+        Convert weight from pounds to kilograms (multiply by 0.4536), then multiply by the mg/kg dosage. For a 30-pound dog at 2 mg/kg: 30 x 0.4536 = 13.6 kg x 2 mg/kg = 27.2 mg.
+      </p>
+
+      <h3>What is the difference between minimum and maximum dose?</h3>
+      <p>
+        The minimum dose is the lowest effective amount, recommended for starting treatment. The maximum dose is the highest safe amount per administration. Start low and only increase if needed and tolerated.
+      </p>
+
+      <h3>Should I consult a vet before giving my pet medication?</h3>
+      <p>
+        Yes, always consult your veterinarian before giving any medication. Your vet can account for your pet's specific health conditions, other medications, and potential interactions.
+      </p>
+
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Pet Insurance ROI Calculator", description: "Compare pet insurance costs vs potential vet bills.", path: pets_pet_insurance_roi_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" },
+      { name: "Cat Food Calculator", description: "Calculate daily calorie needs and food portions for your cat.", path: pets_cat_food_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Dog Food Calculator", description: "Calculate daily food portions for your dog based on weight and activity.", path: health_dog_food_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "pets" %>
+
+    <% blog_posts = related_blog_posts("pet-medication-dosage-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

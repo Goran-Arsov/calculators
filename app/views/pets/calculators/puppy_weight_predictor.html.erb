@@ -1,0 +1,190 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Puppy Weight Predictor - Estimate Your Puppy's Adult Weight",
+  description: "Predict your puppy's adult weight based on current weight, age in weeks, and breed size category. Uses veterinary growth curves for toy, small, medium, large, and giant breeds.",
+  canonical: pets_puppy_weight_predictor_url,
+  og: {
+    title: "Puppy Weight Predictor - Estimate Your Puppy's Adult Weight | CalcWise",
+    description: "Predict your puppy's adult weight using veterinary growth curves based on current weight, age, and breed size.",
+    url: pets_puppy_weight_predictor_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Pets", url: category_url("pets") },
+  { name: "Puppy Weight Predictor", url: pets_puppy_weight_predictor_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How can I predict my puppy's adult weight?", answer: "The most reliable method uses breed-specific growth curves. Puppies of different size categories grow at different rates. By knowing your puppy's current weight, age in weeks, and breed size category, you can estimate what percentage of their adult weight they have already reached and calculate the projected adult weight. For example, a medium-breed puppy at 16 weeks has typically reached about 55% of their adult weight." },
+  { question: "At what age do puppies stop growing?", answer: "The age at which puppies stop growing depends on breed size. Toy breeds (under 10 lbs adult) typically reach adult weight by 9-12 months. Small breeds (10-25 lbs) finish growing by 10-12 months. Medium breeds (25-55 lbs) reach adult size by 12-15 months. Large breeds (55-90 lbs) continue growing until 15-18 months. Giant breeds (90+ lbs) may not reach full size until 18-24 months." },
+  { question: "How accurate are puppy weight predictions?", answer: "Breed-category growth curves are generally accurate within 10-15% for purebred puppies when the breed size category is correctly identified. Mixed-breed puppies are harder to predict because their adult size depends on the genetic contribution of both parents. Factors that can affect accuracy include nutritional status, health conditions, spay/neuter timing, and individual genetic variation within a breed." },
+  { question: "What breed size category is my puppy?", answer: "Breed size categories by typical adult weight: Toy breeds (4-10 lbs) include Chihuahuas, Yorkies, and Pomeranians. Small breeds (10-25 lbs) include Beagles, French Bulldogs, and Cocker Spaniels. Medium breeds (25-55 lbs) include Border Collies, Australian Shepherds, and Bulldogs. Large breeds (55-90 lbs) include Labradors, Golden Retrievers, and German Shepherds. Giant breeds (90+ lbs) include Great Danes, Mastiffs, and Saint Bernards." },
+  { question: "Do mixed breed puppies grow at the same rate as purebreds?", answer: "Mixed breed puppies generally follow similar growth patterns to purebreds of the same adult size category. The challenge is determining the correct size category when parentage is unknown. If you know one or both parents, their sizes are the best predictor. If not, a veterinarian can estimate adult size from paw size, bone structure, and current growth rate. DNA testing can also identify breed mix and predicted adult weight range." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Puppy Weight Predictor",
+  description: "Predict your puppy's adult weight using veterinary growth curves for toy, small, medium, large, and giant breed categories.",
+  url: pets_puppy_weight_predictor_url,
+  category: "HealthApplication",
+  calculator_slug: "puppy-weight-predictor"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Pets", url: category_path("pets") },
+  { name: "Puppy Weight Predictor" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Puppy Weight Predictor</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Predict your puppy's adult weight based on their current weight, age in weeks, and breed size category using veterinary growth curves.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="puppy-weight-predictor-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="puppy-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Weight (lbs)</label>
+            <input id="puppy-weight" type="number" inputmode="decimal" data-puppy-weight-predictor-calculator-target="currentWeight" data-action="input->puppy-weight-predictor-calculator#calculate" class="w-full" placeholder="15" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="puppy-age" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Age (weeks)</label>
+            <input id="puppy-age" type="number" inputmode="numeric" data-puppy-weight-predictor-calculator-target="ageWeeks" data-action="input->puppy-weight-predictor-calculator#calculate" class="w-full" placeholder="16" step="1" min="4" max="104">
+          </div>
+          <div>
+            <label for="puppy-breed-size" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Breed Size Category</label>
+            <select id="puppy-breed-size" data-puppy-weight-predictor-calculator-target="breedSize" data-action="change->puppy-weight-predictor-calculator#calculate" class="w-full" aria-label="Breed Size">
+              <option value="toy">Toy (4-10 lbs adult)</option>
+              <option value="small">Small (10-25 lbs adult)</option>
+              <option value="medium" selected>Medium (25-55 lbs adult)</option>
+              <option value="large">Large (55-90 lbs adult)</option>
+              <option value="giant">Giant (90+ lbs adult)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Prediction</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Predicted Adult Weight</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-puppy-weight-predictor-calculator-target="predictedWeight">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">In Kilograms</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-puppy-weight-predictor-calculator-target="predictedWeightKg">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Growth Completed</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-puppy-weight-predictor-calculator-target="growthPercentage">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Remaining Growth</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-puppy-weight-predictor-calculator-target="remainingGrowth">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Weeks to Adult</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-puppy-weight-predictor-calculator-target="weeksToAdult">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Breed Range</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-puppy-weight-predictor-calculator-target="breedRange">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->puppy-weight-predictor-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "puppy-weight-predictor" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Puppy Weight Predictor</h2>
+      <p>
+        Our free puppy weight predictor estimates your puppy's adult weight using breed-specific growth curves derived from veterinary research. Enter your puppy's current weight in pounds, their age in weeks, and select the breed size category that best matches their expected adult size. The calculator instantly predicts adult weight, shows what percentage of growth is completed, and estimates how many weeks remain until full size.
+      </p>
+      <p>
+        Knowing your puppy's predicted adult weight helps with planning for crate sizes, choosing appropriate food formulas, estimating future costs, and understanding when growth-related behaviors like chewing and boundless energy will begin to settle. It also helps veterinarians track whether a puppy is growing at a healthy rate.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How Growth Curves Work</h2>
+      <p>
+        Puppies do not grow at a constant rate. Growth is fastest during the first few months and gradually slows as the puppy approaches adult size. Smaller breeds reach their adult weight sooner than larger breeds. A toy breed puppy at 16 weeks has typically reached about 72% of its adult weight, while a giant breed puppy of the same age has only reached about 37%. The calculator uses these breed-specific growth percentage curves to extrapolate from current weight to predicted adult weight.
+      </p>
+
+      <h3>Breed Size Categories Explained</h3>
+      <p>
+        <strong>Toy breeds</strong> (4-10 lbs adult) include Chihuahuas, Yorkies, and Pomeranians — they typically finish growing by 9-12 months. <strong>Small breeds</strong> (10-25 lbs) like Beagles and French Bulldogs reach full size by 10-12 months. <strong>Medium breeds</strong> (25-55 lbs) such as Border Collies and Bulldogs mature by 12-15 months. <strong>Large breeds</strong> (55-90 lbs) like Labradors and German Shepherds continue growing until 15-18 months. <strong>Giant breeds</strong> (90+ lbs) including Great Danes and Mastiffs may not reach full size until 18-24 months.
+      </p>
+
+      <h3>Factors Affecting Growth</h3>
+      <p>
+        While growth curves provide good estimates, several factors can affect actual adult size. Genetics is the primary determinant — puppies from larger parents tend to be larger. Nutrition plays a role; overfeeding during growth can lead to excess weight but not larger skeletal size, while underfeeding can stunt growth. Early spaying or neutering may slightly affect final size by allowing growth plates to remain open longer. Health conditions, parasites, and stress can also impact growth.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How can I predict my puppy's adult weight?</h3>
+      <p>
+        Use breed-specific growth curves. By knowing your puppy's current weight, age in weeks, and breed size category, you can estimate what percentage of adult weight they have reached and calculate the projected adult weight.
+      </p>
+
+      <h3>At what age do puppies stop growing?</h3>
+      <p>
+        Toy breeds reach adult weight by 9-12 months. Small breeds finish by 10-12 months. Medium breeds by 12-15 months. Large breeds by 15-18 months. Giant breeds may not reach full size until 18-24 months.
+      </p>
+
+      <h3>How accurate are puppy weight predictions?</h3>
+      <p>
+        Growth curves are generally accurate within 10-15% for purebred puppies when the correct breed size category is selected. Mixed breeds are harder to predict due to genetic variation.
+      </p>
+
+      <h3>What breed size category is my puppy?</h3>
+      <p>
+        Toy: 4-10 lbs (Chihuahua, Yorkie). Small: 10-25 lbs (Beagle, French Bulldog). Medium: 25-55 lbs (Border Collie, Bulldog). Large: 55-90 lbs (Labrador, German Shepherd). Giant: 90+ lbs (Great Dane, Mastiff).
+      </p>
+
+      <h3>Do mixed breed puppies grow at the same rate as purebreds?</h3>
+      <p>
+        Mixed breed puppies generally follow similar patterns to purebreds of the same adult size. The challenge is determining the correct category. A vet can help estimate, or DNA testing can identify breed mix and predicted size.
+      </p>
+
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Dog Age Calculator", description: "Convert your dog's age to human years, adjusted for breed size.", path: health_dog_age_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Dog Food Calculator", description: "Calculate daily food portions for your dog based on weight and activity.", path: health_dog_food_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Horse Feed Calculator", description: "Calculate daily hay, grain, and supplement amounts for horses.", path: pets_horse_feed_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "pets" %>
+
+    <% blog_posts = related_blog_posts("puppy-weight-predictor") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

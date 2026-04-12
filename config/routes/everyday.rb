@@ -170,4 +170,17 @@ namespace :everyday do
   get "final-grade-calculator", to: "calculators#final_grade", as: :final_grade
   get "student-budget-calculator", to: "calculators#student_budget", as: :student_budget
   get "study-time-calculator", to: "calculators#study_time", as: :study_time
+  get "diff-viewer", to: "calculators#diff_viewer", as: :diff_viewer
+  get "sql-to-nosql-converter", to: "calculators#sql_to_nosql", as: :sql_to_nosql
+  get "tailwind-to-css-converter", to: "calculators#tailwind_to_css", as: :tailwind_to_css
+  get "graphql-query-builder", to: "calculators#graphql_builder", as: :graphql_builder
+  get "api-rate-limit-calculator", to: "calculators#api_rate_limit", as: :api_rate_limit
+  get "docker-compose-generator", to: "calculators#docker_compose_generator", as: :docker_compose_generator
+  get "git-commit-message-generator", to: "calculators#git_commit_generator", as: :git_commit_generator
+  get "semver-bump-calculator", to: "calculators#semver_bump", as: :semver_bump
+  get "color-contrast-checker", to: "calculators#color_contrast_checker", as: :color_contrast_checker
+  get "email-signature-generator", to: "calculators#email_signature_generator", as: :email_signature_generator
+  get "timezone-meeting-planner", to: "calculators#timezone_meeting_planner", as: :timezone_meeting_planner
+  get "carbon-footprint-calculator", to: "calculators#carbon_footprint", as: :carbon_footprint
+  get "invoice-pdf-generator", to: "calculators#invoice_pdf_generator", as: :invoice_pdf_generator
 end

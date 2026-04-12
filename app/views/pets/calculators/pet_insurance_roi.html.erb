@@ -1,0 +1,227 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pet Insurance ROI Calculator - Is Pet Insurance Worth It?",
+  description: "Compare pet insurance premiums vs estimated vet bills over your pet's lifetime. Calculate ROI, net savings, and get a recommendation on whether pet insurance makes financial sense.",
+  canonical: pets_pet_insurance_roi_url,
+  og: {
+    title: "Pet Insurance ROI Calculator - Is Pet Insurance Worth It? | CalcWise",
+    description: "Compare pet insurance cost vs potential vet bills and calculate your ROI over your pet's lifetime.",
+    url: pets_pet_insurance_roi_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Pets", url: category_url("pets") },
+  { name: "Pet Insurance ROI Calculator", url: pets_pet_insurance_roi_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Is pet insurance worth the cost?", answer: "Pet insurance is generally worth it for owners who want financial protection against unexpected large vet bills. The average dog owner will face $2,000-$5,000 in emergency vet costs over their pet's lifetime, and a single surgery or hospitalization can cost $3,000-$10,000. If your monthly premium is reasonable relative to your pet's risk profile, insurance can provide significant savings and peace of mind. The ROI tends to be better for larger breeds, younger pets, and pets with higher health risks." },
+  { question: "How much does pet insurance typically cost?", answer: "Average monthly premiums range from $30-$60 for dogs and $15-$35 for cats, depending on breed, age, location, coverage level, deductible, and reimbursement rate. Accident-only plans cost less ($10-$20/month) but cover fewer situations. Comprehensive plans that include illness, accidents, and sometimes wellness care cost more but provide broader protection. Premiums typically increase as your pet ages." },
+  { question: "What is a good reimbursement rate for pet insurance?", answer: "Most pet insurance plans offer reimbursement rates of 70%, 80%, or 90%. An 80% reimbursement rate is the most popular choice, balancing premium cost with coverage. At 80%, the insurance company pays 80% of the eligible vet bill after you meet your deductible. Higher reimbursement rates mean higher premiums but lower out-of-pocket costs when you file a claim." },
+  { question: "What is a pet insurance deductible?", answer: "A pet insurance deductible is the amount you pay out of pocket before insurance coverage kicks in. Annual deductibles (reset each year) typically range from $100 to $500. A higher deductible means lower monthly premiums but more out-of-pocket costs per incident. Most financial advisors recommend choosing a deductible you can comfortably afford in an emergency." },
+  { question: "Does pet insurance cover pre-existing conditions?", answer: "No, pet insurance does not cover pre-existing conditions — health issues that existed before coverage began or during a waiting period. This is the main reason experts recommend getting pet insurance when your pet is young and healthy. Some conditions that are considered cured (no symptoms for 12-18 months) may eventually be covered, but this varies by provider. Hereditary and congenital conditions are covered by most plans if they have not yet manifested." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Pet Insurance ROI Calculator",
+  description: "Compare pet insurance premiums vs estimated veterinary costs over your pet's lifetime to determine if insurance is worth the investment.",
+  url: pets_pet_insurance_roi_url,
+  category: "FinanceApplication",
+  calculator_slug: "pet-insurance-roi"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Pets", url: category_path("pets") },
+  { name: "Pet Insurance ROI Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pet Insurance ROI Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Compare pet insurance premiums against estimated vet bills to determine if insurance makes financial sense for your pet.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="pet-insurance-roi-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="pet-ins-pet-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pet Type</label>
+            <select id="pet-ins-pet-type" data-pet-insurance-roi-calculator-target="petType" data-action="change->pet-insurance-roi-calculator#calculate" class="w-full" aria-label="Pet Type">
+              <option value="dog" selected>Dog</option>
+              <option value="cat">Cat</option>
+            </select>
+          </div>
+          <div>
+            <label for="pet-ins-breed-size" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Breed Size</label>
+            <select id="pet-ins-breed-size" data-pet-insurance-roi-calculator-target="breedSize" data-action="change->pet-insurance-roi-calculator#calculate" class="w-full" aria-label="Breed Size">
+              <option value="small">Small (under 25 lbs)</option>
+              <option value="medium" selected>Medium (25-55 lbs)</option>
+              <option value="large">Large (55-90 lbs)</option>
+              <option value="giant">Giant (90+ lbs)</option>
+            </select>
+          </div>
+          <div>
+            <label for="pet-ins-age" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pet's Current Age (years)</label>
+            <input id="pet-ins-age" type="number" inputmode="numeric" data-pet-insurance-roi-calculator-target="petAge" data-action="input->pet-insurance-roi-calculator#calculate" class="w-full" placeholder="2" step="1" min="0">
+          </div>
+          <div>
+            <label for="pet-ins-lifespan" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Expected Lifespan (years)</label>
+            <input id="pet-ins-lifespan" type="number" inputmode="numeric" data-pet-insurance-roi-calculator-target="expectedLifespan" data-action="input->pet-insurance-roi-calculator#calculate" class="w-full" placeholder="12" step="1" min="1">
+          </div>
+          <div>
+            <label for="pet-ins-premium" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Premium ($)</label>
+            <input id="pet-ins-premium" type="number" inputmode="decimal" data-pet-insurance-roi-calculator-target="monthlyPremium" data-action="input->pet-insurance-roi-calculator#calculate" class="w-full" placeholder="45" step="1" min="0">
+          </div>
+          <div>
+            <label for="pet-ins-deductible" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Deductible ($)</label>
+            <input id="pet-ins-deductible" type="number" inputmode="decimal" data-pet-insurance-roi-calculator-target="annualDeductible" data-action="input->pet-insurance-roi-calculator#calculate" class="w-full" placeholder="250" step="50" min="0" value="250">
+          </div>
+          <div>
+            <label for="pet-ins-reimbursement" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Reimbursement Rate (%)</label>
+            <input id="pet-ins-reimbursement" type="number" inputmode="numeric" data-pet-insurance-roi-calculator-target="reimbursementRate" data-action="input->pet-insurance-roi-calculator#calculate" class="w-full" placeholder="80" step="5" min="1" max="100" value="80">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Insurance Costs</p>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Premiums</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-pet-insurance-roi-calculator-target="totalPremiums">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Deductibles</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-pet-insurance-roi-calculator-target="totalDeductibles">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Insurance Cost</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-pet-insurance-roi-calculator-target="totalInsuranceCost">&mdash;</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estimated Vet Costs</p>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Routine Vet Bills</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-pet-insurance-roi-calculator-target="estimatedVetBills">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Emergency Costs</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-pet-insurance-roi-calculator-target="estimatedEmergencies">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Vet Costs</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-pet-insurance-roi-calculator-target="totalEstimatedCosts">&mdash;</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Insurance Payouts</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-pet-insurance-roi-calculator-target="insurancePayouts">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Savings</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-pet-insurance-roi-calculator-target="netSavings">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">ROI</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-pet-insurance-roi-calculator-target="roiPercentage">&mdash;</span>
+            </div>
+            <div class="mt-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl text-center">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300" data-pet-insurance-roi-calculator-target="recommendation">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->pet-insurance-roi-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "pet-insurance-roi" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Pet Insurance ROI Calculator</h2>
+      <p>
+        Our free pet insurance ROI calculator helps you make an informed financial decision about whether pet insurance is worth the investment for your specific situation. Enter your pet's type, breed size, current age, expected lifespan, monthly premium quote, annual deductible, and reimbursement rate. The calculator estimates total lifetime vet costs (both routine and emergency), compares them against your insurance premiums, and calculates your expected return on investment.
+      </p>
+      <p>
+        Pet ownership costs are rising. The average dog owner spends $1,000-$1,500 per year on routine veterinary care, and a single emergency can cost $3,000-$10,000 or more. Pet insurance provides a financial safety net, but the question of whether it pays off depends on your pet's specific risk factors, the plan you choose, and how you value peace of mind versus pure financial return.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How the Calculation Works</h2>
+      <p>
+        The calculator estimates annual veterinary costs based on your pet's type and breed size, with costs increasing by approximately 5% per year as your pet ages. It then models the probability of major health events (surgeries, hospitalizations, chronic conditions) using age-adjusted risk factors. Larger breeds face higher emergency costs and earlier onset of age-related conditions.
+      </p>
+
+      <h3>Understanding ROI in Pet Insurance</h3>
+      <p>
+        A positive ROI means insurance payouts are expected to exceed your total costs (premiums plus deductibles). However, even a slightly negative ROI does not mean insurance is a bad choice — the value of financial predictability and protection against catastrophic bills is real. Think of it like home insurance: you hope you never need it, but the protection is valuable.
+      </p>
+
+      <h3>Factors That Affect Pet Insurance Value</h3>
+      <p>
+        <strong>Breed size matters significantly.</strong> Large and giant breed dogs face higher vet costs and more health issues, making insurance more likely to pay off. <strong>Age at enrollment</strong> is critical — younger pets get lower premiums and coverage for conditions that have not yet developed. <strong>Reimbursement rate and deductible</strong> create a direct trade-off between monthly cost and claim payouts. An 80% reimbursement rate with a $250 annual deductible is the most popular balance.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is pet insurance worth the cost?</h3>
+      <p>
+        Pet insurance is generally worth it for owners who want financial protection against unexpected large vet bills. The average dog owner faces $2,000-$5,000 in emergency costs over their pet's lifetime. The ROI tends to be better for larger breeds, younger pets, and pets with higher health risks.
+      </p>
+
+      <h3>How much does pet insurance typically cost?</h3>
+      <p>
+        Average monthly premiums range from $30-$60 for dogs and $15-$35 for cats. Accident-only plans cost $10-$20/month. Premiums typically increase as your pet ages.
+      </p>
+
+      <h3>What is a good reimbursement rate for pet insurance?</h3>
+      <p>
+        An 80% reimbursement rate is the most popular choice, balancing premium cost with coverage. Higher rates mean higher premiums but lower out-of-pocket costs when filing claims.
+      </p>
+
+      <h3>What is a pet insurance deductible?</h3>
+      <p>
+        A pet insurance deductible is the amount you pay before insurance kicks in. Annual deductibles typically range from $100 to $500. A higher deductible means lower premiums but more out-of-pocket costs per incident.
+      </p>
+
+      <h3>Does pet insurance cover pre-existing conditions?</h3>
+      <p>
+        No, pet insurance does not cover pre-existing conditions. This is the main reason experts recommend getting insurance when your pet is young and healthy.
+      </p>
+
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Pet Medication Dosage Calculator", description: "Calculate medication doses for your pet by weight.", path: pets_pet_medication_dosage_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" },
+      { name: "Cat Food Calculator", description: "Calculate daily calorie needs and food portions for your cat.", path: pets_cat_food_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Puppy Weight Predictor", description: "Predict your puppy's adult weight based on current weight and breed size.", path: pets_puppy_weight_predictor_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "pets" %>
+
+    <% blog_posts = related_blog_posts("pet-insurance-roi-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

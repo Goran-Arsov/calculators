@@ -1,0 +1,229 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Inductor Calculator - Free Inductance & Energy Tool",
+  description: "Calculate inductance, energy stored (E=½LI²), series/parallel combinations, and RL time constant (τ=L/R). Free online inductor calculator.",
+  canonical: physics_inductor_url,
+  og: {
+    title: "Inductor Calculator - Free Inductance & Energy Tool | CalcWise",
+    description: "Calculate inductance, energy stored, series/parallel combinations, and RL time constant. Real-time results.",
+    url: physics_inductor_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Inductor Calculator", url: physics_inductor_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is inductance?", answer: "Inductance is the property of an electrical conductor that opposes changes in current, measured in henrys (H). When current through an inductor changes, it generates a voltage (back-EMF) proportional to the rate of change: V = L * dI/dt. Inductance depends on the coil geometry — more turns, larger area, and a magnetic core all increase inductance. Practical inductors range from nanohenrys in high-frequency circuits to several henrys in power supplies." },
+  { question: "How much energy does an inductor store?", answer: "An inductor stores energy in its magnetic field: E = 1/2 * L * I^2, where L is inductance in henrys and I is current in amperes. Unlike capacitors which store energy in an electric field, inductors store energy magnetically. The energy is released when current decreases. This is why disconnecting an inductor suddenly can produce a large voltage spike — the stored energy must go somewhere. Flyback converters and boost converters exploit this energy storage mechanism." },
+  { question: "How do inductors combine in series and parallel?", answer: "In series (assuming no mutual coupling), inductances add: Lt = L1 + L2 + L3 + ... In parallel, the reciprocals add: 1/Lt = 1/L1 + 1/L2 + 1/L3 + ... This is the same behavior as resistors: series adds, parallel gives a smaller total. The total parallel inductance is always less than the smallest individual inductor. Mutual inductance between coils can modify these formulas, but for well-separated inductors, the simple formulas apply." },
+  { question: "What is the RL time constant?", answer: "The RL time constant tau = L/R determines how quickly current changes in an inductor-resistor circuit. After one time constant, current reaches about 63.2% of its final value. After three time constants, it reaches about 95%, and after five, about 99.3%. The time constant is important for designing filters, switching power supplies, and relay circuits. A large inductance or small resistance gives a longer time constant (slower current changes)." },
+  { question: "What are common inductor applications?", answer: "Inductors are used in power supplies (energy storage in switching converters, filtering), radio frequency circuits (tuning with capacitors to select frequencies), transformers (mutual inductance between coupled coils), motors and generators (electromagnetic energy conversion), chokes (blocking high-frequency noise while passing DC), and electromagnetic interference filters. Every switching power supply in modern electronics contains inductors." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Inductor Calculator",
+  description: "Calculate inductance, energy stored (E=½LI²), series/parallel combinations, and RL time constant (τ=L/R).",
+  url: physics_inductor_url,
+  category: "EducationalApplication",
+  calculator_slug: "inductor"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Inductor Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Inductor Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate energy stored in an inductor, series/parallel combinations, and RL time constants. Enter your values for real-time results.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="inductor-calculator ad-engagement" class="space-y-5 mb-8">
+      <div data-card="Inductor" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">L</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Inductor Calculations</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">E = &frac12;LI&sup2;, &tau; = L/R</span>
+        </div>
+
+        <div class="mb-4">
+          <label for="ind-mode" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Mode</label>
+          <select id="ind-mode" data-inductor-calculator-target="mode" data-action="change->inductor-calculator#updateFields" class="w-full">
+            <option value="basic">Energy Stored (E = &frac12;LI&sup2;)</option>
+            <option value="series">Series Combination</option>
+            <option value="parallel">Parallel Combination</option>
+            <option value="time_constant">RL Time Constant (&tau; = L/R)</option>
+          </select>
+        </div>
+
+        <div data-inductor-calculator-target="basicGroup">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label for="ind-inductance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Inductance (H)</label>
+              <input id="ind-inductance" type="number" inputmode="decimal" data-inductor-calculator-target="inductance" data-action="input->inductor-calculator#calculate" class="w-full" placeholder="0.01" step="any" min="0">
+              <p class="text-xs text-gray-400 mt-1">e.g., 0.01 = 10 mH</p>
+            </div>
+            <div>
+              <label for="ind-current" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current (A)</label>
+              <input id="ind-current" type="number" inputmode="decimal" data-inductor-calculator-target="current" data-action="input->inductor-calculator#calculate" class="w-full" placeholder="2" step="any">
+            </div>
+          </div>
+        </div>
+
+        <div data-inductor-calculator-target="comboGroup" class="hidden">
+          <div class="mb-4">
+            <label for="ind-inductances" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Inductances (H, comma-separated)</label>
+            <input id="ind-inductances" type="text" data-inductor-calculator-target="inductances" data-action="input->inductor-calculator#calculate" class="w-full" placeholder="0.01, 0.02, 0.05">
+            <p class="text-xs text-gray-400 mt-1">Enter at least 2 values in henrys</p>
+          </div>
+        </div>
+
+        <div data-inductor-calculator-target="timeConstantGroup" class="hidden">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label for="ind-tc-inductance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Inductance (H)</label>
+              <input id="ind-tc-inductance" type="number" inputmode="decimal" data-inductor-calculator-target="inductance" data-action="input->inductor-calculator#calculate" class="w-full" placeholder="0.1" step="any" min="0">
+            </div>
+            <div>
+              <label for="ind-resistance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Resistance (&Omega;)</label>
+              <input id="ind-resistance" type="number" inputmode="decimal" data-inductor-calculator-target="resistance" data-action="input->inductor-calculator#calculate" class="w-full" placeholder="100" step="any" min="0">
+            </div>
+          </div>
+        </div>
+
+        <%# Basic results %>
+        <div data-inductor-calculator-target="basicResults" class="hidden">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Inductance</span>
+              <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400" data-inductor-calculator-target="resultInductance" data-result>&mdash;</span>
+              <span class="block text-xs text-gray-400" data-inductor-calculator-target="resultInductanceMh">&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Current</span>
+              <span class="text-lg font-bold text-amber-600 dark:text-amber-400" data-inductor-calculator-target="resultCurrent" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Energy</span>
+              <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400" data-inductor-calculator-target="resultEnergy" data-result>&mdash;</span>
+              <span class="block text-xs text-gray-400" data-inductor-calculator-target="resultEnergyMj">&mdash;</span>
+            </div>
+          </div>
+        </div>
+
+        <%# Combo results %>
+        <div data-inductor-calculator-target="comboResults" class="hidden">
+          <div class="grid grid-cols-3 gap-4">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Total Inductance</span>
+              <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400" data-inductor-calculator-target="resultTotalInductance" data-result>&mdash;</span>
+              <span class="block text-xs text-gray-400" data-inductor-calculator-target="resultTotalInductanceMh">&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Count</span>
+              <span class="text-lg font-bold text-violet-600 dark:text-violet-400" data-inductor-calculator-target="resultCount" data-result>&mdash;</span>
+            </div>
+          </div>
+        </div>
+
+        <%# Time constant results %>
+        <div data-inductor-calculator-target="tcResults" class="hidden">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Time Constant (&tau;)</span>
+              <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400" data-inductor-calculator-target="resultTimeConstant" data-result>&mdash;</span>
+              <span class="block text-xs text-gray-400" data-inductor-calculator-target="resultTimeConstantMs">&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">63.2% (1&tau;)</span>
+              <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400" data-inductor-calculator-target="resultTime63" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">95% (3&tau;)</span>
+              <span class="text-sm font-bold text-amber-600 dark:text-amber-400" data-inductor-calculator-target="resultTime95" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 mt-3">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">99.3% (5&tau;)</span>
+              <span class="text-sm font-bold text-rose-600 dark:text-rose-400" data-inductor-calculator-target="resultTime99" data-result>&mdash;</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex justify-end">
+          <button data-action="click->inductor-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            Copy
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "inductor" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Inductors</h2>
+      <p>An <strong>inductor</strong> is a passive electronic component that stores energy in a magnetic field when current flows through it. Inductance (L), measured in henrys (H), quantifies how much voltage the component generates in opposition to changes in current: V = L &times; dI/dt. This property, known as self-inductance, is the magnetic analog of capacitance. While a capacitor resists voltage changes, an inductor resists current changes. Together, they form the foundation of all analog signal processing and power conversion circuits.</p>
+
+      <p>This calculator provides four modes: calculating energy stored (E = &frac12;LI&sup2;) for a given inductance and current, series and parallel combination totals, and the RL time constant (&tau; = L/R) that determines how quickly current builds or decays in an inductor-resistor circuit.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Energy Storage in Inductors</h2>
+      <p>The energy stored in an inductor's magnetic field is E = &frac12;LI&sup2;. Unlike capacitors where energy depends on voltage squared, inductor energy depends on current squared. This stored magnetic energy is the operating principle of <strong>switching power supplies</strong>: during one phase, the inductor stores energy from the input; during another phase, it releases energy to the output at a different voltage. Boost converters, buck converters, and flyback transformers all rely on this cycle.</p>
+
+      <h3>Series and Parallel Combinations</h3>
+      <p>Inductors combine like resistors: in <strong>series</strong>, inductances add (L<sub>total</sub> = L<sub>1</sub> + L<sub>2</sub> + ...), and in <strong>parallel</strong>, the reciprocals add (1/L<sub>total</sub> = 1/L<sub>1</sub> + 1/L<sub>2</sub> + ...). These formulas assume no magnetic coupling between inductors. If inductors are close enough for their magnetic fields to interact (mutual inductance), the formulas must be modified. Transformers deliberately exploit mutual inductance between coupled coils.</p>
+
+      <h3>RL Time Constant and Transient Response</h3>
+      <p>In an RL circuit, the <strong>time constant</strong> &tau; = L/R determines the exponential rate of current change. After one time constant, current reaches 63.2% of its final value; after three, 95%; after five, 99.3%. This transient behavior is critical in relay driving circuits (where voltage spikes occur at turn-off), motor control, and filter design. A snubber diode is typically placed across an inductor to safely dissipate stored energy when the circuit is interrupted, preventing damaging voltage spikes.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is inductance?</h3>
+      <p>Inductance (L) in henrys measures opposition to current changes. V = L dI/dt. More turns, larger area, and magnetic cores increase inductance.</p>
+
+      <h3>How much energy does an inductor store?</h3>
+      <p>E = &frac12;LI&sup2;. Energy is stored in the magnetic field and depends on current squared. Released when current decreases.</p>
+
+      <h3>How do inductors combine in series and parallel?</h3>
+      <p>Series: L<sub>t</sub> = L<sub>1</sub> + L<sub>2</sub>. Parallel: 1/L<sub>t</sub> = 1/L<sub>1</sub> + 1/L<sub>2</sub>. Same behavior as resistors (assuming no mutual coupling).</p>
+
+      <h3>What is the RL time constant?</h3>
+      <p>&tau; = L/R. After 1&tau; current reaches 63.2% of final value, 3&tau; reaches 95%, 5&tau; reaches 99.3%. Determines transient response speed.</p>
+
+      <h3>What are common inductor applications?</h3>
+      <p>Switching power supplies, RF tuning, transformers, EMI filters, motors/generators, and chokes for blocking high-frequency noise.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Capacitor Calculator", description: "Calculate capacitance, charge, energy, and series/parallel combinations.", path: physics_capacitor_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Ohm's Law Calculator", description: "Calculate voltage, current, or resistance using Ohm's law V = IR.", path: physics_ohms_law_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Electrical Power Calculator", description: "Calculate power using P=IV, P=I²R, P=V²/R formulas.", path: physics_electrical_power_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "physics" %>
+
+    <% blog_posts = related_blog_posts("inductor-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

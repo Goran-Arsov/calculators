@@ -1,0 +1,144 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Diff Viewer - Side-by-Side Text Comparison Tool",
+  description: "Compare two texts side by side and see additions, deletions, and unchanged lines. Free online diff viewer with line-by-line comparison using the LCS algorithm.",
+  canonical: everyday_diff_viewer_url,
+  og: {
+    title: "Diff Viewer - Side-by-Side Text Comparison Tool | CalcWise",
+    description: "Compare two texts side by side and see additions, deletions, and unchanged lines instantly.",
+    url: everyday_diff_viewer_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Diff Viewer", url: everyday_diff_viewer_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a diff viewer?", answer: "A diff viewer is a tool that compares two pieces of text and highlights the differences between them. It shows which lines were added, removed, or remained unchanged. Diff viewers are commonly used in software development to review code changes, but they are useful anytime you need to compare two versions of any text document." },
+  { question: "How does the line-by-line comparison work?", answer: "This tool uses the Longest Common Subsequence (LCS) algorithm to find the optimal alignment between the two texts. It identifies the longest sequence of lines that appear in both texts in the same order, then marks any lines not in the LCS as either additions (present only in the second text) or deletions (present only in the first text)." },
+  { question: "Can I compare code files with this tool?", answer: "Yes, this diff viewer works with any plain text including source code, configuration files, documentation, and prose. Simply paste the contents of your two files into the left and right text areas and click Compare. The tool preserves whitespace and indentation for accurate code comparison." },
+  { question: "What do the colors mean in the diff output?", answer: "Green lines with a plus sign indicate additions, which are lines present only in the second text. Red lines with a minus sign indicate deletions, lines present only in the first text. Lines without highlighting are unchanged and appear in both texts at the same position in the sequence." },
+  { question: "Is there a size limit for the text comparison?", answer: "The comparison runs entirely in your browser, so there is no server-side limit. However, very large texts with thousands of lines may take a moment to process because the LCS algorithm requires comparing every line pair. For best performance, keep comparisons under a few thousand lines." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Diff Viewer",
+  description: "Side-by-side text comparison tool showing additions, deletions, and unchanged lines using the LCS diff algorithm.",
+  url: everyday_diff_viewer_url,
+  category: "UtilityApplication",
+  calculator_slug: "diff-viewer"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Diff Viewer" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Diff Viewer</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Compare two texts side by side. See additions, deletions, and unchanged lines highlighted with color coding.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="diff-viewer-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Original Text</label>
+          <textarea data-diff-viewer-calculator-target="textA" rows="10" class="w-full font-mono text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="Paste original text here..."></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Modified Text</label>
+          <textarea data-diff-viewer-calculator-target="textB" rows="10" class="w-full font-mono text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="Paste modified text here..."></textarea>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3 mb-4">
+        <button data-action="click->diff-viewer-calculator#compare" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm text-sm font-semibold transition-all duration-200">Compare</button>
+        <button data-action="click->diff-viewer-calculator#swap" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium transition-all duration-200">Swap</button>
+        <button data-action="click->diff-viewer-calculator#clear" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium transition-all duration-200">Clear</button>
+        <button data-action="click->diff-viewer-calculator#copy" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium transition-all duration-200">Copy Output</button>
+      </div>
+
+      <div data-diff-viewer-calculator-target="error" class="hidden mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm"></div>
+
+      <div data-diff-viewer-calculator-target="stats" class="mb-4 text-sm"></div>
+
+      <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-4 overflow-auto max-h-96">
+        <div data-diff-viewer-calculator-target="output" class="text-sm"></div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "diff-viewer" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Diff Viewer</h2>
+      <p>
+        This diff viewer compares two blocks of text and highlights every difference between them. Paste or type the original text on the left and the modified version on the right, then click Compare. The tool uses the Longest Common Subsequence algorithm to produce an accurate, minimal diff that shows exactly what changed between the two versions.
+      </p>
+      <p>
+        Added lines appear in green with a plus prefix, deleted lines appear in red with a minus prefix, and unchanged lines display without highlighting. Line numbers from both texts are shown on the left side so you can reference specific locations in each version. The Swap button lets you reverse the order of comparison, and the Clear button resets both fields.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Diff Output</h2>
+      <p>
+        The diff output format follows the unified diff convention used by version control systems like Git. Each line of output corresponds to one line from either the original or modified text. When a line exists in the original but not in the modified version, it appears as a deletion. When a line exists in the modified version but not the original, it appears as an addition. This format makes it easy to see what was changed, added, or removed at a glance.
+      </p>
+
+      <h3>Common Use Cases</h3>
+      <p>
+        Developers frequently use diff viewers to review code changes before committing. Writers compare document drafts to track revisions. System administrators diff configuration files to identify unexpected changes. Students compare essay drafts to see how their writing evolved. Any scenario where you need to understand the differences between two versions of text benefits from a visual diff tool.
+      </p>
+
+      <h3>The LCS Algorithm</h3>
+      <p>
+        The Longest Common Subsequence algorithm is the foundation of most diff tools. It finds the longest sequence of lines that appear in both texts in the same order, though not necessarily consecutively. Lines not in the LCS are differences. This approach produces the smallest possible set of changes needed to transform the original into the modified version, making the output clean and easy to read.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a diff viewer?</h3>
+      <p>A tool that compares two texts and highlights additions, deletions, and unchanged lines using color coding. Essential for code review, document comparison, and tracking changes.</p>
+
+      <h3>How does the comparison algorithm work?</h3>
+      <p>It uses the Longest Common Subsequence (LCS) algorithm to find the optimal alignment, then marks lines outside the LCS as additions or deletions.</p>
+
+      <h3>Can I compare code files?</h3>
+      <p>Yes, this works with any plain text including source code, configs, and documentation. Whitespace and indentation are preserved for accurate comparison.</p>
+
+      <h3>What do the colors mean?</h3>
+      <p>Green indicates additions (new lines), red indicates deletions (removed lines), and no highlight means the line is unchanged in both texts.</p>
+
+      <h3>Is there a size limit?</h3>
+      <p>The comparison runs in your browser with no server limit. For best performance, keep comparisons under a few thousand lines.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Text Diff Checker", description: "Check differences between two text blocks.", path: everyday_text_diff_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "Word Counter", description: "Count words, characters, sentences, and paragraphs.", path: everyday_word_counter_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "JSON Formatter", description: "Format and beautify JSON data with syntax highlighting.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("diff-viewer") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,188 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Exposure Triangle Calculator - Free Online Tool",
+  description: "Calculate equivalent exposures by changing ISO, aperture, or shutter speed. Maintain the same exposure value while adjusting your camera settings. Free exposure calculator.",
+  canonical: photography_exposure_triangle_url,
+  og: {
+    title: "Exposure Triangle Calculator - Free Online Tool | CalcWise",
+    description: "Calculate equivalent exposures by changing ISO, aperture, or shutter speed while maintaining the same exposure value.",
+    url: photography_exposure_triangle_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Photography", url: category_url("photography") },
+  { name: "Exposure Triangle Calculator", url: photography_exposure_triangle_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the exposure triangle?", answer: "The exposure triangle consists of three camera settings that control how much light reaches the sensor: aperture (f-stop), shutter speed, and ISO sensitivity. Changing one setting requires adjusting at least one of the others to maintain the same overall exposure." },
+  { question: "What is an exposure value (EV)?", answer: "Exposure value (EV) is a number that represents a combination of aperture and shutter speed at a given ISO. Each whole EV step doubles or halves the amount of light. EV is calculated as log2(N^2/t) where N is the f-number and t is the shutter speed in seconds." },
+  { question: "How do I calculate equivalent exposures?", answer: "If you change one exposure setting by a certain number of stops, compensate by changing another setting by the same number of stops in the opposite direction. For example, opening the aperture by 1 stop (f/5.6 to f/4) requires doubling the shutter speed (1/125s to 1/250s) to maintain the same exposure." },
+  { question: "What is a stop in photography?", answer: "A stop is a doubling or halving of the amount of light. One stop more light means twice as much light; one stop less means half. Aperture stops follow the sequence f/1, f/1.4, f/2, f/2.8, f/4, f/5.6, f/8, f/11, f/16, f/22. ISO and shutter speed double or halve per stop." },
+  { question: "How does ISO affect image quality?", answer: "Higher ISO values amplify the sensor signal, which brightens the image but also amplifies noise. Lower ISO values (100-400) produce the cleanest images. Modern cameras handle high ISO well, but image quality degrades progressively above ISO 3200-6400 on most cameras." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Exposure Triangle Calculator",
+  description: "Calculate equivalent exposures by changing ISO, aperture, or shutter speed while maintaining the same exposure value.",
+  url: photography_exposure_triangle_url,
+  category: "PhotographyApplication",
+  calculator_slug: "exposure-triangle"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Photography", url: category_path("photography") },
+  { name: "Exposure Triangle Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Exposure Triangle Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Change one exposure setting and instantly see the equivalent values for the others to maintain the same exposure.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="exposure-triangle-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Current Exposure</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+          <label for="et-cur-iso" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">ISO</label>
+          <input id="et-cur-iso" type="number" inputmode="decimal" data-exposure-triangle-calculator-target="currentIso" data-action="input->exposure-triangle-calculator#calculate" class="w-full" placeholder="100" step="1" min="1">
+        </div>
+        <div>
+          <label for="et-cur-aperture" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Aperture (f-number)</label>
+          <input id="et-cur-aperture" type="number" inputmode="decimal" data-exposure-triangle-calculator-target="currentAperture" data-action="input->exposure-triangle-calculator#calculate" class="w-full" placeholder="5.6" step="0.1" min="0.7">
+        </div>
+        <div>
+          <label for="et-cur-shutter" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Shutter Speed (seconds)</label>
+          <input id="et-cur-shutter" type="number" inputmode="decimal" data-exposure-triangle-calculator-target="currentShutter" data-action="input->exposure-triangle-calculator#calculate" class="w-full" placeholder="0.008" step="any" min="0.000001">
+          <p class="text-xs text-gray-400 mt-1">e.g. 1/125 = 0.008</p>
+        </div>
+      </div>
+
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">New Exposure</h2>
+      <div class="mb-4">
+        <label for="et-solve" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Solve For</label>
+        <select id="et-solve" data-exposure-triangle-calculator-target="solveFor" data-action="change->exposure-triangle-calculator#calculate" class="w-full">
+          <option value="shutter">Shutter Speed</option>
+          <option value="aperture">Aperture</option>
+          <option value="iso">ISO</option>
+        </select>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+          <label for="et-new-iso" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">New ISO</label>
+          <input id="et-new-iso" type="number" inputmode="decimal" data-exposure-triangle-calculator-target="newIso" data-action="input->exposure-triangle-calculator#calculate" class="w-full" placeholder="200" step="1" min="1">
+        </div>
+        <div>
+          <label for="et-new-aperture" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">New Aperture</label>
+          <input id="et-new-aperture" type="number" inputmode="decimal" data-exposure-triangle-calculator-target="newAperture" data-action="input->exposure-triangle-calculator#calculate" class="w-full" placeholder="2.8" step="0.1" min="0.7">
+        </div>
+        <div>
+          <label for="et-new-shutter" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">New Shutter Speed (s)</label>
+          <input id="et-new-shutter" type="number" inputmode="decimal" data-exposure-triangle-calculator-target="newShutter" data-action="input->exposure-triangle-calculator#calculate" class="w-full" placeholder="0.004" step="any" min="0.000001">
+        </div>
+      </div>
+
+      <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Equivalent Exposure</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Exposure Value (EV)</span>
+            <span class="text-xl font-bold text-green-600 dark:text-green-400" data-exposure-triangle-calculator-target="resultEv">&mdash;</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">ISO</span>
+            <span class="text-xl font-bold text-green-600 dark:text-green-400" data-exposure-triangle-calculator-target="resultIso">&mdash;</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Aperture</span>
+            <span class="text-xl font-bold text-green-600 dark:text-green-400" data-exposure-triangle-calculator-target="resultAperture">&mdash;</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Shutter Speed</span>
+            <span class="text-xl font-bold text-green-600 dark:text-green-400" data-exposure-triangle-calculator-target="resultShutter">&mdash;</span>
+          </div>
+        </div>
+        <button data-action="click->exposure-triangle-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "exposure-triangle" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding the Exposure Triangle</h2>
+      <p>
+        The exposure triangle is the foundation of photography. It describes the relationship between three camera settings that control how much light reaches the sensor: aperture, shutter speed, and ISO. Mastering these three variables allows you to take creative control of your images, achieving the exact look you envision rather than relying on automatic modes.
+      </p>
+      <p>
+        Every time you change one setting, the other two must compensate to maintain the same overall brightness. This calculator automates that math, letting you explore equivalent exposures instantly. Enter your current settings, choose which variable you want to change, and the calculator solves for the remaining value.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>How the Exposure Triangle Formula Works</h2>
+      <p>
+        The exposure value (EV) combines aperture and shutter speed into a single number: <strong>EV = log<sub>2</sub>(N&sup2;/t) + log<sub>2</sub>(ISO/100)</strong>, where N is the f-number and t is the shutter speed in seconds. Two different combinations of settings produce the same brightness when they share the same EV. This calculator keeps the EV constant while solving for the unknown variable.
+      </p>
+
+      <h3>Aperture and Depth of Field</h3>
+      <p>
+        Aperture controls both exposure and depth of field. Wider apertures like f/1.8 let in more light and create a shallow depth of field with creamy bokeh. Narrower apertures like f/11 let in less light but keep more of the scene in sharp focus. Standard full-stop aperture values are f/1.0, f/1.4, f/2, f/2.8, f/4, f/5.6, f/8, f/11, f/16, and f/22.
+      </p>
+
+      <h3>Shutter Speed and Motion</h3>
+      <p>
+        Shutter speed controls how motion is rendered. Fast shutter speeds like 1/1000s freeze action, while slow shutter speeds like 1/30s or longer introduce motion blur. Standard full-stop shutter speeds double or halve: 1/1000, 1/500, 1/250, 1/125, 1/60, 1/30, 1/15, 1/8, 1/4, 1/2, 1 second.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the exposure triangle?</h3>
+      <p>
+        The exposure triangle consists of three camera settings that control how much light reaches the sensor: aperture (f-stop), shutter speed, and ISO sensitivity. Changing one setting requires adjusting at least one of the others to maintain the same overall exposure.
+      </p>
+
+      <h3>What is an exposure value (EV)?</h3>
+      <p>
+        Exposure value is a number representing a combination of aperture and shutter speed at a given ISO. Each whole EV step doubles or halves the amount of light reaching the sensor.
+      </p>
+
+      <h3>How do I calculate equivalent exposures?</h3>
+      <p>
+        If you change one setting by a certain number of stops, compensate by changing another setting by the same number of stops in the opposite direction. For example, opening the aperture by 1 stop requires doubling the shutter speed.
+      </p>
+
+      <h3>What is a stop in photography?</h3>
+      <p>
+        A stop is a doubling or halving of light. One stop more light means twice as much; one stop less means half.
+      </p>
+
+      <h3>How does ISO affect image quality?</h3>
+      <p>
+        Higher ISO values amplify the signal, brightening the image but also amplifying noise. Lower ISO values produce the cleanest images with the least grain.
+      </p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Depth of Field Calculator", description: "Calculate DoF, near/far focus limits, and hyperfocal distance.", path: photography_depth_of_field_path, icon_path: "M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" },
+      { name: "Golden Hour Calculator", description: "Calculate golden hour and blue hour times for your location.", path: photography_golden_hour_path, icon_path: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" },
+      { name: "Video File Size Calculator", description: "Estimate video file size from bitrate, duration, and codec.", path: photography_video_file_size_path, icon_path: "M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "photography" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,174 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "EV Range Calculator - Electric Vehicle Range Estimator",
+  description: "Estimate your electric vehicle's real-world range based on battery size, efficiency, speed, temperature, and cargo. Account for weather and driving conditions.",
+  canonical: automotive_ev_range_url,
+  og: {
+    title: "EV Range Calculator - Electric Vehicle Range Estimator | CalcWise",
+    description: "Estimate your EV's real-world range based on battery size, efficiency, speed, temperature, and driving conditions.",
+    url: automotive_ev_range_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Automotive", url: category_url("automotive") },
+  { name: "EV Range Calculator", url: automotive_ev_range_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is EV range calculated?", answer: "EV range is calculated by dividing the battery capacity (in kWh) by the energy consumption rate (in Wh per mile). A 75 kWh battery with an efficiency of 250 Wh/mile gives a base range of 300 miles. Real-world range is then adjusted for speed, temperature, HVAC use, cargo weight, and driving style, which can reduce range by 10-40% from the EPA rating." },
+  { question: "How much does cold weather affect EV range?", answer: "Cold weather can reduce EV range by 20-40%. At 20 degrees Fahrenheit, expect roughly 30% less range than the rated specification. This is caused by reduced battery chemical activity, increased energy needed for cabin heating, and higher rolling resistance from cold tires. Preconditioning the cabin while plugged in helps minimize cold weather range loss." },
+  { question: "Does driving speed affect EV range?", answer: "Yes, speed dramatically affects EV range due to aerodynamic drag. At 55 mph, most EVs achieve close to their rated range. At 70 mph, expect 15-20% less range. At 80 mph, range can drop 25-30% or more. This is because aerodynamic drag increases with the square of speed, requiring exponentially more energy at higher speeds." },
+  { question: "How long does it take to charge an EV?", answer: "Charging time depends on the charger type. Level 1 (standard outlet, 1.4 kW) takes 40-60 hours for a full charge. Level 2 (home charger, 7-11 kW) takes 6-12 hours. DC Fast Charging (50-350 kW) can add 200 miles of range in 20-40 minutes. Most EV owners charge overnight at home on Level 2, starting each day with a full battery." },
+  { question: "What is Wh/mile efficiency and what is good?", answer: "Wh/mile (Watt-hours per mile) measures how much energy an EV uses per mile driven. Lower numbers are better. Efficient small EVs achieve 230-260 Wh/mi, mid-size EVs get 270-300 Wh/mi, and large SUVs and trucks use 350-450 Wh/mi. The EPA rates vehicles in MPGe (miles per gallon equivalent), where 33.7 kWh equals one gallon of gasoline." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "EV Range Calculator",
+  description: "Estimate electric vehicle range from battery size, efficiency, and driving conditions.",
+  url: automotive_ev_range_url,
+  category: "AutomotiveApplication",
+  calculator_slug: "ev-range"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Automotive", url: category_path("automotive") },
+  { name: "EV Range Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">EV Range Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your electric vehicle's real-world range based on battery capacity, efficiency, speed, temperature, and driving conditions.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="ev-range-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="evr-battery" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Battery Capacity (kWh)</label>
+            <input id="evr-battery" type="number" inputmode="decimal" data-ev-range-calculator-target="batteryCapacity" data-action="input->ev-range-calculator#calculate" class="w-full" placeholder="75" step="5" min="0">
+          </div>
+          <div>
+            <label for="evr-efficiency" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rated Efficiency (Wh/mile)</label>
+            <input id="evr-efficiency" type="number" inputmode="decimal" data-ev-range-calculator-target="efficiency" data-action="input->ev-range-calculator#calculate" class="w-full" placeholder="250" step="10" min="0" value="250">
+          </div>
+          <div>
+            <label for="evr-speed" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Average Speed (mph)</label>
+            <input id="evr-speed" type="number" inputmode="decimal" data-ev-range-calculator-target="speed" data-action="input->ev-range-calculator#calculate" class="w-full" placeholder="65" step="5" min="0" value="65">
+          </div>
+          <div>
+            <label for="evr-temp" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Outside Temperature (°F)</label>
+            <input id="evr-temp" type="number" inputmode="decimal" data-ev-range-calculator-target="temperature" data-action="input->ev-range-calculator#calculate" class="w-full" placeholder="70" step="5" value="70">
+          </div>
+          <div class="flex items-center space-x-3">
+            <input id="evr-hvac" type="checkbox" data-ev-range-calculator-target="hvac" data-action="change->ev-range-calculator#calculate" class="h-4 w-4 text-green-600 rounded border-gray-300 dark:border-gray-600 focus:ring-green-500">
+            <label for="evr-hvac" class="text-sm font-semibold text-gray-600 dark:text-gray-400">HVAC (Heat/AC) Running</label>
+          </div>
+          <div>
+            <label for="evr-cargo" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Cargo Weight (lbs)</label>
+            <input id="evr-cargo" type="number" inputmode="decimal" data-ev-range-calculator-target="cargoWeight" data-action="input->ev-range-calculator#calculate" class="w-full" placeholder="0" step="50" min="0" value="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Range Estimate</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Base Range</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-ev-range-calculator-target="baseRange">0.0 mi</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Adjusted Range</span>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-ev-range-calculator-target="adjustedRange">0.0 mi</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Adjusted Efficiency</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-ev-range-calculator-target="adjustedEfficiency">0 Wh/mi</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Range Loss</span>
+              <span class="text-lg font-bold text-red-600 dark:text-red-400" data-ev-range-calculator-target="rangeLoss">0.0%</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Level 2 Charge</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-ev-range-calculator-target="level2Time">0.0 hrs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">DC Fast (to 80%)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-ev-range-calculator-target="dcFastTime">0 min</span>
+            </div>
+          </div>
+          <button data-action="click->ev-range-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "ev-range" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the EV Range Calculator</h2>
+      <p>
+        Our EV range calculator estimates your real-world driving range by adjusting the rated range for actual conditions. Enter your battery capacity in kilowatt-hours, the rated efficiency in watt-hours per mile, your expected average speed, outside temperature, whether HVAC will be running, and any extra cargo weight. The calculator applies physics-based adjustment factors for each variable to produce a realistic range estimate.
+      </p>
+      <p>
+        The calculator also shows estimated charging times for Level 2 home charging and DC fast charging, giving you a complete picture of what to expect on the road. Use this tool for trip planning, understanding seasonal range variations, or comparing different EV models under your specific driving conditions.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Factors That Affect EV Range</h2>
+      <p>
+        EV range varies significantly with driving conditions, sometimes by 40% or more from the EPA rating. The biggest factors are speed, temperature, and HVAC use. Unlike gas vehicles that lose efficiency mainly to friction, EVs are most affected by aerodynamic drag at speed and battery chemistry changes in cold weather. Understanding these factors helps you plan trips accurately and avoid range anxiety.
+      </p>
+
+      <h3>Speed and Aerodynamic Drag</h3>
+      <p>
+        Aerodynamic drag increases with the square of speed, making it the primary efficiency loss at highway speeds. Most EVs achieve their rated range at around 55 mph. At 70 mph, expect 15-20% less range. At 80 mph, range can drop 25-30%. For long highway trips, reducing speed from 75 to 65 mph can add 30-50 miles of range on a typical EV, often saving you an extra charging stop.
+      </p>
+
+      <h3>Temperature Effects on Battery</h3>
+      <p>
+        Cold weather impacts EV range through multiple mechanisms: reduced battery chemical reaction rates, energy used for battery heating, cabin heating demands, and increased tire rolling resistance. At 20 degrees Fahrenheit, expect 25-35% less range than on a 70-degree day. Hot weather also reduces range, but less dramatically, typically 5-15% in extreme heat due to AC use and battery cooling needs.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is EV range calculated?</h3>
+      <p>Battery capacity (kWh) divided by consumption rate (Wh/mile). A 75 kWh battery at 250 Wh/mile gives 300 miles base range, then adjusted for real conditions.</p>
+
+      <h3>How much does cold weather affect EV range?</h3>
+      <p>Cold weather can reduce range by 20-40%. At 20°F, expect roughly 30% less range due to reduced battery activity, cabin heating, and cold tires.</p>
+
+      <h3>Does driving speed affect EV range?</h3>
+      <p>Yes, dramatically. At 70 mph expect 15-20% less range than rated. At 80 mph, range drops 25-30% due to aerodynamic drag increasing with speed squared.</p>
+
+      <h3>How long does it take to charge an EV?</h3>
+      <p>Level 1: 40-60 hours. Level 2: 6-12 hours. DC Fast: 200 miles in 20-40 minutes. Most owners charge overnight at home on Level 2.</p>
+
+      <h3>What is Wh/mile efficiency and what is good?</h3>
+      <p>Wh/mile measures energy use per mile. Small EVs achieve 230-260, mid-size 270-300, and SUVs 350-450 Wh/mi. Lower is better.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "EV Charging Cost Calculator", description: "Calculate the cost to charge your EV at home or public chargers.", path: automotive_ev_charging_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "EV vs Gas Comparison", description: "Compare annual costs of EV vs gas vehicles.", path: automotive_ev_vs_gas_comparison_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "MPG Calculator", description: "Calculate fuel efficiency for gas vehicles.", path: automotive_mpg_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "automotive" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,212 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Student Loan Forgiveness Calculator - PSLF & IDR Estimator",
+  description: "Estimate your student loan forgiveness savings under PSLF and IDR programs. Compare monthly payments, total cost, forgiven amounts, and tax implications.",
+  canonical: education_student_loan_forgiveness_url,
+  og: {
+    title: "Student Loan Forgiveness Calculator - PSLF & IDR Estimator | CalcWise",
+    description: "Estimate your student loan forgiveness savings under PSLF and IDR programs. Compare monthly payments, total cost, forgiven amounts, and tax implications.",
+    url: education_student_loan_forgiveness_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Education", url: category_url("education") },
+  { name: "Student Loan Forgiveness Calculator", url: education_student_loan_forgiveness_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is Public Service Loan Forgiveness (PSLF)?", answer: "PSLF forgives the remaining balance on your Direct Loans after you have made 120 qualifying monthly payments (10 years) while working full-time for a qualifying employer such as a government organization or 501(c)(3) nonprofit. The forgiven amount under PSLF is not taxable as income." },
+  { question: "How does IDR forgiveness work?", answer: "Income-Driven Repayment plans cap your monthly payment at a percentage of your discretionary income. After 20 years (for undergraduate loans) or 25 years (for graduate loans) of qualifying payments, any remaining balance is forgiven. Unlike PSLF, the forgiven amount under IDR may be subject to federal income tax." },
+  { question: "What counts as a qualifying payment for PSLF?", answer: "A qualifying payment must be made under an income-driven repayment plan or the 10-year Standard Repayment Plan, while working full-time for a qualifying employer, for the full amount due, no later than 15 days after the due date. Payments made during forbearance or deferment generally do not count." },
+  { question: "Will I owe taxes on forgiven student loan amounts?", answer: "Under PSLF, forgiven amounts are tax-free. Under IDR forgiveness after 20 or 25 years, the forgiven balance may be treated as taxable income by the IRS. However, the American Rescue Plan Act temporarily exempts student loan forgiveness from federal tax through 2025." },
+  { question: "Can I switch between repayment plans?", answer: "Yes, you can switch between income-driven repayment plans at any time by contacting your loan servicer. If pursuing PSLF, ensure your new plan still qualifies. Previous qualifying payments will still count toward your forgiveness timeline." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Student Loan Forgiveness Calculator",
+  description: "Estimate student loan forgiveness savings under PSLF and IDR programs with monthly payment calculations and tax impact analysis.",
+  url: education_student_loan_forgiveness_url,
+  category: "FinanceApplication",
+  calculator_slug: "student-loan-forgiveness"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Education", url: category_path("education") },
+  { name: "Student Loan Forgiveness Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Student Loan Forgiveness Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your savings under Public Service Loan Forgiveness (PSLF) and Income-Driven Repayment (IDR) forgiveness programs.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="student-loan-forgiveness-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="slf-loan-balance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Loan Balance ($)</label>
+            <input id="slf-loan-balance" type="number" inputmode="decimal" data-student-loan-forgiveness-calculator-target="loanBalance" data-action="input->student-loan-forgiveness-calculator#calculate" class="w-full" placeholder="50000" step="1000" min="0">
+          </div>
+          <div>
+            <label for="slf-annual-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input id="slf-annual-rate" type="number" inputmode="decimal" data-student-loan-forgiveness-calculator-target="annualRate" data-action="input->student-loan-forgiveness-calculator#calculate" class="w-full" placeholder="6.0" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="slf-monthly-income" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Gross Income ($)</label>
+            <input id="slf-monthly-income" type="number" inputmode="decimal" data-student-loan-forgiveness-calculator-target="monthlyIncome" data-action="input->student-loan-forgiveness-calculator#calculate" class="w-full" placeholder="4000" step="100" min="0">
+          </div>
+          <div>
+            <label for="slf-program" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Forgiveness Program</label>
+            <select id="slf-program" data-student-loan-forgiveness-calculator-target="program" data-action="change->student-loan-forgiveness-calculator#calculate" class="w-full">
+              <option value="pslf" selected>PSLF (10 years, tax-free)</option>
+              <option value="idr_20">IDR - 20 Year (undergraduate)</option>
+              <option value="idr_25">IDR - 25 Year (graduate)</option>
+            </select>
+          </div>
+          <div>
+            <label for="slf-family-size" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Family Size</label>
+            <select id="slf-family-size" data-student-loan-forgiveness-calculator-target="familySize" data-action="change->student-loan-forgiveness-calculator#calculate" class="w-full">
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            </select>
+          </div>
+          <div>
+            <label for="slf-payments-made" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Qualifying Payments Already Made</label>
+            <input id="slf-payments-made" type="number" inputmode="numeric" data-student-loan-forgiveness-calculator-target="paymentsMade" data-action="input->student-loan-forgiveness-calculator#calculate" class="w-full" placeholder="0" step="1" min="0" value="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Forgiveness Estimate</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">IDR Monthly Payment</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-student-loan-forgiveness-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total You Pay</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-student-loan-forgiveness-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Forgiven Amount</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-student-loan-forgiveness-calculator-target="forgivenAmount">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Remaining Payments</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-student-loan-forgiveness-calculator-target="remainingPayments">0 payments</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Time to Forgiveness</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-student-loan-forgiveness-calculator-target="monthsUntilForgiveness">0 months</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Standard 10-Year Total</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-student-loan-forgiveness-calculator-target="standardTotal">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Estimated Savings</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-student-loan-forgiveness-calculator-target="savings">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center hidden" data-student-loan-forgiveness-calculator-target="taxRow">
+              <span class="text-gray-600 dark:text-gray-400">Est. Tax on Forgiveness</span>
+              <span class="text-xl font-bold text-amber-600 dark:text-amber-400" data-student-loan-forgiveness-calculator-target="taxOnForgiveness">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->student-loan-forgiveness-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "student-loan-forgiveness" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Student Loan Forgiveness Calculator</h2>
+      <p>
+        Enter your current loan balance, interest rate, and monthly gross income to see how much you could save under different forgiveness programs. The calculator compares your income-driven repayment amount against the standard 10-year repayment plan to show your potential savings. Choose between PSLF (Public Service Loan Forgiveness) for 10-year tax-free forgiveness or IDR forgiveness after 20 or 25 years.
+      </p>
+      <p>
+        Your family size affects the poverty line threshold used to calculate discretionary income, which directly determines your IDR monthly payment. The calculator uses 150% of the federal poverty guidelines to compute discretionary income, then sets your payment at 10% of that amount divided by 12 months. Qualifying payments you have already made reduce the remaining time to forgiveness.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding PSLF vs IDR Forgiveness</h2>
+      <p>
+        Public Service Loan Forgiveness requires 120 qualifying payments (10 years) while employed full-time by a government agency or qualifying nonprofit organization. The key advantage of PSLF is that the forgiven amount is completely tax-free. Income-driven repayment forgiveness occurs after 20 years for undergraduate loans or 25 years for graduate loans, but the forgiven balance may be taxable as ordinary income. This tax liability can be substantial, sometimes amounting to tens of thousands of dollars, which this calculator estimates at a 22% marginal tax rate.
+      </p>
+
+      <h3>Eligibility Requirements for PSLF</h3>
+      <p>
+        To qualify for PSLF, you must have Direct federal loans, be enrolled in an income-driven repayment plan, work full-time for a qualifying employer, and make 120 qualifying monthly payments. Payments do not need to be consecutive, meaning career changes or breaks in public service employment simply pause your progress. Submit the Employment Certification Form annually to track your qualifying payments and confirm employer eligibility.
+      </p>
+
+      <h3>Income-Driven Repayment Plans Explained</h3>
+      <p>
+        The SAVE (Saving on a Valuable Education) plan is the newest IDR option, replacing REPAYE. Under SAVE, undergraduate borrowers pay 5% of discretionary income, while graduate borrowers pay 10%. PAYE and IBR cap payments at 10% and 15% respectively. Each plan has different forgiveness timelines and eligibility criteria. The calculator uses the standard 10% rate as a baseline for estimating your monthly payment across all IDR plans.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is Public Service Loan Forgiveness (PSLF)?</h3>
+      <p>
+        PSLF forgives the remaining balance on your Direct Loans after you have made 120 qualifying monthly payments (10 years) while working full-time for a qualifying employer such as a government organization or 501(c)(3) nonprofit. The forgiven amount under PSLF is not taxable as income.
+      </p>
+
+      <h3>How does IDR forgiveness work?</h3>
+      <p>
+        Income-Driven Repayment plans cap your monthly payment at a percentage of your discretionary income. After 20 years (for undergraduate loans) or 25 years (for graduate loans) of qualifying payments, any remaining balance is forgiven. Unlike PSLF, the forgiven amount under IDR may be subject to federal income tax.
+      </p>
+
+      <h3>What counts as a qualifying payment for PSLF?</h3>
+      <p>
+        A qualifying payment must be made under an income-driven repayment plan or the 10-year Standard Repayment Plan, while working full-time for a qualifying employer, for the full amount due, no later than 15 days after the due date. Payments made during forbearance or deferment generally do not count.
+      </p>
+
+      <h3>Will I owe taxes on forgiven student loan amounts?</h3>
+      <p>
+        Under PSLF, forgiven amounts are tax-free. Under IDR forgiveness after 20 or 25 years, the forgiven balance may be treated as taxable income by the IRS. However, the American Rescue Plan Act temporarily exempts student loan forgiveness from federal tax through 2025.
+      </p>
+
+      <h3>Can I switch between repayment plans?</h3>
+      <p>
+        Yes, you can switch between income-driven repayment plans at any time by contacting your loan servicer. If pursuing PSLF, ensure your new plan still qualifies. Previous qualifying payments will still count toward your forgiveness timeline.
+      </p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "College Cost Comparison Calculator", description: "Compare total cost of two colleges including tuition, room, board, and financial aid.", path: education_college_cost_comparison_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Credit Transfer Calculator", description: "Calculate transferable credits and estimated time and cost savings.", path: education_credit_transfer_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Tuition Savings 529 Calculator", description: "Project 529 plan growth with tax-free earnings over time.", path: education_tuition_savings_529_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "education" %>
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

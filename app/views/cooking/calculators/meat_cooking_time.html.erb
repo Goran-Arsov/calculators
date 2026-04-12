@@ -1,0 +1,165 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Meat Cooking Time Calculator - Cook Times by Cut & Weight",
+  description: "Estimate cooking time for beef, pork, chicken, turkey, and lamb by cut, weight, doneness, and cooking method. Get accurate internal temperatures and rest times.",
+  canonical: cooking_meat_cooking_time_url,
+  og: {
+    title: "Meat Cooking Time Calculator - Free Online Tool | CalcWise",
+    description: "Estimate cooking time for any meat by type, cut, weight, doneness, and method. Includes internal temps and rest times.",
+    url: cooking_meat_cooking_time_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Cooking", url: category_url("cooking") },
+  { name: "Meat Cooking Time Calculator", url: cooking_meat_cooking_time_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What internal temperature is safe for chicken?", answer: "Chicken and all poultry must reach an internal temperature of 165 degrees F (74 degrees C) in the thickest part. This applies to whole birds, breasts, thighs, wings, and ground poultry. Use an instant-read thermometer for accuracy." },
+  { question: "How long per pound for a beef roast?", answer: "At 325-350 degrees F, a beef roast takes approximately 15 minutes per pound for rare (125 F internal), 18 minutes for medium-rare (135 F), 20 minutes for medium (145 F), and 27 minutes for well-done (165 F)." },
+  { question: "Should I rest meat after cooking?", answer: "Yes. Resting allows juices to redistribute throughout the meat. Small cuts like steaks need 5-10 minutes. Large roasts need 15-20 minutes. Brisket and pulled pork benefit from 30-60 minutes of rest." },
+  { question: "How do I know when meat is done without a thermometer?", answer: "While a thermometer is the most reliable method, you can use the touch test for steaks (comparing firmness to parts of your palm), check that poultry juices run clear, or cut into the thickest part. However, a digital instant-read thermometer is strongly recommended for food safety." },
+  { question: "Does bone-in meat take longer to cook?", answer: "Bone-in cuts may take slightly longer because bone conducts heat slower than meat. However, bones also help distribute heat evenly. A good rule is to add 5-10 minutes of total cooking time for bone-in versus boneless cuts of similar weight." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Meat Cooking Time Calculator",
+  description: "Estimate cooking time by meat type, cut, weight, doneness, and cooking method.",
+  url: cooking_meat_cooking_time_url,
+  category: "LifestyleApplication",
+  calculator_slug: "meat-cooking-time"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Cooking", url: category_path("cooking") },
+  { name: "Meat Cooking Time Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Meat Cooking Time Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate cooking time for beef, pork, chicken, turkey, and lamb by cut, weight, doneness, and method.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="meat-cooking-time-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div>
+            <label for="mct-meat" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Meat Type</label>
+            <select id="mct-meat" class="w-full" data-meat-cooking-time-calculator-target="meatType" data-action="change->meat-cooking-time-calculator#updateCutOptions">
+              <option value="">Select meat...</option>
+              <option value="beef">Beef</option>
+              <option value="pork">Pork</option>
+              <option value="chicken">Chicken</option>
+              <option value="turkey">Turkey</option>
+              <option value="lamb">Lamb</option>
+            </select>
+          </div>
+          <div>
+            <label for="mct-cut" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Cut</label>
+            <select id="mct-cut" class="w-full" data-meat-cooking-time-calculator-target="cutOptions" data-action="change->meat-cooking-time-calculator#updateDonenessOptions">
+              <option value="">Select cut...</option>
+            </select>
+          </div>
+          <div>
+            <label for="mct-doneness" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Doneness</label>
+            <select id="mct-doneness" class="w-full" data-meat-cooking-time-calculator-target="donenessOptions" data-action="change->meat-cooking-time-calculator#updateMethodOptions">
+              <option value="">Select doneness...</option>
+            </select>
+          </div>
+          <div>
+            <label for="mct-method" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Cooking Method</label>
+            <select id="mct-method" class="w-full" data-meat-cooking-time-calculator-target="methodOptions" data-action="change->meat-cooking-time-calculator#calculate">
+              <option value="">Select method...</option>
+            </select>
+          </div>
+          <div>
+            <label for="mct-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Weight (lbs)</label>
+            <input id="mct-weight" type="number" inputmode="decimal" min="0.1" step="0.1" placeholder="5" class="w-full" data-meat-cooking-time-calculator-target="weight" data-action="input->meat-cooking-time-calculator#calculate">
+          </div>
+        </div>
+
+        <div data-meat-cooking-time-calculator-target="results" class="hidden" aria-live="polite" aria-atomic="true">
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Cooking Guide</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Estimated Time</span><span class="text-xl font-bold text-green-700 dark:text-green-400" data-meat-cooking-time-calculator-target="totalTime">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Target Internal Temp</span><span class="text-xl font-bold text-green-700 dark:text-green-400" data-meat-cooking-time-calculator-target="internalTemp">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Rest Time</span><span class="text-xl font-bold text-green-700 dark:text-green-400" data-meat-cooking-time-calculator-target="restTime">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Rate</span><span class="text-xl font-bold text-green-700 dark:text-green-400" data-meat-cooking-time-calculator-target="minutesPerLb">--</span></div>
+            </div>
+            <button data-action="click->meat-cooking-time-calculator#copy" class="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm transition-all duration-200 text-sm font-medium">Copy Results</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "meat-cooking-time" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Meat Cooking Time Calculator</h2>
+      <p>
+        Select your meat type, cut, desired doneness, and cooking method, then enter the weight in pounds. The calculator estimates the total cooking time, target internal temperature, and recommended rest time. These estimates are based on standard oven temperatures (325-350 degrees F) and assume the meat starts at refrigerator temperature.
+      </p>
+      <p>
+        Always use a meat thermometer to verify doneness. Cooking times are estimates that vary depending on your specific oven, the shape of the cut, whether it is bone-in or boneless, and the starting temperature of the meat. Pull the meat when it is 5 degrees F below the target temperature, as carryover cooking will bring it to the final temperature during rest.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Safe Internal Temperatures</h2>
+      <p>
+        The USDA recommends minimum internal temperatures for food safety: 145 degrees F for whole cuts of beef, pork, and lamb (with a 3-minute rest), 160 degrees F for ground meats, and 165 degrees F for all poultry. Brisket and pulled pork are cooked to 200 degrees F not for safety but to break down collagen into gelatin for tender, shreddable meat.
+      </p>
+
+      <h3>The Importance of Resting Meat</h3>
+      <p>
+        Resting meat after cooking is essential for juicy results. During cooking, heat drives moisture toward the center. Resting allows the juices to redistribute evenly throughout the meat. Cutting into meat immediately causes those juices to pour out onto the cutting board. Small cuts need 5-10 minutes of rest, while large roasts benefit from 15-30 minutes.
+      </p>
+
+      <h3>Cooking Methods Compared</h3>
+      <p>
+        Oven roasting at 325-350 degrees F is the most predictable method and works for virtually all cuts. Grilling over direct or indirect heat cooks faster due to the intense heat and works best for steaks, chops, and smaller cuts. Smoking uses low temperatures (200-275 degrees F) over long periods, ideal for tough cuts like brisket and ribs that need time to break down connective tissue.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What internal temperature is safe for chicken?</h3>
+      <p>Chicken and all poultry must reach 165 degrees F (74 degrees C) in the thickest part for food safety.</p>
+
+      <h3>How long per pound for a beef roast?</h3>
+      <p>At 325-350 degrees F, approximately 15 minutes per pound for rare, 18 for medium-rare, 20 for medium, and 27 for well-done.</p>
+
+      <h3>Should I rest meat after cooking?</h3>
+      <p>Yes. Small cuts need 5-10 minutes, large roasts 15-20 minutes, and brisket or pulled pork 30-60 minutes.</p>
+
+      <h3>How do I know when meat is done without a thermometer?</h3>
+      <p>You can use the touch test for steaks or check that poultry juices run clear, but an instant-read thermometer is strongly recommended.</p>
+
+      <h3>Does bone-in meat take longer to cook?</h3>
+      <p>Slightly, yes. Add 5-10 minutes total for bone-in versus boneless cuts of similar weight.</p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Smoke Time Calculator", description: "BBQ smoking time by meat type, weight, and smoker temp.", path: cooking_smoke_time_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Freezer Storage Time Calculator", description: "Look up recommended freezer storage times for any food.", path: cooking_freezer_storage_path, icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
+      { name: "Recipe Scaler", description: "Scale recipe ingredients up or down by servings.", path: cooking_recipe_scaler_path, icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "cooking" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

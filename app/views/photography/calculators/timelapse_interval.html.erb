@@ -1,0 +1,160 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Time-Lapse Interval Calculator - Free Online Tool",
+  description: "Calculate the shooting interval, total shots, and final video duration for time-lapse photography. Includes storage estimates for JPEG and RAW. Free time-lapse calculator.",
+  canonical: photography_timelapse_interval_url,
+  og: {
+    title: "Time-Lapse Interval Calculator - Free Online Tool | CalcWise",
+    description: "Calculate the shooting interval, total shots, and final video duration for time-lapse photography with storage estimates.",
+    url: photography_timelapse_interval_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Photography", url: category_url("photography") },
+  { name: "Time-Lapse Interval Calculator", url: photography_timelapse_interval_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate the interval for a time-lapse?", answer: "Divide the total event duration (in seconds) by the number of frames needed. The number of frames equals the desired video duration multiplied by the playback frame rate. For example, to compress a 2-hour sunset into a 30-second video at 24fps: you need 720 frames, so the interval is 7200 seconds / 720 = 10 seconds between shots." },
+  { question: "What frame rate should I use for time-lapse video?", answer: "24fps is the cinematic standard and produces smooth, natural-looking time-lapse video. 25fps is the PAL broadcast standard. 30fps is the NTSC standard and gives slightly smoother playback. Higher rates like 60fps are uncommon for time-lapse but can be used for slow-motion playback of the compressed footage." },
+  { question: "What is a good interval for cloud time-lapse?", answer: "For fast-moving clouds, use 1-3 second intervals. For slow, wispy clouds, use 5-10 second intervals. For dramatic storm clouds, 2-5 seconds works well. Start with 3 seconds as a safe default for cloud photography and adjust based on cloud speed." },
+  { question: "How much storage do I need for a time-lapse?", answer: "Storage depends on file format, camera resolution, and number of frames. A 24MP camera shooting JPEG produces roughly 8 MB per frame; RAW files are about 25 MB each. A 1000-frame time-lapse needs approximately 7.8 GB for JPEG or 24.4 GB for RAW." },
+  { question: "How long should a time-lapse video be?", answer: "Most time-lapse videos work best between 10 and 60 seconds. Social media clips perform well at 15-30 seconds. Longer time-lapses of 1-3 minutes can work for dramatic subjects like the Milky Way or a full day sunrise-to-sunset sequence." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Time-Lapse Interval Calculator",
+  description: "Calculate the shooting interval, total shots, and final video duration for time-lapse photography.",
+  url: photography_timelapse_interval_url,
+  category: "PhotographyApplication",
+  calculator_slug: "timelapse-interval"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Photography", url: category_path("photography") },
+  { name: "Time-Lapse Interval Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Time-Lapse Interval Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the perfect shooting interval, total number of frames, and storage needs for your time-lapse project.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="timelapse-interval-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="tl-event" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Event Duration (minutes)</label>
+            <input id="tl-event" type="number" inputmode="decimal" data-timelapse-interval-calculator-target="eventDuration" data-action="input->timelapse-interval-calculator#calculate" class="w-full" placeholder="120" step="1" min="1">
+          </div>
+          <div>
+            <label for="tl-video" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Desired Video Length (seconds)</label>
+            <input id="tl-video" type="number" inputmode="decimal" data-timelapse-interval-calculator-target="finalVideoSeconds" data-action="input->timelapse-interval-calculator#calculate" class="w-full" placeholder="30" step="1" min="1">
+          </div>
+          <div>
+            <label for="tl-fps" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Playback Frame Rate (fps)</label>
+            <input id="tl-fps" type="number" inputmode="decimal" data-timelapse-interval-calculator-target="playbackFps" data-action="input->timelapse-interval-calculator#calculate" class="w-full" placeholder="24" step="1" min="1" value="24">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Shooting Interval</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-timelapse-interval-calculator-target="resultInterval">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Frames</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-timelapse-interval-calculator-target="resultTotalFrames">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Video Duration</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-timelapse-interval-calculator-target="resultVideoDuration">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Event Duration</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-timelapse-interval-calculator-target="resultEventDuration">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Speed Factor</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-timelapse-interval-calculator-target="resultSpeedFactor">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Storage (JPEG)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-timelapse-interval-calculator-target="resultStorageJpeg">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Storage (RAW)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-timelapse-interval-calculator-target="resultStorageRaw">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->timelapse-interval-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "timelapse-interval" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Plan a Time-Lapse</h2>
+      <p>
+        Time-lapse photography compresses long events into short video clips by taking individual photos at regular intervals and playing them back at standard video frame rates. The key to a successful time-lapse is choosing the right shooting interval. Too short, and you waste storage and battery; too long, and the resulting video appears jerky.
+      </p>
+      <p>
+        Enter the total duration of the event you want to capture, the desired length of the final video, and your playback frame rate. The calculator determines the required shooting interval, total number of frames, the speed compression factor, and estimated storage requirements for both JPEG and RAW formats.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Recommended Intervals by Subject</h2>
+      <p>
+        The ideal interval depends on the speed of your subject. Fast-moving clouds work well at 1-3 seconds. Sunsets and sunrises need 2-5 second intervals. Star trails and the Milky Way require 15-30 second exposures. Flowers blooming need 1-5 minute intervals. Construction projects might use 5-15 minute intervals. Urban traffic looks great at 1-2 second intervals. Always shoot more frames than you think you need — you can always speed up the video in post, but you cannot add frames you did not capture.
+      </p>
+
+      <h3>Storage and Battery Planning</h3>
+      <p>
+        A typical DSLR or mirrorless camera produces JPEG files around 8 MB per frame and RAW files around 25 MB per frame at 24 megapixels. For a 1000-frame time-lapse, budget approximately 8 GB for JPEG or 25 GB for RAW. Battery life is equally important: use an external power source or battery grip for long sessions. Most camera batteries support 300-500 shots per charge, so a multi-hour time-lapse may require multiple batteries.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate the interval for a time-lapse?</h3>
+      <p>Divide the event duration in seconds by the total frames needed. Frames = video duration x playback fps.</p>
+
+      <h3>What frame rate should I use for time-lapse video?</h3>
+      <p>24fps is the cinematic standard. 25fps for PAL regions, 30fps for NTSC. All produce smooth playback.</p>
+
+      <h3>What is a good interval for cloud time-lapse?</h3>
+      <p>1-3 seconds for fast clouds, 5-10 seconds for slow clouds. Start with 3 seconds as a safe default.</p>
+
+      <h3>How much storage do I need for a time-lapse?</h3>
+      <p>At 24MP: about 8 MB per JPEG frame, 25 MB per RAW. A 1000-frame sequence needs 8 GB JPEG or 25 GB RAW.</p>
+
+      <h3>How long should a time-lapse video be?</h3>
+      <p>10-60 seconds works best. Social media clips perform well at 15-30 seconds.</p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Golden Hour Calculator", description: "Find golden hour and blue hour times for your location.", path: photography_golden_hour_path, icon_path: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" },
+      { name: "Photo Storage Calculator", description: "Estimate storage needs for your photo library.", path: photography_photo_storage_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
+      { name: "Video File Size Calculator", description: "Estimate video file size from bitrate and duration.", path: photography_video_file_size_path, icon_path: "M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "photography" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,154 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Class Schedule Builder - Detect Conflicts & Gaps",
+  description: "Build your weekly college class schedule, detect time conflicts and gaps between classes, and calculate total credit hours. Free schedule planning tool for students.",
+  canonical: education_class_schedule_builder_url,
+  og: {
+    title: "Class Schedule Builder - Detect Conflicts & Gaps | CalcWise",
+    description: "Build your weekly college class schedule, detect time conflicts and gaps between classes, and calculate total credit hours. Free schedule planning tool for students.",
+    url: education_class_schedule_builder_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Education", url: category_url("education") },
+  { name: "Class Schedule Builder", url: education_class_schedule_builder_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many credits should I take per semester?", answer: "Full-time students typically take 12-18 credits per semester, with 15 being the standard for graduating in four years. Taking 12 credits is considered the minimum for full-time status and financial aid eligibility. Some students take 18+ credits to graduate early or accommodate a double major, but this requires careful time management." },
+  { question: "What is the ideal gap between classes?", answer: "A 10-15 minute gap is the minimum for walking between buildings on a typical campus. A 30-60 minute gap provides time for reviewing notes, eating, or brief study sessions. Gaps longer than 2 hours can be unproductive unless you use them intentionally for library study or office hours visits." },
+  { question: "Should I avoid back-to-back classes?", answer: "Back-to-back classes minimize gaps but can cause fatigue, especially for lecture-heavy courses. A mix of back-to-back and spaced classes works well for most students. If you have back-to-back classes in distant buildings, verify you have enough time to walk between them." },
+  { question: "Is it better to spread classes across the week or concentrate them?", answer: "Concentrating classes on fewer days (like MWF or TR) creates full free days for studying, work, or internships. However, long class days can be mentally exhausting. Spreading classes provides a more balanced daily rhythm. Choose based on your energy patterns and outside commitments." },
+  { question: "How do I handle lab sections and discussion sections?", answer: "Labs and discussion sections are separate class entries with their own times and locations. Add them individually to your schedule to check for conflicts. Labs often have different meeting patterns (once per week) than the main lecture, so verify days carefully when registering." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Class Schedule Builder",
+  description: "Build a weekly class schedule, detect time conflicts and gaps, and calculate total credit hours and class time.",
+  url: education_class_schedule_builder_url,
+  category: "EducationalApplication",
+  calculator_slug: "class-schedule-builder"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Education", url: category_path("education") },
+  { name: "Class Schedule Builder" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Class Schedule Builder</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Add your classes to detect time conflicts, find gaps, and calculate total credit hours per week.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="class-schedule-builder-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-4" data-class-schedule-builder-calculator-target="classesContainer">
+      </div>
+
+      <button type="button" data-action="click->class-schedule-builder-calculator#addRow" class="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm text-sm font-medium transition-all duration-200">+ Add Class</button>
+
+      <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 mt-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Schedule Summary</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Total Classes</span>
+            <span class="text-xl font-bold text-green-600 dark:text-green-400" data-class-schedule-builder-calculator-target="totalClasses">0</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Total Credits</span>
+            <span class="text-xl font-bold text-green-600 dark:text-green-400" data-class-schedule-builder-calculator-target="totalCredits">0</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Total Class Time</span>
+            <span class="text-xl font-bold text-green-600 dark:text-green-400" data-class-schedule-builder-calculator-target="totalHours">0 hrs/week</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Earliest Start</span>
+            <span class="text-xl font-bold text-green-600 dark:text-green-400" data-class-schedule-builder-calculator-target="earliestStart">N/A</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600 dark:text-gray-400">Latest End</span>
+            <span class="text-xl font-bold text-green-600 dark:text-green-400" data-class-schedule-builder-calculator-target="latestEnd">N/A</span>
+          </div>
+        </div>
+
+        <%# Conflicts %>
+        <div class="mt-5 hidden" data-class-schedule-builder-calculator-target="conflictsSection">
+          <h3 class="text-sm font-bold text-red-600 dark:text-red-400 mb-2">Time Conflicts Detected</h3>
+          <ul class="list-disc list-inside space-y-1" data-class-schedule-builder-calculator-target="conflictsList"></ul>
+        </div>
+
+        <%# Gaps %>
+        <div class="mt-5 hidden" data-class-schedule-builder-calculator-target="gapsSection">
+          <h3 class="text-sm font-bold text-amber-600 dark:text-amber-400 mb-2">Schedule Gaps</h3>
+          <ul class="list-disc list-inside space-y-1" data-class-schedule-builder-calculator-target="gapsList"></ul>
+        </div>
+
+        <button data-action="click->class-schedule-builder-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Schedule</button>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "class-schedule-builder" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Class Schedule Builder</h2>
+      <p>
+        Add each class section with its name, day of the week, start time, end time, credits, and optional room location. The builder automatically detects time conflicts where two classes overlap on the same day and identifies gaps between consecutive classes. For classes that meet multiple days per week (like MWF), add a separate entry for each meeting day to catch all potential conflicts.
+      </p>
+      <p>
+        The summary shows your total weekly credit load, class time in hours, earliest daily start, and latest daily end. Use this information to plan study time, work schedules, meals, and commuting. A well-planned schedule balances class time with adequate breaks for focus and energy management throughout each day.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Tips for Building an Effective Class Schedule</h2>
+      <p>
+        Consider your natural energy patterns when scheduling. If you are most alert in the morning, place your most challenging courses early. Leave buffer time between classes in different buildings, accounting for campus geography. Group related courses on the same days when possible to create thematic study blocks. Reserve at least one block of 2-3 consecutive free hours each day for focused studying.
+      </p>
+
+      <h3>Common Scheduling Mistakes to Avoid</h3>
+      <p>
+        Avoid scheduling all classes on two days to create long free days if it means sitting through 6+ hours of lectures without adequate breaks. Do not forget to account for travel time between distant campus buildings. Watch out for hidden time commitments like mandatory study groups, office hours, or supplemental instruction sessions that do not appear in the official schedule but are essential for success.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many credits should I take per semester?</h3>
+      <p>Full-time students typically take 12-18 credits per semester, with 15 being the standard for graduating in four years. Taking 12 credits is considered the minimum for full-time status and financial aid eligibility.</p>
+
+      <h3>What is the ideal gap between classes?</h3>
+      <p>A 10-15 minute gap is the minimum for walking between buildings on a typical campus. A 30-60 minute gap provides time for reviewing notes, eating, or brief study sessions.</p>
+
+      <h3>Should I avoid back-to-back classes?</h3>
+      <p>Back-to-back classes minimize gaps but can cause fatigue, especially for lecture-heavy courses. A mix of back-to-back and spaced classes works well for most students.</p>
+
+      <h3>Is it better to spread classes across the week or concentrate them?</h3>
+      <p>Concentrating classes on fewer days creates full free days for studying, work, or internships. However, long class days can be mentally exhausting.</p>
+
+      <h3>How do I handle lab sections and discussion sections?</h3>
+      <p>Labs and discussion sections are separate class entries with their own times and locations. Add them individually to your schedule to check for conflicts.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Research Paper Word Count Estimator", description: "Estimate word count from page count based on formatting.", path: education_research_paper_word_count_path, icon_path: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+      { name: "Credit Transfer Calculator", description: "Calculate transferable credits and time savings.", path: education_credit_transfer_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Scholarship ROI Calculator", description: "Calculate hourly return on scholarship applications.", path: education_scholarship_roi_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "education" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

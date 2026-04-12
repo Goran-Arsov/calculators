@@ -1,0 +1,174 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Bond Yield Calculator - Current Yield & YTM Tool",
+  description: "Calculate bond current yield, yield to maturity (YTM), and coupon payments. Free bond yield calculator for investors with instant results.",
+  canonical: finance_bond_yield_url,
+  og: {
+    title: "Bond Yield Calculator - Current Yield & YTM Tool | CalcWise",
+    description: "Calculate bond current yield, yield to maturity (YTM), and coupon payments. Free bond yield calculator for investors.",
+    url: finance_bond_yield_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Bond Yield Calculator", url: finance_bond_yield_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the difference between current yield and yield to maturity?", answer: "Current yield is simply the annual coupon payment divided by the market price. Yield to maturity (YTM) accounts for all future coupon payments plus the gain or loss if you hold the bond to maturity and receive the face value. YTM is a more complete measure of return because it considers the time value of money." },
+  { question: "What is a bond coupon rate?", answer: "The coupon rate is the annual interest rate stated on the bond when it is issued. It determines the fixed dollar amount of interest the bond pays each year. A bond with a $1,000 face value and a 5% coupon rate pays $50 per year in interest, typically in two semi-annual payments of $25." },
+  { question: "Why do bond prices and yields move in opposite directions?", answer: "When market interest rates rise, existing bonds with lower coupon rates become less attractive, so their prices fall to offer competitive yields. When rates fall, existing bonds with higher coupons become more valuable, pushing their prices up. This inverse relationship is fundamental to bond investing." },
+  { question: "What is a premium bond vs. a discount bond?", answer: "A premium bond trades above its face value because its coupon rate is higher than prevailing rates. A discount bond trades below face value because its coupon rate is lower than current rates. At maturity, both return the face value, which affects total return calculations." },
+  { question: "How often do bonds pay interest?", answer: "Most bonds pay interest semi-annually (twice per year). Some bonds pay annually, quarterly, or monthly. The payment frequency affects both the yield to maturity calculation and the actual return you receive." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Bond Yield Calculator",
+  description: "Calculate bond current yield, yield to maturity, and coupon payments.",
+  url: finance_bond_yield_url,
+  category: "FinanceApplication",
+  calculator_slug: "bond-yield"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Bond Yield Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Bond Yield Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate current yield, yield to maturity (YTM), and coupon payments for any bond.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="bond-yield-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="bond-face-value" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Face Value ($)</label>
+            <input id="bond-face-value" type="number" inputmode="decimal" data-bond-yield-calculator-target="faceValue" data-action="input->bond-yield-calculator#calculate" class="w-full" placeholder="1000" step="any" min="0">
+          </div>
+          <div>
+            <label for="bond-coupon-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Coupon Rate (%)</label>
+            <input id="bond-coupon-rate" type="number" inputmode="decimal" data-bond-yield-calculator-target="couponRate" data-action="input->bond-yield-calculator#calculate" class="w-full" placeholder="5" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="bond-market-price" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Market Price ($)</label>
+            <input id="bond-market-price" type="number" inputmode="decimal" data-bond-yield-calculator-target="marketPrice" data-action="input->bond-yield-calculator#calculate" class="w-full" placeholder="950" step="any" min="0">
+          </div>
+          <div>
+            <label for="bond-years-maturity" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Years to Maturity</label>
+            <input id="bond-years-maturity" type="number" inputmode="decimal" data-bond-yield-calculator-target="yearsToMaturity" data-action="input->bond-yield-calculator#calculate" class="w-full" placeholder="10" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="bond-payments-year" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Payments Per Year</label>
+            <select id="bond-payments-year" data-bond-yield-calculator-target="paymentsPerYear" data-action="change->bond-yield-calculator#calculate" class="w-full">
+              <option value="1">Annually (1)</option>
+              <option value="2" selected>Semi-Annually (2)</option>
+              <option value="4">Quarterly (4)</option>
+              <option value="12">Monthly (12)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Current Yield</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bond-yield-calculator-target="currentYield">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Yield to Maturity</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bond-yield-calculator-target="ytm">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Annual Coupon</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bond-yield-calculator-target="annualCoupon">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Coupon Payment</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bond-yield-calculator-target="couponPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Bond Status</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-bond-yield-calculator-target="bondStatus">--</span>
+            </div>
+          </div>
+          <button data-action="click->bond-yield-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "bond-yield" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Bond Yield Calculator</h2>
+      <p>
+        Enter the bond face value (typically $1,000), coupon rate, current market price, years remaining until maturity, and payment frequency. The calculator instantly computes the current yield, yield to maturity (YTM), annual coupon payment, and per-period coupon payment. It also tells you whether the bond trades at a premium, discount, or par.
+      </p>
+      <p>
+        Understanding bond yields is essential for fixed-income investors. The current yield gives you a quick snapshot of the income return, while the yield to maturity provides the total expected return if you hold the bond until it matures, accounting for both coupon payments and any capital gain or loss from the difference between market price and face value.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Bond Yield Metrics</h2>
+      <p>
+        The <strong>current yield</strong> is calculated as the annual coupon divided by the market price. It tells you the income return at today's price but ignores capital gains or losses at maturity. The <strong>yield to maturity (YTM)</strong> is the total return anticipated if the bond is held until maturity, accounting for coupon payments, reinvestment, and the difference between purchase price and face value. YTM is calculated using an iterative method (Newton's method) since there is no closed-form solution.
+      </p>
+
+      <h3>Premium, Discount, and Par Bonds</h3>
+      <p>
+        A bond trading above face value is a premium bond, meaning its coupon rate exceeds current market rates. A discount bond trades below face value, indicating the coupon rate is below market rates. A par bond trades at face value. Understanding this relationship helps investors evaluate whether a bond is fairly priced relative to current interest rate conditions.
+      </p>
+
+      <h3>Factors That Affect Bond Yields</h3>
+      <p>
+        Bond yields are influenced by prevailing interest rates, credit quality of the issuer, time to maturity, inflation expectations, and market supply and demand. Higher credit risk bonds offer higher yields to compensate investors. Longer-term bonds typically yield more than shorter-term bonds, a phenomenon known as the term premium.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the difference between current yield and yield to maturity?</h3>
+      <p>Current yield is the annual coupon divided by market price. YTM accounts for all future coupon payments plus any capital gain or loss at maturity, providing a more complete picture of total return.</p>
+
+      <h3>What is a bond coupon rate?</h3>
+      <p>The coupon rate is the annual interest rate that determines the fixed payments the bond makes. A $1,000 bond with a 5% coupon pays $50 per year.</p>
+
+      <h3>Why do bond prices and yields move in opposite directions?</h3>
+      <p>When rates rise, existing lower-coupon bonds become less attractive, so prices fall. When rates fall, higher-coupon bonds become more valuable, pushing prices up.</p>
+
+      <h3>What is a premium bond vs. a discount bond?</h3>
+      <p>A premium bond trades above face value because its coupon exceeds current rates. A discount bond trades below face value because its coupon is below current rates.</p>
+
+      <h3>How often do bonds pay interest?</h3>
+      <p>Most bonds pay semi-annually. Some pay annually, quarterly, or monthly. The frequency affects the YTM calculation.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Investment Calculator", description: "Project the future value of your investments.", path: finance_investment_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Dividend Yield Calculator", description: "Calculate dividend yield and income from stocks.", path: finance_dividend_yield_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Compound Interest Calculator", description: "See how money grows with compound interest.", path: finance_compound_interest_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <% blog_posts = related_blog_posts("bond-yield-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

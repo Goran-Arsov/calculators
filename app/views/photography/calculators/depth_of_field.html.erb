@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Depth of Field Calculator - Free DoF Calculator",
+  description: "Calculate depth of field, hyperfocal distance, and near/far focus limits from focal length, aperture, subject distance, and sensor size. Free online DoF calculator for photographers.",
+  canonical: photography_depth_of_field_url,
+  og: {
+    title: "Depth of Field Calculator - Free DoF Calculator | CalcWise",
+    description: "Calculate depth of field, hyperfocal distance, and near/far focus limits from focal length, aperture, subject distance, and sensor size.",
+    url: photography_depth_of_field_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Photography", url: category_url("photography") },
+  { name: "Depth of Field Calculator", url: photography_depth_of_field_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is depth of field in photography?", answer: "Depth of field (DoF) is the distance between the nearest and farthest objects in a scene that appear acceptably sharp in a photograph. A shallow DoF means only a thin slice of the scene is in focus, while a deep DoF means most of the scene from foreground to background is sharp." },
+  { question: "How does aperture affect depth of field?", answer: "A wider aperture (smaller f-number like f/1.8) produces a shallower depth of field, blurring the background. A narrower aperture (larger f-number like f/16) produces a deeper depth of field, keeping more of the scene in focus. This is one of the most powerful creative controls in photography." },
+  { question: "What is hyperfocal distance?", answer: "Hyperfocal distance is the focus distance that gives the maximum depth of field, extending from half the hyperfocal distance to infinity. Focusing at the hyperfocal distance is a common technique in landscape photography to maximize sharpness across the entire scene." },
+  { question: "How does sensor size affect depth of field?", answer: "Smaller sensors have a deeper depth of field at the same field of view compared to larger sensors. This is because smaller sensors require shorter focal lengths to achieve the same angle of view, and shorter focal lengths produce deeper DoF. A full-frame sensor produces shallower DoF than an APS-C or Micro Four Thirds sensor." },
+  { question: "What is circle of confusion?", answer: "The circle of confusion (CoC) is the largest blur circle that appears as a point to the human eye. It depends on sensor size, print size, and viewing distance. Standard CoC values are 0.03mm for full-frame, 0.02mm for APS-C Nikon, 0.019mm for APS-C Canon, and 0.015mm for Micro Four Thirds sensors." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Depth of Field Calculator",
+  description: "Calculate depth of field, hyperfocal distance, and near/far focus limits from focal length, aperture, subject distance, and sensor size.",
+  url: photography_depth_of_field_url,
+  category: "PhotographyApplication",
+  calculator_slug: "depth-of-field"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Photography", url: category_path("photography") },
+  { name: "Depth of Field Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Depth of Field Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate DoF, hyperfocal distance, and near/far focus limits for any lens, aperture, and sensor combination.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="depth-of-field-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="dof-focal-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Focal Length (mm)</label>
+            <input id="dof-focal-length" type="number" inputmode="decimal" data-depth-of-field-calculator-target="focalLength" data-action="input->depth-of-field-calculator#calculate" class="w-full" placeholder="50" step="1" min="1" max="2000">
+          </div>
+          <div>
+            <label for="dof-aperture" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Aperture (f-number)</label>
+            <input id="dof-aperture" type="number" inputmode="decimal" data-depth-of-field-calculator-target="aperture" data-action="input->depth-of-field-calculator#calculate" class="w-full" placeholder="2.8" step="0.1" min="0.7" max="128">
+          </div>
+          <div>
+            <label for="dof-distance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Subject Distance (meters)</label>
+            <input id="dof-distance" type="number" inputmode="decimal" data-depth-of-field-calculator-target="distance" data-action="input->depth-of-field-calculator#calculate" class="w-full" placeholder="3" step="0.1" min="0.01">
+          </div>
+          <div>
+            <label for="dof-sensor" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sensor Size</label>
+            <select id="dof-sensor" data-depth-of-field-calculator-target="sensorSize" data-action="change->depth-of-field-calculator#calculate" class="w-full">
+              <option value="full_frame">Full Frame (35mm)</option>
+              <option value="apsc_canon">APS-C (Canon)</option>
+              <option value="apsc_nikon">APS-C (Nikon/Sony)</option>
+              <option value="micro_four_thirds">Micro Four Thirds</option>
+              <option value="medium_format">Medium Format</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Depth of Field</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-depth-of-field-calculator-target="resultDof">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Near Limit</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-depth-of-field-calculator-target="resultNear">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Far Limit</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-depth-of-field-calculator-target="resultFar">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Hyperfocal Distance</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-depth-of-field-calculator-target="resultHyperfocal">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->depth-of-field-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "depth-of-field" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Depth of Field Calculator</h2>
+      <p>
+        Enter your lens focal length in millimeters, the aperture f-number, and the distance to your subject in meters. Select your camera sensor size from the dropdown. The calculator instantly computes the depth of field, near and far focus limits, and the hyperfocal distance using the standard circle of confusion values for each sensor format.
+      </p>
+      <p>
+        Understanding depth of field is crucial for every genre of photography. Portrait photographers use shallow DoF to isolate subjects from distracting backgrounds, while landscape photographers maximize DoF to keep everything sharp from the nearest foreground element to distant mountains. Macro photographers work with extremely thin depth of field, often measured in fractions of a millimeter.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Depth of Field Formula</h2>
+      <p>
+        Depth of field depends on three key variables: focal length, aperture, and focus distance. The formula begins with the hyperfocal distance <strong>H = f&sup2; / (N &times; c) + f</strong>, where f is the focal length, N is the f-number, and c is the circle of confusion. The near limit is <strong>D<sub>n</sub> = H &times; s / (H + s - f)</strong> and the far limit is <strong>D<sub>f</sub> = H &times; s / (H - s + f)</strong>, where s is the subject distance. When the denominator of the far limit becomes zero or negative, the far limit extends to infinity.
+      </p>
+
+      <h3>Circle of Confusion by Sensor Size</h3>
+      <p>
+        The circle of confusion (CoC) is the threshold at which a point of light appears acceptably sharp. Standard values are 0.03mm for full-frame sensors, 0.019mm for Canon APS-C, 0.02mm for Nikon/Sony APS-C, 0.015mm for Micro Four Thirds, and 0.043mm for medium format. These values assume a standard print size of approximately 8&times;10 inches viewed from a normal distance.
+      </p>
+
+      <h3>Practical Tips for Controlling Depth of Field</h3>
+      <p>
+        To achieve a shallower depth of field, use a wider aperture, a longer focal length, or move closer to your subject. To maximize depth of field, use a narrower aperture, a wider-angle lens, or focus at the hyperfocal distance. Remember that extremely narrow apertures such as f/22 or f/32 introduce diffraction, which softens the image overall. Most lenses produce their sharpest results between f/5.6 and f/11.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is depth of field in photography?</h3>
+      <p>
+        Depth of field (DoF) is the distance between the nearest and farthest objects in a scene that appear acceptably sharp in a photograph. A shallow DoF means only a thin slice of the scene is in focus, while a deep DoF means most of the scene from foreground to background is sharp.
+      </p>
+
+      <h3>How does aperture affect depth of field?</h3>
+      <p>
+        A wider aperture (smaller f-number like f/1.8) produces a shallower depth of field, blurring the background. A narrower aperture (larger f-number like f/16) produces a deeper depth of field, keeping more of the scene in focus.
+      </p>
+
+      <h3>What is hyperfocal distance?</h3>
+      <p>
+        Hyperfocal distance is the focus distance that gives the maximum depth of field, extending from half the hyperfocal distance to infinity. Focusing at the hyperfocal distance is a common technique in landscape photography to maximize sharpness across the entire scene.
+      </p>
+
+      <h3>How does sensor size affect depth of field?</h3>
+      <p>
+        Smaller sensors have a deeper depth of field at the same field of view. A full-frame sensor produces shallower DoF than an APS-C or Micro Four Thirds sensor at equivalent framing.
+      </p>
+
+      <h3>What is circle of confusion?</h3>
+      <p>
+        The circle of confusion (CoC) is the largest blur circle that still appears as a point to the human eye. Standard CoC values are 0.03mm for full-frame, 0.02mm for APS-C, and 0.015mm for Micro Four Thirds sensors.
+      </p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Exposure Triangle Calculator", description: "Calculate equivalent exposures by changing ISO, aperture, or shutter speed.", path: photography_exposure_triangle_path, icon_path: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" },
+      { name: "Print Size & DPI Calculator", description: "Calculate print dimensions from pixel dimensions and DPI.", path: photography_print_size_dpi_path, icon_path: "M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" },
+      { name: "Golden Hour Calculator", description: "Calculate golden hour and blue hour times for your location.", path: photography_golden_hour_path, icon_path: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "photography" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

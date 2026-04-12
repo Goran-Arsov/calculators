@@ -1,0 +1,197 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cat Food Calculator - Daily Calories & Feeding Guide",
+  description: "Calculate how much food to feed your cat daily. Get personalized feeding amounts based on weight, age, activity level, and indoor/outdoor lifestyle. Uses the veterinary RER formula.",
+  canonical: pets_cat_food_url,
+  og: {
+    title: "Cat Food Calculator - Daily Calories & Feeding Guide | CalcWise",
+    description: "Calculate daily calorie needs and food portions for your cat based on weight, age, activity, and lifestyle.",
+    url: pets_cat_food_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Pets", url: category_url("pets") },
+  { name: "Cat Food Calculator", url: pets_cat_food_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many calories does a cat need per day?", answer: "An average 10-pound adult indoor cat needs approximately 200-250 calories per day. The exact amount depends on age, activity level, and whether the cat lives indoors or outdoors. Kittens need significantly more calories per pound of body weight (about 2.5 times their resting energy requirement) to support growth, while senior cats typically need fewer calories due to reduced activity." },
+  { question: "How do I calculate my cat's calorie needs?", answer: "Use the Resting Energy Requirement (RER) formula: RER = 70 x (body weight in kg ^ 0.75). Then multiply by a life-stage factor: 2.5 for kittens, 1.2 for normal adult cats, and 1.0 for senior or inactive cats. Adjust further for activity level (multiply by 0.8 for inactive, 1.0 for moderate, 1.2 for active) and add 5-10% for outdoor cats who need extra energy for thermoregulation." },
+  { question: "Should I feed my cat wet food or dry food?", answer: "Both wet and dry food can provide complete nutrition, but many veterinarians recommend incorporating wet food because cats naturally have a low thirst drive and get much of their moisture from food. Wet food typically contains 70-80% water compared to 10% in dry food. A combination of both often works well. When using this calculator, check the calorie content on your specific food's label, as it varies widely between brands." },
+  { question: "How often should I feed my cat?", answer: "Most veterinarians recommend feeding adult cats 2-3 meals per day on a consistent schedule. Free-feeding (leaving dry food out all day) can lead to overeating and obesity, especially for indoor cats. Kittens under 6 months should eat 3-4 times daily. Measured meal feeding gives you better control over portions and makes it easier to notice appetite changes that could indicate health problems." },
+  { question: "Do indoor cats need fewer calories than outdoor cats?", answer: "Yes, indoor cats typically need 5-10% fewer calories than outdoor cats of the same size and age. Outdoor cats burn extra energy through increased physical activity, thermoregulation in varying weather conditions, and generally having larger territories to patrol. Indoor cats are more prone to obesity because they are less active, so portion control is especially important." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Cat Food Calculator",
+  description: "Calculate your cat's daily calorie needs and food portions based on weight, age, activity level, and indoor/outdoor lifestyle.",
+  url: pets_cat_food_url,
+  category: "HealthApplication",
+  calculator_slug: "cat-food"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Pets", url: category_path("pets") },
+  { name: "Cat Food Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cat Food Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find out exactly how much to feed your cat each day based on weight, age, activity level, and whether they live indoors or outdoors.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="cat-food-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="cat-food-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Cat's Weight (lbs)</label>
+            <input id="cat-food-weight" type="number" inputmode="decimal" data-cat-food-calculator-target="weight" data-action="input->cat-food-calculator#calculate" class="w-full" placeholder="10" step="0.5" min="0" max="30">
+          </div>
+          <div>
+            <label for="cat-food-age-category" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Age Category</label>
+            <select id="cat-food-age-category" data-cat-food-calculator-target="ageCategory" data-action="change->cat-food-calculator#calculate" class="w-full" aria-label="Age Category">
+              <option value="kitten">Kitten (under 1 year)</option>
+              <option value="adult" selected>Adult (1-10 years)</option>
+              <option value="senior">Senior (10+ years)</option>
+            </select>
+          </div>
+          <div>
+            <label for="cat-food-activity-level" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Activity Level</label>
+            <select id="cat-food-activity-level" data-cat-food-calculator-target="activityLevel" data-action="change->cat-food-calculator#calculate" class="w-full" aria-label="Activity Level">
+              <option value="inactive">Inactive (mostly sleeping)</option>
+              <option value="moderate" selected>Moderate (some play daily)</option>
+              <option value="active">Active (regular play & hunting)</option>
+              <option value="very_active">Very Active (outdoor hunter)</option>
+            </select>
+          </div>
+          <div>
+            <label for="cat-food-environment" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Environment</label>
+            <select id="cat-food-environment" data-cat-food-calculator-target="environment" data-action="change->cat-food-calculator#calculate" class="w-full" aria-label="Environment">
+              <option value="indoor" selected>Indoor only</option>
+              <option value="outdoor">Outdoor only</option>
+              <option value="both">Indoor / Outdoor</option>
+            </select>
+          </div>
+          <div>
+            <label for="cat-food-kcal" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Food Calorie Density (kcal/can)</label>
+            <input id="cat-food-kcal" type="number" inputmode="decimal" data-cat-food-calculator-target="kcalPerCan" data-action="input->cat-food-calculator#calculate" class="w-full" placeholder="250" value="250" step="10" min="1">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Daily Calories</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-cat-food-calculator-target="dailyCalories">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cans Per Day</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-cat-food-calculator-target="cansPerDay">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Ounces Per Day</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-cat-food-calculator-target="ozPerDay">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Resting Energy (RER)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-cat-food-calculator-target="rer">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->cat-food-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "cat-food" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Cat Food Calculator</h2>
+      <p>
+        Our free cat food calculator determines your cat's daily calorie needs and converts them into practical portion sizes. Enter your cat's weight in pounds, select their age category, activity level, and environment (indoor or outdoor), then optionally adjust the calorie density of their food. The calculator instantly displays daily calorie requirements, number of cans per day, and ounces per day. Results update in real time as you adjust any input.
+      </p>
+      <p>
+        Feeding the right amount is critical for feline health. Obesity affects an estimated 60% of domestic cats and is linked to diabetes, arthritis, urinary problems, and shortened lifespan. Conversely, underfeeding can lead to muscle wasting, weakened immunity, and hepatic lipidosis (fatty liver disease), which is a life-threatening condition in cats that stop eating.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the Calculation</h2>
+      <p>
+        The calculator uses the veterinary Resting Energy Requirement (RER) formula: 70 multiplied by body weight in kilograms raised to the 0.75 power. This allometric scaling formula accounts for the non-linear relationship between body size and metabolic rate. The RER is then adjusted for life stage (kittens need 2.5x their RER for growth, adults need about 1.2x, and seniors about 1.0x), activity level, and whether the cat lives indoors or outdoors.
+      </p>
+
+      <h3>Indoor vs. Outdoor Cats</h3>
+      <p>
+        Outdoor cats burn significantly more energy than indoor cats through hunting behavior, territory patrol, and thermoregulation. An outdoor cat may need 5-10% more calories than an indoor cat of the same size. The calculator accounts for this with an environment adjustment factor. If your cat splits time between indoors and outdoors, the "Indoor/Outdoor" option provides an intermediate estimate.
+      </p>
+
+      <h3>Adjusting for Your Cat</h3>
+      <p>
+        The calculated amount is a starting point. Monitor your cat's body condition over 2-4 weeks. You should be able to feel your cat's ribs with gentle pressure but not see them. A visible waist when viewed from above indicates healthy weight. Spayed or neutered cats may need 10-20% fewer calories. Cats with health conditions like diabetes or kidney disease should follow their veterinarian's specific feeding recommendations.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many calories does a cat need per day?</h3>
+      <p>
+        An average 10-pound adult indoor cat needs approximately 200-250 calories per day. The exact amount depends on age, activity level, and whether the cat lives indoors or outdoors. Kittens need significantly more calories per pound of body weight to support growth, while senior cats typically need fewer calories due to reduced activity.
+      </p>
+
+      <h3>How do I calculate my cat's calorie needs?</h3>
+      <p>
+        Use the Resting Energy Requirement (RER) formula: RER = 70 x (body weight in kg ^ 0.75). Then multiply by a life-stage factor: 2.5 for kittens, 1.2 for normal adult cats, and 1.0 for senior or inactive cats. Adjust further for activity level and add 5-10% for outdoor cats.
+      </p>
+
+      <h3>Should I feed my cat wet food or dry food?</h3>
+      <p>
+        Both wet and dry food can provide complete nutrition, but many veterinarians recommend incorporating wet food because cats naturally have a low thirst drive and get much of their moisture from food. A combination of both often works well. Check the calorie content on your specific food's label, as it varies widely between brands.
+      </p>
+
+      <h3>How often should I feed my cat?</h3>
+      <p>
+        Most veterinarians recommend feeding adult cats 2-3 meals per day on a consistent schedule. Free-feeding can lead to overeating and obesity, especially for indoor cats. Kittens under 6 months should eat 3-4 times daily.
+      </p>
+
+      <h3>Do indoor cats need fewer calories than outdoor cats?</h3>
+      <p>
+        Yes, indoor cats typically need 5-10% fewer calories than outdoor cats of the same size and age. Outdoor cats burn extra energy through increased physical activity and thermoregulation. Indoor cats are more prone to obesity because they are less active, so portion control is especially important.
+      </p>
+
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Cat Age Calculator", description: "Convert your cat's age to human years using the veterinary formula.", path: pets_cat_age_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Dog Food Calculator", description: "Calculate daily food portions for your dog based on weight and activity.", path: health_dog_food_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Pet Insurance ROI Calculator", description: "Compare pet insurance costs vs potential vet bills.", path: pets_pet_insurance_roi_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "pets" %>
+
+    <% blog_posts = related_blog_posts("cat-food-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

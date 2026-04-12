@@ -1,0 +1,182 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Video File Size Calculator - Estimate Video Storage",
+  description: "Estimate video file size from bitrate, duration, frame rate, codec, and audio settings. Plan storage needs for any video project. Free online video size calculator.",
+  canonical: photography_video_file_size_url,
+  og: {
+    title: "Video File Size Calculator - Estimate Video Storage | CalcWise",
+    description: "Estimate video file size from bitrate, duration, frame rate, codec, and audio settings.",
+    url: photography_video_file_size_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Photography", url: category_url("photography") },
+  { name: "Video File Size Calculator", url: photography_video_file_size_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I estimate video file size?", answer: "Multiply the total bitrate (video + audio) by the duration in seconds, then divide by 8 to convert bits to bytes. For example, a 10 Mbps video with 320 kbps audio recorded for 60 seconds: (10,000,000 + 320,000) * 60 / 8 = approximately 77.4 MB." },
+  { question: "What bitrate should I use for 4K video?", answer: "For 4K (3840x2160) video, typical bitrates range from 35-68 Mbps for H.264 and 15-35 Mbps for H.265/HEVC. YouTube recommends 35-45 Mbps for 4K SDR uploads in H.264. ProRes 422 at 4K runs at approximately 470 Mbps." },
+  { question: "How much storage does 1 hour of 4K video use?", answer: "At 50 Mbps (H.264), one hour of 4K video uses approximately 22.5 GB. At 100 Mbps (high-quality H.264), it uses about 45 GB. ProRes 422 at 4K uses approximately 211 GB per hour." },
+  { question: "Which codec produces the smallest files?", answer: "AV1 currently produces the smallest files for a given quality level, followed by H.265/HEVC. H.264 produces larger files but is universally compatible. ProRes and RAW codecs prioritize editing flexibility over file size and produce much larger files." },
+  { question: "Does frame rate affect file size?", answer: "Frame rate affects file size indirectly through bitrate. Higher frame rates require higher bitrates to maintain the same per-frame quality. 60fps footage at equivalent quality is roughly 1.5x the size of 30fps, and 120fps is roughly 2-3x the size of 30fps." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Video File Size Calculator",
+  description: "Estimate video file size from bitrate, duration, frame rate, codec, and audio settings.",
+  url: photography_video_file_size_url,
+  category: "PhotographyApplication",
+  calculator_slug: "video-file-size"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Photography", url: category_path("photography") },
+  { name: "Video File Size Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Video File Size Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate how much storage space your video will use based on bitrate, duration, and codec settings.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="video-file-size-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="vfs-bitrate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Video Bitrate (Mbps)</label>
+            <input id="vfs-bitrate" type="number" inputmode="decimal" data-video-file-size-calculator-target="bitrate" data-action="input->video-file-size-calculator#calculate" class="w-full" placeholder="50" step="0.1" min="0.1">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="vfs-duration" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Duration</label>
+              <input id="vfs-duration" type="number" inputmode="decimal" data-video-file-size-calculator-target="duration" data-action="input->video-file-size-calculator#calculate" class="w-full" placeholder="60" step="1" min="1">
+            </div>
+            <div>
+              <label for="vfs-duration-unit" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit</label>
+              <select id="vfs-duration-unit" data-video-file-size-calculator-target="durationUnit" data-action="change->video-file-size-calculator#calculate" class="w-full">
+                <option value="seconds">Seconds</option>
+                <option value="minutes" selected>Minutes</option>
+                <option value="hours">Hours</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="vfs-codec" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Codec</label>
+            <select id="vfs-codec" data-video-file-size-calculator-target="codec" data-action="change->video-file-size-calculator#calculate" class="w-full">
+              <option value="h264">H.264 (AVC)</option>
+              <option value="h265">H.265 (HEVC)</option>
+              <option value="prores_422">ProRes 422</option>
+              <option value="prores_4444">ProRes 4444</option>
+              <option value="av1">AV1</option>
+              <option value="vp9">VP9</option>
+              <option value="raw">RAW</option>
+            </select>
+          </div>
+          <div>
+            <label for="vfs-fps" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Frame Rate (fps)</label>
+            <input id="vfs-fps" type="number" inputmode="decimal" data-video-file-size-calculator-target="frameRate" data-action="input->video-file-size-calculator#calculate" class="w-full" placeholder="30" step="1" min="1" value="30">
+          </div>
+          <div>
+            <label for="vfs-audio" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Audio Bitrate (kbps)</label>
+            <input id="vfs-audio" type="number" inputmode="decimal" data-video-file-size-calculator-target="audioBitrate" data-action="input->video-file-size-calculator#calculate" class="w-full" placeholder="320" step="1" min="0" value="320">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total File Size</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-video-file-size-calculator-target="resultFileSize">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Size (GB)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-video-file-size-calculator-target="resultFileSizeGb">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Video Data</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-video-file-size-calculator-target="resultVideoSize">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Audio Data</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-video-file-size-calculator-target="resultAudioSize">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Frames</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-video-file-size-calculator-target="resultTotalFrames">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Duration</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-video-file-size-calculator-target="resultDuration">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->video-file-size-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "video-file-size" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Video File Size Is Calculated</h2>
+      <p>
+        Video file size is determined primarily by the bitrate and duration. The formula is straightforward: <strong>File Size = (Video Bitrate + Audio Bitrate) &times; Duration / 8</strong>. The bitrate is measured in bits per second, so dividing by 8 converts to bytes. The total includes both the video stream and the audio track.
+      </p>
+      <p>
+        Bitrate is the single most important factor in file size. A higher bitrate means more data per second of video, resulting in higher quality but larger files. The codec determines how efficiently that data is compressed. Modern codecs like H.265 and AV1 achieve similar quality to H.264 at roughly half the bitrate.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Video Bitrate Guidelines by Resolution</h2>
+      <p>
+        For standard H.264 encoding: 720p typically uses 5-10 Mbps, 1080p uses 10-20 Mbps, 4K uses 35-68 Mbps, and 8K uses 80-160 Mbps. For H.265/HEVC, these values can be reduced by approximately 35-50% while maintaining similar visual quality. ProRes and RAW codecs use significantly higher bitrates as they prioritize editing flexibility over compression efficiency.
+      </p>
+
+      <h3>Codec Comparison</h3>
+      <p>
+        H.264 (AVC) is the most widely compatible codec, supported by virtually all devices. H.265 (HEVC) offers about 35% better compression than H.264. AV1 offers about 45% better compression and is royalty-free. ProRes 422 and 4444 are Apple's professional editing codecs with high bitrates but fast decoding. VP9 is Google's open-source codec used extensively on YouTube.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I estimate video file size?</h3>
+      <p>Multiply the total bitrate by the duration in seconds, then divide by 8 to convert bits to bytes.</p>
+
+      <h3>What bitrate should I use for 4K video?</h3>
+      <p>For 4K video, use 35-68 Mbps for H.264 or 15-35 Mbps for H.265/HEVC.</p>
+
+      <h3>How much storage does 1 hour of 4K video use?</h3>
+      <p>At 50 Mbps, one hour of 4K video uses approximately 22.5 GB.</p>
+
+      <h3>Which codec produces the smallest files?</h3>
+      <p>AV1 produces the smallest files for a given quality, followed by H.265/HEVC, then H.264.</p>
+
+      <h3>Does frame rate affect file size?</h3>
+      <p>Higher frame rates require higher bitrates for equivalent quality, resulting in larger files.</p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Photo Storage Calculator", description: "Estimate storage needs for your photo library.", path: photography_photo_storage_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
+      { name: "Time-Lapse Interval Calculator", description: "Calculate shooting intervals for time-lapse photography.", path: photography_timelapse_interval_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Aspect Ratio Crop Calculator", description: "Calculate crop dimensions to fit a target aspect ratio.", path: photography_aspect_ratio_crop_path, icon_path: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "photography" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

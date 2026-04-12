@@ -1,0 +1,196 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Solar Panel Layout Calculator - Free Online Tool",
+  description: "Calculate how many solar panels fit on your roof, estimated kW capacity, and annual kWh output. Enter roof dimensions for an instant solar layout estimate.",
+  canonical: construction_solar_panel_layout_url,
+  og: {
+    title: "Solar Panel Layout Calculator - Free Online Tool | CalcWise",
+    description: "Calculate solar panel count, kW capacity, and annual energy output for your roof. Instant estimates.",
+    url: construction_solar_panel_layout_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Solar Panel Layout Calculator", url: construction_solar_panel_layout_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many solar panels can fit on my roof?", answer: "The number of panels depends on your usable roof area and panel orientation. A standard residential panel is approximately 1.7m x 1.0m (5.6ft x 3.3ft). Divide your roof length and width by the panel dimensions to find how many fit in rows and columns. Portrait orientation typically fits more panels on wider roofs, while landscape works better on narrower, longer roofs." },
+  { question: "How much electricity will my solar panels produce?", answer: "Annual output depends on the number of panels, their wattage, your location's peak sun hours, and system efficiency. The formula is: kW capacity x peak sun hours x 365 days x 0.80 efficiency factor. For example, a 6 kW system in an area with 5 peak sun hours produces approximately 8,760 kWh per year, enough to offset most of a typical household's electricity usage." },
+  { question: "What are peak sun hours and how do I find mine?", answer: "Peak sun hours represent the number of hours per day when solar irradiance averages 1,000 watts per square meter. This is not the same as hours of daylight. The US averages 3-7 peak sun hours depending on location. The Southwest averages 5-7 hours, the Midwest 4-5 hours, and the Northeast and Northwest 3-4 hours. You can find exact values from the NREL Solar Resource Data." },
+  { question: "What is the typical wattage of a residential solar panel?", answer: "Modern residential solar panels typically range from 350 to 450 watts, with 400 watts being the current standard for new installations. Higher wattage panels (up to 500W) are available but are more common in commercial applications. Panel efficiency has increased from around 15% to over 22% in the last decade, meaning fewer panels are needed for the same output." },
+  { question: "Does panel orientation (portrait vs landscape) matter?", answer: "Yes, panel orientation affects how many panels fit on your roof. Portrait orientation (tall side vertical) works better on wider roofs, while landscape orientation (tall side horizontal) can fit more panels on roofs with limited width but more length. The electrical output per panel is the same regardless of orientation. Orientation also affects mounting rail layout and wind load considerations." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Solar Panel Layout Calculator",
+  description: "Calculate how many solar panels fit on your roof, estimated kW capacity, and annual kWh output.",
+  url: construction_solar_panel_layout_url,
+  category: "HomeApplication",
+  calculator_slug: "solar_panel_layout"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Solar Panel Layout Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Solar Panel Layout Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Calculate how many solar panels fit on your roof, the total kW capacity, and estimated annual energy output in kWh.</p>
+    <div class="mb-8 px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-sm text-amber-800 dark:text-amber-300">
+      <strong>How it works:</strong> Enter your usable roof dimensions in meters, select panel orientation, and adjust peak sun hours for your location. The calculator determines how many standard 400W panels (1.7m x 1.0m) fit, total system capacity, and estimated annual energy production with an 80% efficiency factor. <br class="mb-1"><strong>Note:</strong> Actual panel count may be lower due to obstructions (vents, chimneys, skylights), shading, setback requirements, and roof pitch. Consult a solar installer for a site-specific assessment.
+    </div>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="solar-panel-layout-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="sp-roof-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Roof Length (meters)</label>
+            <input id="sp-roof-length" type="number" inputmode="decimal" data-solar-panel-layout-calculator-target="roofLength" data-action="input->solar-panel-layout-calculator#calculate" class="w-full" placeholder="12" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="sp-roof-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Roof Width (meters)</label>
+            <input id="sp-roof-width" type="number" inputmode="decimal" data-solar-panel-layout-calculator-target="roofWidth" data-action="input->solar-panel-layout-calculator#calculate" class="w-full" placeholder="8" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="sp-sun-hours" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Peak Sun Hours (per day)</label>
+            <input id="sp-sun-hours" type="number" inputmode="decimal" data-solar-panel-layout-calculator-target="peakSunHours" data-action="input->solar-panel-layout-calculator#calculate" class="w-full" value="5.0" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="sp-orientation" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Panel Orientation</label>
+            <select id="sp-orientation" data-solar-panel-layout-calculator-target="panelOrientation" data-action="change->solar-panel-layout-calculator#calculate" class="w-full">
+              <option value="portrait">Portrait (1.0m wide x 1.7m tall)</option>
+              <option value="landscape">Landscape (1.7m wide x 1.0m tall)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Panels</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-solar-panel-layout-calculator-target="resultTotalPanels">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Panels Along Length</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-solar-panel-layout-calculator-target="resultPanelsLength">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Panels Along Width</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-solar-panel-layout-calculator-target="resultPanelsWidth">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">System Capacity</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-solar-panel-layout-calculator-target="resultCapacityKw">0 kW</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Annual Output</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-solar-panel-layout-calculator-target="resultAnnualKwh">0 kWh</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Panel Area</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-solar-panel-layout-calculator-target="resultPanelArea">0 m&sup2;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Roof Area</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-solar-panel-layout-calculator-target="resultRoofArea">0 m&sup2;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Coverage</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-solar-panel-layout-calculator-target="resultCoverage">0%</span>
+            </div>
+          </div>
+          <button data-action="click->solar-panel-layout-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "solar_panel_layout" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Solar Panel Layout Calculator</h2>
+      <p>
+        Planning a solar installation starts with understanding how many panels your roof can accommodate. Enter the usable roof dimensions in meters (length and width of the area available for panels), select whether panels will be mounted in portrait or landscape orientation, and adjust the peak sun hours for your geographic location. The calculator uses standard residential panel dimensions of 1.7 meters by 1.0 meter at 400 watts each to determine how many panels fit in a grid pattern, the total system capacity in kilowatts, and the estimated annual energy production in kilowatt-hours.
+      </p>
+      <p>
+        The annual output estimate includes an 80% efficiency factor that accounts for real-world losses including inverter conversion, wiring losses, temperature effects, soiling, and system degradation. This derating factor is an industry standard used by solar designers for initial estimates. Actual production varies based on roof pitch, azimuth (direction the roof faces), local weather patterns, and shading from nearby trees or buildings.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Solar Panel Sizing</h2>
+      <p>
+        Modern residential solar panels have standardized around the 400-watt class, measuring approximately 1.7 meters tall by 1.0 meter wide. This size represents the sweet spot between efficiency, weight, and handling for residential rooftop installation. Higher wattage panels (up to 500W) exist but are primarily used in ground-mount and commercial applications where the larger physical size is less of a constraint.
+      </p>
+
+      <h3>Peak Sun Hours by Region</h3>
+      <p>
+        Peak sun hours are the key variable in estimating solar production. One peak sun hour equals one hour of sunlight at an intensity of 1,000 watts per square meter. The US Southwest averages 5.5 to 7 peak sun hours, making it ideal for solar. The Southeast and Midwest average 4 to 5 hours, while the Pacific Northwest and Northeast average 3 to 4.5 hours. Even in lower-sun regions, solar panels produce significant energy because they still generate electricity on cloudy days, just at reduced capacity.
+      </p>
+
+      <h3>Portrait vs Landscape Orientation</h3>
+      <p>
+        Panel orientation does not affect electrical output per panel but does determine how many panels fit on your roof. Portrait mounting (standing tall) is the most common residential configuration and typically results in fewer mounting rails. Landscape mounting (lying flat) can maximize panel count on roofs with limited width. Your solar installer will recommend the best orientation based on roof geometry, structural attachment points, and local wind load requirements.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many solar panels fit on my roof?</h3>
+      <p>
+        Divide your usable roof dimensions by the panel dimensions. A standard 400W panel is 1.7m x 1.0m. A 12m x 8m roof in portrait orientation fits 12 panels along the length and 4 along the width for 48 panels total. Account for obstructions like vents, chimneys, and required setbacks from roof edges.
+      </p>
+
+      <h3>How much electricity will my panels produce annually?</h3>
+      <p>
+        Use the formula: kW capacity x peak sun hours x 365 x 0.80. For example, a 19.2 kW system (48 panels x 400W) in an area with 5 peak sun hours produces approximately 28,032 kWh per year. The average US home uses about 10,500 kWh annually.
+      </p>
+
+      <h3>What are peak sun hours?</h3>
+      <p>
+        Peak sun hours measure solar irradiance, not daylight hours. One peak sun hour equals 1,000 W/m2 for one hour. The US Southwest gets 5-7 peak sun hours, the Midwest 4-5, and the Northeast 3-4.5.
+      </p>
+
+      <h3>What wattage are typical residential panels?</h3>
+      <p>
+        Modern residential panels are typically 370-430 watts, with 400W being the standard for new installations. Panel efficiency has improved from 15% to over 22% in recent years, meaning you get more power from the same physical panel size.
+      </p>
+
+      <h3>Does portrait vs landscape orientation affect output?</h3>
+      <p>
+        No, each panel produces the same wattage regardless of orientation. However, orientation determines how many panels physically fit on your roof. Portrait is most common for residential installations. Landscape can maximize count on roofs with limited width.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Electrical Load Calculator", description: "Calculate total electrical load and panel size for your home.", path: construction_electrical_load_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Roofing Calculator", description: "Estimate roofing materials, squares, and underlayment needed.", path: construction_roofing_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "HVAC BTU Calculator", description: "Calculate heating and cooling BTU requirements for your space.", path: construction_hvac_btu_path, icon_path: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("solar-panel-layout-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,191 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "SaaS Metrics Calculator - MRR, ARR, Churn, LTV & CAC Tool",
+  description: "Calculate key SaaS metrics: MRR, ARR, churn rate, LTV, CAC ratio, and quick ratio from your subscription data. Free SaaS metrics calculator for founders.",
+  canonical: finance_saas_metrics_url,
+  og: {
+    title: "SaaS Metrics Calculator - MRR, ARR, Churn, LTV & CAC | CalcWise",
+    description: "Calculate key SaaS metrics: MRR, ARR, churn rate, LTV, CAC ratio, and quick ratio from subscription data.",
+    url: finance_saas_metrics_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "SaaS Metrics Calculator", url: finance_saas_metrics_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is MRR and how is it calculated?", answer: "MRR (Monthly Recurring Revenue) is the total predictable revenue your business earns each month from active subscriptions. It is calculated by summing the monthly subscription fees of all paying customers. For annual plans, divide the annual fee by 12. MRR is the fundamental building block for all SaaS financial metrics." },
+  { question: "What is a good churn rate for SaaS?", answer: "A good monthly churn rate for SaaS companies is 3-5% for SMB-focused products and under 1% for enterprise SaaS. Annual churn below 10% is considered excellent. Negative net revenue churn, where expansion revenue from existing customers exceeds lost revenue from churned customers, is the gold standard." },
+  { question: "How is Customer Lifetime Value (LTV) calculated?", answer: "LTV is calculated as ARPU (Average Revenue Per User) divided by the monthly churn rate. For example, if ARPU is $100/month and monthly churn is 5%, LTV = $100 / 0.05 = $2,000. This represents the total revenue you can expect from an average customer over their entire relationship with your business." },
+  { question: "What is a good LTV to CAC ratio?", answer: "The benchmark LTV:CAC ratio is 3:1 or higher, meaning customers generate three times more revenue than the cost to acquire them. Below 1:1 means you are losing money on each customer. Between 1:1 and 3:1 suggests room for improvement. Above 5:1 may indicate underinvestment in growth." },
+  { question: "What is the SaaS quick ratio?", answer: "The SaaS quick ratio measures growth efficiency by dividing new MRR (from new and expansion customers) by lost MRR (from churned and contracted customers). A quick ratio above 4x indicates healthy growth. Between 2-4x is acceptable. Below 2x suggests the business is struggling to outpace churn." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "SaaS Metrics Calculator",
+  description: "Calculate MRR, ARR, churn rate, LTV, CAC ratio, and quick ratio from subscription data.",
+  url: finance_saas_metrics_url,
+  category: "FinanceApplication",
+  calculator_slug: "saas-metrics"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "SaaS Metrics Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">SaaS Metrics Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your key SaaS metrics: MRR, ARR, churn rate, LTV, CAC ratio, and quick ratio from subscription data.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="saas-metrics-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="saas-mrr" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Subscriptions / MRR ($)</label>
+            <input id="saas-mrr" type="number" inputmode="decimal" data-saas-metrics-calculator-target="monthlySubscriptions" data-action="input->saas-metrics-calculator#calculate" class="w-full" placeholder="50000" step="100" min="0">
+          </div>
+          <div>
+            <label for="saas-customers" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Customers</label>
+            <input id="saas-customers" type="number" inputmode="numeric" data-saas-metrics-calculator-target="totalCustomers" data-action="input->saas-metrics-calculator#calculate" class="w-full" placeholder="500" step="1" min="0">
+          </div>
+          <div>
+            <label for="saas-new" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">New Customers (This Month)</label>
+            <input id="saas-new" type="number" inputmode="numeric" data-saas-metrics-calculator-target="newCustomers" data-action="input->saas-metrics-calculator#calculate" class="w-full" placeholder="30" step="1" min="0">
+          </div>
+          <div>
+            <label for="saas-churned" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Churned Customers (This Month)</label>
+            <input id="saas-churned" type="number" inputmode="numeric" data-saas-metrics-calculator-target="churnedCustomers" data-action="input->saas-metrics-calculator#calculate" class="w-full" placeholder="15" step="1" min="0">
+          </div>
+          <div>
+            <label for="saas-cac" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Customer Acquisition Cost ($)</label>
+            <input id="saas-cac" type="number" inputmode="decimal" data-saas-metrics-calculator-target="cac" data-action="input->saas-metrics-calculator#calculate" class="w-full" placeholder="500" step="10" min="0">
+          </div>
+          <div>
+            <label for="saas-arpu" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">ARPU Override ($ optional)</label>
+            <input id="saas-arpu" type="number" inputmode="decimal" data-saas-metrics-calculator-target="arpu" data-action="input->saas-metrics-calculator#calculate" class="w-full" placeholder="Auto-calculated" step="1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Key Metrics</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">MRR</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-saas-metrics-calculator-target="mrr">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">ARR</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-saas-metrics-calculator-target="arr">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Churn Rate</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-saas-metrics-calculator-target="churnRate">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">LTV</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-saas-metrics-calculator-target="ltv">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">LTV:CAC Ratio</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-saas-metrics-calculator-target="ltvCacRatio">0.00x</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">CAC Payback</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-saas-metrics-calculator-target="cacPayback">0 months</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Quick Ratio</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-saas-metrics-calculator-target="quickRatio">0.00x</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Health Status</span>
+              <span data-saas-metrics-calculator-target="healthStatus" class="text-xl font-bold text-green-600 dark:text-green-400">--</span>
+            </div>
+          </div>
+          <button data-action="click->saas-metrics-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "saas-metrics" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the SaaS Metrics Calculator</h2>
+      <p>
+        Enter your monthly recurring revenue (MRR), total customer count, new customers this month, churned customers, and your customer acquisition cost (CAC). Optionally override the ARPU if it differs from MRR divided by customers. The calculator instantly computes all essential SaaS metrics including ARR, churn rate, LTV, LTV:CAC ratio, CAC payback period, and quick ratio.
+      </p>
+      <p>
+        These metrics are the language of SaaS businesses. Whether you are preparing for a board meeting, fundraising, or simply tracking your business health, understanding these numbers is essential. Investors look at these metrics first when evaluating SaaS companies, and tracking them over time reveals trends that inform strategic decisions.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Key SaaS Metrics</h2>
+      <p>
+        <strong>MRR</strong> (Monthly Recurring Revenue) is the heartbeat of any subscription business. <strong>ARR</strong> (Annual Recurring Revenue) is simply MRR times 12 and is the standard metric for enterprise SaaS. <strong>Churn rate</strong> measures the percentage of customers lost per month. <strong>LTV</strong> (Customer Lifetime Value) estimates total revenue from an average customer. <strong>CAC</strong> (Customer Acquisition Cost) is the cost to acquire one customer.
+      </p>
+
+      <h3>The LTV:CAC Ratio</h3>
+      <p>
+        The LTV:CAC ratio is arguably the most important efficiency metric in SaaS. A ratio of 3:1 means every dollar spent on acquisition generates three dollars of lifetime revenue. Below 1:1, you are losing money on each customer. Above 5:1 may indicate you are not investing enough in growth. The sweet spot for most venture-backed SaaS companies is 3:1 to 5:1.
+      </p>
+
+      <h3>The SaaS Quick Ratio</h3>
+      <p>
+        The quick ratio measures growth efficiency: new MRR divided by lost MRR. A ratio above 4x is excellent, meaning for every dollar lost to churn, you add four dollars from new customers. This metric helps you understand whether growth is sustainable or if churn is undermining your acquisition efforts.
+      </p>
+
+      <h3>Benchmarks for SaaS Health</h3>
+      <p>
+        Top-performing SaaS companies achieve monthly churn below 2%, LTV:CAC above 3x, CAC payback under 12 months, and net revenue retention above 100%. Early-stage companies may not hit all benchmarks, but tracking improvement over time is what matters most. Focus on the metrics you can improve and set quarterly targets.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is MRR and how is it calculated?</h3>
+      <p>MRR is the total monthly subscription revenue. Sum all paying customers' monthly fees. For annual plans, divide by 12.</p>
+
+      <h3>What is a good churn rate for SaaS?</h3>
+      <p>3-5% monthly for SMB SaaS, under 1% for enterprise. Annual churn below 10% is excellent.</p>
+
+      <h3>How is LTV calculated?</h3>
+      <p>LTV = ARPU / monthly churn rate. With $100 ARPU and 5% churn, LTV = $100 / 0.05 = $2,000.</p>
+
+      <h3>What is a good LTV:CAC ratio?</h3>
+      <p>3:1 or higher. Below 1:1 means losing money per customer. Above 5:1 may indicate underinvestment in growth.</p>
+
+      <h3>What is the SaaS quick ratio?</h3>
+      <p>New MRR divided by lost MRR. Above 4x is healthy growth. Below 2x suggests churn is undermining acquisition.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Startup Runway Calculator", description: "Calculate months of runway for your startup.", path: finance_startup_runway_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "ROI Calculator", description: "Calculate return on investment.", path: finance_roi_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Break-Even Calculator", description: "Calculate the break-even point for your business.", path: finance_break_even_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <% blog_posts = related_blog_posts("saas-metrics-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -71,4 +71,15 @@ namespace :finance do
   get "side-hustle-calculator", to: "calculators#side_hustle", as: :side_hustle
   get "emergency-fund-calculator", to: "calculators#emergency_fund", as: :emergency_fund
   get "lease-vs-buy-calculator", to: "calculators#lease_vs_buy", as: :lease_vs_buy
+  get "heloc-calculator", to: "calculators#heloc", as: :heloc
+  get "debt-snowball-vs-avalanche-calculator", to: "calculators#debt_snowball_avalanche", as: :debt_snowball_avalanche
+  get "bond-yield-calculator", to: "calculators#bond_yield", as: :bond_yield
+  get "options-profit-calculator", to: "calculators#options_profit", as: :options_profit
+  get "freelance-rate-calculator", to: "calculators#freelance_rate", as: :freelance_rate
+  get "sales-tax-calculator", to: "calculators#sales_tax", as: :sales_tax
+  get "vat-calculator", to: "calculators#vat", as: :vat
+  get "tip-pooling-calculator", to: "calculators#tip_pooling", as: :tip_pooling
+  get "net-pay-calculator", to: "calculators#net_pay", as: :net_pay
+  get "startup-runway-calculator", to: "calculators#startup_runway", as: :startup_runway
+  get "saas-metrics-calculator", to: "calculators#saas_metrics", as: :saas_metrics
 end

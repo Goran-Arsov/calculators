@@ -1,0 +1,178 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "HELOC Calculator - Free Home Equity Line of Credit Tool",
+  description: "Calculate your home equity line of credit: available equity, monthly payment, interest-only payment, and total interest. Free HELOC calculator with instant results.",
+  canonical: finance_heloc_url,
+  og: {
+    title: "HELOC Calculator - Free Home Equity Line of Credit Tool | CalcWise",
+    description: "Calculate your home equity line of credit: available equity, monthly payment, interest-only payment, and total interest.",
+    url: finance_heloc_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "HELOC Calculator", url: finance_heloc_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a HELOC and how does it work?", answer: "A Home Equity Line of Credit (HELOC) is a revolving credit line secured by your home equity. Unlike a home equity loan that gives you a lump sum, a HELOC lets you borrow as needed up to your credit limit during a draw period (typically 5-10 years), then repay during a repayment period (10-20 years)." },
+  { question: "How much equity can I borrow with a HELOC?", answer: "Most lenders allow you to borrow up to 80-85% of your home value minus your outstanding mortgage balance. For example, if your home is worth $400,000 and you owe $250,000, with an 80% limit you could access up to $70,000 ($400,000 x 0.80 - $250,000)." },
+  { question: "What is the difference between a HELOC and a home equity loan?", answer: "A HELOC is a revolving line of credit with variable rates where you borrow as needed. A home equity loan provides a fixed lump sum with a fixed interest rate and predictable monthly payments. HELOCs offer more flexibility, while home equity loans offer more stability." },
+  { question: "Are HELOC interest payments tax deductible?", answer: "HELOC interest may be tax deductible if the funds are used to buy, build, or substantially improve your home. Interest on HELOC funds used for other purposes such as paying off credit cards or funding education is generally not deductible under current tax law." },
+  { question: "What happens if my home value decreases with a HELOC?", answer: "If your home value drops, your lender may reduce your credit limit, freeze your line of credit, or require early repayment. This is why it is important not to borrow the maximum available and to maintain a financial cushion." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "HELOC Calculator",
+  description: "Calculate your home equity line of credit: available equity, monthly payment, and total interest.",
+  url: finance_heloc_url,
+  category: "FinanceApplication",
+  calculator_slug: "heloc"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "HELOC Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">HELOC Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your available home equity, monthly HELOC payment, and total interest cost.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="heloc-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="heloc-home-value" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Home Value ($)</label>
+            <input id="heloc-home-value" type="number" inputmode="decimal" data-heloc-calculator-target="homeValue" data-action="input->heloc-calculator#calculate" class="w-full" placeholder="400000" step="1000" min="0">
+          </div>
+          <div>
+            <label for="heloc-mortgage-balance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Mortgage Balance ($)</label>
+            <input id="heloc-mortgage-balance" type="number" inputmode="decimal" data-heloc-calculator-target="mortgageBalance" data-action="input->heloc-calculator#calculate" class="w-full" placeholder="250000" step="1000" min="0">
+          </div>
+          <div>
+            <label for="heloc-credit-limit" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Credit Limit (% of Home Value)</label>
+            <input id="heloc-credit-limit" type="number" inputmode="decimal" data-heloc-calculator-target="creditLimitPercent" data-action="input->heloc-calculator#calculate" class="w-full" placeholder="80" step="1" min="1" max="100" value="80">
+          </div>
+          <div>
+            <label for="heloc-annual-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Interest Rate (%)</label>
+            <input id="heloc-annual-rate" type="number" inputmode="decimal" data-heloc-calculator-target="annualRate" data-action="input->heloc-calculator#calculate" class="w-full" placeholder="8.5" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="heloc-draw-amount" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Draw Amount ($)</label>
+            <input id="heloc-draw-amount" type="number" inputmode="decimal" data-heloc-calculator-target="drawAmount" data-action="input->heloc-calculator#calculate" class="w-full" placeholder="50000" step="1000" min="0">
+          </div>
+          <div>
+            <label for="heloc-repayment-years" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Repayment Period (Years)</label>
+            <input id="heloc-repayment-years" type="number" inputmode="decimal" data-heloc-calculator-target="repaymentYears" data-action="input->heloc-calculator#calculate" class="w-full" placeholder="20" step="1" min="1" max="30">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Available Equity</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-heloc-calculator-target="availableEquity">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Monthly Payment</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-heloc-calculator-target="monthlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Interest-Only Payment</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-heloc-calculator-target="interestOnlyPayment">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Paid</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-heloc-calculator-target="totalPaid">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Interest</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-heloc-calculator-target="totalInterest">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->heloc-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "heloc" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the HELOC Calculator</h2>
+      <p>
+        This free HELOC calculator helps you determine how much equity you can access in your home and what your monthly payments will be. Enter your home value, current mortgage balance, the percentage your lender allows as a credit limit (typically 80%), the HELOC interest rate, the amount you plan to draw, and the repayment period. The calculator instantly shows your available equity, monthly payment (principal plus interest), interest-only payment, and total interest cost.
+      </p>
+      <p>
+        A HELOC is one of the most flexible ways to tap into your home equity. Unlike a traditional home equity loan, a HELOC works like a credit card secured by your property. During the draw period, you can borrow and repay as needed, paying interest only on the amount you use. Understanding the costs before you borrow is essential for making a sound financial decision.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding HELOC Payments</h2>
+      <p>
+        Most HELOCs have two phases. During the draw period, typically 5 to 10 years, you can borrow money and usually make interest-only payments. During the repayment period, typically 10 to 20 years, you repay both principal and interest. This calculator shows both the interest-only payment and the fully amortized payment so you can plan for both phases.
+      </p>
+
+      <h3>HELOC vs. Home Equity Loan</h3>
+      <p>
+        A home equity loan gives you a lump sum with a fixed rate, while a HELOC provides revolving credit with a variable rate. Choose a HELOC if you need flexible access to funds over time, such as for ongoing home renovations. Choose a home equity loan if you need a specific amount upfront and prefer the predictability of fixed payments.
+      </p>
+
+      <h3>Tips for Using a HELOC Wisely</h3>
+      <p>
+        Borrow only what you need and can afford to repay. Keep in mind that HELOC rates are typically variable, meaning your payments could increase if interest rates rise. Use HELOC funds for value-adding purposes like home improvements rather than consumable expenses. Maintain an emergency fund separate from your HELOC, and never treat your home equity as an ATM for discretionary spending.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a HELOC and how does it work?</h3>
+      <p>A Home Equity Line of Credit (HELOC) is a revolving credit line secured by your home equity. Unlike a home equity loan that gives you a lump sum, a HELOC lets you borrow as needed up to your credit limit during a draw period (typically 5-10 years), then repay during a repayment period (10-20 years).</p>
+
+      <h3>How much equity can I borrow with a HELOC?</h3>
+      <p>Most lenders allow you to borrow up to 80-85% of your home value minus your outstanding mortgage balance. For example, if your home is worth $400,000 and you owe $250,000, with an 80% limit you could access up to $70,000.</p>
+
+      <h3>Are HELOC interest payments tax deductible?</h3>
+      <p>HELOC interest may be tax deductible if the funds are used to buy, build, or substantially improve your home. Interest on HELOC funds used for other purposes is generally not deductible under current tax law.</p>
+
+      <h3>What happens if my home value decreases?</h3>
+      <p>If your home value drops, your lender may reduce your credit limit, freeze your line of credit, or require early repayment. This is why it is important not to borrow the maximum available.</p>
+
+      <h3>What is the difference between a HELOC and a home equity loan?</h3>
+      <p>A HELOC is a revolving line of credit with variable rates where you borrow as needed. A home equity loan provides a fixed lump sum with a fixed interest rate and predictable monthly payments.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Mortgage Calculator", description: "Calculate your monthly mortgage payment and total cost.", path: finance_mortgage_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
+      { name: "Home Affordability Calculator", description: "Find out how much house you can afford.", path: finance_home_affordability_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Loan Calculator", description: "Calculate monthly payments and total cost for any loan.", path: finance_loan_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <% blog_posts = related_blog_posts("heloc-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,185 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Car Depreciation Calculator - Vehicle Value Over Time",
+  description: "Calculate how much your car depreciates each year using the declining balance method. See year-by-year value breakdown, future value, and total depreciation percentage.",
+  canonical: automotive_car_depreciation_url,
+  og: {
+    title: "Car Depreciation Calculator - Vehicle Value Over Time | CalcWise",
+    description: "Calculate how much your car depreciates each year using the declining balance method. See year-by-year value breakdown and future value.",
+    url: automotive_car_depreciation_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Automotive", url: category_url("automotive") },
+  { name: "Car Depreciation Calculator", url: automotive_car_depreciation_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How fast do cars depreciate?", answer: "New cars depreciate fastest in the first year, losing approximately 20% of their value. After that, vehicles typically lose 15% per year for the next several years. By year five, a new car is worth roughly 37-40% of its original purchase price. Luxury vehicles and certain brands depreciate faster, while trucks and economy cars tend to hold value better." },
+  { question: "What is the declining balance depreciation method?", answer: "The declining balance method calculates depreciation as a fixed percentage of the vehicle's current value each year rather than its original price. This means the dollar amount of depreciation decreases each year even though the percentage rate stays the same, accurately reflecting how cars lose more value in earlier years and less as they age." },
+  { question: "Which cars hold their value best?", answer: "Trucks and SUVs generally hold their value best, especially Toyota, Lexus, and Porsche vehicles. The Toyota Tacoma, Jeep Wrangler, and Porsche 911 consistently rank among the lowest-depreciating vehicles. Electric vehicles are improving but historically depreciated faster due to rapid technology changes." },
+  { question: "Does mileage affect car depreciation?", answer: "Yes, mileage is one of the largest factors in car depreciation beyond age. The average driver puts about 12,000-15,000 miles per year on a vehicle. Cars with significantly higher mileage depreciate faster, while low-mileage vehicles retain more value. Each additional 10,000 miles beyond average can reduce value by 5-10%." },
+  { question: "How can I minimize car depreciation?", answer: "To minimize depreciation, buy a car that is 2-3 years old so the previous owner absorbs the steepest depreciation. Keep mileage reasonable, maintain the vehicle well with documented service records, choose popular colors and common options, and avoid modifications. Selling privately rather than trading in also helps you recover more value." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Car Depreciation Calculator",
+  description: "Calculate how much your car depreciates each year with a year-by-year value schedule.",
+  url: automotive_car_depreciation_url,
+  category: "AutomotiveApplication",
+  calculator_slug: "car-depreciation"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Automotive", url: category_path("automotive") },
+  { name: "Car Depreciation Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Car Depreciation Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">See how your vehicle's value changes over time. Enter purchase price, vehicle age, and depreciation rate to get a year-by-year breakdown.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="car-depreciation-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="car-dep-price" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Purchase Price ($)</label>
+            <input id="car-dep-price" type="number" inputmode="decimal" data-car-depreciation-calculator-target="purchasePrice" data-action="input->car-depreciation-calculator#calculate" class="w-full" placeholder="35000" step="500" min="0">
+          </div>
+          <div>
+            <label for="car-dep-age" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Vehicle Age (Years)</label>
+            <input id="car-dep-age" type="number" inputmode="numeric" data-car-depreciation-calculator-target="vehicleAge" data-action="input->car-depreciation-calculator#calculate" class="w-full" placeholder="0" step="1" min="0">
+          </div>
+          <div>
+            <label for="car-dep-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Depreciation Rate (%)</label>
+            <input id="car-dep-rate" type="number" inputmode="decimal" data-car-depreciation-calculator-target="depreciationRate" data-action="input->car-depreciation-calculator#calculate" class="w-full" placeholder="15" step="0.5" min="0" max="100" value="15">
+          </div>
+          <div>
+            <label for="car-dep-holding" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Holding Period (Years)</label>
+            <input id="car-dep-holding" type="number" inputmode="numeric" data-car-depreciation-calculator-target="holdingYears" data-action="input->car-depreciation-calculator#calculate" class="w-full" placeholder="5" step="1" min="1" value="5">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Current Value</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-car-depreciation-calculator-target="currentValue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Future Value</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-car-depreciation-calculator-target="futureValue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Depreciation</span>
+              <span class="text-xl font-bold text-red-600 dark:text-red-400" data-car-depreciation-calculator-target="totalDepreciation">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Depreciation %</span>
+              <span class="text-xl font-bold text-red-600 dark:text-red-400" data-car-depreciation-calculator-target="depreciationPct">0.0%</span>
+            </div>
+          </div>
+          <button data-action="click->car-depreciation-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+
+      <%# Depreciation schedule table %>
+      <div class="mt-8">
+        <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3">Year-by-Year Depreciation Schedule</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th class="py-2 px-3 text-sm font-semibold text-gray-600 dark:text-gray-400">Year</th>
+                <th class="py-2 px-3 text-sm font-semibold text-gray-600 dark:text-gray-400">Start Value</th>
+                <th class="py-2 px-3 text-sm font-semibold text-gray-600 dark:text-gray-400">Depreciation</th>
+                <th class="py-2 px-3 text-sm font-semibold text-gray-600 dark:text-gray-400">End Value</th>
+              </tr>
+            </thead>
+            <tbody data-car-depreciation-calculator-target="schedule"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "car-depreciation" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Car Depreciation Calculator</h2>
+      <p>
+        Our car depreciation calculator uses the declining balance method to estimate your vehicle's value over time. Enter your vehicle's purchase price, its current age, the expected annual depreciation rate, and how many years you plan to keep it. The calculator generates a year-by-year schedule showing exactly how value declines, plus summary figures for current value, future value, and total depreciation during the holding period.
+      </p>
+      <p>
+        The default 15% annual rate after year one is a widely-used industry average, though your actual depreciation may differ based on make, model, mileage, condition, and market demand. New vehicles use a 20% first-year depreciation rate to reflect the well-documented steep initial drop in value.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Car Depreciation</h2>
+      <p>
+        Depreciation is the single largest cost of vehicle ownership for most drivers, often exceeding fuel, insurance, and maintenance costs combined. A $35,000 new car will typically lose over $15,000 in value during its first three years. Understanding depreciation helps you make smarter buying and selling decisions, whether you are purchasing new or used, deciding between leasing and buying, or timing a sale.
+      </p>
+
+      <h3>The Depreciation Curve</h3>
+      <p>
+        Cars depreciate fastest in the first three years. A new car loses roughly 20% of its value the moment you drive it off the lot, then continues to lose 15% annually. By year five, it retains only about 37% of its original value. After five years, the rate slows significantly, and by year ten, values stabilize. This is why buying a 2-3 year old vehicle is often the best financial decision, as someone else absorbs the steepest depreciation.
+      </p>
+
+      <h3>Factors That Influence Depreciation Rate</h3>
+      <p>
+        Brand reputation, reliability scores, fuel economy, market demand, and body style all influence how quickly a vehicle loses value. Trucks and SUVs typically depreciate more slowly than sedans. Popular models with strong reliability records, like Toyota and Lexus, hold value better than luxury European brands. Color, options, and condition at time of sale also play a role.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How fast do cars depreciate?</h3>
+      <p>
+        New cars depreciate fastest in the first year, losing approximately 20% of their value. After that, vehicles typically lose 15% per year for the next several years. By year five, a new car is worth roughly 37-40% of its original purchase price.
+      </p>
+
+      <h3>What is the declining balance depreciation method?</h3>
+      <p>
+        The declining balance method calculates depreciation as a fixed percentage of the vehicle's current value each year rather than its original price. The dollar amount decreases each year even though the rate stays the same, accurately reflecting how cars lose more value in earlier years.
+      </p>
+
+      <h3>Which cars hold their value best?</h3>
+      <p>
+        Trucks and SUVs generally hold their value best, especially Toyota, Lexus, and Porsche vehicles. The Toyota Tacoma, Jeep Wrangler, and Porsche 911 consistently rank among the lowest-depreciating vehicles.
+      </p>
+
+      <h3>Does mileage affect car depreciation?</h3>
+      <p>
+        Yes, mileage is one of the largest factors in car depreciation beyond age. Cars with significantly higher mileage depreciate faster, while low-mileage vehicles retain more value.
+      </p>
+
+      <h3>How can I minimize car depreciation?</h3>
+      <p>
+        Buy a car that is 2-3 years old, keep mileage reasonable, maintain the vehicle well with documented service records, choose popular colors and common options, and avoid modifications. Selling privately rather than trading in also helps you recover more value.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Car Payment Total Cost Calculator", description: "Calculate the total cost of owning a vehicle including loan, insurance, fuel, and maintenance.", path: automotive_car_payment_total_cost_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "MPG Calculator", description: "Calculate your vehicle's miles per gallon from distance and fuel used.", path: automotive_mpg_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Auto Loan Calculator", description: "Calculate your monthly car payment and total loan cost.", path: finance_auto_loan_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "automotive" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

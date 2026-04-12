@@ -1,0 +1,143 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Docker Compose Generator - Build docker-compose.yml Online",
+  description: "Generate docker-compose.yml files by selecting services like PostgreSQL, Redis, Nginx, Node.js, Rails, and more. Free online Docker Compose generator tool.",
+  canonical: everyday_docker_compose_generator_url,
+  og: {
+    title: "Docker Compose Generator - Build docker-compose.yml | CalcWise",
+    description: "Generate docker-compose.yml files by selecting services. Supports PostgreSQL, Redis, Nginx, and more.",
+    url: everyday_docker_compose_generator_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Docker Compose Generator", url: everyday_docker_compose_generator_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is Docker Compose?", answer: "Docker Compose is a tool for defining and running multi-container Docker applications. You describe your services in a YAML file called docker-compose.yml, specifying images, ports, volumes, environment variables, and dependencies. A single command (docker compose up) starts all the services together, making it ideal for local development environments and simple deployments." },
+  { question: "What services does this generator support?", answer: "This generator supports PostgreSQL, MySQL, Redis, MongoDB, Nginx, Node.js, Ruby on Rails, Elasticsearch, RabbitMQ, Memcached, MailHog for email testing, and MinIO for S3-compatible storage. Each service includes sensible defaults for ports, environment variables, volumes, and health checks." },
+  { question: "How do volumes work in Docker Compose?", answer: "Named volumes persist data between container restarts. When a container is removed, its named volumes are preserved unless explicitly deleted. For databases like PostgreSQL and MySQL, volumes ensure your data survives container recreation. Bind mounts (starting with ./) map local directories into the container for live code reloading during development." },
+  { question: "What are health checks?", answer: "Health checks verify that a service is ready to accept connections. Docker periodically runs the health check command and marks the container as healthy, unhealthy, or starting. This is especially important for databases that need time to initialize. Other services can use depends_on with condition: service_healthy to wait for dependencies to be fully ready." },
+  { question: "How do I customize the generated file?", answer: "The generated file provides a solid starting point. Customize it by changing image tags to specific versions, adjusting environment variables for your project, modifying port mappings to avoid conflicts, adding networks for service isolation, and including additional volumes for configuration files. Always change default passwords before using in any shared environment." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Docker Compose Generator",
+  description: "Generate docker-compose.yml files from service selections including PostgreSQL, Redis, Nginx, and more.",
+  url: everyday_docker_compose_generator_url,
+  category: "UtilityApplication",
+  calculator_slug: "docker-compose-generator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Docker Compose Generator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Docker Compose Generator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Select your services and generate a docker-compose.yml file with proper ports, volumes, health checks, and dependencies.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="docker-compose-generator-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-5">
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Select Services</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <% %w[postgres mysql redis mongodb nginx node rails elasticsearch rabbitmq memcached mailhog minio].each do |service| %>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" value="<%= service %>" data-service-checkbox class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                <span class="text-sm text-gray-700 dark:text-gray-300 capitalize"><%= service %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-3 items-center">
+          <button data-action="click->docker-compose-generator-calculator#generate" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm text-sm font-semibold transition-all duration-200">Generate</button>
+          <button data-action="click->docker-compose-generator-calculator#copy" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium transition-all duration-200">Copy</button>
+          <span data-docker-compose-generator-calculator-target="serviceCount" class="text-sm text-gray-500 dark:text-gray-400"></span>
+        </div>
+
+        <div data-docker-compose-generator-calculator-target="error" class="hidden p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm"></div>
+
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">docker-compose.yml</h2>
+          <textarea data-docker-compose-generator-calculator-target="output" readonly rows="20" class="w-full font-mono text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none resize-y" placeholder="Select services and click Generate..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "docker-compose-generator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use Docker Compose</h2>
+      <p>
+        Docker Compose simplifies running multi-container applications. Instead of starting each container manually with long docker run commands, you define all your services in a single YAML file. Running <code>docker compose up</code> starts everything together with the correct configuration, networking, and volume mounts. This is particularly valuable for development environments where you need a database, cache, and application server running simultaneously.
+      </p>
+      <p>
+        Select the services your project needs from the checkboxes above. Each service comes preconfigured with a recent stable image, standard ports, named volumes for data persistence, and health checks where applicable. The generator also handles service dependencies, so your Rails application will wait for PostgreSQL and Redis to be ready before starting.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Available Services</h2>
+      <p>
+        PostgreSQL and MySQL provide relational database options with persistent storage volumes and health checks. Redis offers in-memory caching and background job processing. MongoDB supports document-based data storage. Nginx serves as a reverse proxy and web server. Node.js and Rails provide application runtime environments. Elasticsearch enables full-text search. RabbitMQ handles message queuing. MailHog captures outbound emails for testing without sending real messages. MinIO provides S3-compatible object storage.
+      </p>
+
+      <h3>Customizing the Generated File</h3>
+      <p>
+        The generated file is a starting point. Always change default passwords before sharing or deploying. Pin image tags to specific versions for reproducible builds. Add custom networks to isolate services. Include environment-specific configuration using <code>.env</code> files referenced with <code>env_file</code>. For production, remove development-only services like MailHog and add resource limits.
+      </p>
+
+      <h3>Common Commands</h3>
+      <p>
+        Use <code>docker compose up -d</code> to start services in the background. <code>docker compose down</code> stops and removes containers but preserves volumes. <code>docker compose logs -f</code> streams logs from all services. <code>docker compose ps</code> shows the status of all containers. <code>docker compose exec service_name command</code> runs a command inside a running container.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is Docker Compose?</h3>
+      <p>A tool for defining and running multi-container applications using a YAML file. One command starts all services together.</p>
+
+      <h3>What services are supported?</h3>
+      <p>PostgreSQL, MySQL, Redis, MongoDB, Nginx, Node.js, Rails, Elasticsearch, RabbitMQ, Memcached, MailHog, and MinIO.</p>
+
+      <h3>How do volumes work?</h3>
+      <p>Named volumes persist data between container restarts. Bind mounts map local directories for live code reloading.</p>
+
+      <h3>What are health checks?</h3>
+      <p>Commands that verify a service is ready. Other services can wait for dependencies to be healthy before starting.</p>
+
+      <h3>How do I customize the output?</h3>
+      <p>Change passwords, pin image versions, add networks, and include .env files. Remove dev-only services for production.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Dockerfile Generator", description: "Generate production-ready Dockerfiles for any language.", path: everyday_dockerfile_generator_path, icon_path: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" },
+      { name: "Nginx Config Generator", description: "Generate Nginx server block configurations.", path: everyday_nginx_config_generator_path, icon_path: "M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" },
+      { name: "Env Variable Validator", description: "Validate .env files for errors and duplicates.", path: everyday_env_validator_path, icon_path: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("docker-compose-generator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

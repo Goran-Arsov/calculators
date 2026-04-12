@@ -1,0 +1,152 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Vector Calculator - Dot Product, Cross Product, Magnitude | CalcWise",
+  description: "Compute vector addition, subtraction, dot product, cross product, magnitude, and normalization for 2D and 3D vectors. Free online vector calculator.",
+  canonical: math_vector_url,
+  og: {
+    title: "Vector Calculator | CalcWise",
+    description: "Perform vector operations: add, subtract, dot product, cross product, magnitude for 2D and 3D vectors.",
+    url: math_vector_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Math", url: category_url("math") },
+  { name: "Vector Calculator", url: math_vector_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a vector?", answer: "A vector is a mathematical object that has both magnitude (length) and direction. In 2D, a vector is defined by two components (x, y), and in 3D by three components (x, y, z). Vectors are used extensively in physics, engineering, computer graphics, and machine learning." },
+  { question: "What is the dot product?", answer: "The dot product of two vectors a and b is a scalar value computed as a1*b1 + a2*b2 + a3*b3. It equals |a|*|b|*cos(theta), where theta is the angle between the vectors. A dot product of zero means the vectors are perpendicular." },
+  { question: "What is the cross product?", answer: "The cross product of two 3D vectors produces a new vector perpendicular to both input vectors. For a = (a1,a2,a3) and b = (b1,b2,b3), the cross product is (a2*b3-a3*b2, a3*b1-a1*b3, a1*b2-a2*b1). Its magnitude equals |a|*|b|*sin(theta), representing the area of the parallelogram formed by the two vectors." },
+  { question: "How is vector magnitude calculated?", answer: "The magnitude (or length) of a vector v = (x, y, z) is sqrt(x^2 + y^2 + z^2). For 2D vectors v = (x, y), it is sqrt(x^2 + y^2). This is the Euclidean distance from the origin to the point represented by the vector." },
+  { question: "What does normalizing a vector mean?", answer: "Normalizing a vector means scaling it to have a magnitude of 1 while preserving its direction. The unit vector is computed as v / |v|. Normalizing is useful when you only care about direction, not magnitude, such as in lighting calculations in computer graphics." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Vector Calculator",
+  description: "Compute vector addition, subtraction, dot product, cross product, and magnitude for 2D and 3D vectors.",
+  url: math_vector_url,
+  category: "MathApplication",
+  calculator_slug: "vector"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Math", url: category_path("math") },
+  { name: "Vector Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Vector Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Compute vector operations for 2D and 3D vectors: addition, subtraction, dot product, cross product, magnitude, normalization, and scalar multiplication.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="vector-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">&rarr;</div>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Vector Operations</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="vec-op" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Operation</label>
+            <select id="vec-op" data-vector-calculator-target="operation" data-action="change->vector-calculator#updateVisibility" class="w-full">
+              <option value="add">Add (v1 + v2)</option>
+              <option value="subtract">Subtract (v1 - v2)</option>
+              <option value="dot_product">Dot Product (v1 &middot; v2)</option>
+              <option value="cross_product">Cross Product (v1 &times; v2)</option>
+              <option value="magnitude">Magnitude |v1|</option>
+              <option value="normalize">Normalize v1</option>
+              <option value="scalar_multiply">Scalar &times; v1</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Vector 1 (comma-separated)</label>
+            <input type="text" data-vector-calculator-target="v1" data-action="input->vector-calculator#calculate" class="w-full font-mono" placeholder="e.g. 1, 2, 3" value="1, 2, 3">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Enter 2 or 3 components separated by commas.</p>
+          </div>
+          <div data-vector-calculator-target="secondVector">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Vector 2 (comma-separated)</label>
+            <input type="text" data-vector-calculator-target="v2" data-action="input->vector-calculator#calculate" class="w-full font-mono" placeholder="e.g. 4, 5, 6" value="4, 5, 6">
+          </div>
+          <div data-vector-calculator-target="scalarInput" class="hidden">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Scalar</label>
+            <input type="number" step="any" value="2" data-vector-calculator-target="scalar" data-action="input->vector-calculator#calculate" class="w-full">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Result</h2>
+          <div class="space-y-3">
+            <div>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400 break-all" data-vector-calculator-target="result">&mdash;</span>
+            </div>
+            <div><span class="text-sm text-gray-500 dark:text-gray-400" data-vector-calculator-target="resultDetail"></span></div>
+            <div><span class="text-sm text-gray-500 dark:text-gray-400" data-vector-calculator-target="angleInfo"></span></div>
+            <div><span class="text-xs text-red-600 dark:text-red-400" data-vector-calculator-target="error"></span></div>
+          </div>
+          <button data-action="click->vector-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Result</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "vector" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Vector Calculator</h2>
+      <p>Select an operation, enter vector components separated by commas (2D or 3D), and see results instantly. For binary operations, both vectors must have the same number of dimensions. Cross product is available for 3D vectors only.</p>
+
+      <p>For example, the cross product of &lang;1, 2, 3&rang; and &lang;4, 5, 6&rang; gives &lang;&minus;3, 6, &minus;3&rang;. The dot product of the same vectors gives 1&times;4 + 2&times;5 + 3&times;6 = 32.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Vector Operations Explained</h2>
+      <p><strong>Addition and subtraction</strong> are performed component-wise: (a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub>) + (b<sub>1</sub>, b<sub>2</sub>, b<sub>3</sub>) = (a<sub>1</sub>+b<sub>1</sub>, a<sub>2</sub>+b<sub>2</sub>, a<sub>3</sub>+b<sub>3</sub>).</p>
+
+      <p>The <strong>dot product</strong> yields a scalar: a &middot; b = |a||b|cos&theta;. It measures how much two vectors point in the same direction. Perpendicular vectors have a dot product of zero.</p>
+
+      <p>The <strong>cross product</strong> (3D only) yields a vector perpendicular to both inputs. Its magnitude equals the area of the parallelogram formed by the two vectors, and it follows the right-hand rule for direction.</p>
+
+      <h3>Applications</h3>
+      <p>Vectors are fundamental in physics (force, velocity, acceleration), computer graphics (3D rendering, lighting, transformations), machine learning (feature vectors, embeddings), navigation (GPS, flight paths), and engineering (stress analysis, fluid flow). Understanding vector operations is essential for any quantitative STEM field.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a vector?</h3>
+      <p>A mathematical object with both magnitude and direction, defined by 2 or 3 components in a coordinate system.</p>
+
+      <h3>What is the dot product?</h3>
+      <p>A scalar product of two vectors equalling |a||b|cos&theta;. Zero dot product means the vectors are perpendicular.</p>
+
+      <h3>What is the cross product?</h3>
+      <p>A 3D operation producing a vector perpendicular to both inputs with magnitude |a||b|sin&theta;.</p>
+
+      <h3>How is magnitude calculated?</h3>
+      <p>|v| = &radic;(x&sup2; + y&sup2; + z&sup2;) for 3D, or &radic;(x&sup2; + y&sup2;) for 2D.</p>
+
+      <h3>What is normalization?</h3>
+      <p>Scaling a vector to unit length (magnitude 1) while preserving direction: v/|v|.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Matrix Calculator", description: "Add, subtract, multiply matrices and calculate determinants.", path: math_matrix_path, icon_path: "M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" },
+      { name: "Eigenvalue Calculator", description: "Find eigenvalues and eigenvectors of 2x2 and 3x3 matrices.", path: math_eigenvalue_path, icon_path: "M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" },
+      { name: "Complex Number Calculator", description: "Perform arithmetic on complex numbers.", path: math_complex_number_path, icon_path: "M12 4v16m-8-8h16" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "math" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

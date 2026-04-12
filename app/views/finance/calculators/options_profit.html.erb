@@ -1,0 +1,187 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Options Profit Calculator - Free Call & Put P/L Tool",
+  description: "Calculate call and put option profit/loss, break-even price, ROI, and max risk. Free options profit calculator for traders with instant results.",
+  canonical: finance_options_profit_url,
+  og: {
+    title: "Options Profit Calculator - Free Call & Put P/L Tool | CalcWise",
+    description: "Calculate call and put option profit/loss, break-even price, ROI, and max risk.",
+    url: finance_options_profit_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Options Profit Calculator", url: finance_options_profit_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do you calculate profit on a call option?", answer: "For a long call option, profit per share equals the underlying price minus the strike price minus the premium paid. Total profit is profit per share multiplied by the number of shares (contracts times 100). If the underlying price is below the strike price, you lose the premium paid. Your break-even point is the strike price plus the premium." },
+  { question: "How do you calculate profit on a put option?", answer: "For a long put option, profit per share equals the strike price minus the underlying price minus the premium paid. Total profit is profit per share multiplied by the number of shares (contracts times 100). If the underlying price is above the strike price, you lose the premium paid. Your break-even point is the strike price minus the premium." },
+  { question: "What is the maximum loss when buying options?", answer: "When buying options (calls or puts), your maximum loss is limited to the total premium paid, which equals the premium per share times 100 shares per contract times the number of contracts. This defined risk is one of the key advantages of buying options versus selling them." },
+  { question: "What does it mean when an option is in the money?", answer: "A call option is in the money when the underlying price is above the strike price. A put option is in the money when the underlying price is below the strike price. In-the-money options have intrinsic value, meaning they would be worth exercising at expiration." },
+  { question: "How is the break-even price calculated for options?", answer: "For a call option, break-even equals the strike price plus the premium paid. For a put option, break-even equals the strike price minus the premium paid. At the break-even price, you recover your entire premium with no profit or loss." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Options Profit Calculator",
+  description: "Calculate call and put option profit/loss, break-even price, ROI, and max risk.",
+  url: finance_options_profit_url,
+  category: "FinanceApplication",
+  calculator_slug: "options-profit"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Options Profit Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Options Profit Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your call or put option profit/loss, break-even price, ROI, and maximum risk instantly.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="options-profit-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="options-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Option Type</label>
+            <select id="options-type" data-options-profit-calculator-target="optionType" data-action="change->options-profit-calculator#calculate" class="w-full">
+              <option value="call">Call (Bullish)</option>
+              <option value="put">Put (Bearish)</option>
+            </select>
+          </div>
+          <div>
+            <label for="options-strike" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Strike Price ($)</label>
+            <input id="options-strike" type="number" inputmode="decimal" data-options-profit-calculator-target="strikePrice" data-action="input->options-profit-calculator#calculate" class="w-full" placeholder="150" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="options-premium" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Premium Per Share ($)</label>
+            <input id="options-premium" type="number" inputmode="decimal" data-options-profit-calculator-target="premium" data-action="input->options-profit-calculator#calculate" class="w-full" placeholder="5.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="options-underlying" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Underlying Price ($)</label>
+            <input id="options-underlying" type="number" inputmode="decimal" data-options-profit-calculator-target="underlyingPrice" data-action="input->options-profit-calculator#calculate" class="w-full" placeholder="160" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="options-contracts" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Contracts</label>
+            <input id="options-contracts" type="number" inputmode="numeric" data-options-profit-calculator-target="contracts" data-action="input->options-profit-calculator#calculate" class="w-full" placeholder="1" step="1" min="1">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total P/L</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-options-profit-calculator-target="totalProfit">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">P/L Per Share</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-options-profit-calculator-target="profitPerShare">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Break-Even Price</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-options-profit-calculator-target="breakEven">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">ROI</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-options-profit-calculator-target="roi">0.00%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Premium Paid</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-options-profit-calculator-target="totalPremium">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Loss</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-options-profit-calculator-target="maxLoss">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Profit</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-options-profit-calculator-target="maxProfit">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Status</span>
+              <span class="text-xl font-bold" data-options-profit-calculator-target="moneyStatus">--</span>
+            </div>
+          </div>
+          <button data-action="click->options-profit-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "options-profit" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Options Profit Calculator</h2>
+      <p>
+        Select whether you are buying a call or put option, then enter the strike price, premium per share, current underlying stock price, and the number of contracts. Each contract represents 100 shares. The calculator instantly shows your total profit or loss, break-even price, return on investment, and maximum risk.
+      </p>
+      <p>
+        This calculator models the profit and loss at expiration for long (bought) options. It helps you quickly evaluate whether a trade setup offers a favorable risk-reward ratio before committing capital. Understanding your maximum loss and break-even price before entering a trade is a fundamental principle of options risk management.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Options Profit and Loss</h2>
+      <p>
+        For a <strong>call option</strong>, you profit when the underlying price exceeds the strike price by more than the premium paid. Your break-even is the strike price plus the premium. Maximum loss is limited to the total premium paid, while maximum profit is theoretically unlimited since stock prices can rise indefinitely.
+      </p>
+      <p>
+        For a <strong>put option</strong>, you profit when the underlying price drops below the strike price by more than the premium paid. Your break-even is the strike price minus the premium. Maximum loss is the total premium paid, and maximum profit is capped at the strike price minus the premium (multiplied by shares) since a stock can only drop to zero.
+      </p>
+
+      <h3>Key Options Terminology</h3>
+      <p>
+        An option is <strong>in the money</strong> when it has intrinsic value: for calls, when the stock is above the strike; for puts, when the stock is below the strike. <strong>Out of the money</strong> means the option has no intrinsic value. The <strong>premium</strong> is the price you pay for the option contract and represents your maximum risk as a buyer.
+      </p>
+
+      <h3>Options Risk Management</h3>
+      <p>
+        Never risk more than you can afford to lose. Options can expire worthless, meaning you lose 100% of your premium. Consider position sizing, which means limiting any single trade to a small percentage of your portfolio. Always know your maximum loss before entering a trade, and consider setting price alerts at your break-even level.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do you calculate profit on a call option?</h3>
+      <p>Profit per share equals the underlying price minus the strike price minus the premium. Multiply by 100 shares per contract and the number of contracts for total profit.</p>
+
+      <h3>What is the maximum loss when buying options?</h3>
+      <p>Your maximum loss is the total premium paid: premium per share times 100 shares per contract times the number of contracts.</p>
+
+      <h3>What does in the money mean?</h3>
+      <p>A call is in the money when the stock price exceeds the strike. A put is in the money when the stock is below the strike. In-the-money options have intrinsic value.</p>
+
+      <h3>How is the break-even price calculated?</h3>
+      <p>For calls: strike price plus premium. For puts: strike price minus premium. At break-even, you recover your entire premium with zero profit or loss.</p>
+
+      <h3>How do you calculate profit on a put option?</h3>
+      <p>Profit per share equals the strike price minus the underlying price minus the premium. Multiply by shares for total profit. If the stock is above the strike, you lose the premium.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Stock Profit Calculator", description: "Calculate profit/loss from stock trades.", path: finance_stock_profit_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "ROI Calculator", description: "Calculate return on investment.", path: finance_roi_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Investment Calculator", description: "Project the future value of your investments.", path: finance_investment_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <% blog_posts = related_blog_posts("options-profit-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

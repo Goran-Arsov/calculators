@@ -39,5 +39,15 @@ module Health
     def pregnancy_weight; end
     def alcohol_burnoff; end
     def biological_age; end
+    def caffeine_half_life; end
+    def medication_dosage_weight; end
+    def wheelchair_ramp; end
+    def hearing_loss_exposure; end
+    def running_pace_zone; end
+    def cycling_ftp; end
+    def swim_pace; end
+    def blood_type_compatibility; end
+    def pregnancy_ivf_due_date; end
+    def wrist_height_ratio; end
   end
 end

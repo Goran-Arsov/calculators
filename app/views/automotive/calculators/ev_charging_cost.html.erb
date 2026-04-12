@@ -1,0 +1,183 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "EV Charging Cost Calculator - Home & Public Charging Costs",
+  description: "Calculate the cost to charge your electric vehicle at home or at public chargers. See energy needed, charge time, cost per mile, and monthly estimates.",
+  canonical: automotive_ev_charging_cost_url,
+  og: {
+    title: "EV Charging Cost Calculator - Home & Public Charging Costs | CalcWise",
+    description: "Calculate the cost to charge your EV at home or public chargers. See energy, time, and cost per mile.",
+    url: automotive_ev_charging_cost_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Automotive", url: category_url("automotive") },
+  { name: "EV Charging Cost Calculator", url: automotive_ev_charging_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much does it cost to charge an electric car at home?", answer: "Home charging cost depends on your electricity rate and battery size. At the US average of $0.13 per kWh, charging a 75 kWh battery from 10% to 80% costs about $6.33 to $9.75 depending on charger efficiency. Monthly costs for a typical 40-mile daily commute are $40-$60. This is roughly 3-4 times cheaper than gasoline for the same distance." },
+  { question: "What is charger efficiency and why does it matter?", answer: "Charger efficiency is the percentage of electricity from the grid that actually reaches the battery. Level 2 chargers are about 85-90% efficient, meaning 10-15% of electricity is lost as heat during charging. Level 1 chargers can be less efficient at 80-85%. DC fast chargers are typically 90-95% efficient. This lost energy still appears on your electric bill, increasing the true cost of charging." },
+  { question: "Is it cheaper to charge at home or at a public charger?", answer: "Home charging is almost always cheaper. Home electricity costs $0.10-$0.20 per kWh in most areas. Public Level 2 chargers cost $0.15-$0.30 per kWh. DC fast chargers cost $0.30-$0.60 per kWh, sometimes with session fees on top. Some EV manufacturers offer free Supercharging promotions, and many workplaces provide free Level 2 charging." },
+  { question: "How long does it take to charge an EV at different levels?", answer: "Level 1 (standard 120V outlet, 1.4 kW) adds about 3-5 miles per hour, taking 40-60 hours for a full charge. Level 2 (240V, 7-11 kW) adds 20-30 miles per hour, completing a full charge in 6-12 hours. DC Fast Charging (50-350 kW) can add 100-200 miles in 20-40 minutes. Tesla Superchargers (up to 250 kW) charge from 10-80% in about 25-35 minutes." },
+  { question: "What does cost per mile mean for an EV?", answer: "Cost per mile is the fuel cost for every mile driven. For EVs, it is calculated by dividing the charging cost by the miles of range added. A typical EV costs $0.03-$0.05 per mile when charged at home, compared to $0.10-$0.15 per mile for a gasoline vehicle. This 60-70% fuel savings is one of the biggest financial advantages of electric vehicles." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "EV Charging Cost Calculator",
+  description: "Calculate the cost to charge your EV at home or at public chargers.",
+  url: automotive_ev_charging_cost_url,
+  category: "AutomotiveApplication",
+  calculator_slug: "ev-charging-cost"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Automotive", url: category_path("automotive") },
+  { name: "EV Charging Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">EV Charging Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the cost to charge your electric vehicle. See energy required, charging time, cost per mile, and estimated monthly charging costs.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="ev-charging-cost-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="evc-battery" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Battery Capacity (kWh)</label>
+            <input id="evc-battery" type="number" inputmode="decimal" data-ev-charging-cost-calculator-target="batteryCapacity" data-action="input->ev-charging-cost-calculator#calculate" class="w-full" placeholder="75" step="5" min="0">
+          </div>
+          <div>
+            <label for="evc-current" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Charge (%)</label>
+            <input id="evc-current" type="number" inputmode="decimal" data-ev-charging-cost-calculator-target="currentCharge" data-action="input->ev-charging-cost-calculator#calculate" class="w-full" placeholder="10" step="5" min="0" max="100" value="10">
+          </div>
+          <div>
+            <label for="evc-target" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target Charge (%)</label>
+            <input id="evc-target" type="number" inputmode="decimal" data-ev-charging-cost-calculator-target="targetCharge" data-action="input->ev-charging-cost-calculator#calculate" class="w-full" placeholder="80" step="5" min="0" max="100" value="80">
+          </div>
+          <div>
+            <label for="evc-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Electricity Rate ($/kWh)</label>
+            <input id="evc-rate" type="number" inputmode="decimal" data-ev-charging-cost-calculator-target="electricityRate" data-action="input->ev-charging-cost-calculator#calculate" class="w-full" placeholder="0.13" step="0.01" min="0" value="0.13">
+          </div>
+          <div>
+            <label for="evc-charger" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Charger Type</label>
+            <select id="evc-charger" data-ev-charging-cost-calculator-target="chargerType" data-action="change->ev-charging-cost-calculator#calculate" class="w-full">
+              <option value="level1">Level 1 (120V - 1.4 kW)</option>
+              <option value="level2" selected>Level 2 (240V - 7.2 kW)</option>
+              <option value="dc_fast">DC Fast (150 kW)</option>
+              <option value="supercharger">Supercharger (250 kW)</option>
+            </select>
+          </div>
+          <div>
+            <label for="evc-efficiency" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Charger Efficiency (%)</label>
+            <input id="evc-efficiency" type="number" inputmode="decimal" data-ev-charging-cost-calculator-target="chargerEfficiency" data-action="input->ev-charging-cost-calculator#calculate" class="w-full" placeholder="90" step="1" min="1" max="100" value="90">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Charging Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Energy Needed</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-ev-charging-cost-calculator-target="energyNeeded">0.00 kWh</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Energy from Grid</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-ev-charging-cost-calculator-target="energyFromGrid">0.00 kWh</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Charging Cost</span>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-ev-charging-cost-calculator-target="chargingCost">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Charge Time</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-ev-charging-cost-calculator-target="chargeTime">0 min</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost per Mile</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-ev-charging-cost-calculator-target="costPerMile">$0.000</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Miles Added</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-ev-charging-cost-calculator-target="milesAdded">0.0 mi</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Est. Monthly Cost</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-ev-charging-cost-calculator-target="monthlyCost">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->ev-charging-cost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "ev-charging-cost" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the EV Charging Cost Calculator</h2>
+      <p>
+        Our EV charging cost calculator helps you understand exactly how much it costs to charge your electric vehicle. Enter your battery size, current and target charge levels, your electricity rate, charger type, and charging efficiency. The calculator shows the total energy needed, energy drawn from the grid including losses, total cost, charge time, cost per mile, and an estimated monthly charging bill based on a typical daily commute.
+      </p>
+      <p>
+        Understanding charging costs is essential for evaluating the financial case for going electric. This calculator lets you compare home charging costs against public charger rates, estimate your monthly fuel budget, and see how electricity rates affect your overall driving costs.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding EV Charging Costs</h2>
+      <p>
+        The cost to charge an EV depends primarily on your electricity rate and how much energy your vehicle needs. At the US average residential rate of $0.13 per kWh, charging a 75 kWh battery costs roughly $10 for a full charge, providing 250-300 miles of range. This is dramatically cheaper than gasoline: the equivalent gas cost for 300 miles at 30 MPG and $3.50 per gallon would be $35.
+      </p>
+
+      <h3>Charger Types and Their Costs</h3>
+      <p>
+        Level 1 charging uses a standard 120V household outlet and is essentially free to install but very slow. Level 2 charging requires a 240V outlet and dedicated charger ($500-$2,000 installed) but provides practical overnight charging speeds. DC fast chargers at public stations are fastest but most expensive, typically costing 2-4 times more per kWh than home electricity. For daily driving, home Level 2 charging offers the best value.
+      </p>
+
+      <h3>Optimizing Your Charging Costs</h3>
+      <p>
+        Several strategies can reduce your EV charging costs. Many utilities offer time-of-use rates with cheaper electricity during off-peak hours, often overnight when most people charge. Solar panels can offset or eliminate charging costs entirely. Charging to 80% instead of 100% is faster and better for battery longevity. Free workplace charging, where available, eliminates daily commute fuel costs completely.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much does it cost to charge an electric car at home?</h3>
+      <p>At $0.13/kWh, a 75 kWh battery from 10-80% costs about $6-$10. Monthly costs for a 40-mile daily commute are $40-$60, roughly 3-4x cheaper than gasoline.</p>
+
+      <h3>What is charger efficiency and why does it matter?</h3>
+      <p>Charger efficiency is the percentage of grid electricity that reaches the battery. Level 2 chargers are 85-90% efficient; 10-15% is lost as heat and still appears on your bill.</p>
+
+      <h3>Is it cheaper to charge at home or at a public charger?</h3>
+      <p>Home charging is almost always cheaper at $0.10-$0.20/kWh versus $0.30-$0.60/kWh for DC fast chargers.</p>
+
+      <h3>How long does it take to charge at different levels?</h3>
+      <p>Level 1: 3-5 miles/hour. Level 2: 20-30 miles/hour. DC Fast: 100-200 miles in 20-40 minutes. Supercharger: 10-80% in 25-35 minutes.</p>
+
+      <h3>What does cost per mile mean for an EV?</h3>
+      <p>EVs cost $0.03-$0.05 per mile when home-charged, compared to $0.10-$0.15 for gasoline. This 60-70% fuel savings is a key EV advantage.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "EV Range Calculator", description: "Estimate your EV's real-world range under various conditions.", path: automotive_ev_range_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "EV vs Gas Comparison", description: "Compare annual costs of EV vs gas vehicles.", path: automotive_ev_vs_gas_comparison_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Electricity Cost Calculator", description: "Calculate electricity costs for any appliance or device.", path: everyday_electricity_cost_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "automotive" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

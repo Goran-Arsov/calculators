@@ -1,0 +1,165 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Startup Runway Calculator - Months of Cash Remaining",
+  description: "Calculate your startup's runway in months from cash balance, burn rate, and revenue. See when cash runs out and plan funding accordingly.",
+  canonical: finance_startup_runway_url,
+  og: {
+    title: "Startup Runway Calculator - Months of Cash Remaining | CalcWise",
+    description: "Calculate your startup's runway in months from cash balance, burn rate, and revenue.",
+    url: finance_startup_runway_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Startup Runway Calculator", url: finance_startup_runway_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do you calculate startup runway?", answer: "Startup runway is calculated by dividing your current cash balance by your net monthly burn rate (monthly expenses minus monthly revenue). For example, if you have $500,000 in cash and burn $50,000 net per month, your runway is 10 months. If you have revenue growth, the calculation accounts for decreasing burn over time." },
+  { question: "What is a good startup runway?", answer: "Most investors and advisors recommend maintaining at least 12-18 months of runway. This gives you enough time to hit milestones and raise your next round of funding. Less than 6 months is considered critical, as fundraising typically takes 3-6 months. More than 24 months gives you significant flexibility." },
+  { question: "What is burn rate vs. net burn rate?", answer: "Gross burn rate is your total monthly expenses regardless of revenue. Net burn rate is gross burn minus monthly revenue. Net burn is the more relevant metric because it shows how fast you are actually consuming cash. A company with $100,000 in expenses and $40,000 in revenue has a net burn of $60,000." },
+  { question: "When should a startup start fundraising?", answer: "Start fundraising when you have at least 6-9 months of runway remaining. The fundraising process typically takes 3-6 months from first meeting to money in the bank. Starting too late puts you in a weak negotiating position and risks running out of cash during the process." },
+  { question: "How can a startup extend its runway?", answer: "Startups can extend runway by increasing revenue, reducing expenses, or raising additional capital. Specific tactics include renegotiating vendor contracts, reducing headcount costs through part-time or contractor roles, focusing on higher-margin products, cutting non-essential spending, and pursuing bridge financing or revenue-based financing." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Startup Runway Calculator",
+  description: "Calculate months of runway from cash balance, burn rate, and revenue.",
+  url: finance_startup_runway_url,
+  category: "FinanceApplication",
+  calculator_slug: "startup-runway"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Startup Runway Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Startup Runway Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate how many months of runway your startup has and when you will need to raise or become profitable.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="startup-runway-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="runway-cash" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Cash Balance ($)</label>
+            <input id="runway-cash" type="number" inputmode="decimal" data-startup-runway-calculator-target="cashBalance" data-action="input->startup-runway-calculator#calculate" class="w-full" placeholder="500000" step="10000" min="0">
+          </div>
+          <div>
+            <label for="runway-burn" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Burn Rate ($)</label>
+            <input id="runway-burn" type="number" inputmode="decimal" data-startup-runway-calculator-target="monthlyBurn" data-action="input->startup-runway-calculator#calculate" class="w-full" placeholder="50000" step="1000" min="0">
+          </div>
+          <div>
+            <label for="runway-revenue" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Revenue ($)</label>
+            <input id="runway-revenue" type="number" inputmode="decimal" data-startup-runway-calculator-target="monthlyRevenue" data-action="input->startup-runway-calculator#calculate" class="w-full" placeholder="10000" step="1000" min="0" value="0">
+          </div>
+          <div>
+            <label for="runway-growth" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Monthly Revenue Growth (%)</label>
+            <input id="runway-growth" type="number" inputmode="decimal" data-startup-runway-calculator-target="revenueGrowth" data-action="input->startup-runway-calculator#calculate" class="w-full" placeholder="10" step="1" min="0" value="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Runway</span>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-startup-runway-calculator-target="runwayMonths">0 months</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Monthly Burn</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-startup-runway-calculator-target="netBurn">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Daily Burn</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-startup-runway-calculator-target="dailyBurn">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Zero Cash Date</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-startup-runway-calculator-target="zeroCashDate">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Status</span>
+              <span class="text-xl font-bold" data-startup-runway-calculator-target="profitStatus">--</span>
+            </div>
+          </div>
+          <button data-action="click->startup-runway-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "startup-runway" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Startup Runway Calculator</h2>
+      <p>
+        Enter your current cash balance, monthly burn rate (total expenses), monthly revenue, and expected monthly revenue growth rate. The calculator shows how many months of runway you have, your net burn rate, daily burn, and the projected date when cash reaches zero. If revenue growth is strong enough to exceed burn, it shows infinite runway.
+      </p>
+      <p>
+        Runway is the single most important financial metric for early-stage startups. It determines how much time you have to achieve milestones, reach profitability, or raise your next round. Running out of cash is the number one reason startups fail, making runway planning a critical founder skill.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Burn Rate and Runway</h2>
+      <p>
+        <strong>Gross burn rate</strong> is your total monthly expenses. <strong>Net burn rate</strong> is gross burn minus revenue, representing the actual monthly cash depletion. <strong>Runway = Cash Balance / Net Burn Rate</strong>. If you have $600,000 and spend $80,000 per month with $20,000 in revenue, your net burn is $60,000 and your runway is 10 months.
+      </p>
+
+      <h3>The Impact of Revenue Growth</h3>
+      <p>
+        Revenue growth dramatically affects runway. Even modest monthly growth compounds quickly. If revenue grows 15% month over month, it doubles roughly every 5 months. This calculator models growth to show that a startup with strong growth may reach breakeven before running out of cash, even if current net burn is high.
+      </p>
+
+      <h3>Fundraising Timeline Planning</h3>
+      <p>
+        Begin fundraising when you have 6-9 months of runway remaining. The process typically takes 3-6 months, and you want buffer for unexpected delays. Entering fundraising with less than 4 months of runway signals desperation, weakening your negotiating position and potentially leading to unfavorable terms.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do you calculate startup runway?</h3>
+      <p>Divide cash balance by net monthly burn (expenses minus revenue). With $500,000 and $50,000 net burn, runway is 10 months.</p>
+
+      <h3>What is a good startup runway?</h3>
+      <p>12-18 months is recommended. Less than 6 months is critical. More than 24 months provides significant flexibility.</p>
+
+      <h3>What is burn rate vs. net burn rate?</h3>
+      <p>Gross burn is total monthly expenses. Net burn is expenses minus revenue. Net burn is more relevant as it shows actual cash depletion speed.</p>
+
+      <h3>When should a startup start fundraising?</h3>
+      <p>With 6-9 months of runway remaining. Fundraising takes 3-6 months, and you need buffer for delays.</p>
+
+      <h3>How can a startup extend its runway?</h3>
+      <p>Increase revenue, reduce expenses, renegotiate contracts, cut non-essential spending, or raise bridge financing.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Break-Even Calculator", description: "Calculate the break-even point for your business.", path: finance_break_even_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "ROI Calculator", description: "Calculate return on investment.", path: finance_roi_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Profit Margin Calculator", description: "Calculate your business profit margin.", path: finance_profit_margin_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <% blog_posts = related_blog_posts("startup-runway-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

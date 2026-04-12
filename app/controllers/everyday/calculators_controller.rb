@@ -169,5 +169,18 @@ module Everyday
     def final_grade; end
     def student_budget; end
     def study_time; end
+    def diff_viewer; end
+    def sql_to_nosql; end
+    def tailwind_to_css; end
+    def graphql_builder; end
+    def api_rate_limit; end
+    def docker_compose_generator; end
+    def git_commit_generator; end
+    def semver_bump; end
+    def color_contrast_checker; end
+    def email_signature_generator; end
+    def timezone_meeting_planner; end
+    def carbon_footprint; end
+    def invoice_pdf_generator; end
   end
 end

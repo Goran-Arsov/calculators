@@ -1,0 +1,203 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Capacitor Calculator - Free Capacitance, Charge & Energy Tool",
+  description: "Calculate capacitance, charge, energy, and series/parallel combinations for capacitors. C=Q/V, E=½CV². Free online capacitor calculator.",
+  canonical: physics_capacitor_url,
+  og: {
+    title: "Capacitor Calculator - Free Capacitance & Energy Tool | CalcWise",
+    description: "Calculate capacitance, charge, energy stored, and series/parallel capacitor combinations. Real-time results.",
+    url: physics_capacitor_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Capacitor Calculator", url: physics_capacitor_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is capacitance?", answer: "Capacitance is the ability of a component to store electrical charge, measured in farads (F). It is defined as C = Q/V, where Q is the charge stored in coulombs and V is the voltage across the capacitor. One farad is the capacitance that stores one coulomb when one volt is applied. In practice, most capacitors are measured in microfarads (uF), nanofarads (nF), or picofarads (pF) because one farad is an extremely large capacitance." },
+  { question: "How do capacitors in series and parallel differ?", answer: "In series, the total capacitance decreases: 1/Ct = 1/C1 + 1/C2 + ... The voltage divides across capacitors but the charge on each is the same. In parallel, capacitances add directly: Ct = C1 + C2 + ... The voltage across each is the same but the total charge is the sum. Series is the opposite behavior of resistors: resistors in series add, but capacitors in series give a smaller total. This is because series capacitors share charge while parallel capacitors share voltage." },
+  { question: "How much energy does a capacitor store?", answer: "The energy stored in a capacitor is E = 1/2 * C * V^2, where C is capacitance and V is voltage. This can also be written as E = Q^2/(2C) or E = QV/2. The energy comes from the work done to move charge against the electric field. A 1000uF capacitor charged to 50V stores 1.25 joules. Supercapacitors can store much more energy and are used in regenerative braking systems and backup power supplies." },
+  { question: "What are common capacitor applications?", answer: "Capacitors are used for energy storage (camera flashes, UPS systems), filtering (smoothing DC power supplies, removing noise), timing (RC circuits in oscillators and timers), coupling and decoupling (passing AC signals while blocking DC), power factor correction (in industrial AC systems), and tuning (radio frequency selection). Every electronic device from smartphones to power grids relies on capacitors." },
+  { question: "What is the difference between a capacitor and a battery?", answer: "Both store energy, but in different ways. Capacitors store energy in an electric field between plates and can charge/discharge almost instantly, but store relatively little energy. Batteries store energy chemically and can hold much more energy but charge/discharge slowly. Capacitors last millions of charge cycles while batteries degrade. Supercapacitors bridge the gap with higher energy density than regular capacitors but faster response than batteries." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Capacitor Calculator",
+  description: "Calculate capacitance, charge, energy stored, and series/parallel combinations for capacitors.",
+  url: physics_capacitor_url,
+  category: "EducationalApplication",
+  calculator_slug: "capacitor"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Capacitor Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Capacitor Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate capacitance, charge, and energy for a single capacitor, or find the total capacitance of series and parallel combinations.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="capacitor-calculator ad-engagement" class="space-y-5 mb-8">
+      <div data-card="Capacitor" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">C</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Capacitor Calculations</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">C = Q/V, E = &frac12;CV&sup2;</span>
+        </div>
+
+        <div class="mb-4">
+          <label for="cap-mode" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Mode</label>
+          <select id="cap-mode" data-capacitor-calculator-target="mode" data-action="change->capacitor-calculator#updateFields" class="w-full">
+            <option value="basic">Single Capacitor (C, V, Q)</option>
+            <option value="series">Series Combination</option>
+            <option value="parallel">Parallel Combination</option>
+          </select>
+        </div>
+
+        <div data-capacitor-calculator-target="basicGroup">
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Enter any two values to calculate the third, plus energy stored.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label for="cap-capacitance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Capacitance (F)</label>
+              <input id="cap-capacitance" type="number" inputmode="decimal" data-capacitor-calculator-target="capacitance" data-action="input->capacitor-calculator#calculate" class="w-full" placeholder="0.001" step="any" min="0">
+              <p class="text-xs text-gray-400 mt-1">e.g., 0.001 = 1000 &micro;F</p>
+            </div>
+            <div>
+              <label for="cap-voltage" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Voltage (V)</label>
+              <input id="cap-voltage" type="number" inputmode="decimal" data-capacitor-calculator-target="voltage" data-action="input->capacitor-calculator#calculate" class="w-full" placeholder="12" step="any">
+            </div>
+            <div>
+              <label for="cap-charge" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Charge (C)</label>
+              <input id="cap-charge" type="number" inputmode="decimal" data-capacitor-calculator-target="charge" data-action="input->capacitor-calculator#calculate" class="w-full" placeholder="0.012" step="any" min="0">
+            </div>
+          </div>
+        </div>
+
+        <div data-capacitor-calculator-target="comboGroup" class="hidden">
+          <div class="mb-4">
+            <label for="cap-capacitances" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Capacitances (F, comma-separated)</label>
+            <input id="cap-capacitances" type="text" data-capacitor-calculator-target="capacitances" data-action="input->capacitor-calculator#calculate" class="w-full" placeholder="0.001, 0.002, 0.005">
+            <p class="text-xs text-gray-400 mt-1">Enter at least 2 values in farads</p>
+          </div>
+        </div>
+
+        <div data-capacitor-calculator-target="basicResults" class="hidden">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Capacitance</span>
+              <span class="text-sm font-bold text-teal-600 dark:text-teal-400" data-capacitor-calculator-target="resultCapacitance" data-result>&mdash;</span>
+              <span class="block text-xs text-gray-400" data-capacitor-calculator-target="resultCapacitanceUf">&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Voltage</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-capacitor-calculator-target="resultVoltage" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Charge</span>
+              <span class="text-sm font-bold text-amber-600 dark:text-amber-400" data-capacitor-calculator-target="resultCharge" data-result>&mdash;</span>
+              <span class="block text-xs text-gray-400" data-capacitor-calculator-target="resultChargeUc">&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Energy</span>
+              <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400" data-capacitor-calculator-target="resultEnergy" data-result>&mdash;</span>
+              <span class="block text-xs text-gray-400" data-capacitor-calculator-target="resultEnergyUj">&mdash;</span>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button data-action="click->capacitor-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <div data-capacitor-calculator-target="comboResults" class="hidden">
+          <div class="grid grid-cols-3 gap-4">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Total Capacitance</span>
+              <span class="text-sm font-bold text-teal-600 dark:text-teal-400" data-capacitor-calculator-target="resultTotalCapacitance" data-result>&mdash;</span>
+              <span class="block text-xs text-gray-400" data-capacitor-calculator-target="resultTotalCapacitanceUf">&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Count</span>
+              <span class="text-lg font-bold text-violet-600 dark:text-violet-400" data-capacitor-calculator-target="resultCount" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button data-action="click->capacitor-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "capacitor" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Capacitors</h2>
+      <p>A <strong>capacitor</strong> is a fundamental electronic component that stores electrical energy in an electric field between two conducting plates separated by an insulating material (dielectric). The <strong>capacitance</strong> C = Q/V defines the ratio of charge stored (Q) to voltage applied (V), measured in farads (F). The energy stored is E = &frac12;CV&sup2;, which depends on both capacitance and voltage. Capacitors are found in virtually every electronic device, from smartphone circuits to industrial power systems.</p>
+
+      <p>This calculator handles three modes: single capacitor calculations (find capacitance, voltage, charge, or energy from two known values), series combinations (where total capacitance decreases), and parallel combinations (where total capacitance increases). Enter values in farads; results are shown in both farads and microfarads for convenience.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Series and Parallel Capacitor Combinations</h2>
+      <p>In a <strong>series</strong> connection, capacitors share the same charge but divide the voltage: 1/C<sub>total</sub> = 1/C<sub>1</sub> + 1/C<sub>2</sub> + ... The total capacitance is always less than the smallest individual capacitor. In a <strong>parallel</strong> connection, capacitors share the same voltage but store charge independently: C<sub>total</sub> = C<sub>1</sub> + C<sub>2</sub> + ... The total capacitance is the sum of all individual values. This is opposite to how resistors combine: resistors add in series, while capacitors add in parallel.</p>
+
+      <h3>Energy Storage</h3>
+      <p>The energy E = &frac12;CV&sup2; stored in a capacitor increases with the square of voltage, making voltage the dominant factor. Doubling the voltage quadruples the stored energy. <strong>Supercapacitors</strong> (ultracapacitors) achieve very high capacitance (hundreds to thousands of farads) and are used in regenerative braking systems, backup power, and energy harvesting. While they store less energy per unit mass than batteries, they can charge and discharge in seconds and survive millions of cycles.</p>
+
+      <h3>Practical Applications</h3>
+      <p>Capacitors serve many roles in electronics: <strong>filtering</strong> (smoothing rectified AC to DC in power supplies), <strong>timing</strong> (RC time constant circuits in oscillators and timers), <strong>coupling/decoupling</strong> (passing AC signals while blocking DC between amplifier stages), <strong>energy storage</strong> (camera flash units, defibrillators), and <strong>power factor correction</strong> (improving efficiency in industrial AC systems). Choosing the right capacitor involves balancing capacitance, voltage rating, size, cost, and frequency response.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is capacitance?</h3>
+      <p>Capacitance C = Q/V is the ability to store charge per unit voltage, measured in farads. Practical values are typically microfarads or picofarads.</p>
+
+      <h3>How do series and parallel capacitors differ?</h3>
+      <p>Series: 1/Ct = sum of 1/Ci, total is less than smallest. Parallel: Ct = sum of Ci, total is the sum. Opposite of resistor behavior.</p>
+
+      <h3>How much energy does a capacitor store?</h3>
+      <p>E = &frac12;CV&sup2;. Energy scales with voltage squared. A 1000&micro;F capacitor at 50V stores 1.25 joules.</p>
+
+      <h3>What are common capacitor applications?</h3>
+      <p>Power supply filtering, timing circuits, signal coupling, energy storage (camera flash, defibrillators), and power factor correction.</p>
+
+      <h3>How do capacitors differ from batteries?</h3>
+      <p>Capacitors store energy in electric fields (fast charge/discharge, low energy density). Batteries store energy chemically (slow, high energy density). Supercapacitors bridge the gap.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Ohm's Law Calculator", description: "Calculate voltage, current, or resistance using Ohm's law V = IR.", path: physics_ohms_law_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Electrical Power Calculator", description: "Calculate power using P=IV, P=I²R, P=V²/R formulas.", path: physics_electrical_power_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Resistor Color Code Calculator", description: "Decode resistor color bands to find resistance values.", path: physics_resistor_color_code_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "physics" %>
+
+    <% blog_posts = related_blog_posts("capacitor-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

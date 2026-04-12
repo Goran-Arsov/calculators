@@ -390,6 +390,18 @@ import BandwidthCalculatorController from "controllers/bandwidth_calculator_cont
 import UnitPriceCalculatorController from "controllers/unit_price_calculator_controller"
 
 // Suite controllers
+// Cooking calculators
+import RecipeScalerCalculatorController from "controllers/recipe_scaler_calculator_controller"
+import BakingSubstitutionCalculatorController from "controllers/baking_substitution_calculator_controller"
+import SourdoughHydrationCalculatorController from "controllers/sourdough_hydration_calculator_controller"
+import MeatCookingTimeCalculatorController from "controllers/meat_cooking_time_calculator_controller"
+import SmokeTimeCalculatorController from "controllers/smoke_time_calculator_controller"
+import PizzaDoughCalculatorController from "controllers/pizza_dough_calculator_controller"
+import CanningAltitudeCalculatorController from "controllers/canning_altitude_calculator_controller"
+import FreezerStorageCalculatorController from "controllers/freezer_storage_calculator_controller"
+import MealPrepCostCalculatorController from "controllers/meal_prep_cost_calculator_controller"
+import MacrosPerRecipeCalculatorController from "controllers/macros_per_recipe_calculator_controller"
+
 import SuiteStepperController from "controllers/suite_stepper_controller"
 
 // UI controllers
@@ -794,6 +806,18 @@ application.register("svg-to-png-calculator", SvgToPngCalculatorController)
 application.register("base64-encoder-calculator", Base64EncoderCalculatorController)
 application.register("url-encoder-calculator", UrlEncoderCalculatorController)
 application.register("hex-ascii-calculator", HexAsciiCalculatorController)
+
+// Cooking calculators
+application.register("recipe-scaler-calculator", RecipeScalerCalculatorController)
+application.register("baking-substitution-calculator", BakingSubstitutionCalculatorController)
+application.register("sourdough-hydration-calculator", SourdoughHydrationCalculatorController)
+application.register("meat-cooking-time-calculator", MeatCookingTimeCalculatorController)
+application.register("smoke-time-calculator", SmokeTimeCalculatorController)
+application.register("pizza-dough-calculator", PizzaDoughCalculatorController)
+application.register("canning-altitude-calculator", CanningAltitudeCalculatorController)
+application.register("freezer-storage-calculator", FreezerStorageCalculatorController)
+application.register("meal-prep-cost-calculator", MealPrepCostCalculatorController)
+application.register("macros-per-recipe-calculator", MacrosPerRecipeCalculatorController)
 
 // Suites
 application.register("suite-stepper", SuiteStepperController)

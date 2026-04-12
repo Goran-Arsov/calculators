@@ -1,0 +1,182 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Caffeine Half-Life Calculator - When Is It Safe to Sleep?",
+  description: "Calculate how much caffeine remains in your body over time. Find out when caffeine drops below sleep-safe levels using the 5-hour half-life formula.",
+  canonical: health_caffeine_half_life_url,
+  og: {
+    title: "Caffeine Half-Life Calculator - When Is It Safe to Sleep? | CalcWise",
+    description: "Track caffeine metabolism in your body. Calculate remaining caffeine, sleep-safe cutoff time, and bedtime impact using the 5-hour half-life decay model.",
+    url: health_caffeine_half_life_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Caffeine Half-Life Calculator", url: health_caffeine_half_life_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the half-life of caffeine?", answer: "The average half-life of caffeine in healthy adults is approximately 5 hours. This means that 5 hours after consuming caffeine, half of it remains in your body. After 10 hours, one quarter remains. Individual variation ranges from 3 to 7 hours depending on genetics, liver function, pregnancy, smoking status, and medications." },
+  { question: "How is caffeine remaining calculated?", answer: "Caffeine remaining is calculated using the exponential decay formula: C(t) = C0 x (0.5)^(t/5), where C0 is the initial caffeine amount in milligrams, t is the time elapsed in hours, and 5 is the half-life in hours. This produces a smooth decay curve showing how caffeine levels drop over time." },
+  { question: "How much caffeine is safe before bed?", answer: "Research suggests that caffeine levels below 50 mg are unlikely to significantly impair sleep for most people. However, caffeine sensitivity varies widely. Some people may need to be below 25 mg, while others can tolerate more. As a general rule, avoid caffeine at least 6-8 hours before bedtime." },
+  { question: "How much caffeine is in a cup of coffee?", answer: "An 8-ounce cup of brewed coffee contains approximately 95 mg of caffeine, though this can range from 70 to 140 mg depending on the bean variety and brewing method. An espresso shot contains about 63 mg, black tea about 47 mg, green tea about 28 mg, and a standard energy drink about 80 mg." },
+  { question: "What factors affect caffeine metabolism?", answer: "Several factors influence how quickly your body processes caffeine. Smoking increases metabolism by up to 50%. Pregnancy can double the half-life to 10 or more hours. Oral contraceptives can extend it to 5-10 hours. Liver disease significantly slows metabolism. Genetics play a major role through CYP1A2 enzyme variations that determine whether you are a fast or slow caffeine metabolizer." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Caffeine Half-Life Calculator",
+  description: "Calculate how much caffeine remains in your body over time and when it is safe to sleep.",
+  url: health_caffeine_half_life_url,
+  category: "HealthApplication",
+  calculator_slug: "caffeine-half-life"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Caffeine Half-Life Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Caffeine Half-Life Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Track how caffeine decays in your body and find the latest time you can drink coffee without disrupting your sleep.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="caffeine-half-life-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="caffeine-mg" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Caffeine Amount (mg)</label>
+            <input id="caffeine-mg" type="number" inputmode="decimal" data-caffeine-half-life-calculator-target="caffeineMg" data-action="input->caffeine-half-life-calculator#calculate" class="w-full" placeholder="95" min="1" max="2000">
+            <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Coffee ~95mg, Espresso ~63mg, Tea ~47mg, Energy drink ~80mg</p>
+          </div>
+          <div>
+            <label for="caffeine-consumed" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Time Consumed</label>
+            <input id="caffeine-consumed" type="time" data-caffeine-half-life-calculator-target="consumedAt" data-action="input->caffeine-half-life-calculator#calculate" class="w-full">
+          </div>
+          <div>
+            <label for="caffeine-sleep" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Planned Bedtime</label>
+            <input id="caffeine-sleep" type="time" data-caffeine-half-life-calculator-target="sleepTime" data-action="input->caffeine-half-life-calculator#calculate" class="w-full" value="22:00">
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Remaining Now</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-caffeine-half-life-calculator-target="remainingNow">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">% Remaining</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-caffeine-half-life-calculator-target="percentRemaining">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sleep-Safe Time</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-caffeine-half-life-calculator-target="sleepSafeTime">—</span>
+            </div>
+            <div class="border-t border-green-200 dark:border-green-800 my-3"></div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">At Bedtime</span>
+              <span class="text-lg font-bold text-orange-600 dark:text-orange-400" data-caffeine-half-life-calculator-target="caffeineAtBedtime">—</span>
+            </div>
+            <div>
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Sleep Impact</span>
+              <div data-caffeine-half-life-calculator-target="sleepImpact" class="text-sm font-semibold">—</div>
+            </div>
+          </div>
+          <button data-action="click->caffeine-half-life-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+      <div class="mt-6">
+        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Caffeine Decay Timeline</h3>
+        <div data-caffeine-half-life-calculator-target="timeline" class="space-y-1.5"></div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "caffeine-half-life" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Caffeine Half-Life Calculator Works</h2>
+      <p>
+        This calculator uses the exponential decay formula C(t) = C0 x (0.5)^(t/5) to model how caffeine is metabolized in your body. The average caffeine half-life in healthy adults is approximately 5 hours, meaning that every 5 hours, the amount of caffeine in your system is reduced by half. Enter the amount of caffeine you consumed, the time you drank it, and your planned bedtime to see exactly how much caffeine will be in your system when you try to sleep.
+      </p>
+      <p>
+        Understanding caffeine metabolism is crucial for optimizing both your energy levels during the day and your sleep quality at night. Many people underestimate how long caffeine stays active in the body. A cup of coffee consumed at 3 PM will still have about 47 mg of caffeine in your system at 8 PM, and roughly 24 mg at 1 AM. For caffeine-sensitive individuals, even these residual amounts can delay sleep onset and reduce sleep quality.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Caffeine Content in Common Beverages</h2>
+      <p>
+        An 8-ounce cup of brewed coffee contains approximately 95 mg of caffeine, though this varies from 70 to 140 mg depending on the bean variety and brewing method. A single espresso shot has about 63 mg, black tea provides around 47 mg, and green tea contains approximately 28 mg. Energy drinks typically contain 80 mg per 8 ounces, though larger cans may contain 150 to 300 mg total. Cola sodas have roughly 34 mg per 12-ounce can.
+      </p>
+
+      <h2>Factors That Affect Caffeine Half-Life</h2>
+      <p>
+        While 5 hours is the average, individual caffeine half-life can range from 3 to 7 hours. Smokers metabolize caffeine about 50% faster due to enzyme induction, resulting in a half-life of approximately 3 hours. Pregnancy significantly slows caffeine metabolism, especially in the third trimester when the half-life can extend to 10 to 15 hours. Oral contraceptives can double the half-life. Liver disease and certain medications can also substantially slow caffeine clearance.
+      </p>
+      <p>
+        Genetic variation in the CYP1A2 enzyme, which is responsible for 95% of caffeine metabolism, creates fast and slow metabolizers. Fast metabolizers may have a half-life as short as 2 to 3 hours, while slow metabolizers may take 7 or more hours. This explains why some people can drink coffee late in the day without sleep issues while others are affected by even morning consumption.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the half-life of caffeine?</h3>
+      <p>
+        The average half-life of caffeine in healthy adults is approximately 5 hours. This means 5 hours after consumption, half of the caffeine remains. After 10 hours, one quarter remains. Individual variation ranges from 3 to 7 hours depending on genetics and other factors.
+      </p>
+
+      <h3>How much caffeine is safe before bed?</h3>
+      <p>
+        Research suggests caffeine levels below 50 mg are unlikely to significantly impair sleep for most people. As a general guideline, avoid caffeine at least 6 to 8 hours before bedtime.
+      </p>
+
+      <h3>How much caffeine is in coffee?</h3>
+      <p>
+        An 8-ounce brewed coffee has about 95 mg, an espresso shot has 63 mg, black tea has 47 mg, green tea has 28 mg, and energy drinks have about 80 mg per 8 ounces.
+      </p>
+
+      <h3>What factors speed up caffeine metabolism?</h3>
+      <p>
+        Smoking increases caffeine metabolism by up to 50%. Regular exercise, being male, and certain genetic variations of CYP1A2 also speed up metabolism.
+      </p>
+
+      <h3>Does caffeine build up with multiple cups?</h3>
+      <p>
+        Yes. If you drink a second cup before the first is fully metabolized, the amounts are additive. For example, if you have 95 mg at 8 AM and another 95 mg at 10 AM, at 10 AM you have about 73 mg from the first cup plus 95 mg from the second, totaling roughly 168 mg.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Sleep Calculator", description: "Calculate optimal bedtime and wake-up times based on sleep cycles.", path: health_sleep_path, icon_path: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" },
+      { name: "Water Intake Calculator", description: "Calculate your recommended daily water intake based on weight and activity.", path: health_water_intake_path, icon_path: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <% blog_posts = related_blog_posts("caffeine-half-life-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,137 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "SQL to NoSQL Converter - Convert SQL to MongoDB Queries",
+  description: "Convert SQL queries to MongoDB query syntax instantly. Supports SELECT, INSERT, UPDATE, DELETE, CREATE TABLE, and DROP TABLE conversions. Free online tool.",
+  canonical: everyday_sql_to_nosql_url,
+  og: {
+    title: "SQL to NoSQL Converter - Convert SQL to MongoDB | CalcWise",
+    description: "Convert SQL queries to MongoDB query syntax instantly. Supports SELECT, INSERT, UPDATE, DELETE, and more.",
+    url: everyday_sql_to_nosql_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "SQL to NoSQL Converter", url: everyday_sql_to_nosql_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What SQL statements can be converted to MongoDB?", answer: "This tool converts SELECT (with WHERE, ORDER BY, LIMIT), INSERT INTO, UPDATE with SET and WHERE, DELETE FROM, CREATE TABLE, and DROP TABLE. Complex queries with JOINs, subqueries, GROUP BY, or HAVING require manual conversion because MongoDB uses a different data model based on embedded documents and the aggregation pipeline." },
+  { question: "How does SELECT translate to MongoDB?", answer: "SELECT maps to db.collection.find(). The WHERE clause becomes the query filter document, the field list becomes a projection document, ORDER BY maps to .sort(), and LIMIT maps to .limit(). For example, SELECT name, age FROM users WHERE age > 25 ORDER BY name LIMIT 10 becomes db.users.find({ age: { $gt: 25 } }, { name: 1, age: 1 }).sort({ name: 1 }).limit(10)." },
+  { question: "How does INSERT translate to MongoDB?", answer: "INSERT INTO maps to db.collection.insertOne() for a single row. The column names and values become key-value pairs in a document. For example, INSERT INTO users (name, age) VALUES ('Alice', 30) becomes db.users.insertOne({ name: 'Alice', age: 30 }). Multiple row inserts would use insertMany() with an array of documents." },
+  { question: "What is the main difference between SQL and MongoDB queries?", answer: "SQL uses a declarative, table-based syntax with strict schemas, while MongoDB uses a document-oriented query language with flexible schemas. SQL JOINs are replaced by embedded documents or the $lookup aggregation stage. SQL WHERE clauses use comparison operators like = and >, while MongoDB uses $eq, $gt, and other operator objects inside filter documents." },
+  { question: "Can this tool handle JOIN queries?", answer: "No, JOINs require understanding the data model and cannot be automatically converted with a simple syntax transformation. In MongoDB, the equivalent depends on your schema design. You might embed related data in a single document, use the $lookup aggregation stage for a left outer join, or perform multiple queries in your application code." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "SQL to NoSQL Converter",
+  description: "Convert SQL queries to MongoDB query syntax. Supports SELECT, INSERT, UPDATE, DELETE, CREATE TABLE, and DROP TABLE.",
+  url: everyday_sql_to_nosql_url,
+  category: "UtilityApplication",
+  calculator_slug: "sql-to-nosql"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "SQL to NoSQL Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">SQL to NoSQL Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert SQL queries to MongoDB query syntax. Paste your SQL and get the equivalent MongoDB command with an explanation.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="sql-to-nosql-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">SQL Query</label>
+          <textarea data-sql-to-nosql-calculator-target="sqlInput" rows="5" class="w-full font-mono text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="SELECT name, age FROM users WHERE age > 25 ORDER BY name LIMIT 10;"></textarea>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <button data-action="click->sql-to-nosql-calculator#convert" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm text-sm font-semibold transition-all duration-200">Convert to MongoDB</button>
+          <button data-action="click->sql-to-nosql-calculator#clear" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium transition-all duration-200">Clear</button>
+          <button data-action="click->sql-to-nosql-calculator#copy" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium transition-all duration-200">Copy Output</button>
+        </div>
+
+        <div data-sql-to-nosql-calculator-target="error" class="hidden p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm"></div>
+
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">MongoDB Query</h2>
+          <textarea data-sql-to-nosql-calculator-target="output" readonly rows="6" class="w-full font-mono text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none resize-y" placeholder="Converted MongoDB query will appear here..."></textarea>
+          <p data-sql-to-nosql-calculator-target="explanation" class="mt-3 text-sm text-gray-600 dark:text-gray-400"></p>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "sql-to-nosql" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How SQL Maps to MongoDB</h2>
+      <p>
+        SQL and MongoDB use fundamentally different data models. SQL organizes data into tables with fixed schemas and rows, while MongoDB stores data as flexible JSON-like documents in collections. Despite these differences, most basic CRUD operations have direct equivalents. This tool handles the syntax translation automatically for the most common SQL patterns.
+      </p>
+      <p>
+        The SELECT statement maps to the <code>find()</code> method in MongoDB. The WHERE clause becomes a filter document using MongoDB query operators like <code>$gt</code>, <code>$lt</code>, <code>$eq</code>, and <code>$ne</code>. Field selection becomes a projection document, and ORDER BY maps to the <code>sort()</code> method. LIMIT works identically in both systems.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Supported Conversions</h2>
+      <p>
+        The converter supports SELECT with WHERE, ORDER BY, and LIMIT clauses. INSERT INTO translates to <code>insertOne()</code>. UPDATE with SET and WHERE becomes <code>updateMany()</code> with the <code>$set</code> operator. DELETE FROM maps to <code>deleteMany()</code>. CREATE TABLE converts to <code>createCollection()</code>, though MongoDB collections are typically created implicitly. DROP TABLE becomes <code>collection.drop()</code>.
+      </p>
+
+      <h3>Operators Mapping</h3>
+      <p>
+        SQL comparison operators translate to MongoDB query operators: equals (=) becomes implicit equality or <code>$eq</code>, greater than (>) becomes <code>$gt</code>, greater than or equal (>=) becomes <code>$gte</code>, less than (<) becomes <code>$lt</code>, and not equal (!=) becomes <code>$ne</code>. The LIKE operator converts to a regular expression pattern where % wildcards become <code>.*</code>.
+      </p>
+
+      <h3>Limitations</h3>
+      <p>
+        JOINs, subqueries, GROUP BY, HAVING, and aggregate functions like COUNT and SUM cannot be converted with simple syntax transformation. These require MongoDB's aggregation pipeline, which has a fundamentally different structure. For complex queries, this tool provides a starting point, but manual adjustment is needed.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What SQL statements can be converted?</h3>
+      <p>SELECT, INSERT, UPDATE, DELETE, CREATE TABLE, and DROP TABLE. Complex queries with JOINs or subqueries require manual conversion.</p>
+
+      <h3>How does SELECT translate?</h3>
+      <p>SELECT maps to <code>find()</code>. WHERE becomes the filter, fields become projection, ORDER BY maps to <code>sort()</code>, LIMIT maps to <code>limit()</code>.</p>
+
+      <h3>Can this handle JOINs?</h3>
+      <p>No, JOINs require understanding your data model. In MongoDB, use embedded documents, the <code>$lookup</code> aggregation stage, or application-level joins.</p>
+
+      <h3>What is the main difference between SQL and MongoDB?</h3>
+      <p>SQL uses table-based schemas with declarative queries. MongoDB uses flexible document schemas with a programmatic query API and operators like <code>$gt</code> and <code>$set</code>.</p>
+
+      <h3>Is the conversion always accurate?</h3>
+      <p>For simple CRUD queries, the conversion is accurate. Complex queries with multiple tables, aggregations, or nested subqueries may need manual adjustment.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "SQL Formatter", description: "Format and beautify SQL queries with proper indentation.", path: everyday_sql_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "JSON Formatter", description: "Format and beautify JSON data with syntax highlighting.", path: everyday_json_formatter_path, icon_path: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+      { name: "YAML to JSON", description: "Convert YAML to JSON format instantly.", path: everyday_yaml_to_json_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("sql-to-nosql-converter") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

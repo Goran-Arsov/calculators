@@ -1,0 +1,205 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Fish Tank Size Calculator - Stocking, Filtration & Equipment Guide",
+  description: "Calculate your aquarium's volume, stocking capacity, and equipment needs. Get filtration GPH, heater wattage, and stocking level recommendations based on tank dimensions.",
+  canonical: pets_fish_tank_url,
+  og: {
+    title: "Fish Tank Size Calculator - Stocking, Filtration & Equipment Guide | CalcWise",
+    description: "Calculate aquarium volume, stocking capacity, filter size, and heater wattage for any tank shape.",
+    url: pets_fish_tank_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Pets", url: category_url("pets") },
+  { name: "Fish Tank Size Calculator", url: pets_fish_tank_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many fish can I put in my tank?", answer: "The general rule of thumb is 1 inch of fish per gallon of water for freshwater aquariums. This means a 20-gallon tank can hold approximately 20 inches of fish. However, this is a simplified guideline. Actual capacity depends on fish species, filtration quality, and whether fish are slim-bodied (like neon tetras) or heavy-bodied (like goldfish). Heavy-bodied fish produce more waste and need roughly 2 gallons per inch." },
+  { question: "What size filter do I need for my aquarium?", answer: "Your filter should be rated to turn over the entire tank volume at least 4 times per hour. For a 20-gallon tank, you need a filter rated for at least 80 gallons per hour (GPH). For heavily stocked tanks or tanks with messy fish like goldfish or cichlids, aim for 6-8 times turnover. Having slightly more filtration than needed is always better than not enough." },
+  { question: "How many watts should my aquarium heater be?", answer: "A general rule is 5 watts per gallon of water. A 20-gallon tank needs approximately a 100-watt heater. In cooler rooms or for tanks that need higher temperatures, consider 10 watts per gallon. For tanks over 50 gallons, using two smaller heaters placed at opposite ends provides more even heating and serves as backup if one fails." },
+  { question: "How do I calculate the volume of my fish tank?", answer: "For rectangular tanks, multiply length x width x height (in inches), then multiply by 0.004329 to convert to gallons. For bow front tanks, add about 10% to the rectangular calculation. For cylinder tanks, use pi x radius squared x height. Subtract about 10% from the total for substrate, decorations, and equipment that displace water." },
+  { question: "What does overstocking a fish tank mean?", answer: "Overstocking means having more fish than the tank's biological filtration can safely handle. When a tank is overstocked, ammonia and nitrite levels spike, oxygen decreases, and fish become stressed and susceptible to disease. Signs of overstocking include cloudy water, gasping at the surface, frequent illness, and algae blooms. If your stocking level exceeds 100%, consider upgrading your tank, adding more filtration, or rehoming some fish." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Fish Tank Size Calculator",
+  description: "Calculate aquarium volume, fish stocking capacity, filter requirements, and heater size for rectangular, bow front, cylinder, and hexagonal tanks.",
+  url: pets_fish_tank_url,
+  category: "HealthApplication",
+  calculator_slug: "fish-tank"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Pets", url: category_path("pets") },
+  { name: "Fish Tank Size Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Fish Tank Size Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your aquarium's volume, stocking capacity, and recommended equipment based on tank dimensions and shape.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="fish-tank-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="fish-tank-shape" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tank Shape</label>
+            <select id="fish-tank-shape" data-fish-tank-calculator-target="tankShape" data-action="change->fish-tank-calculator#calculate" class="w-full" aria-label="Tank Shape">
+              <option value="rectangular" selected>Rectangular</option>
+              <option value="bow_front">Bow Front</option>
+              <option value="cylinder">Cylinder</option>
+              <option value="hexagonal">Hexagonal</option>
+            </select>
+          </div>
+          <div>
+            <label for="fish-tank-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Length / Diameter (inches)</label>
+            <input id="fish-tank-length" type="number" inputmode="decimal" data-fish-tank-calculator-target="length" data-action="input->fish-tank-calculator#calculate" class="w-full" placeholder="24" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="fish-tank-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Width (inches)</label>
+            <input id="fish-tank-width" type="number" inputmode="decimal" data-fish-tank-calculator-target="width" data-action="input->fish-tank-calculator#calculate" class="w-full" placeholder="12" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="fish-tank-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Height (inches)</label>
+            <input id="fish-tank-height" type="number" inputmode="decimal" data-fish-tank-calculator-target="height" data-action="input->fish-tank-calculator#calculate" class="w-full" placeholder="16" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="fish-tank-fish-count" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Fish (optional)</label>
+            <input id="fish-tank-fish-count" type="number" inputmode="numeric" data-fish-tank-calculator-target="fishCount" data-action="input->fish-tank-calculator#calculate" class="w-full" placeholder="0" step="1" min="0" value="0">
+          </div>
+          <div>
+            <label for="fish-tank-avg-size" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Average Fish Size (inches)</label>
+            <input id="fish-tank-avg-size" type="number" inputmode="decimal" data-fish-tank-calculator-target="avgFishInches" data-action="input->fish-tank-calculator#calculate" class="w-full" placeholder="2" step="0.5" min="0" value="2">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Volume (Gallons)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-fish-tank-calculator-target="volumeGallons">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Volume (Liters)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-fish-tank-calculator-target="volumeLiters">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Fish (inches)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-fish-tank-calculator-target="maxFishInches">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Stocking Level</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-fish-tank-calculator-target="stockingPercentage">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Status</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-fish-tank-calculator-target="stockingLevel">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Filter Needed</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-fish-tank-calculator-target="filterGph">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Heater Needed</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-fish-tank-calculator-target="heaterWatts">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->fish-tank-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "fish-tank" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Fish Tank Size Calculator</h2>
+      <p>
+        Our free fish tank calculator helps you determine your aquarium's water volume, maximum stocking capacity, and recommended equipment specifications. Enter your tank's dimensions in inches, select the tank shape, and optionally enter your current fish count and average fish size. The calculator instantly displays the usable water volume, stocking percentage, recommended filter flow rate, and heater wattage. All results update in real time as you adjust any input.
+      </p>
+      <p>
+        Properly sizing your aquarium equipment is one of the most important aspects of successful fishkeeping. Undersized filters lead to poor water quality, which is the number one killer of aquarium fish. An undersized heater cannot maintain stable temperatures, stressing tropical fish and making them vulnerable to disease.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Stocking Levels</h2>
+      <p>
+        The classic "1 inch of fish per gallon" rule provides a useful starting point for freshwater aquariums. This means a 20-gallon tank can accommodate roughly 20 inches of fish total — for example, ten 2-inch neon tetras. However, this is a simplification. Heavy-bodied fish like goldfish or oscars produce significantly more waste per inch than slim-bodied fish like danios, so they need more water per inch. The calculator accounts for the 10% volume loss from substrate, decorations, and equipment.
+      </p>
+
+      <h3>Filtration Requirements</h3>
+      <p>
+        Your filter should turn over the entire tank volume at least <strong>4 times per hour</strong>. This means a 30-gallon tank needs a filter rated for at least 120 gallons per hour (GPH). For tanks with messy fish, live plants, or heavy stocking, aim for 6-8 times turnover. Canister filters and hang-on-back (HOB) filters are the most popular choices. For tanks over 75 gallons, a canister filter or sump system is usually preferred for adequate biological filtration capacity.
+      </p>
+
+      <h3>Heater Sizing</h3>
+      <p>
+        The standard recommendation is <strong>5 watts per gallon</strong> of aquarium water. For a 20-gallon tank, that means a 100-watt heater. If your room temperature is significantly below your target tank temperature (more than 10 degrees difference), consider sizing up to 10 watts per gallon. For tanks larger than 50 gallons, two smaller heaters placed at opposite ends provide more even heat distribution and serve as redundancy.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many fish can I put in my tank?</h3>
+      <p>
+        The general rule is 1 inch of fish per gallon of water for freshwater aquariums. A 20-gallon tank can hold approximately 20 inches of fish total. Actual capacity depends on fish species, filtration quality, and body type. Heavy-bodied fish need roughly 2 gallons per inch.
+      </p>
+
+      <h3>What size filter do I need for my aquarium?</h3>
+      <p>
+        Your filter should turn over the entire tank volume at least 4 times per hour. For a 20-gallon tank, you need a filter rated for at least 80 GPH. For heavily stocked tanks, aim for 6-8 times turnover.
+      </p>
+
+      <h3>How many watts should my aquarium heater be?</h3>
+      <p>
+        A general rule is 5 watts per gallon. A 20-gallon tank needs approximately a 100-watt heater. In cooler rooms, consider 10 watts per gallon. For tanks over 50 gallons, two smaller heaters at opposite ends provide more even heating.
+      </p>
+
+      <h3>How do I calculate the volume of my fish tank?</h3>
+      <p>
+        For rectangular tanks, multiply length x width x height in inches, then multiply by 0.004329 to convert to gallons. Subtract about 10% for substrate and decorations that displace water.
+      </p>
+
+      <h3>What does overstocking a fish tank mean?</h3>
+      <p>
+        Overstocking means having more fish than the tank's biological filtration can handle. Signs include cloudy water, fish gasping at the surface, and frequent illness. If your stocking level exceeds 100%, consider upgrading your tank or adding more filtration.
+      </p>
+
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Pet Insurance ROI Calculator", description: "Compare pet insurance costs vs potential vet bills.", path: pets_pet_insurance_roi_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" },
+      { name: "Pool Volume Calculator", description: "Calculate the volume of a swimming pool.", path: construction_pool_volume_path, icon_path: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" },
+      { name: "Cat Food Calculator", description: "Calculate daily calorie needs and food portions for your cat.", path: pets_cat_food_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "pets" %>
+
+    <% blog_posts = related_blog_posts("fish-tank-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,176 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Blood Type Compatibility Calculator - Donor & Recipient Chart",
+  description: "Check blood type compatibility for donations and transfusions. See which blood types you can donate to and receive from, with full ABO/Rh compatibility matrix.",
+  canonical: health_blood_type_compatibility_url,
+  og: {
+    title: "Blood Type Compatibility Calculator | CalcWise",
+    description: "Find out your blood type compatibility for donations and transfusions. Complete ABO/Rh compatibility chart with antigen and antibody information.",
+    url: health_blood_type_compatibility_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Blood Type Compatibility Calculator", url: health_blood_type_compatibility_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What blood type is the universal donor?", answer: "O-negative (O-) is the universal red blood cell donor because it lacks A, B, and Rh antigens, meaning it will not trigger an immune reaction in any recipient. O- blood can be safely transfused to patients of any blood type, making it critical for emergency situations when there is no time to determine the patient's blood type." },
+  { question: "What blood type is the universal recipient?", answer: "AB-positive (AB+) is the universal recipient for red blood cell transfusions. Because AB+ blood already has A, B, and Rh antigens, the immune system will not attack donor blood of any type. AB+ individuals can receive red blood cells from all eight blood types." },
+  { question: "How is blood type determined?", answer: "Blood type is determined by the presence or absence of A and B antigens on the surface of red blood cells, and the Rh factor (D antigen). Type A has A antigens, Type B has B antigens, Type AB has both, and Type O has neither. The Rh factor adds the positive (+) or negative (-) designation. Blood type is inherited from parents and does not change over a lifetime." },
+  { question: "Can blood types affect pregnancy?", answer: "Rh incompatibility can affect pregnancy when an Rh-negative mother carries an Rh-positive baby. The mother's immune system may produce antibodies against the baby's Rh-positive blood cells, potentially causing hemolytic disease of the newborn in subsequent pregnancies. This is prevented with RhIG (RhoGAM) injections during pregnancy and after delivery." },
+  { question: "What is the rarest blood type?", answer: "AB-negative (AB-) is the rarest of the eight common blood types, found in only about 0.6% of the population. The most common blood type is O-positive (O+) at 37.4%, followed by A-positive (A+) at 35.7%. Blood type distribution varies significantly by ethnicity and geographic region." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Blood Type Compatibility Calculator",
+  description: "Check blood type compatibility for donations and transfusions with complete ABO/Rh matrix.",
+  url: health_blood_type_compatibility_url,
+  category: "HealthApplication",
+  calculator_slug: "blood-type-compatibility"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Blood Type Compatibility Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Blood Type Compatibility Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Check which blood types you can donate to and receive from, with a full ABO/Rh compatibility matrix and antigen information.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="blood-type-compatibility-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="bt-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Your Blood Type</label>
+            <select id="bt-type" data-blood-type-compatibility-calculator-target="bloodType" data-action="change->blood-type-compatibility-calculator#calculate" class="w-full">
+              <option value="">Select blood type</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Can Donate To</h3>
+            <div data-blood-type-compatibility-calculator-target="canDonateTo" class="min-h-[2rem]"></div>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Can Receive From</h3>
+            <div data-blood-type-compatibility-calculator-target="canReceiveFrom" class="min-h-[2rem]"></div>
+          </div>
+          <div class="space-y-2 pt-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600 dark:text-gray-400">Population</span>
+              <span class="font-bold text-blue-600 dark:text-blue-400" data-blood-type-compatibility-calculator-target="population">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600 dark:text-gray-400">Antigens</span>
+              <span class="font-bold text-blue-600 dark:text-blue-400" data-blood-type-compatibility-calculator-target="antigens">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600 dark:text-gray-400">Antibodies</span>
+              <span class="font-bold text-blue-600 dark:text-blue-400" data-blood-type-compatibility-calculator-target="antibodies">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600 dark:text-gray-400">Rh Factor</span>
+              <span class="font-bold text-blue-600 dark:text-blue-400" data-blood-type-compatibility-calculator-target="rhFactor">—</span>
+            </div>
+          </div>
+          <ul data-blood-type-compatibility-calculator-target="specialNotes" class="list-disc list-inside space-y-1"></ul>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Compatibility Matrix</h2>
+          <div data-blood-type-compatibility-calculator-target="compatMatrix" class="overflow-x-auto text-xs"></div>
+          <button data-action="click->blood-type-compatibility-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "blood-type-compatibility" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Blood Type Compatibility Calculator Works</h2>
+      <p>
+        Select your ABO/Rh blood type to instantly see which blood types you can donate red blood cells to and receive from. The calculator also displays a full compatibility matrix showing all possible donor-recipient combinations, along with your antigen profile, antibody information, Rh factor, and population frequency. Special notes highlight universal donor and recipient status.
+      </p>
+      <p>
+        Blood type compatibility is determined by the antigens present on red blood cells and the antibodies in plasma. When incompatible blood is transfused, the recipient's antibodies attack the donor's red blood cells, causing a potentially life-threatening hemolytic transfusion reaction. Understanding compatibility is crucial for safe blood transfusions and organ transplants.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The ABO Blood Group System</h2>
+      <p>
+        The ABO system classifies blood into four groups based on antigens: Type A (A antigens, anti-B antibodies), Type B (B antigens, anti-A antibodies), Type AB (A and B antigens, no ABO antibodies), and Type O (no ABO antigens, anti-A and anti-B antibodies). The Rh system adds a positive or negative designation based on the D antigen, creating eight common blood types.
+      </p>
+
+      <h3>Universal Donors and Recipients</h3>
+      <p>
+        O-negative blood is the universal donor for red blood cells because it has no A, B, or Rh antigens to trigger immune reactions. AB-positive is the universal recipient because it has all antigens and will not produce antibodies against any donated blood type. For plasma transfusions, the compatibility is reversed: AB plasma is universal donor plasma because it contains no ABO antibodies.
+      </p>
+
+      <h3>Blood Type and Population Distribution</h3>
+      <p>
+        O-positive is the most common blood type in the United States at 37.4%, followed by A-positive at 35.7%. The rarest type is AB-negative at just 0.6%. Blood type distribution varies significantly by ethnicity: Type O is more common in Hispanic and African American populations, while Type A is more common in European populations.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the universal donor blood type?</h3>
+      <p>O-negative is the universal donor for red blood cells. It can be transfused to any patient regardless of their blood type.</p>
+
+      <h3>What is the universal recipient?</h3>
+      <p>AB-positive can receive red blood cells from all eight blood types because it has all antigens present.</p>
+
+      <h3>How is blood type determined?</h3>
+      <p>By the presence of A and B antigens on red blood cells and the Rh factor (D antigen). Blood type is inherited and does not change.</p>
+
+      <h3>Can blood types affect pregnancy?</h3>
+      <p>Rh incompatibility can occur when an Rh-negative mother carries an Rh-positive baby, potentially causing hemolytic disease. This is prevented with RhoGAM injections.</p>
+
+      <h3>What is the rarest blood type?</h3>
+      <p>AB-negative is the rarest at 0.6% of the population. O-positive is the most common at 37.4%.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Blood Pressure Calculator", description: "Check your blood pressure category and get health recommendations.", path: health_blood_pressure_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Biological Age Calculator", description: "Estimate your biological age based on lifestyle factors.", path: health_biological_age_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <% blog_posts = related_blog_posts("blood-type-compatibility-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

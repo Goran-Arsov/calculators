@@ -1,0 +1,188 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Carbon Footprint Calculator - Estimate Your Annual CO2",
+  description: "Estimate your annual carbon footprint from driving, electricity, flights, diet, and natural gas. Compare against global and US averages. Free online calculator.",
+  canonical: everyday_carbon_footprint_url,
+  og: {
+    title: "Carbon Footprint Calculator - Annual CO2 Estimate | CalcWise",
+    description: "Estimate your annual carbon footprint from transportation, energy, flights, and diet.",
+    url: everyday_carbon_footprint_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Carbon Footprint Calculator", url: everyday_carbon_footprint_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is the carbon footprint calculated?", answer: "The calculator multiplies your activity levels by standard emission factors. Driving uses 0.21 kg CO2 per km (average passenger car). Electricity uses 0.42 kg CO2 per kWh (US average grid). Flights use 0.255 kg CO2 per km per passenger. Diet estimates range from 1,500 kg per year for vegan to 3,300 kg for heavy meat consumption. Natural gas uses 5.3 kg CO2 per therm." },
+  { question: "What is a typical carbon footprint?", answer: "The global average is about 4 tonnes of CO2 per person per year. The US average is approximately 16 tonnes, one of the highest in the world. The EU average is about 6 tonnes. The Paris Agreement target is roughly 2 tonnes per person by 2050 to limit global warming to 1.5 degrees Celsius." },
+  { question: "Which activities contribute most to carbon footprint?", answer: "For most people in developed countries, transportation (especially flying and driving) and home energy use are the largest contributors. A single round-trip transatlantic flight generates about 3.6 tonnes of CO2. Daily driving contributes 2-4 tonnes per year. Home heating and electricity typically add 2-5 tonnes. Diet ranges from 1.5 to 3.3 tonnes depending on meat consumption." },
+  { question: "How can I reduce my carbon footprint?", answer: "The most impactful actions are: reduce air travel (one fewer long flight saves about 3.6 tonnes), switch to an electric vehicle or use public transit, improve home insulation and switch to renewable energy, reduce meat consumption (especially beef), and minimize food waste. Small changes like shorter showers and LED bulbs help but have less impact than transportation and diet changes." },
+  { question: "Why does diet affect carbon footprint?", answer: "Food production generates significant greenhouse gas emissions. Beef has the highest footprint due to methane from cattle and land use for feed. A heavy meat diet produces about 3.3 tonnes of CO2 per year, while a vegan diet produces about 1.5 tonnes. The difference comes from methane emissions, deforestation for grazing land, and the energy-intensive production of animal feed." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Carbon Footprint Calculator",
+  description: "Estimate annual CO2 footprint from driving, electricity, flights, diet, and natural gas usage.",
+  url: everyday_carbon_footprint_url,
+  category: "UtilityApplication",
+  calculator_slug: "carbon-footprint"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Carbon Footprint Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Carbon Footprint Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your annual CO2 emissions from transportation, energy use, flights, and diet. See how you compare to global averages.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="carbon-footprint-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Driving (km/week)</label>
+            <input type="number" inputmode="decimal" data-carbon-footprint-calculator-target="drivingKm" data-action="input->carbon-footprint-calculator#calculate" class="w-full" placeholder="200" min="0" value="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Electricity (kWh/month)</label>
+            <input type="number" inputmode="decimal" data-carbon-footprint-calculator-target="electricityKwh" data-action="input->carbon-footprint-calculator#calculate" class="w-full" placeholder="900" min="0" value="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Short Flights/year (under 3 hrs)</label>
+            <input type="number" inputmode="numeric" data-carbon-footprint-calculator-target="shortFlights" data-action="input->carbon-footprint-calculator#calculate" class="w-full" placeholder="2" min="0" value="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Long Flights/year (over 3 hrs)</label>
+            <input type="number" inputmode="numeric" data-carbon-footprint-calculator-target="longFlights" data-action="input->carbon-footprint-calculator#calculate" class="w-full" placeholder="1" min="0" value="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Diet</label>
+            <select data-carbon-footprint-calculator-target="diet" data-action="change->carbon-footprint-calculator#calculate" class="w-full">
+              <option value="meat_heavy">Heavy Meat Eater</option>
+              <option value="average" selected>Average</option>
+              <option value="low_meat">Low Meat</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="vegan">Vegan</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Natural Gas (therms/month)</label>
+            <input type="number" inputmode="decimal" data-carbon-footprint-calculator-target="naturalGas" data-action="input->carbon-footprint-calculator#calculate" class="w-full" placeholder="50" min="0" value="0">
+          </div>
+        </div>
+
+        <div aria-live="polite" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Your Carbon Footprint</h2>
+          <div class="text-center mb-4">
+            <span class="text-3xl font-bold text-green-600 dark:text-green-400" data-carbon-footprint-calculator-target="resultTonnes">0 tonnes</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400 block">CO2 per year</span>
+          </div>
+
+          <div class="space-y-2 text-sm mb-4">
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Driving</span><span class="font-semibold" data-carbon-footprint-calculator-target="resultDriving">0 kg</span></div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div data-carbon-footprint-calculator-target="drivingBar" class="bg-blue-500 h-2 rounded-full text-xs text-white text-center" style="width: 0%"></div></div>
+
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Electricity</span><span class="font-semibold" data-carbon-footprint-calculator-target="resultElectricity">0 kg</span></div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div data-carbon-footprint-calculator-target="electricityBar" class="bg-yellow-500 h-2 rounded-full text-xs text-white text-center" style="width: 0%"></div></div>
+
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Flights</span><span class="font-semibold" data-carbon-footprint-calculator-target="resultFlights">0 kg</span></div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div data-carbon-footprint-calculator-target="flightsBar" class="bg-red-500 h-2 rounded-full text-xs text-white text-center" style="width: 0%"></div></div>
+
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Diet</span><span class="font-semibold" data-carbon-footprint-calculator-target="resultDiet">0 kg</span></div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div data-carbon-footprint-calculator-target="dietBar" class="bg-green-500 h-2 rounded-full text-xs text-white text-center" style="width: 0%"></div></div>
+
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Natural Gas</span><span class="font-semibold" data-carbon-footprint-calculator-target="resultGas">0 kg</span></div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div data-carbon-footprint-calculator-target="gasBar" class="bg-purple-500 h-2 rounded-full text-xs text-white text-center" style="width: 0%"></div></div>
+          </div>
+
+          <hr class="border-gray-200 dark:border-gray-700 my-3">
+          <div class="flex justify-between text-sm"><span class="text-gray-600 dark:text-gray-400 font-semibold">Total</span><span class="font-bold text-lg" data-carbon-footprint-calculator-target="resultTotal">0 kg</span></div>
+
+          <div class="mt-4 space-y-1 text-xs text-gray-500 dark:text-gray-400">
+            <div data-carbon-footprint-calculator-target="resultVsGlobal">-</div>
+            <div data-carbon-footprint-calculator-target="resultVsUs">-</div>
+            <div data-carbon-footprint-calculator-target="resultVsEu">-</div>
+            <div data-carbon-footprint-calculator-target="resultVsParis">-</div>
+          </div>
+
+          <button data-action="click->carbon-footprint-calculator#copy" class="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm text-sm font-medium transition-all duration-200">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "carbon-footprint" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Your Carbon Footprint</h2>
+      <p>
+        Your carbon footprint represents the total greenhouse gas emissions caused directly and indirectly by your activities, measured in equivalent tonnes of CO2 per year. This calculator estimates emissions from five major categories: driving, electricity consumption, air travel, diet, and natural gas usage. Each uses standard emission factors to convert your activity levels into CO2 equivalents.
+      </p>
+      <p>
+        The global average carbon footprint is approximately 4 tonnes per person per year. The US average is about 16 tonnes, driven by high car usage, large homes, and energy-intensive lifestyles. To meet the Paris Agreement goal of limiting warming to 1.5 degrees Celsius, the global average needs to drop to around 2 tonnes per person by 2050.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Emission Factors Used</h2>
+      <p>
+        Driving: approximately 0.21 kg CO2 per kilometer for an average passenger car. This accounts for fuel combustion and upstream emissions. Electric vehicles produce less per kilometer but are not zero-emission when charging from fossil-fuel grids. Electricity: 0.42 kg CO2 per kWh, the US national average. This varies significantly by state and country based on the energy mix. Flights: 0.255 kg CO2 per passenger-kilometer, including the high-altitude radiative forcing effect.
+      </p>
+
+      <h3>Reducing Your Footprint</h3>
+      <p>
+        The highest-impact individual actions are reducing air travel, switching to an electric vehicle or public transit, and reducing meat consumption. One fewer transatlantic round-trip flight saves about 3.6 tonnes of CO2. Switching from a heavy meat diet to vegetarian saves about 1.6 tonnes per year. Installing solar panels or switching to a green electricity provider can eliminate your electricity emissions entirely.
+      </p>
+
+      <h3>Beyond Individual Action</h3>
+      <p>
+        While individual actions matter, systemic changes have the greatest impact. Supporting renewable energy policies, investing in public transit infrastructure, and choosing companies with strong climate commitments all contribute to reducing overall emissions. Carbon offsets can compensate for unavoidable emissions, but they should complement rather than replace direct emission reductions.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is the carbon footprint calculated?</h3>
+      <p>By multiplying activity levels by emission factors: 0.21 kg/km driving, 0.42 kg/kWh electricity, 0.255 kg/km flights, plus diet and gas estimates.</p>
+
+      <h3>What is a typical carbon footprint?</h3>
+      <p>Global average: 4 tonnes/year. US average: 16 tonnes. EU average: 6 tonnes. Paris target: 2 tonnes by 2050.</p>
+
+      <h3>Which activities contribute most?</h3>
+      <p>Transportation (flying and driving) and home energy are typically the largest. A single transatlantic flight can equal a year of driving.</p>
+
+      <h3>How can I reduce my footprint?</h3>
+      <p>Reduce flights, switch to electric/public transit, improve home efficiency, eat less meat, and choose renewable energy.</p>
+
+      <h3>Why does diet matter?</h3>
+      <p>Beef produces high methane emissions. A heavy meat diet generates 3,300 kg CO2/year vs 1,500 kg for vegan, a difference of nearly 2 tonnes.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Electricity Usage Calculator", description: "Calculate electricity consumption and costs.", path: everyday_electricity_usage_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Fuel Cost Calculator", description: "Calculate fuel costs for trips.", path: everyday_fuel_cost_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Gas Mileage Calculator", description: "Calculate fuel efficiency and mileage.", path: everyday_gas_mileage_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("carbon-footprint-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

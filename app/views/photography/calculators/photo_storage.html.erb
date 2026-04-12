@@ -1,0 +1,171 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Photo Storage Calculator - Estimate Storage Needs",
+  description: "Estimate how much storage space your photos need based on number of photos, file format (RAW, JPEG, TIFF, HEIF), and camera megapixels. Free photo storage calculator.",
+  canonical: photography_photo_storage_url,
+  og: {
+    title: "Photo Storage Calculator - Estimate Storage Needs | CalcWise",
+    description: "Estimate storage needs from number of photos, file format, and camera megapixels.",
+    url: photography_photo_storage_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Photography", url: category_url("photography") },
+  { name: "Photo Storage Calculator", url: photography_photo_storage_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much storage does a RAW photo take?", answer: "RAW file size depends on megapixels and bit depth. A 24MP camera produces RAW files of approximately 25-30 MB (14-bit). A 45MP camera produces RAW files of approximately 45-60 MB. Compressed RAW formats (like Sony's lossless compressed) are roughly 40-60% of uncompressed RAW size." },
+  { question: "How many photos can fit on a 64GB memory card?", answer: "At 24MP: approximately 2,600 JPEG files, 2,100 RAW files, or 1,400 RAW+JPEG pairs. At 45MP: approximately 1,400 JPEG files, 1,100 RAW files, or 740 RAW+JPEG pairs. Actual numbers vary by scene complexity, as more detailed scenes produce larger files." },
+  { question: "Should I shoot RAW or JPEG?", answer: "RAW preserves maximum image data for post-processing flexibility but uses 3-4 times more storage than JPEG. JPEG is pre-processed and compressed, using less storage but offering less editing latitude. Many professionals shoot RAW+JPEG: RAW for keepers and JPEG for quick sharing." },
+  { question: "How much storage do I need for a wedding shoot?", answer: "A typical wedding generates 3,000-5,000 photos. At 24MP shooting RAW+JPEG, budget approximately 100-150 GB. At 45MP, budget 200-300 GB. Many wedding photographers carry at least 256 GB of card capacity and back up to a laptop during the event." },
+  { question: "How do HEIF files compare to JPEG in size?", answer: "HEIF (High Efficiency Image Format) files are typically 30-40% smaller than equivalent quality JPEG files while maintaining similar or better image quality. HEIF is used by default on newer iPhones and is supported by many modern cameras. Not all software supports HEIF editing." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Photo Storage Calculator",
+  description: "Estimate storage needs from number of photos, file format, and camera megapixels.",
+  url: photography_photo_storage_url,
+  category: "PhotographyApplication",
+  calculator_slug: "photo-storage"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Photography", url: category_path("photography") },
+  { name: "Photo Storage Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Photo Storage Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate how much storage space you need for your photos based on format, megapixels, and quantity.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="photo-storage-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="ps-num" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Photos</label>
+            <input id="ps-num" type="number" inputmode="numeric" data-photo-storage-calculator-target="numPhotos" data-action="input->photo-storage-calculator#calculate" class="w-full" placeholder="1000" step="1" min="1">
+          </div>
+          <div>
+            <label for="ps-mp" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Camera Megapixels</label>
+            <input id="ps-mp" type="number" inputmode="decimal" data-photo-storage-calculator-target="megapixels" data-action="input->photo-storage-calculator#calculate" class="w-full" placeholder="24" step="0.1" min="1">
+          </div>
+          <div>
+            <label for="ps-format" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">File Format</label>
+            <select id="ps-format" data-photo-storage-calculator-target="format" data-action="change->photo-storage-calculator#calculate" class="w-full">
+              <option value="jpeg">JPEG</option>
+              <option value="raw">RAW</option>
+              <option value="tiff">TIFF</option>
+              <option value="heif">HEIF/HEIC</option>
+              <option value="raw_jpeg">RAW + JPEG</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Storage Estimate</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Format</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-photo-storage-calculator-target="resultFormat">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Per Photo</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-photo-storage-calculator-target="resultPerPhoto">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total (MB)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-photo-storage-calculator-target="resultTotalMb">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total (GB)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-photo-storage-calculator-target="resultTotalGb">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total (TB)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-photo-storage-calculator-target="resultTotalTb">&mdash;</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">32 GB Cards</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-photo-storage-calculator-target="resultCards32">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">64 GB Cards</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-photo-storage-calculator-target="resultCards64">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">128 GB Cards</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-photo-storage-calculator-target="resultCards128">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->photo-storage-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "photo-storage" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Photo Storage Is Calculated</h2>
+      <p>
+        Photo file size depends primarily on image resolution (megapixels), file format, and compression level. This calculator uses empirical averages for each format: approximately 0.3 MB per megapixel for high-quality JPEG, 1.2 MB per megapixel for 14-bit RAW, 3.0 MB per megapixel for 16-bit TIFF, and 0.2 MB per megapixel for HEIF. Actual sizes vary by scene complexity — images with fine detail and texture compress less than smooth scenes.
+      </p>
+      <p>
+        Select your file format, enter your camera resolution in megapixels and the number of photos, and the calculator estimates total storage in MB, GB, and TB along with the number of memory cards needed at common capacities.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>File Format Comparison</h2>
+      <p>
+        JPEG is the universal standard with good quality at small file sizes. RAW captures all sensor data for maximum editing flexibility but uses significantly more storage. TIFF is an uncompressed format used primarily for archival and print production. HEIF (used by iPhones and some cameras) offers JPEG-quality images at 30-40% smaller file sizes. RAW+JPEG shoots both formats simultaneously, using the most storage but giving you the best of both worlds.
+      </p>
+
+      <h3>Storage Planning for Events</h3>
+      <p>
+        For a typical event shoot of 500-1000 photos at 24MP shooting RAW, budget 15-30 GB. A wedding with 3000-5000 photos needs 90-150 GB in RAW. A year of casual shooting (5000 JPEGs) needs about 36 GB. Professional photographers maintaining RAW archives typically need 1-4 TB per year depending on volume. Always carry more storage than you think you need — running out of cards during a shoot is far worse than having spare capacity.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much storage does a RAW photo take?</h3>
+      <p>A 24MP camera produces RAW files of approximately 25-30 MB. A 45MP camera produces RAW files of about 45-60 MB.</p>
+
+      <h3>How many photos can fit on a 64GB card?</h3>
+      <p>At 24MP: approximately 2,600 JPEG files, 2,100 RAW files, or 1,400 RAW+JPEG pairs.</p>
+
+      <h3>Should I shoot RAW or JPEG?</h3>
+      <p>RAW offers maximum editing flexibility; JPEG is smaller and ready to share. Many pros shoot RAW+JPEG for the best of both.</p>
+
+      <h3>How much storage do I need for a wedding shoot?</h3>
+      <p>Budget 100-150 GB at 24MP or 200-300 GB at 45MP when shooting RAW+JPEG for 3,000-5,000 photos.</p>
+
+      <h3>How do HEIF files compare to JPEG?</h3>
+      <p>HEIF files are 30-40% smaller than equivalent quality JPEG while maintaining similar image quality.</p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Video File Size Calculator", description: "Estimate video file size from bitrate and duration.", path: photography_video_file_size_path, icon_path: "M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" },
+      { name: "Time-Lapse Interval Calculator", description: "Calculate shooting intervals for time-lapse photography.", path: photography_timelapse_interval_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Print Size & DPI Calculator", description: "Calculate print dimensions from pixel dimensions and DPI.", path: photography_print_size_dpi_path, icon_path: "M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "photography" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

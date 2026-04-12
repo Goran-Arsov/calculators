@@ -1,0 +1,189 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Oil Change Interval Calculator - Next Oil Change Date & Mileage",
+  description: "Calculate when your next oil change is due based on oil type, driving conditions, and current mileage. Get personalized interval recommendations with date and mileage.",
+  canonical: automotive_oil_change_interval_url,
+  og: {
+    title: "Oil Change Interval Calculator - Next Oil Change Date & Mileage | CalcWise",
+    description: "Calculate when your next oil change is due based on oil type, driving conditions, and mileage.",
+    url: automotive_oil_change_interval_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Automotive", url: category_url("automotive") },
+  { name: "Oil Change Interval Calculator", url: automotive_oil_change_interval_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How often should I change my oil?", answer: "Oil change intervals depend on oil type and driving conditions. Conventional oil: every 3,000-5,000 miles or 3 months. Synthetic blend: every 5,000-7,500 miles or 6 months. Full synthetic: every 7,500-10,000 miles or 12 months. Severe driving conditions (frequent short trips, extreme temperatures, towing, dusty roads) cut these intervals roughly in half." },
+  { question: "What are severe driving conditions?", answer: "Severe driving conditions include frequent short trips under 10 miles, stop-and-go city driving, driving in extreme heat or cold, towing or carrying heavy loads, driving on dusty or gravel roads, and sustained high-speed highway driving. Most manufacturers classify the majority of typical daily driving as severe conditions, not normal." },
+  { question: "Is synthetic oil worth the extra cost?", answer: "Yes, for most drivers synthetic oil is worth it. While it costs more per quart, it lasts 2-3 times longer than conventional oil, provides better protection at extreme temperatures, flows better in cold starts, reduces engine wear and deposits, and can improve fuel economy slightly. The longer change interval offsets the higher per-quart cost." },
+  { question: "Can I switch between conventional and synthetic oil?", answer: "Yes, you can switch between conventional and synthetic oil without any issues. Modern engines and oils are fully compatible. You can also use synthetic blend as a middle ground. Switching does not damage your engine, void your warranty, or cause leaks. The only consideration is adjusting your oil change interval to match the oil type." },
+  { question: "What happens if I go too long between oil changes?", answer: "Driving too long between oil changes allows oil to break down and lose its lubricating properties. Degraded oil leads to increased friction and heat, accelerated engine wear, sludge buildup that can clog oil passages, reduced fuel efficiency, and potentially catastrophic engine failure in extreme cases. The damage is cumulative and often not reversible." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Oil Change Interval Calculator",
+  description: "Calculate your next oil change date and mileage based on oil type and driving conditions.",
+  url: automotive_oil_change_interval_url,
+  category: "AutomotiveApplication",
+  calculator_slug: "oil-change-interval"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Automotive", url: category_path("automotive") },
+  { name: "Oil Change Interval Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Oil Change Interval Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find out when your next oil change is due. Enter your oil type, mileage, and driving conditions for a personalized recommendation.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="oil-change-interval-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="oil-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Oil Type</label>
+            <select id="oil-type" data-oil-change-interval-calculator-target="oilType" data-action="change->oil-change-interval-calculator#calculate" class="w-full">
+              <option value="conventional">Conventional</option>
+              <option value="synthetic_blend">Synthetic Blend</option>
+              <option value="full_synthetic" selected>Full Synthetic</option>
+              <option value="high_mileage">High Mileage</option>
+            </select>
+          </div>
+          <div>
+            <label for="oil-current-mileage" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Odometer (miles)</label>
+            <input id="oil-current-mileage" type="number" inputmode="decimal" data-oil-change-interval-calculator-target="currentMileage" data-action="input->oil-change-interval-calculator#calculate" class="w-full" placeholder="45000" step="100" min="0">
+          </div>
+          <div>
+            <label for="oil-last-mileage" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Last Change Mileage</label>
+            <input id="oil-last-mileage" type="number" inputmode="decimal" data-oil-change-interval-calculator-target="lastChangeMileage" data-action="input->oil-change-interval-calculator#calculate" class="w-full" placeholder="40000" step="100" min="0">
+          </div>
+          <div>
+            <label for="oil-last-date" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Last Change Date</label>
+            <input id="oil-last-date" type="date" data-oil-change-interval-calculator-target="lastChangeDate" data-action="input->oil-change-interval-calculator#calculate" class="w-full">
+          </div>
+          <div>
+            <label for="oil-daily-miles" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Average Daily Miles</label>
+            <input id="oil-daily-miles" type="number" inputmode="decimal" data-oil-change-interval-calculator-target="dailyMiles" data-action="input->oil-change-interval-calculator#calculate" class="w-full" placeholder="30" step="5" min="0" value="30">
+          </div>
+          <div>
+            <label for="oil-conditions" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Driving Conditions</label>
+            <select id="oil-conditions" data-oil-change-interval-calculator-target="drivingConditions" data-action="change->oil-change-interval-calculator#calculate" class="w-full">
+              <option value="normal">Normal</option>
+              <option value="moderate">Moderate (some city driving)</option>
+              <option value="severe">Severe (short trips, towing, dusty)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Oil Change Status</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Recommended Interval</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-oil-change-interval-calculator-target="recommendedMiles">0 mi</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Time Interval</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-oil-change-interval-calculator-target="recommendedMonths">0 months</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Miles Since Change</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-oil-change-interval-calculator-target="milesSinceChange">0 mi</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Miles Remaining</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-oil-change-interval-calculator-target="milesRemaining">0 mi</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Oil Life Remaining</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-oil-change-interval-calculator-target="oilLifePct">0.0%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Next Change At</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-oil-change-interval-calculator-target="nextChangeMileage">0 mi</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Next Change Date</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-oil-change-interval-calculator-target="nextChangeDate">--</span>
+            </div>
+          </div>
+          <div data-oil-change-interval-calculator-target="overdueWarning" class="hidden mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm font-medium">
+            Your oil change is overdue! Schedule service as soon as possible.
+          </div>
+          <button data-action="click->oil-change-interval-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "oil-change-interval" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Oil Change Interval Calculator</h2>
+      <p>
+        Our oil change interval calculator provides personalized recommendations for when to change your oil. Select your oil type, enter your current mileage, the mileage and date of your last oil change, your average daily driving distance, and your typical driving conditions. The calculator determines how much oil life remains, when you should schedule your next change by both date and mileage, and whether you are already overdue.
+      </p>
+      <p>
+        The calculator uses both mileage-based and time-based intervals, recommending service at whichever comes first. Even if you do not drive many miles, oil degrades over time from moisture absorption, acid formation, and additive depletion, making the time-based interval equally important.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Oil Types and Their Intervals</h2>
+      <p>
+        Different oil types have different change intervals due to their chemical composition and additive packages. Conventional oil is the most affordable but requires the most frequent changes at roughly 3,000 miles or 3 months. Synthetic blend offers a middle ground at 5,000 miles or 6 months. Full synthetic oil provides the best protection and longest intervals at 7,500 miles or 12 months. High-mileage formulations are designed for engines with over 75,000 miles and typically follow 5,000-mile intervals.
+      </p>
+
+      <h3>Driving Conditions Impact</h3>
+      <p>
+        Your driving conditions significantly affect how quickly oil degrades. Severe conditions, including frequent short trips, stop-and-go traffic, dusty roads, towing, and extreme temperatures, can reduce recommended intervals by up to 50%. Most manufacturers actually classify the typical daily commute with frequent short trips and city driving as severe service, meaning the majority of drivers should follow the shorter interval schedule.
+      </p>
+
+      <h3>Why Time Matters as Much as Mileage</h3>
+      <p>
+        Even if your car sits in the garage, oil degrades over time. Moisture from condensation, acid formation from combustion byproducts, and additive depletion all occur regardless of mileage. This is why oil should be changed at least once a year for full synthetic or every 3-6 months for conventional oil, even if you have not reached the mileage interval.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How often should I change my oil?</h3>
+      <p>It depends on oil type: conventional every 3,000 miles/3 months, synthetic blend every 5,000 miles/6 months, full synthetic every 7,500 miles/12 months. Severe driving conditions cut these roughly in half.</p>
+
+      <h3>What are severe driving conditions?</h3>
+      <p>Frequent short trips under 10 miles, stop-and-go driving, extreme temperatures, towing, dusty roads, and sustained high-speed driving. Most typical daily commutes qualify as severe.</p>
+
+      <h3>Is synthetic oil worth the extra cost?</h3>
+      <p>Yes, for most drivers. It lasts 2-3 times longer, provides better protection, and the longer interval offsets the higher per-quart cost.</p>
+
+      <h3>Can I switch between conventional and synthetic oil?</h3>
+      <p>Yes, switching between oil types is perfectly safe and will not damage your engine or void your warranty.</p>
+
+      <h3>What happens if I go too long between oil changes?</h3>
+      <p>Degraded oil leads to increased friction, accelerated engine wear, sludge buildup, reduced fuel efficiency, and potentially engine failure.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "MPG Calculator", description: "Calculate your vehicle's fuel efficiency in miles per gallon.", path: automotive_mpg_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Car Payment Total Cost Calculator", description: "Calculate the total cost of vehicle ownership.", path: automotive_car_payment_total_cost_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Car Depreciation Calculator", description: "See how your vehicle's value changes over time.", path: automotive_car_depreciation_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "automotive" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

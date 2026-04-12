@@ -1,0 +1,181 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Wheelchair Ramp Length Calculator - ADA Compliant Ramp Tool",
+  description: "Calculate wheelchair ramp length from height using ADA 1:12 and commercial 1:16 slope ratios. Includes landing requirements and angle calculations.",
+  canonical: health_wheelchair_ramp_url,
+  og: {
+    title: "Wheelchair Ramp Length Calculator - ADA Compliant Ramp Tool | CalcWise",
+    description: "Calculate ADA-compliant wheelchair ramp dimensions. Get run length, ramp angle, and landing requirements for residential and commercial ramps.",
+    url: health_wheelchair_ramp_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Wheelchair Ramp Calculator", url: health_wheelchair_ramp_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the ADA ramp slope requirement?", answer: "The Americans with Disabilities Act (ADA) requires a maximum slope of 1:12 for wheelchair ramps, meaning for every 1 inch of vertical rise, the ramp must extend 12 inches horizontally. This produces a slope of approximately 4.76 degrees. For example, a 24-inch rise requires a minimum ramp run of 288 inches (24 feet)." },
+  { question: "What is the maximum ramp length before a landing is needed?", answer: "According to ADA guidelines, a ramp run cannot exceed 30 feet (360 inches) in horizontal length without an intermediate landing. Landings must be at least 60 inches (5 feet) long and at least as wide as the ramp. Top and bottom landings are also required for all ramps." },
+  { question: "What is the difference between 1:12 and 1:16 slope?", answer: "A 1:12 slope is the maximum allowed by ADA and provides 12 inches of horizontal run per inch of rise (about 4.76 degrees). A 1:16 slope is gentler, providing 16 inches of run per inch of rise (about 3.58 degrees). The 1:16 ratio is recommended for commercial and public buildings as it is easier for wheelchair users to navigate independently." },
+  { question: "How wide should a wheelchair ramp be?", answer: "ADA requires a minimum clear width of 36 inches between handrails for wheelchair ramps. However, 48 inches is recommended for two-way traffic or commercial settings. Handrails are required on both sides of ramps with a rise greater than 6 inches or a horizontal run greater than 72 inches." },
+  { question: "Can I build a steeper ramp than 1:12?", answer: "For new construction, ADA requires a maximum 1:12 slope. Steeper slopes of 1:10 may be permitted for existing buildings where space is limited and the maximum rise is 6 inches. A 1:8 slope may be allowed for very short rises of 3 inches or less. However, these exceptions apply only to existing structures and specific circumstances." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Wheelchair Ramp Length Calculator",
+  description: "Calculate ADA-compliant wheelchair ramp length from height rise, with landing requirements.",
+  url: health_wheelchair_ramp_url,
+  category: "HealthApplication",
+  calculator_slug: "wheelchair-ramp"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Wheelchair Ramp Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Wheelchair Ramp Length Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the required ramp length from height rise using ADA 1:12 and commercial 1:16 slope ratios, including landing requirements.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="wheelchair-ramp-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="ramp-rise" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Height Rise</label>
+            <div class="flex gap-2">
+              <input id="ramp-rise" type="number" inputmode="decimal" data-wheelchair-ramp-calculator-target="rise" data-action="input->wheelchair-ramp-calculator#calculate" class="flex-1" placeholder="24" min="0.1" step="0.1">
+              <select data-wheelchair-ramp-calculator-target="unit" data-action="change->wheelchair-ramp-calculator#calculate" class="w-24">
+                <option value="inches">inches</option>
+                <option value="cm">cm</option>
+              </select>
+            </div>
+          </div>
+          <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
+            <h3 class="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">ADA Standard (1:12)</h3>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Horizontal Run</span><span class="font-bold text-blue-600 dark:text-blue-400" data-wheelchair-ramp-calculator-target="adaRun">—</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Ramp Length</span><span class="font-bold text-blue-600 dark:text-blue-400" data-wheelchair-ramp-calculator-target="adaLength">—</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Slope Angle</span><span class="font-bold text-blue-600 dark:text-blue-400" data-wheelchair-ramp-calculator-target="adaAngle">—</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Landings</span><span class="font-bold text-blue-600 dark:text-blue-400" data-wheelchair-ramp-calculator-target="adaLandings">—</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Commercial (1:16)</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Horizontal Run</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-wheelchair-ramp-calculator-target="commercialRun">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Ramp Length</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-wheelchair-ramp-calculator-target="commercialLength">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Slope Angle</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-wheelchair-ramp-calculator-target="commercialAngle">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Landings</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-wheelchair-ramp-calculator-target="commercialLandings">—</span>
+            </div>
+          </div>
+          <button data-action="click->wheelchair-ramp-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "wheelchair-ramp" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Wheelchair Ramp Calculator</h2>
+      <p>
+        Enter the vertical height difference (rise) that the ramp needs to overcome, and this calculator instantly computes the required horizontal run, ramp length, slope angle, and intermediate landing requirements for both ADA residential (1:12) and commercial (1:16) standards. Results update in real time as you adjust the input, helping you plan ramp construction with confidence.
+      </p>
+      <p>
+        Building an ADA-compliant wheelchair ramp requires precise measurements to ensure accessibility and safety. The most common mistake in ramp design is underestimating the horizontal space required. A seemingly modest 30-inch rise requires a ramp run of at least 30 feet under ADA guidelines, which significantly impacts the layout of an entrance area.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding ADA Ramp Requirements</h2>
+      <p>
+        The ADA 1:12 slope ratio means for every 1 inch of height, the ramp extends 12 inches horizontally. This creates a gentle 4.76-degree angle that most wheelchair users can navigate independently. The maximum ramp run without a landing is 30 feet, and landings must be at least 60 inches long and as wide as the ramp itself.
+      </p>
+
+      <h3>Commercial vs. Residential Standards</h3>
+      <p>
+        While ADA mandates a maximum 1:12 slope, commercial and public buildings often use a 1:16 ratio for improved accessibility. The gentler slope of 3.58 degrees makes it easier for wheelchair users, particularly those with limited upper body strength, to navigate the ramp without assistance. The trade-off is that a 1:16 ramp requires 33% more horizontal space than a 1:12 ramp.
+      </p>
+
+      <h3>Ramp Width and Handrail Requirements</h3>
+      <p>
+        ADA requires a minimum clear width of 36 inches between handrails. Handrails are mandatory on both sides when the rise exceeds 6 inches or the run exceeds 72 inches. Handrails must be 34 to 38 inches above the ramp surface and extend 12 inches beyond the top and bottom of the ramp. Edge protection is required to prevent wheelchair wheels from slipping off the ramp edge.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the ADA ramp slope requirement?</h3>
+      <p>
+        ADA requires a maximum slope of 1:12 for wheelchair ramps. For every 1 inch of rise, the ramp must extend 12 inches horizontally, producing a slope of approximately 4.76 degrees.
+      </p>
+
+      <h3>When are intermediate landings required?</h3>
+      <p>
+        A ramp run cannot exceed 30 feet without an intermediate landing. Landings must be at least 60 inches long and at least as wide as the ramp. Top and bottom landings are required for all ramps.
+      </p>
+
+      <h3>What is the difference between 1:12 and 1:16?</h3>
+      <p>
+        A 1:12 slope is the ADA maximum, suitable for residential use. A 1:16 slope is gentler and recommended for commercial and public buildings, providing easier independent navigation for wheelchair users.
+      </p>
+
+      <h3>How wide should a wheelchair ramp be?</h3>
+      <p>
+        ADA requires a minimum clear width of 36 inches between handrails. For commercial settings or two-way traffic, 48 inches is recommended.
+      </p>
+
+      <h3>Can I build a steeper ramp?</h3>
+      <p>
+        For existing buildings with space constraints, 1:10 may be permitted for rises up to 6 inches, and 1:8 for rises up to 3 inches. New construction must meet the 1:12 standard.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Ideal Weight Calculator", description: "Calculate your ideal body weight based on height, gender, and frame size.", path: health_ideal_weight_path, icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+      { name: "Steps Per Mile Calculator", description: "Estimate how many steps you walk per mile based on your height and pace.", path: health_steps_per_mile_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <% blog_posts = related_blog_posts("wheelchair-ramp-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

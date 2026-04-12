@@ -26,6 +26,16 @@ module Construction
     def rip_cut; end
     def cabinet_door; end
 
+    # Structural & specialty
+    def solar_panel_layout; end
+    def rebar_spacing; end
+    def concrete_mix; end
+    def beam_load_span; end
+    def window_u_value; end
+    def drainage_slope; end
+    def brick_block; end
+    def septic_tank_size; end
+
     # Home improvement
     def grout; end
     def carpet; end

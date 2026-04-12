@@ -1,0 +1,178 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Towing Capacity Calculator - Safe Towing Weight Estimator",
+  description: "Calculate your vehicle's safe towing capacity from GVWR, curb weight, and payload. See max towing weight, tongue weight, and payload utilization percentage.",
+  canonical: automotive_towing_capacity_url,
+  og: {
+    title: "Towing Capacity Calculator - Safe Towing Weight Estimator | CalcWise",
+    description: "Calculate your vehicle's safe towing capacity from GVWR, curb weight, and payload.",
+    url: automotive_towing_capacity_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Automotive", url: category_url("automotive") },
+  { name: "Towing Capacity Calculator", url: automotive_towing_capacity_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is GVWR and why does it matter for towing?", answer: "GVWR (Gross Vehicle Weight Rating) is the maximum total weight your vehicle can safely handle, including the vehicle itself, passengers, cargo, and tongue weight from a trailer. It is set by the manufacturer and found on the driver's door jamb sticker. Exceeding GVWR stresses the frame, suspension, brakes, and tires beyond their design limits, creating dangerous handling and stopping conditions." },
+  { question: "How do I calculate my towing capacity?", answer: "Start with your vehicle's GVWR, subtract the curb weight (empty vehicle weight) to get maximum payload. Then subtract any passengers and cargo you are carrying. The remaining payload capacity determines your maximum towing, because the trailer's tongue weight counts as part of your payload. Divide remaining payload by the tongue weight percentage (typically 10-15%) to get maximum trailer weight." },
+  { question: "What is tongue weight and how much should it be?", answer: "Tongue weight is the downward force the trailer hitch exerts on the tow vehicle. For conventional trailers, tongue weight should be 10-15% of the total trailer weight. For fifth-wheel trailers, it should be 15-25%. Too little tongue weight causes trailer sway, while too much overloads the rear axle and can lift the front wheels, reducing steering and braking effectiveness." },
+  { question: "What is the difference between GVWR and GCWR?", answer: "GVWR is the maximum weight of the vehicle alone with all its contents. GCWR (Gross Combined Weight Rating) is the maximum weight of the vehicle plus the trailer combined. GCWR is always higher than GVWR. When towing, you must stay within both ratings. Your towing capacity is limited by whichever rating you reach first." },
+  { question: "Can I tow more than my rated capacity?", answer: "No, you should never exceed your vehicle's rated towing capacity. The ratings account for frame strength, suspension, brakes, transmission cooling, engine power, and tire capacity. Exceeding these limits causes excessive wear, overheating, brake fade, suspension damage, and significantly increases the risk of accidents. Many states also have laws against overloaded vehicles, with fines and liability implications." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Towing Capacity Calculator",
+  description: "Calculate safe towing weight from GVWR, curb weight, and payload.",
+  url: automotive_towing_capacity_url,
+  category: "AutomotiveApplication",
+  calculator_slug: "towing-capacity"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Automotive", url: category_path("automotive") },
+  { name: "Towing Capacity Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Towing Capacity Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your vehicle's safe towing capacity based on GVWR, curb weight, and current payload. See maximum and recommended safe towing weights.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="towing-capacity-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="tow-gvwr" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">GVWR (lbs)</label>
+            <input id="tow-gvwr" type="number" inputmode="decimal" data-towing-capacity-calculator-target="gvwr" data-action="input->towing-capacity-calculator#calculate" class="w-full" placeholder="7000" step="100" min="0">
+          </div>
+          <div>
+            <label for="tow-curb" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Curb Weight (lbs)</label>
+            <input id="tow-curb" type="number" inputmode="decimal" data-towing-capacity-calculator-target="curbWeight" data-action="input->towing-capacity-calculator#calculate" class="w-full" placeholder="5000" step="100" min="0">
+          </div>
+          <div>
+            <label for="tow-passengers" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Passengers Weight (lbs)</label>
+            <input id="tow-passengers" type="number" inputmode="decimal" data-towing-capacity-calculator-target="passengersWeight" data-action="input->towing-capacity-calculator#calculate" class="w-full" placeholder="400" step="50" min="0">
+          </div>
+          <div>
+            <label for="tow-cargo" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Cargo Weight (lbs)</label>
+            <input id="tow-cargo" type="number" inputmode="decimal" data-towing-capacity-calculator-target="cargoWeight" data-action="input->towing-capacity-calculator#calculate" class="w-full" placeholder="200" step="50" min="0">
+          </div>
+          <div>
+            <label for="tow-tongue-pct" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tongue Weight (% of trailer)</label>
+            <input id="tow-tongue-pct" type="number" inputmode="decimal" data-towing-capacity-calculator-target="tongueWeightPct" data-action="input->towing-capacity-calculator#calculate" class="w-full" placeholder="10" step="1" min="1" max="25" value="10">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Towing Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Payload</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-towing-capacity-calculator-target="maxPayload">0 lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Current Payload</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-towing-capacity-calculator-target="currentPayload">0 lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Remaining Payload</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-towing-capacity-calculator-target="remainingPayload">0 lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Payload Used</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-towing-capacity-calculator-target="payloadPct">0.0%</span>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Towing Capacity</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-towing-capacity-calculator-target="maxTowing">0 lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Safe Towing (80%)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-towing-capacity-calculator-target="safeTowing">0 lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Tongue Weight</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-towing-capacity-calculator-target="maxTongueWeight">0 lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Est. GCWR</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-towing-capacity-calculator-target="gcwr">0 lbs</span>
+            </div>
+          </div>
+          <button data-action="click->towing-capacity-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "towing-capacity" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Towing Capacity Calculator</h2>
+      <p>
+        Our towing capacity calculator helps you determine how much you can safely tow with your vehicle. Enter your GVWR (found on the driver's door jamb sticker), curb weight (empty vehicle weight from the owner's manual), the weight of passengers and cargo you'll be carrying, and the expected tongue weight percentage. The calculator shows your maximum and recommended safe towing capacity, accounting for your actual payload situation.
+      </p>
+      <p>
+        The calculator provides both maximum and safe (80% of max) towing weights. We recommend using the safe towing figure to maintain a margin for hills, wind, and emergency maneuvers. This keeps your vehicle, brakes, and drivetrain within comfortable operating limits.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Towing Weight Ratings</h2>
+      <p>
+        Towing capacity is not a single number but an interplay between multiple weight ratings. Your GVWR limits total vehicle weight, your payload capacity limits what you can carry including tongue weight, and your GCWR limits the combined weight of vehicle and trailer. The most common mistake people make is looking only at the manufacturer's maximum towing rating without accounting for their actual payload, which reduces available towing capacity.
+      </p>
+
+      <h3>The Importance of Tongue Weight</h3>
+      <p>
+        Tongue weight, the downward force on the hitch, is the key connection between payload capacity and towing capacity. Since tongue weight is part of your vehicle's payload, every pound of tongue weight reduces your remaining payload. For a conventional bumper-pull trailer, tongue weight should be 10-15% of trailer weight. A 5,000 lb trailer has 500-750 lbs of tongue weight that your vehicle must support.
+      </p>
+
+      <h3>Safe Towing Practices</h3>
+      <p>
+        Always stay within your rated capacity and ideally at or below 80% for safety margins. Ensure proper tongue weight distribution, use weight-distributing hitches for heavier loads, check tire pressures on both vehicle and trailer, and account for elevation changes on your route. Remember that towing reduces fuel economy by 20-40% and significantly increases stopping distances.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is GVWR and why does it matter for towing?</h3>
+      <p>GVWR is the maximum total weight your vehicle can handle, including itself, passengers, cargo, and tongue weight. It is on your door jamb sticker. Exceeding it stresses the frame, suspension, brakes, and tires.</p>
+
+      <h3>How do I calculate my towing capacity?</h3>
+      <p>GVWR minus curb weight gives max payload. Subtract passengers and cargo, then divide remaining payload by tongue weight percentage to get max trailer weight.</p>
+
+      <h3>What is tongue weight and how much should it be?</h3>
+      <p>Tongue weight is the downward force on the hitch, typically 10-15% of trailer weight for conventional trailers and 15-25% for fifth wheels.</p>
+
+      <h3>What is the difference between GVWR and GCWR?</h3>
+      <p>GVWR is the max weight of the vehicle alone with contents. GCWR is the max weight of vehicle plus trailer combined. You must stay within both ratings.</p>
+
+      <h3>Can I tow more than my rated capacity?</h3>
+      <p>No. Exceeding towing ratings causes excessive wear, overheating, brake fade, and significantly increases accident risk. Many states also fine overloaded vehicles.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Zero to Sixty Calculator", description: "Estimate 0-60 and quarter mile times from horsepower and weight.", path: automotive_zero_to_sixty_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Engine Horsepower Calculator", description: "Calculate HP from torque and RPM.", path: automotive_engine_horsepower_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "MPG Calculator", description: "Calculate your vehicle's fuel efficiency.", path: automotive_mpg_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "automotive" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,191 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Brick and Block Calculator - Free Online Tool",
+  description: "Calculate the number of bricks or concrete blocks needed for a wall. Enter dimensions, unit type, and openings for an instant material estimate.",
+  canonical: construction_brick_block_url,
+  og: {
+    title: "Brick and Block Calculator - Free Online Tool | CalcWise",
+    description: "Calculate bricks, blocks, and mortar bags needed for your wall project. Instant material estimates.",
+    url: construction_brick_block_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Brick and Block Calculator", url: construction_brick_block_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many bricks do I need per square foot?", answer: "A standard brick (8 inches x 2.25 inches x 3.5 inches) with a 3/8-inch mortar joint covers approximately 6.75 bricks per square foot of wall area. This is calculated by dividing 144 square inches by the area of one brick plus its mortar joint (8.375 inches x 2.625 inches = 21.98 square inches). Always add 10% for waste from cuts, breakage, and defective units." },
+  { question: "How many concrete blocks per square foot?", answer: "Standard 8-inch CMU (Concrete Masonry Unit) blocks measuring 16 inches x 8 inches with 3/8-inch mortar joints require approximately 1.125 blocks per square foot. This equals about 113 blocks per 100 square feet of wall area. The same count applies to 12-inch-wide CMU blocks since only the face dimensions (16 x 8) determine the count, not the wall thickness." },
+  { question: "How much mortar do I need for a brick wall?", answer: "For standard bricks, one bag of premixed mortar (typically 60 or 80 lbs) covers approximately 130-150 bricks depending on joint thickness and technique. For CMU blocks, one bag covers approximately 30-40 square feet of wall area. Mortar requirements increase with wider joints and less-experienced bricklayers. Always have extra mortar on hand, as running out mid-course requires careful color matching." },
+  { question: "How do I account for window and door openings?", answer: "Calculate the total wall area (length x height) and subtract the area of all openings (windows, doors, and other cutouts) in square feet. Enter the total opening area in the Openings field. The calculator will subtract this from the gross wall area before computing the number of bricks or blocks needed. Dont forget to account for lintels above openings, which may require additional materials." },
+  { question: "What is the difference between modular and standard bricks?", answer: "Standard bricks measure 8 inches x 2.25 inches x 3.5 inches. Modular bricks measure 7.625 inches x 2.25 inches x 3.625 inches and are designed so that three courses of brick plus three mortar joints equal exactly 8 inches in height, making it easier to coordinate with 8-inch CMU block coursing. Modular bricks require slightly more units per square foot (about 6.86 vs 6.75) but simplify layout at corners and openings." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Brick and Block Calculator",
+  description: "Calculate the number of bricks or concrete blocks needed for a wall, including mortar bag estimates.",
+  url: construction_brick_block_url,
+  category: "HomeApplication",
+  calculator_slug: "brick_block"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Brick and Block Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Brick and Block Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Calculate the number of bricks or blocks needed for a wall, along with mortar bag estimates, from wall dimensions and unit type.</p>
+    <div class="mb-8 px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-sm text-amber-800 dark:text-amber-300">
+      <strong>How it works:</strong> Enter the wall length and height in feet, select the brick or block type, and enter the total area of openings (windows, doors) in square feet. The calculator computes the net wall area, units per square foot, total units needed (with 10% waste), and mortar bags. <br class="mb-1"><strong>Note:</strong> Estimates are for single-wythe (one layer) walls. For double-wythe or cavity wall construction, double the unit count. Mortar estimates are approximate and vary with joint thickness and technique.
+    </div>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="brick-block-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="bb-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wall Length (ft)</label>
+            <input id="bb-length" type="number" inputmode="decimal" data-brick-block-calculator-target="wallLength" data-action="input->brick-block-calculator#calculate" class="w-full" placeholder="20" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="bb-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wall Height (ft)</label>
+            <input id="bb-height" type="number" inputmode="decimal" data-brick-block-calculator-target="wallHeight" data-action="input->brick-block-calculator#calculate" class="w-full" placeholder="8" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="bb-unit" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit Type</label>
+            <select id="bb-unit" data-brick-block-calculator-target="unitType" data-action="change->brick-block-calculator#calculate" class="w-full">
+              <option value="standard_brick">Standard Brick (8" x 2.25" x 3.5")</option>
+              <option value="modular_brick">Modular Brick (7.625" x 2.25" x 3.625")</option>
+              <option value="king_brick">King Size Brick (9.625" x 2.75" x 2.75")</option>
+              <option value="cmu_8">CMU Block 8" (16" x 8" x 8")</option>
+              <option value="cmu_12">CMU Block 12" (16" x 8" x 12")</option>
+            </select>
+          </div>
+          <div>
+            <label for="bb-openings" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Openings (sq ft)</label>
+            <input id="bb-openings" type="number" inputmode="decimal" data-brick-block-calculator-target="openings" data-action="input->brick-block-calculator#calculate" class="w-full" value="0" step="0.1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Gross Wall Area</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-brick-block-calculator-target="resultGrossArea">0 ft&sup2;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Wall Area</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-brick-block-calculator-target="resultNetArea">0 ft&sup2;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Units Per Sq Ft</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-brick-block-calculator-target="resultUnitsPerSqft">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Units (+10%)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-brick-block-calculator-target="resultUnitsNeeded">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Waste Units</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-brick-block-calculator-target="resultWasteUnits">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mortar Bags</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-brick-block-calculator-target="resultMortarBags">0</span>
+            </div>
+          </div>
+          <button data-action="click->brick-block-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "brick_block" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Brick and Block Calculator</h2>
+      <p>
+        Whether you are building a garden wall, a house facade, or a structural block wall, knowing the exact quantity of bricks or blocks prevents both shortages and expensive over-ordering. Enter the total wall length and height in feet, select the unit type from five common options (standard brick, modular brick, king-size brick, 8-inch CMU, or 12-inch CMU), and enter the total area of all window and door openings in square feet. The calculator computes the net wall area, determines how many units are needed per square foot including the mortar joint, adds 10% for waste from cuts and breakage, and estimates the number of mortar bags required.
+      </p>
+      <p>
+        For projects with multiple walls, calculate each wall separately and add the totals. For walls with different unit types (such as a brick facade over a CMU structural wall), run separate calculations for each layer. The 10% waste factor covers typical job-site losses from cutting around corners, openings, and bond patterns. For complex designs with many cuts (arches, curves, decorative patterns), increase the waste allowance to 15%.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Brick and Block Sizes</h2>
+      <p>
+        Standard bricks measure 8 inches long by 2-1/4 inches tall by 3-1/2 inches deep, which yields approximately 6.75 bricks per square foot with 3/8-inch mortar joints. Modular bricks are slightly smaller at 7-5/8 inches by 2-1/4 inches by 3-5/8 inches, designed so that three brick courses plus mortar equal exactly 8 inches in height. This modular dimensioning simplifies layout where brick meets block construction.
+      </p>
+
+      <h3>CMU Block Sizing</h3>
+      <p>
+        Concrete Masonry Units (CMU) are commonly called cinder blocks or concrete blocks. The standard CMU is nominally 8 inches by 8 inches by 16 inches, but the actual dimensions are 7-5/8 inches by 7-5/8 inches by 15-5/8 inches to accommodate the 3/8-inch mortar joint. At 1.125 blocks per square foot, a 100-square-foot wall requires about 113 blocks. CMU walls are faster to build than brick walls because each block covers a larger area, but they typically need a veneer or coating for finished appearance.
+      </p>
+
+      <h3>Mortar Types and Selection</h3>
+      <p>
+        Mortar is classified by type: Type M (highest strength, 2,500 PSI) for below-grade and structural applications, Type S (1,800 PSI) for exterior walls and high-wind areas, Type N (750 PSI) for general-purpose above-grade work, and Type O (350 PSI) for interior non-load-bearing partitions. For most residential exterior brick walls, Type S mortar is recommended. For garden walls and non-structural projects, Type N is sufficient and easier to work with.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many bricks per square foot?</h3>
+      <p>
+        Standard bricks require about 6.75 per square foot with 3/8-inch mortar joints. Modular bricks need about 6.86 per square foot. Add 10% for waste from cuts, breakage, and defective units.
+      </p>
+
+      <h3>How many CMU blocks per square foot?</h3>
+      <p>
+        Standard 16" x 8" CMU blocks need about 1.125 per square foot (113 per 100 sq ft). This applies to both 8-inch and 12-inch wide blocks since only the face dimensions matter.
+      </p>
+
+      <h3>How much mortar do I need?</h3>
+      <p>
+        One bag covers approximately 140 standard bricks or 35 square feet of CMU block wall. Amounts vary with joint thickness and technique. Keep extra mortar on hand.
+      </p>
+
+      <h3>How do I account for openings?</h3>
+      <p>
+        Measure each window and door opening (width x height in feet) and add the areas together. Enter the total in the Openings field. The calculator subtracts openings from the gross wall area.
+      </p>
+
+      <h3>What is the difference between modular and standard bricks?</h3>
+      <p>
+        Modular bricks (7.625" x 2.25") are designed so three courses plus mortar equal 8 inches, coordinating with CMU coursing. Standard bricks (8" x 2.25") are slightly larger. Modular bricks need about 2% more units per square foot.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Retaining Wall Calculator", description: "Calculate blocks, gravel, and backfill for retaining walls.", path: construction_retaining_wall_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" },
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Grout Calculator", description: "Calculate grout and adhesive needed for tile and masonry projects.", path: construction_grout_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("brick-block-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

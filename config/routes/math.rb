@@ -21,6 +21,17 @@ namespace :math do
   get "scientific-calculator", to: "calculators#scientific", as: :scientific
   get "integral-calculator", to: "calculators#integral", as: :integral
 
+  get "derivative-calculator", to: "calculators#derivative", as: :derivative
+  get "limit-calculator", to: "calculators#limit", as: :limit
+  get "taylor-series-calculator", to: "calculators#taylor_series", as: :taylor_series
+  get "complex-number-calculator", to: "calculators#complex_number", as: :complex_number
+  get "vector-calculator", to: "calculators#vector", as: :vector
+  get "eigenvalue-calculator", to: "calculators#eigenvalue", as: :eigenvalue
+  get "boolean-algebra-simplifier", to: "calculators#boolean_algebra", as: :boolean_algebra
+  get "base-arithmetic-calculator", to: "calculators#base_arithmetic", as: :base_arithmetic
+  get "modular-arithmetic-calculator", to: "calculators#modular_arithmetic", as: :modular_arithmetic
+  get "set-operations-calculator", to: "calculators#set_operations", as: :set_operations
+
   # Micro-calculator variants
   get "percentage-increase-calculator", to: "calculators#percentage_increase", as: :percentage_increase
   get "percentage-decrease-calculator", to: "calculators#percentage_decrease", as: :percentage_decrease

@@ -1,8 +1,8 @@
 require "test_helper"
 
 class CalculatorRegistryTest < ActiveSupport::TestCase
-  test "ALL_CATEGORIES contains all eleven categories" do
-    expected = %w[finance math physics health construction textile everyday alcohol geography gardening relationships]
+  test "ALL_CATEGORIES contains all categories" do
+    expected = %w[finance math physics health construction textile everyday alcohol geography gardening relationships photography education pets cooking]
     assert_equal expected.sort, CalculatorRegistry::ALL_CATEGORIES.keys.sort
   end
 

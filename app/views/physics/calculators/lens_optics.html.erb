@@ -1,0 +1,191 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Lens Optics Calculator - Free Thin Lens Equation Tool",
+  description: "Calculate focal length, image distance, magnification, and image characteristics using the thin lens equation 1/f = 1/do + 1/di. Free online optics calculator.",
+  canonical: physics_lens_optics_url,
+  og: {
+    title: "Lens Optics Calculator - Free Thin Lens Equation Tool | CalcWise",
+    description: "Calculate focal length, image distance, magnification, and image characteristics using the thin lens equation. Results update in real time.",
+    url: physics_lens_optics_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Lens Optics Calculator", url: physics_lens_optics_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the thin lens equation?", answer: "The thin lens equation is 1/f = 1/do + 1/di, where f is the focal length, do is the object distance from the lens, and di is the image distance. It applies to thin converging (convex) and diverging (concave) lenses when the lens thickness is negligible compared to the focal length and object/image distances. Positive values of di indicate real images formed on the opposite side, while negative values indicate virtual images on the same side as the object." },
+  { question: "What is magnification in optics?", answer: "Magnification (m) is the ratio of the image height to the object height, calculated as m = -di/do. A positive magnification means the image is upright relative to the object, while a negative magnification means it is inverted. An absolute magnification greater than 1 means the image is enlarged, less than 1 means it is reduced, and exactly 1 means same size. Lateral magnification applies to the height dimension perpendicular to the optical axis." },
+  { question: "What is the difference between a real and virtual image?", answer: "A real image forms where light rays actually converge after passing through a lens, on the opposite side from the object. It can be projected onto a screen and has a positive image distance. A virtual image forms where light rays appear to diverge from, on the same side as the object. It cannot be projected onto a screen and has a negative image distance. Converging lenses can form both types, while diverging lenses always form virtual images." },
+  { question: "How do converging and diverging lenses differ?", answer: "Converging (convex) lenses are thicker at the center and bend parallel light rays inward to a focal point. They have positive focal lengths and can produce real or virtual images depending on object placement. Diverging (concave) lenses are thinner at the center, spread parallel light rays outward, have negative focal lengths, and always produce virtual, upright, reduced images regardless of object position." },
+  { question: "What happens when an object is placed at the focal point of a converging lens?", answer: "When an object is placed exactly at the focal point of a converging lens, light rays exit parallel to each other and never converge. The image forms at infinity and the magnification is theoretically infinite. In the thin lens equation, 1/di becomes zero, meaning di approaches infinity. This principle is used in collimators and spotlights where a parallel beam of light is desired." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Lens Optics Calculator",
+  description: "Calculate focal length, image distance, object distance, and magnification using the thin lens equation 1/f = 1/do + 1/di.",
+  url: physics_lens_optics_url,
+  category: "EducationalApplication",
+  calculator_slug: "lens-optics"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Lens Optics Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Lens Optics Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate image distance, focal length, or object distance using the thin lens equation. Get magnification, image type, and orientation instantly.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="lens-optics-calculator ad-engagement" class="space-y-5 mb-8">
+      <div data-card="Lens Optics" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">f</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Thin Lens Equation</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">1/f = 1/d<sub>o</sub> + 1/d<sub>i</sub></span>
+        </div>
+
+        <div class="mb-4">
+          <label for="lens-mode" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Solve for</label>
+          <select id="lens-mode" data-lens-optics-calculator-target="mode" data-action="change->lens-optics-calculator#updateFields" class="w-full">
+            <option value="find_image">Image Distance (d_i)</option>
+            <option value="find_focal">Focal Length (f)</option>
+            <option value="find_object">Object Distance (d_o)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div data-lens-optics-calculator-target="focalLengthGroup">
+            <label for="lens-focal" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Focal Length (cm)</label>
+            <input id="lens-focal" type="number" inputmode="decimal" data-lens-optics-calculator-target="focalLength" data-action="input->lens-optics-calculator#calculate" class="w-full" placeholder="10" step="any">
+            <p class="text-xs text-gray-400 mt-1">Positive = converging, Negative = diverging</p>
+          </div>
+          <div data-lens-optics-calculator-target="objectDistanceGroup">
+            <label for="lens-object" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Object Distance (cm)</label>
+            <input id="lens-object" type="number" inputmode="decimal" data-lens-optics-calculator-target="objectDistance" data-action="input->lens-optics-calculator#calculate" class="w-full" placeholder="20" step="any">
+          </div>
+          <div data-lens-optics-calculator-target="imageDistanceGroup">
+            <label for="lens-image" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Image Distance (cm)</label>
+            <input id="lens-image" type="number" inputmode="decimal" data-lens-optics-calculator-target="imageDistance" data-action="input->lens-optics-calculator#calculate" class="w-full" placeholder="20" step="any">
+            <p class="text-xs text-gray-400 mt-1">Positive = real, Negative = virtual</p>
+          </div>
+        </div>
+
+        <div data-lens-optics-calculator-target="results" class="hidden">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-3">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Focal Length</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-lens-optics-calculator-target="resultFocal" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Object Distance</span>
+              <span class="text-lg font-bold text-violet-600 dark:text-violet-400" data-lens-optics-calculator-target="resultObject" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Image Distance</span>
+              <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" data-lens-optics-calculator-target="resultImage" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Magnification</span>
+              <span class="text-lg font-bold text-amber-600 dark:text-amber-400" data-lens-optics-calculator-target="resultMagnification" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Image Type</span>
+              <span class="text-sm font-bold text-green-600 dark:text-green-400" data-lens-optics-calculator-target="resultImageType" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Orientation</span>
+              <span class="text-sm font-bold text-rose-600 dark:text-rose-400" data-lens-optics-calculator-target="resultOrientation" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-cyan-50 to-sky-50 dark:from-cyan-900/20 dark:to-sky-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Size</span>
+              <span class="text-sm font-bold text-cyan-600 dark:text-cyan-400" data-lens-optics-calculator-target="resultSize" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-fuchsia-50 to-pink-50 dark:from-fuchsia-900/20 dark:to-pink-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Lens Type</span>
+              <span class="text-sm font-bold text-fuchsia-600 dark:text-fuchsia-400" data-lens-optics-calculator-target="resultLensType" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button data-action="click->lens-optics-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "lens-optics" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding the Thin Lens Equation</h2>
+      <p>The <strong>thin lens equation</strong> (1/f = 1/d<sub>o</sub> + 1/d<sub>i</sub>) is one of the most fundamental relationships in geometric optics. It connects the focal length of a lens to the distances of the object and its image. First formalized in the 17th century, this equation remains essential for designing cameras, telescopes, microscopes, eyeglasses, and countless other optical instruments. The equation assumes that the lens is thin enough that all refraction occurs at a single plane, which is an excellent approximation for most everyday lenses.</p>
+
+      <p>This calculator lets you solve for any one of the three variables: focal length, object distance, or image distance. It also computes the <strong>magnification</strong> (m = -d<sub>i</sub>/d<sub>o</sub>), which tells you how large the image is relative to the object and whether it is upright or inverted. The sign conventions used here follow the standard physics convention: positive image distances correspond to real images, and positive focal lengths correspond to converging lenses.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Real vs. Virtual Images</h2>
+      <p>A <strong>real image</strong> forms when light rays actually converge at a point after passing through the lens. Real images have positive image distances and can be projected onto a screen. A <strong>virtual image</strong> forms where diverging rays appear to originate; it has a negative image distance and cannot be captured on a screen but can be seen by looking through the lens. Converging lenses produce real images when the object is beyond the focal point, and virtual images when the object is between the lens and the focal point.</p>
+
+      <h3>Magnification and Image Characteristics</h3>
+      <p>The magnification tells you three things about the image: its size relative to the object (|m| > 1 means enlarged, |m| < 1 means reduced), its orientation (m > 0 means upright, m < 0 means inverted), and whether it is real or virtual. For a single thin lens, a real image is always inverted and a virtual image is always upright. These relationships are critical in optical design, from choosing the right focal length for a camera lens to calculating the power of corrective eyeglasses.</p>
+
+      <h3>Applications of Lens Optics</h3>
+      <p>The thin lens equation is applied across many fields. <strong>Photography</strong> uses it to determine focus distances and depth of field. <strong>Ophthalmology</strong> relies on it to prescribe corrective lenses measured in diopters (1/f in meters). <strong>Microscopy</strong> uses compound lens systems where the equation is applied sequentially to multiple lenses. <strong>Telescopes</strong> combine converging and diverging elements to magnify distant objects. Even the human eye operates as a converging lens system, with the cornea and crystalline lens working together to focus light onto the retina.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the thin lens equation?</h3>
+      <p>The thin lens equation is 1/f = 1/d<sub>o</sub> + 1/d<sub>i</sub>, relating focal length (f), object distance (d<sub>o</sub>), and image distance (d<sub>i</sub>). It applies to thin lenses where thickness is negligible compared to other distances.</p>
+
+      <h3>What is magnification in optics?</h3>
+      <p>Magnification m = -d<sub>i</sub>/d<sub>o</sub> gives the ratio of image height to object height. Positive means upright, negative means inverted. Values with |m| > 1 are enlarged, |m| < 1 are reduced.</p>
+
+      <h3>What is the difference between real and virtual images?</h3>
+      <p>Real images form where light rays converge (positive d<sub>i</sub>) and can be projected. Virtual images form where rays appear to diverge from (negative d<sub>i</sub>) and can only be seen through the lens.</p>
+
+      <h3>How do converging and diverging lenses differ?</h3>
+      <p>Converging (convex) lenses have positive focal lengths and can produce real or virtual images. Diverging (concave) lenses have negative focal lengths and always produce virtual, upright, reduced images.</p>
+
+      <h3>What happens at the focal point?</h3>
+      <p>When an object is at the focal point of a converging lens, light exits parallel and the image forms at infinity. The thin lens equation gives 1/d<sub>i</sub> = 0, confirming this result.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Wavelength & Frequency Calculator", description: "Calculate wavelength, frequency, or wave speed for electromagnetic and mechanical waves.", path: physics_wavelength_frequency_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Decibel Calculator", description: "Convert between decibel levels, power, and amplitude ratios.", path: physics_decibel_path, icon_path: "M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5.586v12.828a1 1 0 01-1.707.707L5.586 15z" },
+      { name: "Spring Constant Calculator", description: "Calculate the spring constant using Hooke's Law or oscillation method.", path: physics_spring_constant_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "physics" %>
+
+    <% blog_posts = related_blog_posts("lens-optics-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,151 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Canning Altitude Adjustment Calculator - USDA Guidelines",
+  description: "Adjust canning processing time and pressure for your altitude. Covers water bath, dial gauge, and weighted gauge pressure canning with USDA-recommended adjustments.",
+  canonical: cooking_canning_altitude_url,
+  og: {
+    title: "Canning Altitude Adjustment Calculator - Free Online Tool | CalcWise",
+    description: "Adjust canning processing time and pressure for your altitude with USDA-recommended adjustments.",
+    url: cooking_canning_altitude_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Cooking", url: category_url("cooking") },
+  { name: "Canning Altitude Adjustment Calculator", url: cooking_canning_altitude_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Why does altitude affect canning?", answer: "Water boils at a lower temperature at higher altitudes because atmospheric pressure decreases. At sea level, water boils at 212 degrees F, but at 5,000 feet it boils at about 203 degrees F. This lower temperature means bacteria and spores are not killed as effectively, so processing times or pressures must be increased." },
+  { question: "How much extra time do I add for water bath canning at altitude?", answer: "Per USDA guidelines: add 5 minutes at 1,001-3,000 feet, 10 minutes at 3,001-6,000 feet, 15 minutes at 6,001-8,000 feet, and 20 minutes at 8,001-10,000 feet above sea level." },
+  { question: "How does altitude affect pressure canning?", answer: "For dial gauge canners, increase pressure by 1 PSI for every 2,000 feet above 1,000 feet. For weighted gauge canners, simply use 15 PSI instead of 10 PSI at any altitude above 1,000 feet." },
+  { question: "Can I use a water bath canner for low-acid foods?", answer: "No. Low-acid foods (vegetables, meats, poultry, seafood) must be processed in a pressure canner to reach 240 degrees F, which destroys Clostridium botulinum spores. Water bath canning only reaches the boiling point and is safe only for high-acid foods like fruits, pickles, and jams." },
+  { question: "How do I find my altitude?", answer: "Search for your city or zip code followed by 'elevation' in any search engine. You can also use GPS-enabled smartphone apps or check topographic maps. Many county extension offices also provide local altitude information." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Canning Altitude Adjustment Calculator",
+  description: "Adjust canning processing time and pressure for your altitude.",
+  url: cooking_canning_altitude_url,
+  category: "LifestyleApplication",
+  calculator_slug: "canning-altitude"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Cooking", url: category_path("cooking") },
+  { name: "Canning Altitude Adjustment Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Canning Altitude Adjustment Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Adjust your canning processing time or pressure based on your altitude for safe home food preservation.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="canning-altitude-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div>
+            <label for="ca-altitude" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Your Altitude (feet)</label>
+            <input id="ca-altitude" type="number" inputmode="numeric" min="0" max="10000" step="100" placeholder="5000" class="w-full" data-canning-altitude-calculator-target="altitude" data-action="input->canning-altitude-calculator#calculate">
+          </div>
+          <div>
+            <label for="ca-method" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Canning Method</label>
+            <select id="ca-method" class="w-full" data-canning-altitude-calculator-target="canningMethod" data-action="change->canning-altitude-calculator#togglePressureFields">
+              <option value="">Select method...</option>
+              <option value="water_bath">Water Bath</option>
+              <option value="pressure_dial">Pressure Canner (Dial Gauge)</option>
+              <option value="pressure_weighted">Pressure Canner (Weighted Gauge)</option>
+            </select>
+          </div>
+          <div>
+            <label for="ca-time" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Base Processing Time (minutes)</label>
+            <input id="ca-time" type="number" inputmode="numeric" min="1" step="1" placeholder="20" class="w-full" data-canning-altitude-calculator-target="baseTime" data-action="input->canning-altitude-calculator#calculate">
+          </div>
+          <div data-canning-altitude-calculator-target="pressureFields" class="hidden">
+            <label for="ca-pressure" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Base Pressure (PSI)</label>
+            <input id="ca-pressure" type="number" inputmode="numeric" min="5" max="20" step="1" value="10" class="w-full" data-canning-altitude-calculator-target="basePressure" data-action="input->canning-altitude-calculator#calculate">
+          </div>
+        </div>
+
+        <div data-canning-altitude-calculator-target="results" class="hidden" aria-live="polite" aria-atomic="true">
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Adjusted Processing</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Adjusted Time</span><span class="text-xl font-bold text-green-700 dark:text-green-400" data-canning-altitude-calculator-target="adjustedTime">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Time Adjustment</span><span class="font-bold text-green-700 dark:text-green-400" data-canning-altitude-calculator-target="extraMinutes">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Adjusted Pressure</span><span class="text-xl font-bold text-green-700 dark:text-green-400" data-canning-altitude-calculator-target="adjustedPressure">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Pressure Adjustment</span><span class="font-bold text-green-700 dark:text-green-400" data-canning-altitude-calculator-target="extraPsi">--</span></div>
+            </div>
+            <div class="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl">
+              <p class="text-sm text-amber-800 dark:text-amber-300" data-canning-altitude-calculator-target="note">--</p>
+            </div>
+            <button data-action="click->canning-altitude-calculator#copy" class="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm transition-all duration-200 text-sm font-medium">Copy Results</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "canning-altitude" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Canning Altitude Adjustment Calculator</h2>
+      <p>
+        Enter your altitude in feet above sea level, select your canning method (water bath, pressure dial gauge, or pressure weighted gauge), and enter the base processing time from your recipe. For pressure canning, also enter the base pressure specified in the recipe (usually 10 PSI). The calculator applies USDA-recommended adjustments to give you the correct processing time or pressure for your altitude.
+      </p>
+      <p>
+        This tool is essential for anyone canning above 1,000 feet elevation. Using sea-level processing times at higher altitudes can result in improperly processed food, creating a food safety risk. Always follow tested recipes from reliable sources such as the USDA Complete Guide to Home Canning, the National Center for Home Food Preservation, or your local Cooperative Extension Service.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Altitude Matters for Canning</h2>
+      <p>
+        At higher altitudes, atmospheric pressure decreases, which lowers the boiling point of water. At sea level, water boils at 212 degrees F (100 degrees C). At 5,000 feet, it boils at about 203 degrees F. This lower temperature means the heat treatment during water bath canning is less intense, so additional processing time is needed to ensure harmful organisms are destroyed. For pressure canning, increased pressure compensates by raising the boiling point back to safe levels.
+      </p>
+
+      <h3>Water Bath vs. Pressure Canning</h3>
+      <p>
+        Water bath canning is suitable only for high-acid foods with a pH of 4.6 or lower, such as fruits, pickles, salsas, jams, and jellies. The boiling water (212 degrees F at sea level) is hot enough to destroy molds, yeasts, and some bacteria in acidic environments. Low-acid foods (vegetables, meats, poultry) require pressure canning, which reaches 240 degrees F at 10 PSI, killing Clostridium botulinum spores.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Why does altitude affect canning?</h3>
+      <p>Water boils at a lower temperature at higher altitudes, so bacteria and spores are not killed as effectively. Processing times or pressures must increase.</p>
+
+      <h3>How much extra time for water bath canning at altitude?</h3>
+      <p>Add 5 minutes at 1,001-3,000 ft, 10 minutes at 3,001-6,000 ft, 15 minutes at 6,001-8,000 ft, and 20 minutes at 8,001-10,000 ft.</p>
+
+      <h3>How does altitude affect pressure canning?</h3>
+      <p>Dial gauge: increase by 1 PSI per 2,000 ft above 1,000 ft. Weighted gauge: use 15 PSI instead of 10 above 1,000 ft.</p>
+
+      <h3>Can I use a water bath canner for low-acid foods?</h3>
+      <p>No. Low-acid foods must use a pressure canner to reach 240 degrees F to destroy botulism spores.</p>
+
+      <h3>How do I find my altitude?</h3>
+      <p>Search your city or zip code with "elevation" in any search engine, use a GPS app, or check with your county extension office.</p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Freezer Storage Time Calculator", description: "Look up recommended freezer storage times for any food.", path: cooking_freezer_storage_path, icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
+      { name: "Meat Cooking Time Calculator", description: "Cooking time by meat type, cut, weight, and method.", path: cooking_meat_cooking_time_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Recipe Scaler", description: "Scale recipe ingredients up or down by servings.", path: cooking_recipe_scaler_path, icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "cooking" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

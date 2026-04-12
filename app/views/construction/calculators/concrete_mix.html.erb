@@ -1,0 +1,192 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Concrete PSI Mix Calculator - Free Online Tool",
+  description: "Calculate the right concrete mix ratio of cement, sand, gravel, and water for your target PSI strength. Get material weights and bag counts instantly.",
+  canonical: construction_concrete_mix_url,
+  og: {
+    title: "Concrete PSI Mix Calculator - Free Online Tool | CalcWise",
+    description: "Get the correct concrete mix ratio for target PSI strength. Calculate cement, sand, gravel, and water quantities.",
+    url: construction_concrete_mix_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Concrete PSI Mix Calculator", url: construction_concrete_mix_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the concrete mix ratio for 3000 PSI?", answer: "A 3000 PSI concrete mix uses a ratio of approximately 1:2:3 (cement:sand:gravel by volume) with a water-cement ratio of 0.55. This is the standard mix for residential foundations, sidewalks, and general-purpose concrete work. For one cubic yard, you need approximately 517 lbs of cement (about 6 bags), 1,100 lbs of sand, and 1,575 lbs of gravel." },
+  { question: "What PSI concrete do I need for a driveway?", answer: "Driveways typically require 3500-4000 PSI concrete. The 3500 PSI mix (ratio 1:1.75:2.75) is the minimum recommended for residential driveways, while 4000 PSI is better for driveways that will support heavy vehicles. The higher PSI provides better resistance to freeze-thaw cycles, deicing chemicals, and abrasion from tire traffic." },
+  { question: "What does the water-cement ratio mean?", answer: "The water-cement ratio (W/C) is the weight of water divided by the weight of cement in the mix. A lower W/C ratio produces stronger, more durable concrete. For example, a 0.45 W/C ratio means 0.45 pounds of water per pound of cement. Typical ratios range from 0.35 for high-strength concrete to 0.65 for general-purpose mixes. Adding too much water weakens concrete significantly." },
+  { question: "How many bags of cement do I need per cubic yard?", answer: "The number of 94-pound cement bags per cubic yard depends on the mix strength. A 3000 PSI mix needs about 5-6 bags per cubic yard, a 4000 PSI mix needs about 6-7 bags, and a 5000 PSI mix needs about 7-8 bags. Higher-strength concrete requires more cement relative to the aggregate, which increases cost but also increases durability and load-bearing capacity." },
+  { question: "Can I mix my own concrete for structural work?", answer: "Site-mixed concrete is acceptable for small residential projects like fence posts, small footings, and repairs. For structural work like foundations, slabs, and load-bearing elements, ready-mix concrete from a batch plant is strongly recommended because it is computer-batched for precise proportions, tested for quality, and delivered at the correct consistency. Many building codes require ready-mix for structural elements." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Concrete PSI Mix Calculator",
+  description: "Calculate concrete mix ratios and material quantities for target PSI strength.",
+  url: construction_concrete_mix_url,
+  category: "HomeApplication",
+  calculator_slug: "concrete_mix"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Concrete PSI Mix Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Concrete PSI Mix Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Calculate the right cement, sand, gravel, and water proportions for your target PSI strength, with material weights and bag counts.</p>
+    <div class="mb-8 px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-sm text-amber-800 dark:text-amber-300">
+      <strong>How it works:</strong> Select the target PSI strength and enter the total volume in cubic yards. The calculator recommends a mix ratio (cement:sand:gravel), provides material weights in pounds, water volume in gallons, and the number of 94-lb cement bags needed. <br class="mb-1"><strong>Note:</strong> These are standard proportional mixes for reference. Actual mix design depends on aggregate properties, water quality, admixtures, and environmental conditions. For structural concrete, use engineered mix designs from a ready-mix supplier.
+    </div>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="concrete-mix-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="cm-psi" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target PSI Strength</label>
+            <select id="cm-psi" data-concrete-mix-calculator-target="targetPsi" data-action="change->concrete-mix-calculator#calculate" class="w-full">
+              <option value="2500">2,500 PSI - General purpose</option>
+              <option value="3000" selected>3,000 PSI - Standard residential</option>
+              <option value="3500">3,500 PSI - Driveways & sidewalks</option>
+              <option value="4000">4,000 PSI - Structural / commercial</option>
+              <option value="4500">4,500 PSI - Heavy-duty structural</option>
+              <option value="5000">5,000 PSI - High-strength</option>
+            </select>
+          </div>
+          <div>
+            <label for="cm-volume" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Volume (cubic yards)</label>
+            <input id="cm-volume" type="number" inputmode="decimal" data-concrete-mix-calculator-target="volume" data-action="input->concrete-mix-calculator#calculate" class="w-full" value="1" step="0.1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Application</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-concrete-mix-calculator-target="resultLabel">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Ratio (C:S:G)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-concrete-mix-calculator-target="resultRatio">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">W/C Ratio</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-concrete-mix-calculator-target="resultWcr">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cement</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-concrete-mix-calculator-target="resultCementLbs">0 lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sand</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-concrete-mix-calculator-target="resultSandLbs">0 lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Gravel</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-concrete-mix-calculator-target="resultGravelLbs">0 lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Water</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-concrete-mix-calculator-target="resultWaterGal">0 gal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cement Bags (94 lb)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-concrete-mix-calculator-target="resultCementBags">0</span>
+            </div>
+          </div>
+          <button data-action="click->concrete-mix-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "concrete_mix" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Concrete Mix Calculator</h2>
+      <p>
+        Selecting the correct concrete mix ratio is critical for achieving the required strength for your project. This calculator provides standard proportional mixes for PSI strengths ranging from 2,500 to 5,000 PSI. Select the target strength, enter the total volume you need in cubic yards, and the calculator will determine the weight of cement, sand, gravel, and water required. It also shows the number of 94-pound cement bags needed and the water-cement ratio, which is the primary factor controlling concrete strength.
+      </p>
+      <p>
+        The mix ratios are expressed as cement:sand:gravel by volume. A 3,000 PSI mix at 1:2:3 means one part cement to two parts sand to three parts gravel. Higher PSI mixes use more cement relative to aggregate, resulting in a stronger but more expensive mix. The water-cement ratio decreases with higher strength requirements because excess water creates voids in the hardened concrete, reducing its ultimate strength.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Concrete Strength Grades</h2>
+      <p>
+        Concrete strength is measured in pounds per square inch (PSI) at 28 days after placement. The 28-day mark is when concrete reaches approximately 95% of its design strength. Each PSI grade has specific applications: 2,500 PSI is suitable for footings and non-structural slabs, 3,000 PSI is the standard for residential foundations and sidewalks, 3,500 PSI is recommended for driveways, 4,000 PSI is used for commercial slabs and structural elements, and 5,000 PSI is reserved for high-strength applications like parking garages and bridge decks.
+      </p>
+
+      <h3>The Importance of the Water-Cement Ratio</h3>
+      <p>
+        The water-cement ratio is the single most important factor in concrete strength. Every gallon of excess water per cubic yard reduces the compressive strength by 200 to 300 PSI. Water makes concrete easier to work (higher slump) but weakens the final product. For structural concrete, never add water beyond what the mix design specifies. If workability is needed, use a water-reducing admixture (plasticizer) instead of additional water.
+      </p>
+
+      <h3>Site-Mixed vs Ready-Mix Concrete</h3>
+      <p>
+        For small projects requiring less than one cubic yard, site-mixed concrete using bags or bulk materials is practical and cost-effective. For larger pours, ready-mix concrete delivered by truck is preferred because it is precisely batched using computer-controlled proportioning systems, quality-tested, and delivered at the correct consistency. Ready-mix suppliers can also add fiber reinforcement, air entrainment for freeze-thaw resistance, and accelerators or retarders for temperature extremes.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What mix ratio for 3000 PSI concrete?</h3>
+      <p>
+        A 3000 PSI mix uses a 1:2:3 ratio (cement:sand:gravel) with a 0.55 water-cement ratio. This is the standard for residential foundations, sidewalks, and general construction.
+      </p>
+
+      <h3>What PSI concrete for a driveway?</h3>
+      <p>
+        Driveways need 3500-4000 PSI concrete. The higher strength resists freeze-thaw cycles, deicing chemicals, and tire abrasion. Use air-entrained concrete in cold climates.
+      </p>
+
+      <h3>What is the water-cement ratio?</h3>
+      <p>
+        It is the weight of water divided by the weight of cement. Lower ratios produce stronger concrete. Typical ratios range from 0.35 (high-strength) to 0.65 (general-purpose).
+      </p>
+
+      <h3>How many bags of cement per cubic yard?</h3>
+      <p>
+        It depends on the mix strength. A 3000 PSI mix needs about 5-6 bags (94 lb each) per cubic yard. A 5000 PSI mix needs 7-8 bags per yard. Higher-strength mixes require more cement.
+      </p>
+
+      <h3>Can I mix structural concrete by hand?</h3>
+      <p>
+        For structural work like foundations and load-bearing elements, ready-mix is strongly recommended because it is precisely batched and quality-tested. Site mixing is acceptable for small non-structural projects like fence posts, small pads, and repairs.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Rebar Spacing Calculator", description: "Calculate rebar quantity and spacing for slabs and footings.", path: construction_rebar_spacing_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" },
+      { name: "Gravel & Mulch Calculator", description: "Calculate cubic yards and tons of gravel, mulch, or soil.", path: construction_gravel_mulch_path, icon_path: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("concrete-mix-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

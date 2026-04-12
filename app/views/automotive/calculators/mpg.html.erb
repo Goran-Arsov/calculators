@@ -1,0 +1,168 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "MPG Calculator - Miles Per Gallon & Fuel Efficiency",
+  description: "Calculate your vehicle's miles per gallon (MPG) from distance and fuel used. Supports imperial and metric units with L/100km conversion. Free instant results.",
+  canonical: automotive_mpg_url,
+  og: {
+    title: "MPG Calculator - Miles Per Gallon & Fuel Efficiency | CalcWise",
+    description: "Calculate your vehicle's miles per gallon (MPG) from distance and fuel used. Supports imperial and metric units with L/100km conversion.",
+    url: automotive_mpg_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Automotive", url: category_url("automotive") },
+  { name: "MPG Calculator", url: automotive_mpg_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate miles per gallon?", answer: "Divide the total distance traveled (in miles) by the total fuel used (in gallons). For example, if you drove 300 miles on 10 gallons, your MPG is 300 / 10 = 30 MPG. For the most accurate reading, fill your tank completely, reset your trip odometer, drive normally, then fill up again and note how many gallons it took." },
+  { question: "What is a good MPG for a car?", answer: "A good MPG depends on vehicle type. For passenger cars, 30-40 MPG is considered good, with hybrids reaching 50-60 MPG. SUVs typically get 25-30 MPG, and trucks 15-25 MPG. The EPA average for all new vehicles in 2024 is about 26 MPG. Electric vehicles equivalent can exceed 100 MPGe." },
+  { question: "How do I convert MPG to liters per 100 km?", answer: "To convert MPG (US gallons) to L/100km, divide 235.215 by the MPG value. For example, 30 MPG equals 235.215 / 30 = 7.84 L/100km. This inverse relationship means higher MPG corresponds to lower L/100km, indicating better fuel efficiency in both systems." },
+  { question: "Why does my actual MPG differ from the EPA estimate?", answer: "EPA estimates are measured under controlled laboratory conditions. Real-world factors that reduce MPG include aggressive driving and rapid acceleration, highway speeds above 50 mph, cold weather and short trips, heavy cargo or towing, underinflated tires, and excessive idling. Typically, real-world MPG is 10-20% lower than EPA estimates." },
+  { question: "Does driving speed affect fuel efficiency?", answer: "Yes, significantly. Most vehicles reach optimal fuel efficiency between 35-55 mph. Above 50 mph, fuel efficiency drops rapidly due to aerodynamic drag, which increases with the square of speed. Driving at 65 mph versus 55 mph can reduce fuel economy by about 15%, and driving at 75 mph can reduce it by about 25%." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "MPG Calculator",
+  description: "Calculate your vehicle's miles per gallon from distance traveled and fuel used.",
+  url: automotive_mpg_url,
+  category: "AutomotiveApplication",
+  calculator_slug: "mpg"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Automotive", url: category_path("automotive") },
+  { name: "MPG Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">MPG Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your vehicle's fuel efficiency in miles per gallon or liters per 100 km. Enter your distance and fuel used for instant results.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="mpg-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="mpg-unit-system" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit System</label>
+            <select id="mpg-unit-system" data-mpg-calculator-target="unitSystem" data-action="change->mpg-calculator#calculate" class="w-full">
+              <option value="imperial">Imperial (miles / gallons)</option>
+              <option value="metric">Metric (km / liters)</option>
+            </select>
+          </div>
+          <div>
+            <label for="mpg-distance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance Traveled</label>
+            <input id="mpg-distance" type="number" inputmode="decimal" data-mpg-calculator-target="distance" data-action="input->mpg-calculator#calculate" class="w-full" placeholder="300" step="1" min="0">
+          </div>
+          <div>
+            <label for="mpg-fuel-used" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fuel Used</label>
+            <input id="mpg-fuel-used" type="number" inputmode="decimal" data-mpg-calculator-target="fuelUsed" data-action="input->mpg-calculator#calculate" class="w-full" placeholder="10" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="mpg-fuel-cost" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fuel Price ($/gal or $/L) <span class="font-normal text-gray-400">(optional)</span></label>
+            <input id="mpg-fuel-cost" type="number" inputmode="decimal" data-mpg-calculator-target="fuelCostInput" data-action="input->mpg-calculator#calculate" class="w-full" placeholder="3.50" step="0.01" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Miles Per Gallon</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-mpg-calculator-target="mpg">0.0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Liters / 100 km</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-mpg-calculator-target="lper100km">0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost per Mile</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-mpg-calculator-target="costPerMile">$0.000</span>
+            </div>
+          </div>
+          <button data-action="click->mpg-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "mpg" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the MPG Calculator</h2>
+      <p>
+        Our free MPG calculator makes it easy to determine your vehicle's real-world fuel efficiency. Simply select your preferred unit system, enter the distance you traveled and the amount of fuel consumed, and the calculator instantly displays your fuel economy in both miles per gallon and liters per 100 kilometers. You can optionally enter the fuel price to see your cost per mile driven.
+      </p>
+      <p>
+        For the most accurate results, fill your tank completely before a trip, note your odometer reading, drive your normal route, then fill up again. The gallons (or liters) needed to refill represent your fuel consumption for that distance. This fill-to-fill method eliminates the guesswork of partial tank readings and gives you a reliable baseline for your vehicle's performance.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Fuel Efficiency</h2>
+      <p>
+        Fuel efficiency is one of the most important factors in vehicle operating costs. A vehicle that gets 30 MPG versus one that gets 20 MPG saves roughly $700 per year at current fuel prices for an average driver covering 12,000 miles annually. Over a 10-year ownership period, that difference adds up to $7,000 in fuel savings alone.
+      </p>
+
+      <h3>Factors That Affect Your MPG</h3>
+      <p>
+        Several factors influence your vehicle's fuel efficiency beyond its EPA rating. Driving habits have the biggest impact: aggressive acceleration and hard braking can reduce fuel economy by 15-30% on highways and 10-40% in city driving. Maintaining steady speeds, using cruise control on highways, and anticipating stops all improve efficiency. Vehicle maintenance also matters: properly inflated tires, clean air filters, and fresh engine oil each contribute to optimal fuel economy.
+      </p>
+
+      <h3>Imperial vs. Metric Fuel Economy</h3>
+      <p>
+        The United States uses miles per gallon, where a higher number means better efficiency. Most of the rest of the world uses liters per 100 kilometers, where a lower number is better. The conversion factor between these systems is 235.215, and our calculator handles this conversion automatically so you can compare fuel economy across different standards.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate miles per gallon?</h3>
+      <p>
+        Divide the total distance traveled in miles by the total fuel used in gallons. For example, if you drove 300 miles on 10 gallons, your MPG is 300 / 10 = 30 MPG. For the most accurate reading, fill your tank completely, reset your trip odometer, drive normally, then fill up again and note how many gallons it took.
+      </p>
+
+      <h3>What is a good MPG for a car?</h3>
+      <p>
+        A good MPG depends on vehicle type. For passenger cars, 30-40 MPG is considered good, with hybrids reaching 50-60 MPG. SUVs typically get 25-30 MPG, and trucks 15-25 MPG. The EPA average for all new vehicles in 2024 is about 26 MPG.
+      </p>
+
+      <h3>How do I convert MPG to liters per 100 km?</h3>
+      <p>
+        To convert MPG (US gallons) to L/100km, divide 235.215 by the MPG value. For example, 30 MPG equals 235.215 / 30 = 7.84 L/100km.
+      </p>
+
+      <h3>Why does my actual MPG differ from the EPA estimate?</h3>
+      <p>
+        EPA estimates are measured under controlled laboratory conditions. Real-world factors that reduce MPG include aggressive driving, highway speeds above 50 mph, cold weather, heavy cargo, underinflated tires, and excessive idling. Typically, real-world MPG is 10-20% lower than EPA estimates.
+      </p>
+
+      <h3>Does driving speed affect fuel efficiency?</h3>
+      <p>
+        Yes, significantly. Most vehicles reach optimal fuel efficiency between 35-55 mph. Above 50 mph, fuel efficiency drops rapidly due to aerodynamic drag. Driving at 65 mph versus 55 mph can reduce fuel economy by about 15%.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Car Depreciation Calculator", description: "Calculate how your vehicle's value decreases over time.", path: automotive_car_depreciation_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Car Payment Total Cost Calculator", description: "Calculate the total cost of owning a vehicle including loan, insurance, fuel, and maintenance.", path: automotive_car_payment_total_cost_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "EV vs Gas Comparison", description: "Compare annual costs of electric versus gas-powered vehicles.", path: automotive_ev_vs_gas_comparison_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "automotive" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

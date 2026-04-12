@@ -1,0 +1,160 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Engine Horsepower Calculator - HP from Torque & RPM",
+  description: "Calculate engine horsepower from torque and RPM, or torque from HP and RPM using the standard HP = (Torque x RPM) / 5252 formula. Includes kW and Nm conversions.",
+  canonical: automotive_engine_horsepower_url,
+  og: {
+    title: "Engine Horsepower Calculator - HP from Torque & RPM | CalcWise",
+    description: "Calculate engine horsepower from torque and RPM, or torque from HP and RPM. Includes metric conversions.",
+    url: automotive_engine_horsepower_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Automotive", url: category_url("automotive") },
+  { name: "Engine Horsepower Calculator", url: automotive_engine_horsepower_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the formula for calculating horsepower?", answer: "Horsepower is calculated using the formula HP = (Torque x RPM) / 5252, where torque is measured in pound-feet (lb-ft) and RPM is revolutions per minute. The constant 5252 comes from the definition of one horsepower (33,000 ft-lbs per minute) divided by 2 * pi. This formula shows that HP and torque are always equal at exactly 5,252 RPM." },
+  { question: "What is the difference between horsepower and torque?", answer: "Torque is the rotational force the engine produces, measured in pound-feet (lb-ft) or Newton-meters (Nm). Horsepower is the rate at which that work is done, combining torque with engine speed. Think of torque as the ability to push or pull, while horsepower is how quickly that pushing or pulling happens. An engine can have high torque at low RPM but still produce less horsepower than a high-revving engine with less torque." },
+  { question: "How do I convert horsepower to kilowatts?", answer: "To convert mechanical horsepower to kilowatts, multiply by 0.7457. For example, 300 HP x 0.7457 = 223.7 kW. To convert kilowatts back to horsepower, divide by 0.7457 or multiply by 1.341. This conversion is useful when comparing vehicles from countries using different power measurement systems." },
+  { question: "What is a good horsepower for a car?", answer: "For daily driving, 150-200 HP is adequate for most sedans. Sporty cars typically have 250-350 HP. Performance vehicles range from 400-600 HP, and supercars exceed 700 HP. The right amount depends on vehicle weight, intended use, and personal preference. A lightweight 200 HP car can feel faster than a heavy 300 HP SUV." },
+  { question: "Why do horsepower and torque cross at 5252 RPM?", answer: "The crossover at 5,252 RPM is a mathematical certainty, not a coincidence. Since HP = (Torque x RPM) / 5252, when RPM equals 5,252, the equation simplifies to HP = Torque. Below 5,252 RPM, torque is always numerically higher than horsepower. Above 5,252 RPM, horsepower is numerically higher. This crossover point appears on every dyno chart regardless of engine type." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Engine Horsepower Calculator",
+  description: "Calculate horsepower from torque and RPM or torque from HP and RPM.",
+  url: automotive_engine_horsepower_url,
+  category: "AutomotiveApplication",
+  calculator_slug: "engine-horsepower"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Automotive", url: category_path("automotive") },
+  { name: "Engine Horsepower Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Engine Horsepower Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate engine horsepower from torque and RPM, or find torque from HP and RPM. Includes conversions to kilowatts and Newton-meters.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="engine-horsepower-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="ehp-mode" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Calculation Mode</label>
+            <select id="ehp-mode" data-engine-horsepower-calculator-target="mode" data-action="change->engine-horsepower-calculator#updateMode" class="w-full">
+              <option value="hp_from_torque">Calculate HP from Torque</option>
+              <option value="torque_from_hp">Calculate Torque from HP</option>
+            </select>
+          </div>
+          <div data-engine-horsepower-calculator-target="torqueGroup">
+            <label for="ehp-torque" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Torque (lb-ft)</label>
+            <input id="ehp-torque" type="number" inputmode="decimal" data-engine-horsepower-calculator-target="torque" data-action="input->engine-horsepower-calculator#calculate" class="w-full" placeholder="350" step="5" min="0">
+          </div>
+          <div data-engine-horsepower-calculator-target="hpGroup" class="hidden">
+            <label for="ehp-hp-input" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Horsepower (HP)</label>
+            <input id="ehp-hp-input" type="number" inputmode="decimal" data-engine-horsepower-calculator-target="horsepowerInput" data-action="input->engine-horsepower-calculator#calculate" class="w-full" placeholder="300" step="5" min="0">
+          </div>
+          <div>
+            <label for="ehp-rpm" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">RPM</label>
+            <input id="ehp-rpm" type="number" inputmode="decimal" data-engine-horsepower-calculator-target="rpm" data-action="input->engine-horsepower-calculator#calculate" class="w-full" placeholder="5500" step="100" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Horsepower</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-engine-horsepower-calculator-target="resultHp">0.00 HP</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Torque</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-engine-horsepower-calculator-target="resultTorque">0.00 lb-ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Kilowatts</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-engine-horsepower-calculator-target="resultKw">0.00 kW</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Newton-meters</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-engine-horsepower-calculator-target="resultNm">0.00 Nm</span>
+            </div>
+          </div>
+          <button data-action="click->engine-horsepower-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "engine-horsepower" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Engine Horsepower Calculator</h2>
+      <p>
+        Our engine horsepower calculator lets you convert between horsepower, torque, and RPM using the fundamental relationship HP = (Torque x RPM) / 5252. Select your calculation mode to either find horsepower from known torque and RPM values, or calculate torque from known horsepower and RPM. The calculator automatically provides metric equivalents in kilowatts and Newton-meters for international comparison.
+      </p>
+      <p>
+        This tool is useful for interpreting dyno results, comparing engines across different vehicles, understanding specification sheets, and verifying manufacturer claims. Whether you are building an engine, shopping for a vehicle, or simply curious about automotive engineering, this calculator provides the key conversion instantly.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Horsepower and Torque</h2>
+      <p>
+        The relationship between horsepower, torque, and RPM is one of the most important concepts in automotive engineering. Torque represents the engine's rotational force, measured in pound-feet. Horsepower measures the rate of doing work, combining force with speed. The constant 5252 in the formula derives from the original definition of one horsepower as 33,000 foot-pounds of work per minute, divided by 2pi.
+      </p>
+
+      <h3>Why the 5252 RPM Crossover Matters</h3>
+      <p>
+        On every dynamometer chart, horsepower and torque curves cross at exactly 5,252 RPM. Below this point, torque is numerically higher than horsepower. Above it, horsepower exceeds torque. This crossover is a mathematical certainty from the formula, not an engine design characteristic. Understanding this helps when reading dyno charts and comparing engine performance at different RPM ranges.
+      </p>
+
+      <h3>Horsepower Types</h3>
+      <p>
+        There are several ways to measure horsepower. Brake horsepower (bhp) is measured at the flywheel before drivetrain losses. Wheel horsepower (whp) is measured at the wheels and is typically 15-20% lower due to transmission and differential losses. Metric horsepower (PS) differs slightly from mechanical horsepower, where 1 HP equals approximately 1.014 PS. This calculator uses standard mechanical horsepower.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the formula for calculating horsepower?</h3>
+      <p>HP = (Torque x RPM) / 5252, where torque is in lb-ft and RPM is revolutions per minute. The constant 5252 comes from the definition of one horsepower.</p>
+
+      <h3>What is the difference between horsepower and torque?</h3>
+      <p>Torque is the rotational force the engine produces. Horsepower is the rate at which that work is done. Torque is the ability to push, while horsepower is how quickly that pushing happens.</p>
+
+      <h3>How do I convert horsepower to kilowatts?</h3>
+      <p>Multiply horsepower by 0.7457 to get kilowatts. For example, 300 HP x 0.7457 = 223.7 kW.</p>
+
+      <h3>What is a good horsepower for a car?</h3>
+      <p>For daily driving, 150-200 HP is adequate. Sporty cars have 250-350 HP. Performance vehicles range from 400-600 HP, and supercars exceed 700 HP.</p>
+
+      <h3>Why do horsepower and torque cross at 5252 RPM?</h3>
+      <p>Since HP = (Torque x RPM) / 5252, when RPM equals 5,252, the equation simplifies to HP = Torque. This is a mathematical certainty that appears on every dyno chart.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Zero to Sixty Calculator", description: "Estimate 0-60 and quarter mile times from horsepower and weight.", path: automotive_zero_to_sixty_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Towing Capacity Calculator", description: "Calculate safe towing weight from GVWR and payload.", path: automotive_towing_capacity_path, icon_path: "M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "MPG Calculator", description: "Calculate your vehicle's miles per gallon.", path: automotive_mpg_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "automotive" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

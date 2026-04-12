@@ -1,0 +1,179 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Wrist-to-Height Ratio Calculator - Frame Size & Ideal Weight",
+  description: "Determine your body frame size from wrist circumference and height. Get frame-adjusted ideal weight ranges using the Hamwi method.",
+  canonical: health_wrist_height_ratio_url,
+  og: {
+    title: "Wrist-to-Height Ratio Calculator - Frame Size Tool | CalcWise",
+    description: "Calculate your body frame size from wrist circumference. Get personalized ideal weight ranges adjusted for small, medium, or large frame.",
+    url: health_wrist_height_ratio_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Wrist-to-Height Ratio Calculator", url: health_wrist_height_ratio_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does wrist circumference determine frame size?", answer: "Wrist circumference is one of the most reliable indicators of skeletal frame size because the wrist has very little fat or muscle, making it a direct measurement of bone structure. For men, a wrist under 16.5 cm indicates a small frame, 16.5-19 cm is medium, and over 19 cm is large. For women, under 14 cm is small, 14-16.5 cm is medium, and over 16.5 cm is large." },
+  { question: "Why does frame size matter for ideal weight?", answer: "People with larger skeletal frames naturally weigh more than those with smaller frames at the same height, even at the same body fat percentage. A large-framed person has heavier bones and larger joints, which can account for 10% or more additional body weight. Standard ideal weight formulas that ignore frame size may give misleading targets for people at either end of the frame size spectrum." },
+  { question: "How do I measure my wrist circumference?", answer: "Measure your wrist circumference using a flexible tape measure placed just below the wrist bone (ulnar styloid process), where the wrist meets the hand. The tape should be snug but not compressing the skin. Measure your dominant hand. If you do not have a tape measure, wrap a piece of string around your wrist, mark it, and measure the string length with a ruler." },
+  { question: "What is the wrist-to-height ratio?", answer: "The wrist-to-height ratio is calculated by dividing wrist circumference by height (both in the same units). This ratio typically ranges from 8% to 12% and provides a normalized measure of frame size that accounts for overall body proportions. A higher ratio indicates a larger frame relative to height." },
+  { question: "How are ideal weight ranges calculated?", answer: "This calculator uses the Hamwi method as a base: for men, 48 kg for the first 5 feet plus 2.7 kg per additional inch; for women, 45.5 kg for the first 5 feet plus 2.2 kg per additional inch. The result is then adjusted by plus or minus 10% based on frame size, with a range of plus or minus 10% around the adjusted base to provide a realistic weight range." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Wrist-to-Height Ratio Calculator",
+  description: "Estimate body frame size and ideal weight range from wrist circumference and height.",
+  url: health_wrist_height_ratio_url,
+  category: "HealthApplication",
+  calculator_slug: "wrist-height-ratio"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Wrist-to-Height Ratio Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Wrist-to-Height Ratio Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Determine your body frame size from wrist circumference and get frame-adjusted ideal weight ranges.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="wrist-height-ratio-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="whr-gender" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gender</label>
+            <select id="whr-gender" data-wrist-height-ratio-calculator-target="gender" data-action="change->wrist-height-ratio-calculator#calculate" class="w-full">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label for="whr-unit" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Unit</label>
+            <select id="whr-unit" data-wrist-height-ratio-calculator-target="unit" data-action="change->wrist-height-ratio-calculator#calculate" class="w-full">
+              <option value="cm">Centimeters</option>
+              <option value="inches">Inches</option>
+            </select>
+          </div>
+          <div>
+            <label for="whr-wrist" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wrist Circumference</label>
+            <input id="whr-wrist" type="number" inputmode="decimal" data-wrist-height-ratio-calculator-target="wrist" data-action="input->wrist-height-ratio-calculator#calculate" class="w-full" placeholder="17" step="0.1" min="1">
+          </div>
+          <div>
+            <label for="whr-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Height</label>
+            <input id="whr-height" type="number" inputmode="decimal" data-wrist-height-ratio-calculator-target="height" data-action="input->wrist-height-ratio-calculator#calculate" class="w-full" placeholder="175" step="0.1" min="1">
+          </div>
+          <div class="pt-2">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Frame Size Ranges</h3>
+            <div data-wrist-height-ratio-calculator-target="frameSizeRanges" class="space-y-1"></div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Frame Size</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-wrist-height-ratio-calculator-target="frameSize">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Wrist/Height Ratio</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-wrist-height-ratio-calculator-target="ratio">—</span>
+            </div>
+            <div class="border-t border-green-200 dark:border-green-800 my-3"></div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Ideal Weight (kg)</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-wrist-height-ratio-calculator-target="idealWeightKg">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Ideal Weight (lbs)</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-wrist-height-ratio-calculator-target="idealWeightLbs">—</span>
+            </div>
+          </div>
+          <button data-action="click->wrist-height-ratio-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "wrist-height-ratio" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Wrist-to-Height Ratio Calculator Works</h2>
+      <p>
+        This calculator uses your wrist circumference to determine your body frame size (small, medium, or large), then calculates a frame-adjusted ideal weight range using the Hamwi method. Enter your gender, wrist circumference, and height to see your frame classification and personalized weight range that accounts for your skeletal structure. Results update instantly as you change any input.
+      </p>
+      <p>
+        Standard ideal weight calculators based solely on height often produce misleading targets because they do not account for differences in bone structure. Two people of the same height can have very different healthy weights if one has a small frame and the other has a large frame. The wrist measurement provides an objective way to classify frame size because the wrist has minimal fat and muscle, making it a direct reflection of bone structure.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Frame Size Classification</h2>
+      <p>
+        Frame size is classified differently for men and women. For men, a wrist circumference under 16.5 cm (6.5 inches) indicates a small frame, 16.5 to 19 cm (6.5 to 7.5 inches) is medium, and over 19 cm (7.5 inches) is large. For women, under 14 cm (5.5 inches) is small, 14 to 16.5 cm (5.5 to 6.5 inches) is medium, and over 16.5 cm (6.5 inches) is large.
+      </p>
+
+      <h3>How Frame Size Affects Ideal Weight</h3>
+      <p>
+        A person with a large frame naturally has heavier bones and larger joints, which can account for 10% or more additional body weight compared to someone with a small frame at the same height. This calculator adjusts the Hamwi base weight by minus 10% for small frames and plus 10% for large frames, then provides a range of plus or minus 10% around the adjusted value to give a realistic healthy weight window.
+      </p>
+
+      <h3>Measuring Your Wrist</h3>
+      <p>
+        Use a flexible tape measure placed just below the wrist bone (the bump on the outside of your wrist), where the wrist meets the hand. The tape should be snug but not compressing the skin. Measure your dominant hand. If you do not have a tape measure, wrap a string around your wrist, mark the overlap point, and measure the string against a ruler.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does wrist size determine frame size?</h3>
+      <p>The wrist has minimal fat and muscle, so its circumference directly reflects bone structure. Research has established reliable cutoff values for small, medium, and large frames by gender.</p>
+
+      <h3>Why does frame size matter for weight?</h3>
+      <p>Larger frames have heavier bones and joints, accounting for 10% or more additional weight. Standard weight tables may underestimate healthy weight for large-framed individuals.</p>
+
+      <h3>How do I measure my wrist?</h3>
+      <p>Place a tape measure just below the wrist bone, where the wrist meets the hand. Keep it snug but not tight. Measure your dominant hand.</p>
+
+      <h3>What is a normal wrist-to-height ratio?</h3>
+      <p>The ratio typically ranges from 8% to 12%. Higher ratios indicate larger frames relative to height. The absolute wrist size thresholds are more commonly used for frame classification than the ratio itself.</p>
+
+      <h3>How are ideal weight ranges calculated?</h3>
+      <p>Using the Hamwi method base weight, adjusted by frame size (plus/minus 10%), with a healthy range of plus/minus 10% around the adjusted base.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Ideal Weight Calculator", description: "Calculate your ideal body weight based on height, gender, and frame size.", path: health_ideal_weight_path, icon_path: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" },
+      { name: "BMI Calculator", description: "Calculate your Body Mass Index and find out your weight category.", path: health_bmi_path, icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" },
+      { name: "Body Fat Calculator", description: "Estimate your body fat percentage using skinfold measurements or body measurements.", path: health_body_fat_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <% blog_posts = related_blog_posts("wrist-height-ratio-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

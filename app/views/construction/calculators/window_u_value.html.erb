@@ -1,0 +1,204 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Window U-Value Calculator - Free Online Tool",
+  description: "Calculate window U-value and R-value from glass layers, gap type, and frame material. Check Energy Star qualification for your window configuration.",
+  canonical: construction_window_u_value_url,
+  og: {
+    title: "Window U-Value Calculator - Free Online Tool | CalcWise",
+    description: "Calculate window U-value, R-value, and SHGC from glass type and frame material. Check Energy Star qualification.",
+    url: construction_window_u_value_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Window U-Value Calculator", url: construction_window_u_value_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a good U-value for windows?", answer: "A good U-value depends on your climate zone. For cold climates (northern US), aim for U-0.25 or lower (R-4 or higher). For moderate climates, U-0.30 is a good target. Energy Star requires U-0.30 or lower for most US climate zones. The best triple-pane Low-E argon windows achieve U-values as low as 0.15. Single-pane windows have a U-value around 1.0, which is very poor by modern standards." },
+  { question: "What is the difference between U-value and R-value?", answer: "U-value measures how quickly heat passes through a material (lower is better for insulation). R-value measures resistance to heat flow (higher is better). They are reciprocals: R = 1/U. U-value is the standard for windows and is measured in W/m2K (metric) or BTU/h*ft2*F (imperial). A window with U-0.25 imperial has an R-value of 4.0." },
+  { question: "How does Low-E coating improve windows?", answer: "Low-emissivity (Low-E) coatings are microscopically thin metallic layers applied to glass that reflect infrared heat radiation while allowing visible light to pass through. A Low-E coating can reduce a double-pane window's U-value from 2.8 to 1.6 W/m2K (a 43% improvement) and reduce the SHGC from 0.76 to 0.40, helping control solar heat gain in summer while retaining indoor heat in winter." },
+  { question: "Is argon gas in windows worth it?", answer: "Argon gas filling between panes reduces heat transfer by about 30% compared to air because argon is denser and less conductive. A double-pane window with argon has a U-value of approximately 2.0 W/m2K versus 2.8 with air. The cost premium for argon is modest (typically 30 to 50 dollars per window) and the energy savings generally pay for it within 2-5 years. Argon may slowly leak over time, but most windows retain adequate gas fill for 20 plus years." },
+  { question: "What is SHGC and why does it matter?", answer: "Solar Heat Gain Coefficient (SHGC) measures how much solar radiation passes through a window, on a scale of 0 to 1. A higher SHGC lets in more solar heat, which is beneficial in cold climates for passive solar heating but undesirable in hot climates where it increases cooling costs. Low-E coatings significantly reduce SHGC. For hot climates, look for SHGC below 0.25. For cold climates, a higher SHGC (0.40 plus) helps reduce heating costs." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Window U-Value Calculator",
+  description: "Calculate window U-value, R-value, and SHGC from glass type, gap fill, and frame material.",
+  url: construction_window_u_value_url,
+  category: "HomeApplication",
+  calculator_slug: "window_u_value"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Window U-Value Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Window U-Value Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Calculate the whole-window U-value, R-value, SHGC, and Energy Star qualification from glass type, gas fill, and frame material.</p>
+    <div class="mb-8 px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-sm text-amber-800 dark:text-amber-300">
+      <strong>How it works:</strong> Select the glass type (including pane count, gas fill, and Low-E coating), frame material, and frame percentage of total window area. The calculator computes the area-weighted whole-window U-value, R-value in both metric and imperial units, SHGC, and whether the window meets Energy Star requirements. <br class="mb-1"><strong>Note:</strong> These are estimated values based on typical performance data. Actual window performance depends on specific manufacturer glazing systems, frame profiles, spacer bars, and installation quality. Refer to NFRC ratings for certified performance data.
+    </div>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="window-u-value-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="wu-glass" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Glass Type</label>
+            <select id="wu-glass" data-window-u-value-calculator-target="glassType" data-action="change->window-u-value-calculator#calculate" class="w-full">
+              <option value="single">Single Pane</option>
+              <option value="double">Double Pane (air)</option>
+              <option value="double_argon">Double Pane (argon)</option>
+              <option value="double_low_e">Double Pane Low-E (air)</option>
+              <option value="double_low_e_argon" selected>Double Pane Low-E (argon)</option>
+              <option value="triple">Triple Pane (air)</option>
+              <option value="triple_argon">Triple Pane (argon)</option>
+              <option value="triple_low_e_argon">Triple Pane Low-E (argon)</option>
+            </select>
+          </div>
+          <div>
+            <label for="wu-frame" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Frame Material</label>
+            <select id="wu-frame" data-window-u-value-calculator-target="frameType" data-action="change->window-u-value-calculator#calculate" class="w-full">
+              <option value="aluminum">Aluminum (no thermal break)</option>
+              <option value="aluminum_break">Aluminum (thermal break)</option>
+              <option value="vinyl" selected>Vinyl / PVC</option>
+              <option value="wood">Wood</option>
+              <option value="fiberglass">Fiberglass</option>
+            </select>
+          </div>
+          <div>
+            <label for="wu-frame-pct" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Frame Percentage (%)</label>
+            <input id="wu-frame-pct" type="number" inputmode="decimal" data-window-u-value-calculator-target="framePercentage" data-action="input->window-u-value-calculator#calculate" class="w-full" value="20" step="1" min="1" max="50">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Glass</span>
+              <span class="text-sm font-bold text-green-600 dark:text-green-400" data-window-u-value-calculator-target="resultGlassLabel">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Frame</span>
+              <span class="text-sm font-bold text-green-600 dark:text-green-400" data-window-u-value-calculator-target="resultFrameLabel">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">U-Value (metric)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-window-u-value-calculator-target="resultWholeU">0 W/m&sup2;K</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">U-Value (imperial)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-window-u-value-calculator-target="resultUImperial">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">R-Value (metric)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-window-u-value-calculator-target="resultRMetric">0 m&sup2;K/W</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">R-Value (imperial)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-window-u-value-calculator-target="resultRImperial">R-0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">SHGC</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-window-u-value-calculator-target="resultShgc">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Energy Star Qualified</span>
+              <span class="text-xl font-bold text-gray-400" data-window-u-value-calculator-target="resultEnergyStar">--</span>
+            </div>
+          </div>
+          <button data-action="click->window-u-value-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "window_u_value" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Window U-Value Calculator</h2>
+      <p>
+        Windows are one of the largest sources of energy loss in buildings, accounting for 25-30% of heating and cooling energy use. This calculator helps you compare different window configurations by computing the whole-window U-value, which accounts for both the glass and frame performance. Select the glass type (number of panes, gas fill, and Low-E coating), the frame material, and the percentage of the window area occupied by the frame. The calculator provides U-values in both metric (W/m&sup2;K) and imperial (BTU/h&middot;ft&sup2;&middot;&deg;F) units, along with the corresponding R-values, Solar Heat Gain Coefficient (SHGC), and Energy Star qualification status.
+      </p>
+      <p>
+        The whole-window U-value is an area-weighted average of the glass center-of-glass U-value and the frame/edge U-value. Frames typically represent 15-25% of the total window area and can significantly affect overall performance, especially when aluminum frames without thermal breaks are used. Upgrading from aluminum to vinyl or wood frames can improve the whole-window U-value by 15-30%.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Window Energy Performance</h2>
+      <p>
+        Window thermal performance has improved dramatically over the past two decades. A single-pane window with an aluminum frame has a U-value around 6.0 W/m&sup2;K, while a modern triple-pane Low-E argon window with a vinyl frame achieves approximately 0.6 W/m&sup2;K, representing a ten-fold improvement. This progression has been driven by three key technologies: multiple panes of glass with insulating gas fills, low-emissivity coatings that reflect infrared radiation, and thermally improved frame materials that reduce conductive heat loss through the frame.
+      </p>
+
+      <h3>Low-E Coatings Explained</h3>
+      <p>
+        Low-emissivity coatings are microscopically thin layers of metallic oxide (typically silver-based) applied to one or more glass surfaces. These coatings are transparent to visible light but reflect long-wave infrared radiation (heat). In winter, Low-E coatings reflect room heat back inside. In summer, they reflect solar heat away. The coating position on the glass (surface 2, 3, or 4 counting from outside) determines whether the window is optimized for heating climates (high SHGC) or cooling climates (low SHGC).
+      </p>
+
+      <h3>Frame Material Impact</h3>
+      <p>
+        The frame material significantly affects both thermal performance and cost. Aluminum frames without thermal breaks are the poorest performers, conducting heat readily and causing condensation in cold weather. Thermally broken aluminum improves performance but still lags behind non-metal options. Vinyl (PVC) frames offer excellent thermal performance at moderate cost and are the most popular choice for residential windows. Wood frames provide the best insulation value but require more maintenance. Fiberglass frames combine excellent thermal performance with durability and low maintenance.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a good window U-value?</h3>
+      <p>
+        For cold climates, target U-0.25 or lower. For moderate climates, U-0.30 is good. Energy Star requires U-0.30 or below for most US zones. The best triple-pane Low-E argon windows achieve U-0.15.
+      </p>
+
+      <h3>What is the difference between U-value and R-value?</h3>
+      <p>
+        U-value measures heat transfer rate (lower = better insulation). R-value measures heat resistance (higher = better). They are reciprocals: R = 1/U. Windows use U-value as the standard metric.
+      </p>
+
+      <h3>How does Low-E coating help?</h3>
+      <p>
+        Low-E coatings reflect infrared heat while passing visible light. They can reduce a double-pane window's U-value by 43% (from 2.8 to 1.6 W/m&sup2;K) and reduce unwanted solar heat gain.
+      </p>
+
+      <h3>Is argon gas filling worth it?</h3>
+      <p>
+        Yes. Argon reduces heat transfer by about 30% compared to air, improving a double-pane U-value from 2.8 to 2.0 W/m&sup2;K. The modest cost premium ($30-50/window) is recouped in 2-5 years through energy savings.
+      </p>
+
+      <h3>What is SHGC?</h3>
+      <p>
+        Solar Heat Gain Coefficient measures how much solar radiation passes through. Higher SHGC (0.40+) helps heating in cold climates. Lower SHGC (below 0.25) reduces cooling costs in hot climates. Low-E coatings significantly reduce SHGC.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Insulation Calculator", description: "Calculate insulation R-value and material needed for walls and attics.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "HVAC BTU Calculator", description: "Calculate heating and cooling BTU requirements for your space.", path: construction_hvac_btu_path, icon_path: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" },
+      { name: "Siding Calculator", description: "Calculate siding squares, trim, and accessories for your exterior.", path: construction_siding_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("window-u-value-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

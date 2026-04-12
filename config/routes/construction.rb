@@ -38,4 +38,14 @@ namespace :construction do
   get "kitchen-remodel-cost-calculator", to: "calculators#kitchen_remodel", as: :kitchen_remodel
   get "bathroom-remodel-cost-calculator", to: "calculators#bathroom_remodel", as: :bathroom_remodel
   get "attic-ventilation-calculator", to: "calculators#attic_ventilation", as: :attic_ventilation
+
+  # Structural & specialty
+  get "solar-panel-layout-calculator", to: "calculators#solar_panel_layout", as: :solar_panel_layout
+  get "rebar-spacing-calculator", to: "calculators#rebar_spacing", as: :rebar_spacing
+  get "concrete-mix-calculator", to: "calculators#concrete_mix", as: :concrete_mix
+  get "beam-load-span-calculator", to: "calculators#beam_load_span", as: :beam_load_span
+  get "window-u-value-calculator", to: "calculators#window_u_value", as: :window_u_value
+  get "drainage-slope-calculator", to: "calculators#drainage_slope", as: :drainage_slope
+  get "brick-block-calculator", to: "calculators#brick_block", as: :brick_block
+  get "septic-tank-size-calculator", to: "calculators#septic_tank_size", as: :septic_tank_size
 end

@@ -1,0 +1,155 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Smoke Time Calculator - BBQ Smoking Time Estimator",
+  description: "Calculate BBQ smoking time by meat type, weight, and smoker temperature. Get target internal temps, stall estimates, and rest times for perfect barbecue.",
+  canonical: cooking_smoke_time_url,
+  og: {
+    title: "Smoke Time Calculator - Free BBQ Tool | CalcWise",
+    description: "Calculate BBQ smoking time by meat type, weight, and smoker temperature. Includes stall time estimates and rest times.",
+    url: cooking_smoke_time_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Cooking", url: category_url("cooking") },
+  { name: "Smoke Time Calculator", url: cooking_smoke_time_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How long does it take to smoke a brisket?", answer: "At 225-250 degrees F, brisket takes approximately 60-90 minutes per pound. A 12-pound brisket typically takes 12-18 hours including the stall. Plan for the longer estimate and wrap in butcher paper if the stall lasts too long." },
+  { question: "What is the stall when smoking meat?", answer: "The stall occurs around 150-170 degrees F internal temperature when evaporative cooling from the meat's surface moisture slows or halts the temperature rise. It can last 2-6 hours on large cuts. Wrapping the meat in foil or butcher paper (the Texas Crutch) pushes through the stall faster." },
+  { question: "What temperature should I smoke at?", answer: "Low and slow smoking is typically 225-250 degrees F. This range allows collagen to slowly convert to gelatin for tender results. Hot and fast smoking at 275-350 degrees F reduces cook time but requires more attention. Both methods produce excellent barbecue." },
+  { question: "How do I know when smoked meat is done?", answer: "Internal temperature is the most reliable indicator. Brisket and pulled pork are done at 200-205 degrees F when a probe slides in like butter. Chicken is done at 165 degrees F. Ribs are done when the meat pulls back from the bone about 1/4 inch." },
+  { question: "Should I rest smoked meat?", answer: "Absolutely. Resting is critical for smoked meats. Large cuts like brisket should rest 30-60 minutes (or up to 4 hours in a cooler). This allows juices to redistribute and the collagen to set, producing moister and more tender results." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Smoke Time Calculator",
+  description: "BBQ smoking time by meat type, weight, smoker temp, and target internal temp.",
+  url: cooking_smoke_time_url,
+  category: "LifestyleApplication",
+  calculator_slug: "smoke-time"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Cooking", url: category_path("cooking") },
+  { name: "Smoke Time Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Smoke Time Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate BBQ smoking time by meat type, weight, and smoker temperature. Includes stall time estimates and rest recommendations.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="smoke-time-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div>
+            <label for="st-meat" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Meat Type</label>
+            <select id="st-meat" class="w-full" data-smoke-time-calculator-target="meatType" data-action="change->smoke-time-calculator#calculate">
+              <option value="">Select meat...</option>
+              <option value="beef_brisket">Beef Brisket</option>
+              <option value="pork_butt">Pork Butt / Shoulder</option>
+              <option value="pork_ribs">Pork Ribs</option>
+              <option value="pork_loin">Pork Loin</option>
+              <option value="whole_chicken">Whole Chicken</option>
+              <option value="turkey_breast">Turkey Breast</option>
+              <option value="whole_turkey">Whole Turkey</option>
+              <option value="salmon">Salmon</option>
+              <option value="lamb_shoulder">Lamb Shoulder</option>
+              <option value="beef_chuck_roast">Beef Chuck Roast</option>
+              <option value="sausage">Sausage</option>
+            </select>
+          </div>
+          <div>
+            <label for="st-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Weight (lbs)</label>
+            <input id="st-weight" type="number" inputmode="decimal" min="0.5" step="0.5" placeholder="12" class="w-full" data-smoke-time-calculator-target="weight" data-action="input->smoke-time-calculator#calculate">
+          </div>
+          <div>
+            <label for="st-temp" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Smoker Temperature (°F)</label>
+            <input id="st-temp" type="number" inputmode="numeric" min="180" max="400" step="5" placeholder="225" class="w-full" data-smoke-time-calculator-target="smokerTemp" data-action="input->smoke-time-calculator#calculate">
+          </div>
+        </div>
+
+        <div data-smoke-time-calculator-target="results" class="hidden" aria-live="polite" aria-atomic="true">
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Smoking Guide</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Cook Time</span><span class="text-xl font-bold text-green-700 dark:text-green-400" data-smoke-time-calculator-target="totalTime">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">With Stall</span><span class="text-xl font-bold text-green-700 dark:text-green-400" data-smoke-time-calculator-target="totalWithStall">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Target Internal Temp</span><span class="text-xl font-bold text-green-700 dark:text-green-400" data-smoke-time-calculator-target="targetTemp">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Temp Range</span><span class="text-sm font-medium text-green-700 dark:text-green-400" data-smoke-time-calculator-target="tempRange">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Rate</span><span class="font-bold text-green-700 dark:text-green-400" data-smoke-time-calculator-target="minutesPerLb">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Stall Time</span><span class="font-bold text-green-700 dark:text-green-400" data-smoke-time-calculator-target="stallTime">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Rest Time</span><span class="font-bold text-green-700 dark:text-green-400" data-smoke-time-calculator-target="restTime">--</span></div>
+            </div>
+            <button data-action="click->smoke-time-calculator#copy" class="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm transition-all duration-200 text-sm font-medium">Copy Results</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "smoke-time" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Smoke Time Calculator</h2>
+      <p>
+        Select the type of meat you are smoking, enter the weight in pounds, and set your smoker temperature. The calculator estimates the total cooking time, accounts for the dreaded stall on large cuts, and recommends appropriate rest times. Times include a fine-tuning adjustment based on your exact smoker temperature within the range.
+      </p>
+      <p>
+        BBQ smoking is as much an art as a science. These estimates give you a solid planning baseline, but every smoker behaves differently. Monitor internal temperature with a reliable probe thermometer and adjust your timeline accordingly. It is always better to finish early (you can hold meat in a cooler for hours) than to rush and serve undercooked barbecue.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the Stall</h2>
+      <p>
+        The stall is the single biggest source of anxiety for beginner pitmasters. When large cuts like brisket or pork butt reach about 150-170 degrees F internal temperature, the surface moisture begins evaporating rapidly, which cools the meat at the same rate the smoker heats it. The internal temperature can plateau for 2-6 hours. The Texas Crutch, wrapping the meat in butcher paper or aluminum foil, traps moisture and pushes through the stall faster while preserving bark formation.
+      </p>
+
+      <h3>Low and Slow vs. Hot and Fast</h3>
+      <p>
+        Traditional barbecue runs at 225-250 degrees F for maximum smoke absorption and gentle collagen breakdown. Hot and fast methods at 275-350 degrees F have gained popularity as pitmasters have discovered they produce equally tender results in less time. The key is that collagen begins converting to gelatin around 160 degrees F regardless of oven or smoker temperature; higher heat simply reaches that point faster.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How long does it take to smoke a brisket?</h3>
+      <p>At 225-250 degrees F, brisket takes 60-90 minutes per pound. A 12-pound brisket typically takes 12-18 hours including the stall.</p>
+
+      <h3>What is the stall when smoking meat?</h3>
+      <p>The stall occurs around 150-170 degrees F when evaporative cooling slows the temperature rise. It can last 2-6 hours on large cuts.</p>
+
+      <h3>What temperature should I smoke at?</h3>
+      <p>Low and slow is 225-250 degrees F. Hot and fast is 275-350 degrees F. Both produce excellent results.</p>
+
+      <h3>How do I know when smoked meat is done?</h3>
+      <p>Internal temperature is the most reliable indicator. Brisket and pork butt are done at 200-205 degrees F. Chicken is done at 165 degrees F.</p>
+
+      <h3>Should I rest smoked meat?</h3>
+      <p>Absolutely. Large cuts should rest 30-60 minutes. Brisket can rest up to 4 hours in an insulated cooler.</p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Meat Cooking Time Calculator", description: "Cooking time by meat type, cut, weight, and method.", path: cooking_meat_cooking_time_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Freezer Storage Time Calculator", description: "Look up recommended freezer storage times for any food.", path: cooking_freezer_storage_path, icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
+      { name: "Recipe Scaler", description: "Scale recipe ingredients up or down by servings.", path: cooking_recipe_scaler_path, icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "cooking" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,192 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Rebar Spacing Calculator - Free Online Tool",
+  description: "Calculate rebar quantity, spacing, and weight for concrete slabs and footings. Enter dimensions, bar size, and spacing for instant rebar estimates.",
+  canonical: construction_rebar_spacing_url,
+  og: {
+    title: "Rebar Spacing Calculator - Free Online Tool | CalcWise",
+    description: "Calculate rebar quantity, linear feet, and weight for slabs and footings. Instant material estimates.",
+    url: construction_rebar_spacing_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Rebar Spacing Calculator", url: construction_rebar_spacing_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate rebar spacing for a concrete slab?", answer: "Rebar is laid in a grid pattern with bars running in both directions. Divide the slab width by the spacing to find bars running along the length, and divide the slab length by the spacing for bars running along the width. Add 1 to each count for the edge bar. Standard residential slabs use #4 rebar at 12-inch or 18-inch on-center (OC) spacing. Add 10% for waste from overlaps and cuts." },
+  { question: "What size rebar should I use for a residential slab?", answer: "For typical 4-inch residential slabs, #4 rebar (1/2-inch diameter) at 12-inch or 18-inch spacing is standard. For driveways and garage slabs that support vehicle weight, #4 at 12-inch spacing is recommended. For sidewalks and patios, #3 rebar at 18-inch spacing is often sufficient. Always follow your local building code requirements and engineer specifications." },
+  { question: "How much does rebar weigh per foot?", answer: "Rebar weight varies by size: #3 (3/8-inch) weighs 0.376 lbs/ft, #4 (1/2-inch) weighs 0.668 lbs/ft, #5 (5/8-inch) weighs 1.043 lbs/ft, #6 (3/4-inch) weighs 1.502 lbs/ft, #7 (7/8-inch) weighs 2.044 lbs/ft, and #8 (1-inch) weighs 2.670 lbs/ft. Standard rebar sticks are sold in 20-foot lengths." },
+  { question: "How much overlap do rebar splices need?", answer: "The minimum lap splice length for rebar is typically 24 inches (about 40 bar diameters for #4 rebar). This overlap is where two bars are tied together to transfer load. The exact splice length depends on bar size, concrete strength, and structural requirements. Your engineer or local code will specify the exact requirement, which can range from 24 to 48 inches." },
+  { question: "Should rebar be in the top or bottom of a slab?", answer: "For a standard slab-on-grade, rebar should be positioned in the bottom third of the slab thickness, typically supported by rebar chairs to maintain 2-3 inches of clear cover from the bottom. This placement provides tensile reinforcement where the concrete is most likely to crack from bending. For suspended slabs, rebar may be needed in both top and bottom depending on the engineering design." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Rebar Spacing Calculator",
+  description: "Calculate rebar quantity, spacing, linear feet, and weight for concrete slabs and footings.",
+  url: construction_rebar_spacing_url,
+  category: "HomeApplication",
+  calculator_slug: "rebar_spacing"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Rebar Spacing Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Rebar Spacing Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Calculate the number of rebar bars, total linear feet, weight, and 20-foot sticks needed for your concrete slab or footing.</p>
+    <div class="mb-8 px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-sm text-amber-800 dark:text-amber-300">
+      <strong>How it works:</strong> Enter the slab length and width in feet, select the rebar bar size and spacing in inches. The calculator computes bars in both directions, total linear feet (with 10% waste), total weight, and the number of 20-foot sticks to order. <br class="mb-1"><strong>Note:</strong> This calculator estimates rebar for a single-layer grid. Actual requirements depend on slab thickness, soil conditions, load requirements, and local building codes.
+    </div>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="rebar-spacing-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="rb-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Slab Length (ft)</label>
+            <input id="rb-length" type="number" inputmode="decimal" data-rebar-spacing-calculator-target="length" data-action="input->rebar-spacing-calculator#calculate" class="w-full" placeholder="20" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="rb-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Slab Width (ft)</label>
+            <input id="rb-width" type="number" inputmode="decimal" data-rebar-spacing-calculator-target="width" data-action="input->rebar-spacing-calculator#calculate" class="w-full" placeholder="20" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="rb-spacing" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Spacing (inches OC)</label>
+            <input id="rb-spacing" type="number" inputmode="decimal" data-rebar-spacing-calculator-target="spacing" data-action="input->rebar-spacing-calculator#calculate" class="w-full" value="12" step="1" min="1">
+          </div>
+          <div>
+            <label for="rb-bar-size" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Bar Size</label>
+            <select id="rb-bar-size" data-rebar-spacing-calculator-target="barSize" data-action="change->rebar-spacing-calculator#calculate" class="w-full">
+              <option value="#3">#3 (3/8" - 0.376 lb/ft)</option>
+              <option value="#4" selected>#4 (1/2" - 0.668 lb/ft)</option>
+              <option value="#5">#5 (5/8" - 1.043 lb/ft)</option>
+              <option value="#6">#6 (3/4" - 1.502 lb/ft)</option>
+              <option value="#7">#7 (7/8" - 2.044 lb/ft)</option>
+              <option value="#8">#8 (1" - 2.670 lb/ft)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Bars Along Length</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-rebar-spacing-calculator-target="resultBarsLength">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Bars Along Width</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-rebar-spacing-calculator-target="resultBarsWidth">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Bars</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-rebar-spacing-calculator-target="resultTotalBars">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Linear Feet (+10%)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-rebar-spacing-calculator-target="resultLinearFt">0 ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Weight</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-rebar-spacing-calculator-target="resultWeight">0 lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">20-ft Sticks</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-rebar-spacing-calculator-target="resultSticks">0</span>
+            </div>
+          </div>
+          <button data-action="click->rebar-spacing-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "rebar_spacing" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Rebar Spacing Calculator</h2>
+      <p>
+        Reinforcing steel (rebar) is essential for preventing concrete from cracking under tensile loads. This calculator helps you determine the quantity of rebar needed for a slab or footing by computing bars in both the length and width directions based on your specified on-center spacing. Enter the slab dimensions in feet, select the bar size from #3 through #8, and choose the spacing in inches. The calculator provides total bar count, linear footage with a 10% waste factor for splices and cuts, total weight in pounds, and the number of standard 20-foot sticks to purchase.
+      </p>
+      <p>
+        The most common residential slab reinforcement is #4 rebar (1/2-inch diameter) at 12-inch on-center spacing in both directions, forming a grid pattern. For lighter-duty applications like sidewalks and patios, #3 rebar at 18-inch spacing is often sufficient. For structural footings and driveways, your engineer may specify #5 rebar at closer spacing.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Rebar Placement and Best Practices</h2>
+      <p>
+        Rebar must be properly positioned within the concrete to be effective. For slabs on grade, place rebar in the lower third of the slab thickness, supported by rebar chairs (dobies or plastic bar supports) to maintain proper cover. The minimum concrete cover is typically 2 inches for concrete in contact with soil and 3/4 inch for interior concrete not exposed to weather. Use tie wire at every intersection to keep the grid aligned during the concrete pour.
+      </p>
+
+      <h3>Lap Splices and Overlaps</h3>
+      <p>
+        When bars must be joined, overlap them by at least 24 inches (or 40 bar diameters, whichever is greater) and tie them together. Stagger splice locations so that no more than half the bars are spliced at any one cross-section. The 10% waste factor in this calculator accounts for typical splice overlaps and end cuts. For large pours requiring many splices, you may need to increase the waste factor to 15%.
+      </p>
+
+      <h3>Common Bar Sizes and Applications</h3>
+      <p>
+        Bar sizes are designated by the number of eighths of an inch in the diameter. A #4 bar is 4/8 or 1/2 inch in diameter. For residential construction, #3 and #4 are the most commonly used sizes. #5 and #6 bars are typical for structural footings and foundation walls. #7 and #8 bars are generally used in commercial and heavy structural applications. Using the correct bar size ensures adequate tensile strength while keeping material costs reasonable.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate rebar for a slab?</h3>
+      <p>
+        Divide the slab width by the spacing to get bars along the length. Divide the slab length by the spacing for bars along the width. Add 1 to each for edge bars. Multiply bar counts by the slab dimensions for linear feet. Standard residential slabs use #4 rebar at 12-inch OC spacing.
+      </p>
+
+      <h3>What size rebar for a residential slab?</h3>
+      <p>
+        Use #4 rebar (1/2-inch) at 12-inch or 18-inch spacing for standard 4-inch residential slabs. Driveways and garages should use #4 at 12-inch spacing. Sidewalks and patios can use #3 at 18-inch spacing.
+      </p>
+
+      <h3>How much does rebar weigh per foot?</h3>
+      <p>
+        #3 weighs 0.376 lbs/ft, #4 weighs 0.668 lbs/ft, #5 weighs 1.043 lbs/ft, #6 weighs 1.502 lbs/ft, #7 weighs 2.044 lbs/ft, and #8 weighs 2.670 lbs/ft. Standard sticks are 20 feet long.
+      </p>
+
+      <h3>How much lap splice overlap is needed?</h3>
+      <p>
+        The minimum splice length is typically 24 inches or 40 bar diameters, whichever is greater. For #4 rebar this is 24 inches. Stagger splices so no more than half the bars are spliced at the same location.
+      </p>
+
+      <h3>Should rebar go in the top or bottom of a slab?</h3>
+      <p>
+        For slab-on-grade, rebar goes in the bottom third, supported by rebar chairs to maintain 2-3 inches of cover from the bottom. Suspended slabs may require rebar in both top and bottom per engineering specifications.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Concrete Mix Calculator", description: "Get the right cement, sand, and gravel mix ratio for your target PSI.", path: construction_concrete_mix_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" },
+      { name: "Retaining Wall Calculator", description: "Calculate blocks, gravel, and backfill for retaining walls.", path: construction_retaining_wall_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("rebar-spacing-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

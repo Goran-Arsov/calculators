@@ -17,4 +17,14 @@ namespace :physics do
   get "pressure-converter", to: "calculators#pressure_converter", as: :pressure_converter
   get "heat-transfer-calculator", to: "calculators#heat_transfer", as: :heat_transfer
   get "spring-constant-calculator", to: "calculators#spring_constant", as: :spring_constant
+  get "lens-optics-calculator", to: "calculators#lens_optics", as: :lens_optics
+  get "pendulum-calculator", to: "calculators#pendulum", as: :pendulum
+  get "buoyancy-calculator", to: "calculators#buoyancy", as: :buoyancy
+  get "centripetal-force-calculator", to: "calculators#centripetal_force", as: :centripetal_force
+  get "doppler-effect-calculator", to: "calculators#doppler_effect", as: :doppler_effect
+  get "radioactive-decay-calculator", to: "calculators#radioactive_decay", as: :radioactive_decay
+  get "electrical-power-calculator", to: "calculators#electrical_power", as: :electrical_power
+  get "capacitor-calculator", to: "calculators#capacitor", as: :capacitor
+  get "inductor-calculator", to: "calculators#inductor", as: :inductor
+  get "transformer-turns-ratio-calculator", to: "calculators#transformer_turns_ratio", as: :transformer_turns_ratio
 end

@@ -11,7 +11,12 @@ module SeoHelper
     "alcohol" => "/images/og/alcohol.png",
     "geography" => "/images/og/geography.png",
     "gardening" => "/images/og/gardening.png",
-    "relationships" => "/images/og/relationships.png"
+    "relationships" => "/images/og/relationships.png",
+    "photography" => "/images/og/photography.png",
+    "cooking" => "/images/og/cooking.png",
+    "pets" => "/images/og/pets.png",
+    "automotive" => "/images/og/automotive.png",
+    "education" => "/images/og/education.png"
   }.freeze
 
   OG_DEFAULT_IMAGE = "/images/og/default.png"

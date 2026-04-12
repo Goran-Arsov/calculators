@@ -1,0 +1,185 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Electrical Power Calculator - Free P=IV, P=I²R, P=V²/R Tool",
+  description: "Calculate electrical power, voltage, current, or resistance using P=IV, P=I²R, P=V²/R. Free online electrical power calculator with real-time results.",
+  canonical: physics_electrical_power_url,
+  og: {
+    title: "Electrical Power Calculator - Free P=IV Tool | CalcWise",
+    description: "Calculate electrical power, voltage, current, or resistance using multiple power formulas. Real-time results.",
+    url: physics_electrical_power_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Electrical Power Calculator", url: physics_electrical_power_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is electrical power?", answer: "Electrical power is the rate at which electrical energy is transferred in a circuit, measured in watts (W). It can be calculated using P = IV (power equals current times voltage), P = I^2R (current squared times resistance), or P = V^2/R (voltage squared divided by resistance). One watt equals one joule per second. A 60-watt light bulb converts 60 joules of electrical energy into light and heat every second." },
+  { question: "What is the difference between watts and kilowatt-hours?", answer: "Watts (W) measure power — the rate of energy use at any instant. Kilowatt-hours (kWh) measure energy — the total amount of power consumed over time. One kilowatt-hour equals using 1,000 watts for one hour, or equivalently 3,600,000 joules. Your electricity bill charges by the kWh. A 100W bulb running for 10 hours uses 1 kWh of energy." },
+  { question: "How are P=IV, P=I²R, and P=V²/R related?", answer: "All three are derived from two fundamental laws: P = IV (definition of electrical power) and V = IR (Ohm's law). Substituting V = IR into P = IV gives P = I^2R. Substituting I = V/R into P = IV gives P = V^2/R. All three formulas give the same answer for a given circuit; the choice depends on which quantities you know. P = IV is most general, P = I^2R emphasizes current effects (like wire heating), and P = V^2/R is useful for fixed-voltage analyses." },
+  { question: "Why do power lines use high voltage?", answer: "Power lines use high voltage to reduce energy losses during transmission. Power loss in a wire is P_loss = I^2R, where I is current and R is wire resistance. For a given amount of power to transmit (P = IV), increasing voltage allows proportionally less current, which dramatically reduces I^2R losses. Doubling the voltage halves the current and reduces losses by a factor of four. This is why electricity is transmitted at hundreds of thousands of volts and stepped down by transformers near homes." },
+  { question: "What is the power rating of an appliance?", answer: "The power rating is the maximum rate at which the appliance consumes electrical energy under normal operating conditions, measured in watts. A 1500W space heater draws 1500 joules per second. The rating helps estimate electricity costs: running a 1500W heater for 8 hours uses 12 kWh. At $0.12/kWh, that costs $1.44. Not all appliances run at their rated power continuously — refrigerators and air conditioners cycle on and off, so their average consumption is lower than the rating." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Electrical Power Calculator",
+  description: "Calculate electrical power, voltage, current, or resistance using P=IV, P=I²R, P=V²/R formulas.",
+  url: physics_electrical_power_url,
+  category: "EducationalApplication",
+  calculator_slug: "electrical-power"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Electrical Power Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Electrical Power Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate power, voltage, current, or resistance using the standard electrical power formulas. Choose your calculation mode and results update instantly.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="electrical-power-calculator ad-engagement" class="space-y-5 mb-8">
+      <div data-card="Electrical Power" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">P</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Power Formulas</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">P = IV = I&sup2;R = V&sup2;/R</span>
+        </div>
+
+        <div class="mb-4">
+          <label for="epower-mode" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Calculate using</label>
+          <select id="epower-mode" data-electrical-power-calculator-target="mode" data-action="change->electrical-power-calculator#updateFields" class="w-full">
+            <option value="p_iv">Power from Current & Voltage (P = IV)</option>
+            <option value="p_i2r">Power from Current & Resistance (P = I&sup2;R)</option>
+            <option value="p_v2r">Power from Voltage & Resistance (P = V&sup2;/R)</option>
+            <option value="find_current">Find Current (I = P/V)</option>
+            <option value="find_voltage">Find Voltage (V = P/I)</option>
+            <option value="find_resistance">Find Resistance (R = V&sup2;/P)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div data-electrical-power-calculator-target="powerGroup" class="hidden">
+            <label for="epower-power" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Power (W)</label>
+            <input id="epower-power" type="number" inputmode="decimal" data-electrical-power-calculator-target="power" data-action="input->electrical-power-calculator#calculate" class="w-full" placeholder="100" step="any">
+          </div>
+          <div data-electrical-power-calculator-target="voltageGroup">
+            <label for="epower-voltage" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Voltage (V)</label>
+            <input id="epower-voltage" type="number" inputmode="decimal" data-electrical-power-calculator-target="voltage" data-action="input->electrical-power-calculator#calculate" class="w-full" placeholder="120" step="any">
+          </div>
+          <div data-electrical-power-calculator-target="currentGroup">
+            <label for="epower-current" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current (A)</label>
+            <input id="epower-current" type="number" inputmode="decimal" data-electrical-power-calculator-target="current" data-action="input->electrical-power-calculator#calculate" class="w-full" placeholder="5" step="any">
+          </div>
+          <div data-electrical-power-calculator-target="resistanceGroup" class="hidden">
+            <label for="epower-resistance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Resistance (&Omega;)</label>
+            <input id="epower-resistance" type="number" inputmode="decimal" data-electrical-power-calculator-target="resistance" data-action="input->electrical-power-calculator#calculate" class="w-full" placeholder="24" step="any" min="0">
+          </div>
+        </div>
+
+        <div data-electrical-power-calculator-target="results" class="hidden">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-3">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Power</span>
+              <span class="text-lg font-bold text-yellow-600 dark:text-yellow-400" data-electrical-power-calculator-target="resultPower" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Power (kW)</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-electrical-power-calculator-target="resultPowerKw" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Voltage</span>
+              <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" data-electrical-power-calculator-target="resultVoltage" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Current</span>
+              <span class="text-sm font-bold text-orange-600 dark:text-orange-400" data-electrical-power-calculator-target="resultCurrent" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Resistance</span>
+              <span class="text-sm font-bold text-violet-600 dark:text-violet-400" data-electrical-power-calculator-target="resultResistance" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-cyan-50 to-sky-50 dark:from-cyan-900/20 dark:to-sky-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Energy (kWh/hr)</span>
+              <span class="text-sm font-bold text-cyan-600 dark:text-cyan-400" data-electrical-power-calculator-target="resultEnergyKwh" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button data-action="click->electrical-power-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "electrical-power" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Electrical Power</h2>
+      <p><strong>Electrical power</strong> measures the rate at which electrical energy is converted into other forms of energy (heat, light, motion, etc.) in a circuit. The fundamental relationship is P = IV, where P is power in watts, I is current in amperes, and V is voltage in volts. Combined with Ohm's law (V = IR), this yields two additional forms: P = I&sup2;R and P = V&sup2;/R. All three equations are equivalent and give the same result; the choice depends on which quantities are known.</p>
+
+      <p>This calculator supports six calculation modes covering all practical combinations. Whether you need to find power from known current and voltage, determine the current drawn by a device of known power and voltage, or calculate resistance from power and voltage measurements, simply select the appropriate mode and enter your values.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Watts, Kilowatts, and Kilowatt-Hours</h2>
+      <p>Power is measured in <strong>watts</strong> (W) or kilowatts (1 kW = 1000 W). Energy consumption over time is measured in <strong>kilowatt-hours</strong> (kWh): one kWh equals 1000 watts used for one hour, or 3.6 million joules. Electricity bills are based on kWh consumption. Understanding the relationship between instantaneous power and cumulative energy is essential for estimating electricity costs and sizing electrical systems.</p>
+
+      <h3>The Power Triangle</h3>
+      <p>The three power formulas form what electricians call the "power triangle" or "power wheel." P = IV is the most general form and applies to all DC circuits and resistive AC loads. P = I&sup2;R emphasizes that power dissipation in a resistor increases with the square of the current, which is why overloaded wires overheat — doubling the current quadruples the heat generated. P = V&sup2;/R shows that for a fixed voltage source, lower resistance means higher power consumption.</p>
+
+      <h3>Practical Applications</h3>
+      <p>Electrical power calculations are essential in <strong>circuit design</strong> for selecting component ratings and preventing overheating. <strong>Home electrical systems</strong> use power calculations to size circuit breakers (e.g., a 15A breaker on a 120V circuit handles up to 1800W). <strong>Power transmission</strong> engineers use P = I&sup2;R to minimize line losses by increasing voltage. <strong>Electronics manufacturers</strong> specify power ratings for resistors, transistors, and power supplies to ensure safe operation within thermal limits.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is electrical power?</h3>
+      <p>Electrical power is the rate of energy transfer, measured in watts. P = IV = I&sup2;R = V&sup2;/R. One watt = one joule per second.</p>
+
+      <h3>What is the difference between watts and kilowatt-hours?</h3>
+      <p>Watts measure instantaneous power (rate). Kilowatt-hours measure energy (total). 1 kWh = 1000W used for 1 hour. Electricity bills are in kWh.</p>
+
+      <h3>How are P=IV, P=I&sup2;R, and P=V&sup2;/R related?</h3>
+      <p>All derived from P=IV and Ohm's law V=IR. They give the same answer; use whichever matches your known quantities.</p>
+
+      <h3>Why do power lines use high voltage?</h3>
+      <p>Higher voltage means lower current for the same power (P=IV). Lower current reduces I&sup2;R losses in transmission wires.</p>
+
+      <h3>What is a power rating?</h3>
+      <p>The maximum rate of energy consumption under normal operation. A 1500W heater uses 1500 joules per second, costing about $0.18/hour at typical electricity rates.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Ohm's Law Calculator", description: "Calculate voltage, current, or resistance using Ohm's law V = IR.", path: physics_ohms_law_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Electricity Cost Calculator", description: "Calculate electricity costs from wattage, usage time, and electricity rate.", path: physics_electricity_cost_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Wire Gauge Calculator", description: "Find the right wire gauge for your electrical project based on current, distance, and voltage.", path: physics_wire_gauge_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "physics" %>
+
+    <% blog_posts = related_blog_posts("electrical-power-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,156 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "VAT Calculator - Add or Remove VAT Instantly",
+  description: "Calculate VAT-inclusive and VAT-exclusive prices instantly. Add VAT to net prices or remove VAT from gross prices. Free VAT calculator for any rate.",
+  canonical: finance_vat_url,
+  og: {
+    title: "VAT Calculator - Add or Remove VAT Instantly | CalcWise",
+    description: "Calculate VAT-inclusive and VAT-exclusive prices instantly. Add or remove VAT for any rate.",
+    url: finance_vat_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "VAT Calculator", url: finance_vat_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do you calculate VAT from a net price?", answer: "To add VAT to a net (excluding VAT) price, multiply the net price by the VAT rate. For example, if the net price is 100 and VAT is 20%, the VAT amount is 100 x 0.20 = 20, making the gross price 120. The formula is: Gross Price = Net Price x (1 + VAT Rate)." },
+  { question: "How do you remove VAT from a gross price?", answer: "To extract VAT from a gross (including VAT) price, divide the gross price by (1 + VAT rate). For example, if the gross price is 120 and VAT is 20%, the net price is 120 / 1.20 = 100, and the VAT amount is 120 - 100 = 20." },
+  { question: "What is the standard VAT rate in major countries?", answer: "Standard VAT rates vary by country: UK 20%, Germany 19%, France 20%, Italy 22%, Spain 21%, Netherlands 21%, Australia (GST) 10%, Canada (GST) 5%, India (GST) 18%. Some countries have reduced rates for essential goods like food and medicine." },
+  { question: "What is the difference between VAT and sales tax?", answer: "VAT (Value Added Tax) is collected at every stage of production and distribution, with businesses reclaiming VAT on their purchases. Sales tax is collected only at the final point of sale to the consumer. VAT is more common internationally, while sales tax is the standard in the United States." },
+  { question: "Can businesses claim back VAT?", answer: "Yes, VAT-registered businesses can reclaim VAT paid on business purchases (input VAT) by deducting it from the VAT they collect on sales (output VAT). They remit only the difference to the government. This mechanism prevents tax cascading through the supply chain." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "VAT Calculator",
+  description: "Calculate VAT-inclusive and VAT-exclusive prices for any rate.",
+  url: finance_vat_url,
+  category: "FinanceApplication",
+  calculator_slug: "vat"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "VAT Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">VAT Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Add VAT to a net price or remove VAT from a gross price. Works with any VAT rate.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="vat-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="vat-mode" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Calculation Mode</label>
+            <select id="vat-mode" data-vat-calculator-target="mode" data-action="change->vat-calculator#calculate" class="w-full">
+              <option value="add">Add VAT (Net to Gross)</option>
+              <option value="remove">Remove VAT (Gross to Net)</option>
+            </select>
+          </div>
+          <div>
+            <label for="vat-amount" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Amount ($)</label>
+            <input id="vat-amount" type="number" inputmode="decimal" data-vat-calculator-target="amount" data-action="input->vat-calculator#calculate" class="w-full" placeholder="100.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="vat-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">VAT Rate (%)</label>
+            <input id="vat-rate" type="number" inputmode="decimal" data-vat-calculator-target="vatRate" data-action="input->vat-calculator#calculate" class="w-full" placeholder="20" step="0.5" min="0" value="20">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Price (excl. VAT)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-vat-calculator-target="netPrice">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">VAT Amount</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-vat-calculator-target="vatAmount">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Gross Price (incl. VAT)</span>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-vat-calculator-target="grossPrice">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->vat-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "vat" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the VAT Calculator</h2>
+      <p>
+        Select whether you want to add VAT to a net price or remove VAT from a gross price. Enter the amount and the VAT rate percentage. The calculator instantly displays the net price, VAT amount, and gross price. This is useful for invoicing, price comparisons, and understanding the true cost of goods and services in countries that use VAT.
+      </p>
+      <p>
+        VAT (Value Added Tax) is used in over 160 countries worldwide. Unlike US sales tax, VAT is collected at each stage of the supply chain. Businesses reclaim the VAT they pay on purchases, and only the final consumer bears the full tax burden. Understanding VAT is essential for international business, travel, and e-commerce.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>VAT Calculation Formulas</h2>
+      <p>
+        To <strong>add VAT</strong>: Gross Price = Net Price x (1 + VAT Rate). For example, 100 x 1.20 = 120 for a 20% VAT rate. To <strong>remove VAT</strong>: Net Price = Gross Price / (1 + VAT Rate). For example, 120 / 1.20 = 100. The VAT amount is always the difference between gross and net: 120 - 100 = 20.
+      </p>
+
+      <h3>Standard VAT Rates by Country</h3>
+      <p>
+        VAT rates vary significantly by country. The UK charges 20%, Germany 19%, France 20%, Italy 22%, and the Netherlands 21%. Some countries like Hungary have rates as high as 27%, while others like Switzerland charge only 8.1%. Most countries also have reduced rates for essential goods such as food, medicine, and children's clothing.
+      </p>
+
+      <h3>VAT vs. Sales Tax</h3>
+      <p>
+        The key difference is where in the supply chain tax is collected. VAT is collected at every stage, with businesses reclaiming input VAT. Sales tax is collected only at the point of final sale. VAT is generally more efficient at revenue collection and harder to evade, which is why it is the dominant consumption tax globally. The United States is one of the few developed countries that does not use a national VAT system.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do you calculate VAT from a net price?</h3>
+      <p>Multiply the net price by the VAT rate. For a net price of 100 at 20% VAT: 100 x 0.20 = 20 VAT, making the gross price 120.</p>
+
+      <h3>How do you remove VAT from a gross price?</h3>
+      <p>Divide the gross price by (1 + VAT rate). For a gross price of 120 at 20% VAT: 120 / 1.20 = 100 net, with 20 being the VAT amount.</p>
+
+      <h3>What is the standard VAT rate in major countries?</h3>
+      <p>UK 20%, Germany 19%, France 20%, Italy 22%, Spain 21%, Australia (GST) 10%, Canada (GST) 5%.</p>
+
+      <h3>What is the difference between VAT and sales tax?</h3>
+      <p>VAT is collected at every production stage with business reclaiming input tax. Sales tax is collected only at the final sale to consumers.</p>
+
+      <h3>Can businesses claim back VAT?</h3>
+      <p>Yes, VAT-registered businesses reclaim VAT on business purchases by deducting input VAT from output VAT, remitting only the difference.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Sales Tax Calculator", description: "Calculate sales tax amount and total price.", path: finance_sales_tax_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Profit Margin Calculator", description: "Calculate your profit margin percentage.", path: finance_profit_margin_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
+      { name: "Markup & Margin Converter", description: "Convert between markup and margin.", path: finance_markup_margin_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <% blog_posts = related_blog_posts("vat-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

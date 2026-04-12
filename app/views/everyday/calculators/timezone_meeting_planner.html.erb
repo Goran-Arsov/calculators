@@ -1,0 +1,146 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Timezone Meeting Planner - Find Overlapping Business Hours",
+  description: "Find overlapping business hours across multiple timezones. Plan meetings that work for distributed teams. See a visual 24-hour schedule. Free online tool.",
+  canonical: everyday_timezone_meeting_planner_url,
+  og: {
+    title: "Timezone Meeting Planner - Overlapping Business Hours | CalcWise",
+    description: "Find overlapping business hours across timezones for distributed team meetings.",
+    url: everyday_timezone_meeting_planner_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Timezone Meeting Planner", url: everyday_timezone_meeting_planner_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How does the timezone meeting planner work?", answer: "Enter two or more timezone abbreviations and your business hours. The tool checks each hour of the day (UTC 0-23) and highlights hours that fall within business hours for ALL timezones simultaneously. Green rows indicate overlapping business hours when all participants are available, making them ideal meeting times." },
+  { question: "What timezone abbreviations are supported?", answer: "Common abbreviations include EST/EDT (US Eastern), CST/CDT (US Central), MST/MDT (US Mountain), PST/PDT (US Pacific), UTC/GMT, CET/CEST (Central Europe), EET/EEST (Eastern Europe), IST (India), JST (Japan), AEST/AEDT (Australia Eastern), and NZST/NZDT (New Zealand). Use CST_ASIA for China Standard Time to avoid confusion with US Central." },
+  { question: "What if there are no overlapping hours?", answer: "When teams span more than 12 timezones, there may be no overlapping business hours. In this case, consider rotating meeting times so no single timezone always has inconvenient hours. Alternatively, extend the business hour window (e.g., 8 AM to 8 PM) or use asynchronous communication methods for some participants." },
+  { question: "Does this account for daylight saving time?", answer: "This tool uses fixed UTC offsets. During daylight saving transitions, use the appropriate abbreviation: EST (-5) for standard time or EDT (-4) for daylight saving time in the US Eastern timezone. Similarly, use CET (+1) or CEST (+2) for Central European time. Check your current offset if you are unsure which to use." },
+  { question: "How do I find the best meeting time for a global team?", answer: "Enter all team timezones, set realistic business hours (9 AM to 5 PM is the default), and look for green highlighted rows. If multiple hours overlap, choose a time that is most comfortable for the majority. For teams spanning Asia and the Americas, the overlap is often in the early morning for one side and late afternoon for the other." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Timezone Meeting Planner",
+  description: "Find overlapping business hours across multiple timezones for scheduling distributed team meetings.",
+  url: everyday_timezone_meeting_planner_url,
+  category: "UtilityApplication",
+  calculator_slug: "timezone-meeting-planner"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Timezone Meeting Planner" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Timezone Meeting Planner</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find overlapping business hours across timezones. Enter timezone abbreviations to see a visual schedule with highlighted meeting windows.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="timezone-meeting-planner-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-4">
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Timezones <span class="text-gray-400 font-normal">(comma-separated, e.g., EST, CET, JST)</span></label>
+          <input type="text" data-timezone-meeting-planner-calculator-target="timezones" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="EST, CET, JST">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Business Start (hour)</label>
+            <input type="number" data-timezone-meeting-planner-calculator-target="businessStart" value="9" min="0" max="23" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+          </div>
+          <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Business End (hour)</label>
+            <input type="number" data-timezone-meeting-planner-calculator-target="businessEnd" value="17" min="1" max="24" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-3 items-center">
+          <button data-action="click->timezone-meeting-planner-calculator#calculate" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm text-sm font-semibold transition-all duration-200">Find Overlap</button>
+          <button data-action="click->timezone-meeting-planner-calculator#copy" class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium transition-all duration-200">Copy</button>
+          <span data-timezone-meeting-planner-calculator-target="overlapCount" class="text-sm font-medium text-gray-600 dark:text-gray-400"></span>
+        </div>
+
+        <div data-timezone-meeting-planner-calculator-target="error" class="hidden p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm"></div>
+
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-4 overflow-auto max-h-[500px]">
+          <div data-timezone-meeting-planner-calculator-target="output"></div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "timezone-meeting-planner" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Planning Meetings Across Timezones</h2>
+      <p>
+        Scheduling meetings for distributed teams is one of the most common challenges in remote work. This planner shows a 24-hour visual schedule for each timezone, highlighting the hours when all participants are within their business hours. Green rows represent optimal meeting windows where everyone is available during normal working hours.
+      </p>
+      <p>
+        Enter your team's timezones as comma-separated abbreviations and set the business hour range. The default is 9 AM to 5 PM, but you can adjust this to reflect your team's actual working hours. The tool displays local times for each timezone at every UTC hour, making it easy to find the best time slot for everyone.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Working With Global Teams</h2>
+      <p>
+        Teams spanning the Americas, Europe, and Asia face the greatest scheduling challenges. The time difference between the US West Coast (PST, UTC-8) and Japan (JST, UTC+9) is 17 hours, leaving very few overlapping business hours. In these cases, consider alternating meeting times between early morning for one group and late afternoon for another. Some teams designate specific "overlap hours" when all members are expected to be available.
+      </p>
+
+      <h3>Daylight Saving Time</h3>
+      <p>
+        This tool uses fixed UTC offsets, so choose the correct abbreviation for the current season. US Eastern Standard Time (EST) is UTC-5, while Eastern Daylight Time (EDT) is UTC-4. Central European Time (CET) is UTC+1, while Central European Summer Time (CEST) is UTC+2. Be mindful that different countries switch to daylight saving time on different dates, creating temporary shifts in overlap windows.
+      </p>
+
+      <h3>Asynchronous Alternatives</h3>
+      <p>
+        When overlapping hours are limited, consider asynchronous communication for status updates, decisions, and documentation. Reserve synchronous meetings for discussions that truly benefit from real-time interaction. Record meetings for those who cannot attend. Use shared documents and project management tools to keep everyone aligned regardless of timezone differences.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How does this tool work?</h3>
+      <p>It checks each UTC hour against business hours in all timezones and highlights hours when everyone is available simultaneously.</p>
+
+      <h3>What abbreviations are supported?</h3>
+      <p>EST, EDT, CST, CDT, MST, MDT, PST, PDT, UTC, GMT, CET, CEST, EET, IST, JST, AEST, AEDT, NZST, and more.</p>
+
+      <h3>What if there is no overlap?</h3>
+      <p>Rotate meeting times, extend business hours, or use asynchronous communication for teams spanning more than 12 timezones.</p>
+
+      <h3>Does this handle daylight saving time?</h3>
+      <p>Use the correct abbreviation (EST vs EDT, CET vs CEST) for the current season. Offsets are fixed per abbreviation.</p>
+
+      <h3>How to find the best time for a global team?</h3>
+      <p>Enter all timezones, look for green rows, and choose the most comfortable overlapping hour for the majority of participants.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Time Zone Converter", description: "Convert times between different timezones.", path: everyday_time_zone_converter_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Work Hours Calculator", description: "Calculate total work hours from start and end times.", path: everyday_work_hours_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Business Days Calculator", description: "Calculate business days between two dates.", path: everyday_business_days_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("timezone-meeting-planner") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

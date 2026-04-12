@@ -1,0 +1,191 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Drainage Slope Calculator - Free Online Tool",
+  description: "Calculate required drainage slope percentage, drop per foot, and total fall for pipes. Check minimum slope requirements by pipe diameter.",
+  canonical: construction_drainage_slope_url,
+  og: {
+    title: "Drainage Slope Calculator - Free Online Tool | CalcWise",
+    description: "Calculate drainage pipe slope, drop per foot, and total fall. Check code-minimum slope requirements instantly.",
+    url: construction_drainage_slope_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Drainage Slope Calculator", url: construction_drainage_slope_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the minimum slope for a 4-inch drain pipe?", answer: "The minimum slope for a 4-inch drain pipe is 1/8 inch per foot (approximately 1.04% grade), per the International Plumbing Code. This means for every foot of horizontal run, the pipe must drop at least 1/8 inch. For a 50-foot run, the total drop would be 6.25 inches. This minimum slope ensures adequate flow velocity (at least 2 feet per second) to carry solids and prevent clogs." },
+  { question: "What slope do I need for a 2-inch or 3-inch drain pipe?", answer: "Pipes 3 inches or smaller in diameter require a minimum slope of 1/4 inch per foot (approximately 2.08% grade), which is twice the slope required for 4-inch and larger pipes. The steeper slope is needed because smaller pipes have less capacity and need higher velocity to prevent blockages. For a 2-inch pipe on a 30-foot run, the minimum drop would be 7.5 inches." },
+  { question: "How do I calculate the total drop for a drainage pipe?", answer: "Multiply the slope in inches per foot by the total run length in feet. For example, a 4-inch pipe at the minimum 1/8 inch per foot slope over a 100-foot run has a total drop of 12.5 inches (100 x 0.125). You can also use the percentage slope: 1.04% of 100 feet equals 1.04 feet or 12.48 inches. Always measure the run as horizontal distance, not the actual pipe length." },
+  { question: "What happens if the drain slope is too steep?", answer: "While more slope generally improves drainage, excessively steep slopes (above 4-5%) can cause problems. The liquid flows too fast and separates from solid waste, leaving solids stranded in the pipe. This is especially problematic for sanitary sewer lines. For storm drains, steeper slopes are generally acceptable. The ideal slope provides a flow velocity between 2 and 10 feet per second." },
+  { question: "What is the difference between drainage slope for sanitary vs storm drains?", answer: "Sanitary sewer pipes (carrying waste from toilets, sinks, and drains) must maintain minimum slopes per code to ensure solids are carried by the flow. Storm drains (carrying rainwater) are more flexible because they carry clean water without solids. Storm drains can use minimum slopes or even steeper grades. Both types should maintain flow velocity between 2 and 10 fps. The calculator uses plumbing code minimums applicable to sanitary drainage." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Drainage Slope Calculator",
+  description: "Calculate drainage pipe slope percentage, drop per foot, and total fall for various pipe diameters.",
+  url: construction_drainage_slope_url,
+  category: "HomeApplication",
+  calculator_slug: "drainage_slope"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Drainage Slope Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Drainage Slope Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Calculate the required slope percentage, drop per foot, total fall, and estimated flow velocity for drainage pipes of various diameters.</p>
+    <div class="mb-8 px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-sm text-amber-800 dark:text-amber-300">
+      <strong>How it works:</strong> Enter the pipe run length in feet and select the pipe diameter. Optionally, enter a custom slope percentage or leave it blank to use the code-minimum slope for the selected pipe size. The calculator shows the slope, drop per foot, total fall, whether it meets minimum requirements, and an estimated flow velocity. <br class="mb-1"><strong>Note:</strong> Minimum slopes are based on the International Plumbing Code. Local codes may differ. Always verify requirements with your local building department.
+    </div>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="drainage-slope-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="ds-run" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pipe Run Length (ft)</label>
+            <input id="ds-run" type="number" inputmode="decimal" data-drainage-slope-calculator-target="runLength" data-action="input->drainage-slope-calculator#calculate" class="w-full" placeholder="50" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="ds-diameter" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pipe Diameter (inches)</label>
+            <select id="ds-diameter" data-drainage-slope-calculator-target="pipeDiameter" data-action="change->drainage-slope-calculator#calculate" class="w-full">
+              <option value="2">2-inch</option>
+              <option value="3">3-inch</option>
+              <option value="4" selected>4-inch</option>
+              <option value="6">6-inch</option>
+              <option value="8">8-inch</option>
+            </select>
+          </div>
+          <div>
+            <label for="ds-slope" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Custom Slope % (optional)</label>
+            <input id="ds-slope" type="number" inputmode="decimal" data-drainage-slope-calculator-target="slopePct" data-action="input->drainage-slope-calculator#calculate" class="w-full" placeholder="Leave blank for minimum" step="0.01" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Slope</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-drainage-slope-calculator-target="resultSlopePct">0%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Drop Per Foot</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-drainage-slope-calculator-target="resultSlopeInPerFt">0"/ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Drop (inches)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-drainage-slope-calculator-target="resultTotalDropIn">0"</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Drop (feet)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-drainage-slope-calculator-target="resultTotalDropFt">0 ft</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Meets Minimum</span>
+              <span class="text-xl font-bold text-gray-400" data-drainage-slope-calculator-target="resultMeetsMinimum">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Minimum Required</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-drainage-slope-calculator-target="resultMinSlope">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Flow Velocity</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-drainage-slope-calculator-target="resultVelocity">0 ft/s</span>
+            </div>
+          </div>
+          <button data-action="click->drainage-slope-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "drainage_slope" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Drainage Slope Calculator</h2>
+      <p>
+        Proper drainage slope is critical for any plumbing or site drainage project. Insufficient slope causes slow drainage, standing water, and clogged pipes. Enter the horizontal run length of your pipe in feet, select the pipe diameter, and optionally enter a custom slope percentage. If you leave the slope field blank, the calculator uses the code-minimum slope for the selected pipe diameter. The results show the slope percentage, drop per foot in inches, total fall over the run length, whether the slope meets the minimum code requirement, and an estimated flow velocity using a simplified Manning equation.
+      </p>
+      <p>
+        The International Plumbing Code requires a minimum slope of 1/4 inch per foot (2.08%) for pipes 3 inches and smaller, and 1/8 inch per foot (1.04%) for pipes 4 inches and larger. These minimums ensure a self-cleansing velocity of at least 2 feet per second, which is necessary to carry solid waste and prevent sediment buildup. For storm drainage, the same minimums apply, though steeper slopes are generally preferred when grade allows.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Minimum Slope Requirements by Pipe Size</h2>
+      <p>
+        Understanding the minimum slope requirements prevents costly corrections after installation. Two-inch and three-inch pipes require 1/4 inch per foot because their smaller diameter means less water volume and slower flow. A 2-inch pipe on a 30-foot run needs at least 7.5 inches of total drop. Four-inch and six-inch pipes need 1/8 inch per foot, so a 4-inch pipe on a 100-foot run requires only 12.5 inches of drop. Eight-inch pipes, used primarily for building sewers and site mains, can get by with 1/16 inch per foot (0.52%) due to their large capacity.
+      </p>
+
+      <h3>Avoiding Excessive Slope</h3>
+      <p>
+        While more slope generally improves drainage, slopes exceeding 4-5% can cause problems in sanitary sewer lines. At steep slopes, liquids outrun solids, leaving waste deposits that eventually cause blockages. The ideal flow velocity is between 2 and 10 feet per second. For storm drains carrying clean water, steeper slopes are generally acceptable. When site conditions force steep drops, consider using vertical drops (cleanout risers) rather than an excessively steep pipe run.
+      </p>
+
+      <h3>Measuring and Setting Pipe Slope</h3>
+      <p>
+        Use a laser level or transit to establish the starting and ending elevations before trenching. Mark the required drop on grade stakes at regular intervals (every 10 feet is typical). Use a string line between stakes and measure down to the pipe invert to verify slope during installation. For long runs, check slope with a 4-foot level and adjust the bubble position to reflect the required grade. Every 1/8 inch per foot requires the bubble to be approximately 1/16 inch off-center on a 4-foot level.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the minimum slope for a 4-inch drain?</h3>
+      <p>
+        1/8 inch per foot (1.04% grade). For a 50-foot run, the total drop is 6.25 inches. This ensures adequate flow velocity to carry solids and prevent clogs.
+      </p>
+
+      <h3>What slope for 2-inch or 3-inch pipes?</h3>
+      <p>
+        1/4 inch per foot (2.08% grade), which is double the slope required for 4-inch pipes. Smaller pipes need steeper slopes to maintain adequate flow velocity.
+      </p>
+
+      <h3>How do I calculate total drop?</h3>
+      <p>
+        Multiply slope (inches per foot) by run length (feet). Example: 1/8" per foot x 100 feet = 12.5 inches total drop. Always measure the run as horizontal distance.
+      </p>
+
+      <h3>What if the slope is too steep?</h3>
+      <p>
+        Slopes above 4-5% can cause liquids to outrun solids in sanitary lines, creating blockages. Ideal flow velocity is 2-10 ft/s. Use vertical drops for steep grade changes instead.
+      </p>
+
+      <h3>Do storm drains have the same slope requirements?</h3>
+      <p>
+        Storm drains follow the same code minimums, but steeper slopes are preferred when possible since they carry clean water. The key concern is preventing erosion at the outlet rather than solid transport.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Plumbing Calculator", description: "Calculate pipe sizes, fittings, and plumbing material needs.", path: construction_plumbing_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" },
+      { name: "Concrete Calculator", description: "Estimate cubic yards and bags of concrete for your project.", path: construction_concrete_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+      { name: "Gravel & Mulch Calculator", description: "Calculate cubic yards and tons of gravel, mulch, or soil.", path: construction_gravel_mulch_path, icon_path: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("drainage-slope-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

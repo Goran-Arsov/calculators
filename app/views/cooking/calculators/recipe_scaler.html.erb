@@ -1,0 +1,150 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Recipe Scaler - Scale Ingredients Up or Down",
+  description: "Easily scale any recipe up or down by adjusting the number of servings. Our free recipe scaler calculates exact ingredient amounts instantly.",
+  canonical: cooking_recipe_scaler_url,
+  og: {
+    title: "Recipe Scaler - Free Online Tool | CalcWise",
+    description: "Easily scale any recipe up or down by adjusting the number of servings. Our free recipe scaler calculates exact ingredient amounts instantly.",
+    url: cooking_recipe_scaler_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Cooking", url: category_url("cooking") },
+  { name: "Recipe Scaler", url: cooking_recipe_scaler_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I scale a recipe up or down?", answer: "Divide the desired number of servings by the original number of servings to get a multiplier. Multiply each ingredient amount by this multiplier. For example, to double a recipe that serves 4 to serve 8, multiply every ingredient by 2." },
+  { question: "Do all ingredients scale linearly?", answer: "Most ingredients scale linearly, but seasonings, salt, leavening agents (baking powder, baking soda, yeast), and spices often need less than a linear increase when scaling up. Start with 1.5x for these when doubling a recipe." },
+  { question: "Can I halve a recipe that calls for one egg?", answer: "Yes. Beat the egg, measure it (about 3 tablespoons), and use half (1.5 tablespoons). Alternatively, use a small egg or egg substitute for the halved amount." },
+  { question: "Does scaling a recipe affect cooking time?", answer: "Scaling ingredients does not always change cooking time proportionally. Larger volumes may need slightly longer cooking, while individual portion sizes (like cookies) remain the same. Use an instant-read thermometer to verify doneness." },
+  { question: "How do I scale baking recipes accurately?", answer: "Use weight measurements (grams) instead of volume (cups) for the most accurate scaling. Weigh each ingredient and multiply by your scaling factor. This eliminates measuring cup inconsistencies." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Recipe Scaler",
+  description: "Scale recipe ingredients up or down by servings multiplier.",
+  url: cooking_recipe_scaler_url,
+  category: "LifestyleApplication",
+  calculator_slug: "recipe-scaler"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Cooking", url: category_path("cooking") },
+  { name: "Recipe Scaler" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Recipe Scaler</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Scale any recipe up or down by entering your original and desired serving counts.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="recipe-scaler-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label for="rs-original" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Original Servings</label>
+          <input id="rs-original" type="number" inputmode="numeric" min="1" step="1" placeholder="4" class="w-full" data-recipe-scaler-calculator-target="originalServings" data-action="input->recipe-scaler-calculator#calculate">
+        </div>
+        <div>
+          <label for="rs-desired" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Desired Servings</label>
+          <input id="rs-desired" type="number" inputmode="numeric" min="1" step="1" placeholder="8" class="w-full" data-recipe-scaler-calculator-target="desiredServings" data-action="input->recipe-scaler-calculator#calculate">
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <div class="flex justify-between items-center mb-2">
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400">Ingredients</label>
+          <button type="button" data-action="click->recipe-scaler-calculator#addIngredient" class="text-sm text-green-600 hover:text-green-700 font-medium">+ Add Ingredient</button>
+        </div>
+        <div class="grid grid-cols-12 gap-2 mb-1 text-xs text-gray-400">
+          <span class="col-span-5">Name</span>
+          <span class="col-span-3">Amount</span>
+          <span class="col-span-3">Unit</span>
+          <span class="col-span-1"></span>
+        </div>
+        <div data-recipe-scaler-calculator-target="ingredientRows"></div>
+      </div>
+
+      <div data-recipe-scaler-calculator-target="results" class="hidden" aria-live="polite" aria-atomic="true">
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 mt-4">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Scaled Recipe</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Multiplier: <span class="font-bold text-green-700 dark:text-green-400" data-recipe-scaler-calculator-target="multiplier">--</span></p>
+          <div data-recipe-scaler-calculator-target="scaledList"></div>
+          <button data-action="click->recipe-scaler-calculator#copy" class="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "recipe-scaler" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Recipe Scaler</h2>
+      <p>
+        Our free recipe scaler makes it simple to adjust any recipe for a different number of servings. Enter the original number of servings the recipe makes, type in how many servings you want, then add each ingredient with its amount and unit. The calculator instantly computes the scaled amounts using a precise multiplier so you never have to do the math yourself.
+      </p>
+      <p>
+        Whether you are cooking for a crowd, halving a recipe for a weeknight dinner for two, or tripling a batch of cookies for a bake sale, the recipe scaler handles the arithmetic. It works with any unit of measurement, including cups, tablespoons, grams, ounces, and milliliters.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Tips for Scaling Recipes Accurately</h2>
+      <p>
+        While most ingredients scale linearly, a few categories behave differently when you multiply or divide a recipe. Seasonings, salt, and spices are best adjusted conservatively. When doubling a recipe, start with 1.5 times the original seasoning amount, taste, and adjust. Leavening agents like baking powder and baking soda also should not be scaled in perfect proportion for very large multiples because carbon dioxide production does not increase linearly with quantity.
+      </p>
+
+      <h3>Cooking and Baking Adjustments</h3>
+      <p>
+        Scaling a recipe changes the total volume of food but not necessarily the cooking time or temperature. A doubled cake batter in the same size pan will need more time in the oven, while the same batter split into two pans will bake in roughly the original time. Always use a thermometer or visual cues to judge doneness rather than relying solely on the timer.
+      </p>
+
+      <h3>Weight vs. Volume Measurements</h3>
+      <p>
+        For the most accurate results, especially in baking, use weight measurements (grams or ounces) rather than volume (cups, tablespoons). A cup of flour can vary by 30 grams or more depending on how it is scooped. Weighing eliminates that variability and makes scaling simple multiplication.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I scale a recipe up or down?</h3>
+      <p>Divide the desired number of servings by the original number of servings to get a multiplier. Multiply each ingredient amount by this multiplier. For example, to double a recipe that serves 4 to serve 8, multiply every ingredient by 2.</p>
+
+      <h3>Do all ingredients scale linearly?</h3>
+      <p>Most ingredients scale linearly, but seasonings, salt, leavening agents (baking powder, baking soda, yeast), and spices often need less than a linear increase when scaling up. Start with 1.5x for these when doubling a recipe.</p>
+
+      <h3>Can I halve a recipe that calls for one egg?</h3>
+      <p>Yes. Beat the egg, measure it (about 3 tablespoons), and use half (1.5 tablespoons). Alternatively, use a small egg or egg substitute for the halved amount.</p>
+
+      <h3>Does scaling a recipe affect cooking time?</h3>
+      <p>Scaling ingredients does not always change cooking time proportionally. Larger volumes may need slightly longer cooking, while individual portion sizes (like cookies) remain the same. Use an instant-read thermometer to verify doneness.</p>
+
+      <h3>How do I scale baking recipes accurately?</h3>
+      <p>Use weight measurements (grams) instead of volume (cups) for the most accurate scaling. Weigh each ingredient and multiply by your scaling factor. This eliminates measuring cup inconsistencies.</p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Baking Substitution Calculator", description: "Find substitutions for common baking ingredients.", path: cooking_baking_substitution_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" },
+      { name: "Pizza Dough Calculator", description: "Calculate exact dough ingredients for perfect pizza.", path: cooking_pizza_dough_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Macros per Recipe Calculator", description: "Calculate total and per-serving macros for any recipe.", path: cooking_macros_per_recipe_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "cooking" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

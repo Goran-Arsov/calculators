@@ -1,0 +1,168 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "IVF Due Date Calculator - Due Date from Embryo Transfer",
+  description: "Calculate your due date from IVF embryo transfer date for Day 3 or Day 5 (blastocyst) transfers. Includes trimester dates, gestational age, and pregnancy milestones.",
+  canonical: health_pregnancy_ivf_due_date_url,
+  og: {
+    title: "IVF Due Date Calculator - Embryo Transfer Due Date | CalcWise",
+    description: "Calculate your IVF pregnancy due date from transfer date. Supports Day 3 and Day 5 embryo transfers with milestone tracking.",
+    url: health_pregnancy_ivf_due_date_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "IVF Due Date Calculator", url: health_pregnancy_ivf_due_date_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is the IVF due date calculated?", answer: "The IVF due date is calculated by first determining the equivalent last menstrual period (LMP) date. For a Day 5 blastocyst transfer, subtract 19 days from the transfer date (14 days for ovulation + 5 days of embryo age). For a Day 3 transfer, subtract 17 days. Then add 280 days (40 weeks) to the equivalent LMP to get the estimated due date." },
+  { question: "What is the difference between Day 3 and Day 5 transfers?", answer: "A Day 3 transfer uses a cleavage-stage embryo that has been cultured for 3 days since fertilization. A Day 5 transfer uses a blastocyst that has been cultured for 5 days and has developed further. Day 5 transfers have higher implantation rates per transfer because blastocysts have already demonstrated viability. The due date calculation adjusts for the embryo's age at transfer." },
+  { question: "Is the IVF due date more accurate than natural conception?", answer: "Yes, IVF due dates are typically more accurate because the exact date of fertilization and embryo transfer are known. In natural conception, the date of ovulation and fertilization are estimated. This is why IVF due dates are calculated from the transfer date rather than the last menstrual period, providing a more precise estimate." },
+  { question: "What is the equivalent LMP date?", answer: "The equivalent LMP (last menstrual period) date is a calculated date used to align IVF pregnancies with standard gestational age tracking. It represents when your last period would have started if conception had occurred naturally. For Day 5 transfers, it is 19 days before the transfer date. Doctors use this to track pregnancy progress using standard week-by-week milestones." },
+  { question: "When are IVF pregnancies considered full term?", answer: "Like all pregnancies, IVF pregnancies are considered early term at 37-38 weeks, full term at 39-40 weeks, late term at 41 weeks, and post-term at 42+ weeks. IVF pregnancies do not have a different gestational timeline, though some studies suggest IVF babies may be slightly more likely to be born a few days earlier than their due date." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "IVF Due Date Calculator",
+  description: "Calculate pregnancy due date from IVF embryo transfer date for Day 3 and Day 5 transfers.",
+  url: health_pregnancy_ivf_due_date_url,
+  category: "HealthApplication",
+  calculator_slug: "pregnancy-ivf-due-date"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "IVF Due Date Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">IVF Due Date Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your estimated due date from your IVF embryo transfer date, with gestational age tracking and pregnancy milestones.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="pregnancy-ivf-due-date-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="ivf-transfer-date" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Transfer Date</label>
+            <input id="ivf-transfer-date" type="date" data-pregnancy-ivf-due-date-calculator-target="transferDate" data-action="input->pregnancy-ivf-due-date-calculator#calculate" class="w-full">
+          </div>
+          <div>
+            <label for="ivf-embryo-type" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Embryo Type</label>
+            <select id="ivf-embryo-type" data-pregnancy-ivf-due-date-calculator-target="embryoType" data-action="change->pregnancy-ivf-due-date-calculator#calculate" class="w-full">
+              <option value="day_5">Day 5 - Blastocyst Transfer</option>
+              <option value="day_3">Day 3 - Cleavage Stage Transfer</option>
+            </select>
+          </div>
+          <div class="pt-4 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Equivalent LMP</span>
+              <span class="text-sm font-bold text-gray-600 dark:text-gray-400" data-pregnancy-ivf-due-date-calculator-target="equivalentLmp">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Due Date</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-pregnancy-ivf-due-date-calculator-target="dueDate">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Gestational Age</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-pregnancy-ivf-due-date-calculator-target="gestationalAge">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Days Remaining</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-pregnancy-ivf-due-date-calculator-target="daysRemaining">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Trimester</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-pregnancy-ivf-due-date-calculator-target="trimester">—</span>
+            </div>
+          </div>
+          <button data-action="click->pregnancy-ivf-due-date-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+      <div class="mt-6">
+        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Pregnancy Milestones</h3>
+        <div data-pregnancy-ivf-due-date-calculator-target="milestones" class="space-y-0.5"></div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "pregnancy-ivf-due-date" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the IVF Due Date Calculator Works</h2>
+      <p>
+        This calculator determines your estimated due date from your IVF embryo transfer date. Select whether you had a Day 3 (cleavage stage) or Day 5 (blastocyst) transfer, and the calculator computes your equivalent last menstrual period date, due date, current gestational age, trimester, and key pregnancy milestones. Because IVF provides the exact transfer date, due date calculations are more precise than those based on the last menstrual period.
+      </p>
+      <p>
+        The calculation works by converting the transfer date to an equivalent LMP date, then adding 280 days (40 weeks) for the standard gestational period. For a Day 5 blastocyst transfer, the equivalent LMP is 19 days before transfer (14 days for the ovulation-to-period offset plus 5 days of embryo age). For a Day 3 transfer, it is 17 days before. This alignment ensures your gestational age tracking matches standard pregnancy week milestones used by healthcare providers.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Day 3 vs. Day 5 Embryo Transfers</h2>
+      <p>
+        A Day 3 embryo (cleavage stage) has typically divided into 6-8 cells and is at an earlier developmental stage. A Day 5 embryo (blastocyst) has continued developing for two more days, forming a more complex structure with approximately 100+ cells, including the inner cell mass that will become the baby and the trophectoderm that will become the placenta. Blastocyst transfers generally have higher implantation rates per transfer because the embryo has already demonstrated its ability to develop past early stages.
+      </p>
+
+      <h3>Pregnancy Milestones After IVF</h3>
+      <p>
+        After IVF transfer, the first beta-hCG blood test typically occurs 9-14 days later to confirm implantation. An early ultrasound at 6-7 weeks checks for a heartbeat. The first trimester screening (NT scan) occurs around 12-13 weeks. The anatomy scan at 20 weeks is a detailed assessment of fetal development. The gestational milestones and trimester dates shown in this calculator follow the same timeline as naturally conceived pregnancies.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is the IVF due date calculated?</h3>
+      <p>Subtract 19 days (Day 5) or 17 days (Day 3) from the transfer date to get the equivalent LMP, then add 280 days for the due date.</p>
+
+      <h3>What is the difference between Day 3 and Day 5?</h3>
+      <p>Day 3 embryos are cleavage-stage (6-8 cells). Day 5 blastocysts are more developed (100+ cells). Day 5 transfers typically have higher implantation rates.</p>
+
+      <h3>Is the IVF due date more accurate?</h3>
+      <p>Yes, because the exact fertilization and transfer dates are known, unlike natural conception where ovulation date is estimated.</p>
+
+      <h3>What is the equivalent LMP?</h3>
+      <p>A calculated date representing when your last period would have been if conception occurred naturally. It aligns IVF pregnancies with standard gestational age tracking.</p>
+
+      <h3>When is an IVF pregnancy full term?</h3>
+      <p>Like all pregnancies: early term at 37-38 weeks, full term at 39-40 weeks, late term at 41 weeks, post-term at 42+ weeks.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Pregnancy Due Date Calculator", description: "Calculate your due date from your last menstrual period.", path: health_pregnancy_due_date_path, icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
+      { name: "Pregnancy Week Calculator", description: "Find out how many weeks pregnant you are and your current trimester.", path: health_pregnancy_week_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Conception Calculator", description: "Estimate your conception date based on your due date or last period.", path: health_conception_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <% blog_posts = related_blog_posts("ivf-due-date-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

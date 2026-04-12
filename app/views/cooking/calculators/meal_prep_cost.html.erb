@@ -1,0 +1,144 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Meal Prep Cost Calculator - Cost Per Serving Tool",
+  description: "Calculate the true cost per serving of your meal prep. Enter ingredients with costs and quantities to see total cost, per-serving cost, and daily/weekly estimates.",
+  canonical: cooking_meal_prep_cost_url,
+  og: {
+    title: "Meal Prep Cost Calculator - Free Online Tool | CalcWise",
+    description: "Calculate cost per serving for your meal prep. Add ingredients with costs and quantities to see the true per-serving breakdown.",
+    url: cooking_meal_prep_cost_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Cooking", url: category_url("cooking") },
+  { name: "Meal Prep Cost Calculator", url: cooking_meal_prep_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate cost per serving?", answer: "For each ingredient, divide the purchase price by the quantity purchased to get the unit cost. Multiply the unit cost by the quantity used in the recipe. Sum all ingredient costs and divide by the number of servings the recipe makes." },
+  { question: "Is meal prepping cheaper than eating out?", answer: "Yes, significantly. The average restaurant meal costs $13-15 per person, while a home-cooked meal prep serving typically costs $2-5. Even with the cost of containers and utilities, meal prepping saves most people 50-70% compared to eating out." },
+  { question: "How many servings should I prep at once?", answer: "Most meal preppers make 4-5 days of meals at a time. This balances freshness (food stays good in the fridge for 4-5 days) with efficiency. Some foods like soups and stews can be frozen in portions for longer storage." },
+  { question: "Should I include the cost of spices and oils?", answer: "For accuracy, yes. A simple approach is to estimate spices at $0.10-0.25 per recipe and cooking oil at about $0.05-0.15 per tablespoon. These small costs add up across many meals and affect your true per-serving cost." },
+  { question: "How can I reduce my meal prep cost?", answer: "Buy proteins in bulk when on sale, use seasonal vegetables, cook with dried beans and lentils instead of canned, buy store-brand staples, and plan meals around what is on sale that week. Batch cooking grains and proteins saves both time and money." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Meal Prep Cost Calculator",
+  description: "Calculate cost per serving for a meal plan with ingredients.",
+  url: cooking_meal_prep_cost_url,
+  category: "LifestyleApplication",
+  calculator_slug: "meal-prep-cost"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Cooking", url: category_path("cooking") },
+  { name: "Meal Prep Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Meal Prep Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the true cost per serving of your meal prep by entering ingredients, costs, and quantities.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="meal-prep-cost-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="mb-4">
+        <label for="mpc-servings" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Servings</label>
+        <input id="mpc-servings" type="number" inputmode="numeric" min="1" step="1" placeholder="6" class="w-full md:w-48" data-meal-prep-cost-calculator-target="servings" data-action="input->meal-prep-cost-calculator#calculate">
+      </div>
+
+      <div class="mb-4">
+        <div class="flex justify-between items-center mb-2">
+          <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400">Ingredients</label>
+          <button type="button" data-action="click->meal-prep-cost-calculator#addIngredient" class="text-sm text-green-600 hover:text-green-700 font-medium">+ Add Ingredient</button>
+        </div>
+        <div class="grid grid-cols-12 gap-2 mb-1 text-xs text-gray-400">
+          <span class="col-span-3">Name</span>
+          <span class="col-span-2">Cost ($)</span>
+          <span class="col-span-2">Qty Used</span>
+          <span class="col-span-2">Qty Bought</span>
+          <span class="col-span-2">Unit</span>
+          <span class="col-span-1"></span>
+        </div>
+        <div data-meal-prep-cost-calculator-target="ingredientRows"></div>
+      </div>
+
+      <div data-meal-prep-cost-calculator-target="results" class="hidden" aria-live="polite" aria-atomic="true">
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 mt-4">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Cost Breakdown</h2>
+          <div class="space-y-3 mb-4">
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Total Recipe Cost</span><span class="text-xl font-bold text-green-700 dark:text-green-400" data-meal-prep-cost-calculator-target="totalCost">--</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Cost Per Serving</span><span class="text-xl font-bold text-green-700 dark:text-green-400" data-meal-prep-cost-calculator-target="costPerServing">--</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Daily Cost (3 meals)</span><span class="font-bold text-green-700 dark:text-green-400" data-meal-prep-cost-calculator-target="dailyCost">--</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Weekly Cost (21 meals)</span><span class="font-bold text-green-700 dark:text-green-400" data-meal-prep-cost-calculator-target="weeklyCost">--</span></div>
+          </div>
+          <div data-meal-prep-cost-calculator-target="ingredientBreakdown" class="border-t border-gray-200 dark:border-gray-700 pt-3"></div>
+          <button data-action="click->meal-prep-cost-calculator#copy" class="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "meal-prep-cost" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Meal Prep Cost Calculator</h2>
+      <p>
+        Enter the total number of servings your recipe makes, then add each ingredient with its purchase cost, the quantity you use in the recipe, and the total quantity you purchased. For example, if you bought a 5-pound bag of chicken breast for $15 and used 2 pounds, enter cost $15, quantity used 2, quantity purchased 5. The calculator computes the proportional cost of each ingredient, the total recipe cost, and the cost per serving.
+      </p>
+      <p>
+        Understanding the true cost per serving of your meals helps you budget more effectively, compare the cost of cooking at home versus eating out, and identify which ingredients are driving up your food costs. Many people are surprised to find that meal prepping costs as little as $2-4 per serving for nutritious, protein-rich meals.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Tips for Reducing Meal Prep Costs</h2>
+      <p>
+        The biggest savings come from buying proteins in bulk during sales and freezing portions. Whole chickens cost significantly less per pound than boneless breasts. Dried beans and lentils provide excellent protein at a fraction of the cost of meat. Seasonal produce is both cheaper and more nutritious. Plan your meals around what is on sale each week rather than buying specific ingredients for predetermined recipes.
+      </p>
+
+      <h3>Tracking Your Savings</h3>
+      <p>
+        Compare your per-serving cost to typical restaurant or takeout prices. The average fast-food meal costs $8-10, casual dining averages $13-18, and delivery services add 20-30% in fees and tips. A meal prep serving at $3-5 saves $5-15 per meal, which adds up to $1,500-5,000 per year for a single person eating most meals at home.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate cost per serving?</h3>
+      <p>Divide each ingredient's purchase price by quantity purchased, multiply by quantity used, sum all costs, and divide by servings.</p>
+
+      <h3>Is meal prepping cheaper than eating out?</h3>
+      <p>Yes, typically 50-70% cheaper. Average restaurant meals cost $13-15 vs. $2-5 per meal prep serving.</p>
+
+      <h3>How many servings should I prep at once?</h3>
+      <p>4-5 days is ideal, balancing freshness with efficiency. Freeze additional portions for longer storage.</p>
+
+      <h3>Should I include the cost of spices and oils?</h3>
+      <p>Yes, for accuracy. Estimate spices at $0.10-0.25 per recipe and cooking oil at $0.05-0.15 per tablespoon.</p>
+
+      <h3>How can I reduce my meal prep cost?</h3>
+      <p>Buy proteins on sale, use seasonal vegetables, cook with dried beans, buy store-brand staples, and plan around sales.</p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Macros per Recipe Calculator", description: "Calculate total and per-serving macros for any recipe.", path: cooking_macros_per_recipe_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "Recipe Scaler", description: "Scale recipe ingredients up or down by servings.", path: cooking_recipe_scaler_path, icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" },
+      { name: "Freezer Storage Time Calculator", description: "Look up recommended freezer storage times for any food.", path: cooking_freezer_storage_path, icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "cooking" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

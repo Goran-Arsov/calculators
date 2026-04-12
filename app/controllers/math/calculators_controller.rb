@@ -24,5 +24,15 @@ module Math
     def percentage_increase; end
     def percentage_decrease; end
     def percentage_off; end
+    def derivative; end
+    def limit; end
+    def taylor_series; end
+    def complex_number; end
+    def vector; end
+    def eigenvalue; end
+    def boolean_algebra; end
+    def base_arithmetic; end
+    def modular_arithmetic; end
+    def set_operations; end
   end
 end

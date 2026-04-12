@@ -1,0 +1,200 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Transformer Turns Ratio Calculator - Free Online Tool",
+  description: "Calculate transformer turns ratio, output voltage, output current, and secondary turns from primary values. V1/V2 = N1/N2. Free online transformer calculator.",
+  canonical: physics_transformer_turns_ratio_url,
+  og: {
+    title: "Transformer Turns Ratio Calculator - Free Online Tool | CalcWise",
+    description: "Calculate transformer turns ratio, output voltage, current, and power from primary and secondary values. Real-time results.",
+    url: physics_transformer_turns_ratio_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Transformer Turns Ratio Calculator", url: physics_transformer_turns_ratio_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a transformer turns ratio?", answer: "The turns ratio of a transformer is the ratio of the number of turns in the primary winding to the number in the secondary winding: N1/N2. This ratio determines the voltage transformation: V1/V2 = N1/N2. A turns ratio greater than 1 means the transformer is a step-down type (lower output voltage), while less than 1 means step-up (higher output voltage). A 1:1 ratio is an isolation transformer that provides electrical isolation without changing voltage." },
+  { question: "How does a transformer change voltage?", answer: "A transformer changes voltage through electromagnetic induction. Alternating current in the primary winding creates a changing magnetic field in the core, which induces a voltage in the secondary winding. The voltage ratio equals the turns ratio: V2 = V1 * (N2/N1). For an ideal transformer, power is conserved: V1*I1 = V2*I2, so stepping up voltage proportionally steps down current and vice versa. Real transformers have efficiency losses of 2-10% due to resistance, core losses, and flux leakage." },
+  { question: "What is the difference between step-up and step-down transformers?", answer: "A step-up transformer has more secondary turns than primary turns (N2 > N1), producing a higher output voltage and lower output current. A step-down transformer has fewer secondary turns (N2 < N1), producing lower voltage and higher current. Power transmission uses step-up transformers at generating stations (to reduce line losses) and step-down transformers near consumers (to provide safe voltages). The transformer on a utility pole is typically a step-down unit converting thousands of volts to 120/240V." },
+  { question: "What is transformer efficiency?", answer: "Transformer efficiency is the ratio of output power to input power, expressed as a percentage. Ideal transformers are 100% efficient (V1*I1 = V2*I2), but real transformers have losses from copper resistance (I^2R heating in windings), core losses (hysteresis and eddy currents in the iron core), and flux leakage. High-quality power transformers achieve 95-99% efficiency. Distribution transformers typically operate at 97-99% efficiency. Small electronic transformers may be 85-95% efficient." },
+  { question: "Why can't transformers work with DC?", answer: "Transformers require a changing magnetic field to induce voltage in the secondary winding. Direct current creates a constant magnetic field that does not change with time, so no voltage is induced after the initial transient. If DC is applied continuously, only the primary winding resistance limits the current, which can overheat and destroy the transformer. To use transformers with DC sources, the DC must first be converted to AC using an inverter, which is exactly how switch-mode power supplies and DC-DC converters work." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Transformer Turns Ratio Calculator",
+  description: "Calculate transformer turns ratio, output voltage, output current, and secondary turns. V1/V2 = N1/N2.",
+  url: physics_transformer_turns_ratio_url,
+  category: "EducationalApplication",
+  calculator_slug: "transformer-turns-ratio"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Transformer Turns Ratio Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Transformer Turns Ratio Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the turns ratio, output voltage, output current, or required secondary turns for a transformer. Includes efficiency adjustment for real-world calculations.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="transformer-turns-ratio-calculator ad-engagement" class="space-y-5 mb-8">
+      <div data-card="Transformer" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-rose-500 to-red-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">N</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Transformer Equation</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">V<sub>1</sub>/V<sub>2</sub> = N<sub>1</sub>/N<sub>2</sub></span>
+        </div>
+
+        <div class="mb-4">
+          <label for="xfmr-mode" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Solve for</label>
+          <select id="xfmr-mode" data-transformer-turns-ratio-calculator-target="mode" data-action="change->transformer-turns-ratio-calculator#updateFields" class="w-full">
+            <option value="find_output_voltage">Output Voltage (from turns)</option>
+            <option value="find_output_current">Output Current (from voltages & input current)</option>
+            <option value="find_turns_ratio">Turns Ratio (from voltages)</option>
+            <option value="find_turns">Secondary Turns (from voltages & primary turns)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div data-transformer-turns-ratio-calculator-target="primaryVoltageGroup">
+            <label for="xfmr-v1" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Primary Voltage (V)</label>
+            <input id="xfmr-v1" type="number" inputmode="decimal" data-transformer-turns-ratio-calculator-target="primaryVoltage" data-action="input->transformer-turns-ratio-calculator#calculate" class="w-full" placeholder="120" step="any" min="0">
+          </div>
+          <div data-transformer-turns-ratio-calculator-target="secondaryVoltageGroup">
+            <label for="xfmr-v2" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Secondary Voltage (V)</label>
+            <input id="xfmr-v2" type="number" inputmode="decimal" data-transformer-turns-ratio-calculator-target="secondaryVoltage" data-action="input->transformer-turns-ratio-calculator#calculate" class="w-full" placeholder="24" step="any" min="0">
+          </div>
+          <div data-transformer-turns-ratio-calculator-target="primaryCurrentGroup">
+            <label for="xfmr-i1" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Primary Current (A) <span class="text-gray-400 font-normal">optional</span></label>
+            <input id="xfmr-i1" type="number" inputmode="decimal" data-transformer-turns-ratio-calculator-target="primaryCurrent" data-action="input->transformer-turns-ratio-calculator#calculate" class="w-full" placeholder="5" step="any" min="0">
+          </div>
+          <div data-transformer-turns-ratio-calculator-target="primaryTurnsGroup">
+            <label for="xfmr-n1" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Primary Turns</label>
+            <input id="xfmr-n1" type="number" inputmode="decimal" data-transformer-turns-ratio-calculator-target="primaryTurns" data-action="input->transformer-turns-ratio-calculator#calculate" class="w-full" placeholder="500" step="1" min="1">
+          </div>
+          <div data-transformer-turns-ratio-calculator-target="secondaryTurnsGroup">
+            <label for="xfmr-n2" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Secondary Turns</label>
+            <input id="xfmr-n2" type="number" inputmode="decimal" data-transformer-turns-ratio-calculator-target="secondaryTurns" data-action="input->transformer-turns-ratio-calculator#calculate" class="w-full" placeholder="100" step="1" min="1">
+          </div>
+          <div>
+            <label for="xfmr-eff" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Efficiency (%)</label>
+            <input id="xfmr-eff" type="number" inputmode="decimal" data-transformer-turns-ratio-calculator-target="efficiency" data-action="input->transformer-turns-ratio-calculator#calculate" class="w-full" placeholder="100" step="any" min="1" max="100" value="100">
+            <p class="text-xs text-gray-400 mt-1">100% = ideal transformer</p>
+          </div>
+        </div>
+
+        <div data-transformer-turns-ratio-calculator-target="results" class="hidden">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-3">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-rose-50 to-red-50 dark:from-rose-900/20 dark:to-red-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Output Voltage</span>
+              <span class="text-lg font-bold text-rose-600 dark:text-rose-400" data-transformer-turns-ratio-calculator-target="resultSecondaryVoltage" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Turns Ratio</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-transformer-turns-ratio-calculator-target="resultTurnsRatio" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Type</span>
+              <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" data-transformer-turns-ratio-calculator-target="resultType" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Secondary Turns</span>
+              <span class="text-lg font-bold text-violet-600 dark:text-violet-400" data-transformer-turns-ratio-calculator-target="resultSecondaryTurns" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Primary Current</span>
+              <span class="text-sm font-bold text-amber-600 dark:text-amber-400" data-transformer-turns-ratio-calculator-target="resultPrimaryCurrent" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-cyan-50 to-sky-50 dark:from-cyan-900/20 dark:to-sky-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Secondary Current</span>
+              <span class="text-sm font-bold text-cyan-600 dark:text-cyan-400" data-transformer-turns-ratio-calculator-target="resultSecondaryCurrent" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Input Power</span>
+              <span class="text-sm font-bold text-green-600 dark:text-green-400" data-transformer-turns-ratio-calculator-target="resultPrimaryPower" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Output Power</span>
+              <span class="text-sm font-bold text-pink-600 dark:text-pink-400" data-transformer-turns-ratio-calculator-target="resultSecondaryPower" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button data-action="click->transformer-turns-ratio-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "transformer-turns-ratio" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Transformer Turns Ratio</h2>
+      <p>A <strong>transformer</strong> transfers electrical energy between circuits through electromagnetic induction. The fundamental relationship V<sub>1</sub>/V<sub>2</sub> = N<sub>1</sub>/N<sub>2</sub> shows that the voltage ratio equals the turns ratio, where N<sub>1</sub> and N<sub>2</sub> are the number of turns in the primary and secondary windings. For an ideal transformer, power is conserved: V<sub>1</sub>I<sub>1</sub> = V<sub>2</sub>I<sub>2</sub>, meaning stepping up voltage proportionally reduces current and vice versa. Transformers are the reason AC power won the "War of Currents" — they allow efficient voltage conversion that DC systems of the era could not match.</p>
+
+      <p>This calculator supports four modes: finding the output voltage from known turns, finding output current from known voltages and input current, calculating the turns ratio from voltages, and determining the required secondary turns. An adjustable efficiency parameter accounts for real-world losses in copper resistance, core hysteresis, and flux leakage.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Step-Up and Step-Down Transformers</h2>
+      <p>A <strong>step-down transformer</strong> (turns ratio > 1) reduces voltage, which is the most common type in consumer electronics and power distribution — the transformer on a utility pole steps thousands of volts down to 120/240V. A <strong>step-up transformer</strong> (turns ratio < 1) increases voltage, used at power plants to raise generator output to transmission voltages of 115 kV to 765 kV, dramatically reducing transmission losses. An <strong>isolation transformer</strong> (1:1 ratio) provides electrical isolation between circuits without changing voltage, used for safety in medical equipment and test instruments.</p>
+
+      <h3>Transformer Efficiency</h3>
+      <p>Real transformers are not perfectly efficient. Losses include <strong>copper losses</strong> (I&sup2;R heating in the windings), <strong>core losses</strong> (hysteresis and eddy currents in the iron core), and <strong>flux leakage</strong> (magnetic flux that does not link both windings). Large power transformers achieve 97-99% efficiency, while small electronic transformers may be 85-95% efficient. Efficiency varies with load — most transformers are optimized for peak efficiency at 50-75% of rated load.</p>
+
+      <h3>Applications</h3>
+      <p>Transformers are everywhere in the electrical power system. <strong>Power generation</strong> uses step-up transformers to raise voltage for long-distance transmission. <strong>Distribution substations</strong> use step-down transformers to reduce voltage for local distribution. <strong>Wall adapters</strong> and <strong>laptop chargers</strong> use small transformers (or switching converter transformers) to provide low-voltage DC. <strong>Welding machines</strong> use high-current step-down transformers. <strong>Musical instrument amplifiers</strong> use output transformers to match tube amplifier impedances to speakers. The ability to efficiently change voltage levels is what makes AC power practical for modern electrical grids.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is a transformer turns ratio?</h3>
+      <p>The ratio N<sub>1</sub>/N<sub>2</sub> of primary to secondary winding turns. It equals the voltage ratio V<sub>1</sub>/V<sub>2</sub>. Ratios > 1 are step-down; < 1 are step-up.</p>
+
+      <h3>How does a transformer change voltage?</h3>
+      <p>AC in the primary creates a changing magnetic field that induces voltage in the secondary. V<sub>2</sub> = V<sub>1</sub> &times; N<sub>2</sub>/N<sub>1</sub>. Power is conserved: higher voltage means lower current.</p>
+
+      <h3>What is the difference between step-up and step-down?</h3>
+      <p>Step-up increases voltage (more secondary turns). Step-down decreases voltage (fewer secondary turns). Power grids use both for efficient distribution.</p>
+
+      <h3>What is transformer efficiency?</h3>
+      <p>Output power / input power &times; 100%. Losses come from winding resistance, core hysteresis, and eddy currents. Large units reach 97-99% efficiency.</p>
+
+      <h3>Why can't transformers work with DC?</h3>
+      <p>Transformers need a changing magnetic field. DC creates a constant field with no time variation, so no voltage is induced after the initial transient. DC must be converted to AC first.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Electrical Power Calculator", description: "Calculate power using P=IV, P=I²R, P=V²/R formulas.", path: physics_electrical_power_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Ohm's Law Calculator", description: "Calculate voltage, current, or resistance using Ohm's law V = IR.", path: physics_ohms_law_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Inductor Calculator", description: "Calculate inductance, energy stored, series/parallel combinations, and RL time constant.", path: physics_inductor_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "physics" %>
+
+    <% blog_posts = related_blog_posts("transformer-turns-ratio-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

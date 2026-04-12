@@ -1,0 +1,156 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Baking Substitution Calculator - Ingredient Swap Tool",
+  description: "Calculate exact substitution amounts for common baking ingredients. Swap butter for oil, flour types, sugar types, and egg substitutes with precise ratios.",
+  canonical: cooking_baking_substitution_url,
+  og: {
+    title: "Baking Substitution Calculator - Free Online Tool | CalcWise",
+    description: "Calculate exact substitution amounts for common baking ingredients with precise conversion ratios and helpful notes.",
+    url: cooking_baking_substitution_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Cooking", url: category_url("cooking") },
+  { name: "Baking Substitution Calculator", url: cooking_baking_substitution_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much oil replaces butter in baking?", answer: "Use 3/4 the amount of oil to replace butter. For example, if a recipe calls for 1 cup of butter, use 3/4 cup of oil. The texture may be slightly different since butter contains water and milk solids." },
+  { question: "Can I substitute whole wheat flour for all-purpose flour?", answer: "You can replace up to 75% of all-purpose flour with whole wheat flour. Using 100% whole wheat will produce denser, heavier baked goods. Start with a 50/50 blend for best results." },
+  { question: "How do I make a flax egg?", answer: "Mix 1 tablespoon of ground flaxseed with 3 tablespoons of water. Let it sit for 5 minutes until it becomes gel-like. One flax egg replaces one regular egg." },
+  { question: "Can I use honey instead of sugar in baking?", answer: "Use 3/4 cup of honey for every 1 cup of sugar. Reduce other liquids in the recipe by 1/4 cup per cup of honey used, and lower the oven temperature by 25 degrees F to prevent over-browning." },
+  { question: "What is the best egg substitute for binding?", answer: "For binding, flax eggs and chia eggs work best. For moisture, applesauce or mashed banana are excellent. For leavening, use 1/4 tsp baking soda + 1 tbsp vinegar per egg." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Baking Substitution Calculator",
+  description: "Calculate substitution amounts for common baking ingredients.",
+  url: cooking_baking_substitution_url,
+  category: "LifestyleApplication",
+  calculator_slug: "baking-substitution"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Cooking", url: category_path("cooking") },
+  { name: "Baking Substitution Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Baking Substitution Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find the right amount when swapping common baking ingredients like butter, oil, flour, sugar, and eggs.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="baking-substitution-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="space-y-4">
+        <div>
+          <label for="bs-from" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Original Ingredient</label>
+          <select id="bs-from" class="w-full" data-baking-substitution-calculator-target="fromIngredient" data-action="change->baking-substitution-calculator#updateToOptions">
+            <option value="">Select ingredient...</option>
+            <option value="butter">Butter</option>
+            <option value="oil">Oil</option>
+            <option value="all_purpose_flour">All-Purpose Flour</option>
+            <option value="white_sugar">White Sugar</option>
+            <option value="egg">Egg</option>
+            <option value="buttermilk">Buttermilk</option>
+          </select>
+        </div>
+        <div>
+          <label for="bs-to" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Substitute With</label>
+          <select id="bs-to" class="w-full" data-baking-substitution-calculator-target="toOptions" data-action="change->baking-substitution-calculator#calculate">
+            <option value="">Select substitute...</option>
+          </select>
+        </div>
+        <div>
+          <label for="bs-amount" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Amount (cups, units, or tbsp)</label>
+          <input id="bs-amount" type="number" inputmode="decimal" min="0" step="0.25" placeholder="1" class="w-full" data-baking-substitution-calculator-target="amount" data-action="input->baking-substitution-calculator#calculate">
+        </div>
+      </div>
+
+      <div data-baking-substitution-calculator-target="results" class="hidden" aria-live="polite" aria-atomic="true">
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 mt-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Substitution Result</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Substitute Amount</span>
+              <span class="text-xl font-bold text-green-700 dark:text-green-400" data-baking-substitution-calculator-target="convertedAmount">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Conversion Ratio</span>
+              <span class="text-xl font-bold text-green-700 dark:text-green-400" data-baking-substitution-calculator-target="ratio">--</span>
+            </div>
+          </div>
+          <div class="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl">
+            <p class="text-sm text-amber-800 dark:text-amber-300" data-baking-substitution-calculator-target="note">--</p>
+          </div>
+          <button data-action="click->baking-substitution-calculator#copy" class="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm transition-all duration-200 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "baking-substitution" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Baking Substitution Calculator</h2>
+      <p>
+        Select the original ingredient from the dropdown, choose the substitute you want to use, and enter the amount called for in your recipe. The calculator instantly shows the correct substitute amount, the conversion ratio, and helpful notes about how the substitution affects your baking results. This tool covers the most common baking swaps including fats (butter, oil, coconut oil), flours (all-purpose, cake, whole wheat, almond), sugars (white, brown, honey, maple syrup), eggs (flax, chia, applesauce, banana), and buttermilk alternatives.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Baking Substitutions</h2>
+      <p>
+        Every ingredient in a baking recipe serves a purpose: structure, moisture, fat, leavening, or flavor. When you substitute one ingredient for another, the chemical balance of the recipe shifts. Understanding what each ingredient does helps you predict how a substitution will affect the final product. Butter, for example, provides both fat and water and creates flaky layers in pastry; replacing it with oil gives a moister, denser crumb because oil is 100% fat.
+      </p>
+
+      <h3>Fat Substitutions</h3>
+      <p>
+        Butter is about 80% fat and 20% water. When replacing butter with oil, use 3/4 the amount because oil is 100% fat. Coconut oil substitutes 1:1 for butter and gives a similar solid-fat structure when used in its solid state. Applesauce can replace some or all of the fat to reduce calories, but expect a denser, moister texture.
+      </p>
+
+      <h3>Flour Substitutions</h3>
+      <p>
+        All-purpose flour is the baseline. Cake flour has less protein, producing tender crumb; use about 1-1/8 cups per cup of all-purpose. Whole wheat flour adds fiber and nuttiness but absorbs more liquid and creates denser results. Replace no more than 75% of the all-purpose flour with whole wheat for best results.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much oil replaces butter in baking?</h3>
+      <p>Use 3/4 the amount of oil to replace butter. For example, if a recipe calls for 1 cup of butter, use 3/4 cup of oil.</p>
+
+      <h3>Can I substitute whole wheat flour for all-purpose flour?</h3>
+      <p>You can replace up to 75% of all-purpose flour with whole wheat flour. Using 100% whole wheat will produce denser, heavier baked goods.</p>
+
+      <h3>How do I make a flax egg?</h3>
+      <p>Mix 1 tablespoon of ground flaxseed with 3 tablespoons of water. Let it sit for 5 minutes until it becomes gel-like. One flax egg replaces one regular egg.</p>
+
+      <h3>Can I use honey instead of sugar in baking?</h3>
+      <p>Use 3/4 cup of honey for every 1 cup of sugar. Reduce other liquids by 1/4 cup per cup of honey, and lower oven temperature by 25 degrees F.</p>
+
+      <h3>What is the best egg substitute for binding?</h3>
+      <p>For binding, flax eggs and chia eggs work best. For moisture, applesauce or mashed banana are excellent. For leavening, use 1/4 tsp baking soda + 1 tbsp vinegar per egg.</p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Recipe Scaler", description: "Scale recipe ingredients up or down by servings.", path: cooking_recipe_scaler_path, icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" },
+      { name: "Macros per Recipe Calculator", description: "Calculate total and per-serving macros for any recipe.", path: cooking_macros_per_recipe_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "Sourdough Hydration Calculator", description: "Calculate flour, water, and starter for sourdough bread.", path: cooking_sourdough_hydration_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "cooking" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

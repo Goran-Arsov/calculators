@@ -1,0 +1,190 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Buoyancy Calculator - Free Buoyant Force Tool",
+  description: "Calculate buoyant force, whether an object floats or sinks, apparent weight, and percent submerged using Archimedes' principle. Free online buoyancy calculator.",
+  canonical: physics_buoyancy_url,
+  og: {
+    title: "Buoyancy Calculator - Free Buoyant Force Tool | CalcWise",
+    description: "Calculate buoyant force, float/sink status, and apparent weight using Archimedes' principle. Real-time results.",
+    url: physics_buoyancy_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Buoyancy Calculator", url: physics_buoyancy_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is Archimedes' principle?", answer: "Archimedes' principle states that any object fully or partially submerged in a fluid experiences an upward buoyant force equal to the weight of the fluid displaced by the object. Mathematically, Fb = rho_fluid * V_object * g, where rho_fluid is the fluid density, V_object is the volume of the object submerged, and g is gravitational acceleration. This principle explains why ships float, hot air balloons rise, and heavy steel objects sink in water." },
+  { question: "How do you determine if an object floats or sinks?", answer: "An object floats when the buoyant force equals or exceeds its weight, which happens when the object's average density is less than the fluid's density. If the object is denser than the fluid, the buoyant force is less than the weight and the object sinks. For example, wood (density ~500-800 kg/m^3) floats in water (998 kg/m^3) while steel (density ~7800 kg/m^3) sinks. Ships float despite being made of steel because their hollow shape gives them an average density less than water." },
+  { question: "What is apparent weight?", answer: "Apparent weight is the effective weight of an object when submerged in a fluid. It equals the actual weight minus the buoyant force: W_apparent = W - Fb = mg - rho_fluid * V * g. This is why objects feel lighter underwater. If the buoyant force exceeds the weight (the object floats), the apparent weight is zero because the fluid fully supports the object." },
+  { question: "What fraction of a floating object is submerged?", answer: "For a floating object, the fraction submerged equals the ratio of the object's density to the fluid's density: fraction = rho_object / rho_fluid. For example, ice has a density of about 917 kg/m^3 and water 998 kg/m^3, so about 92% of an iceberg is submerged. This is the origin of the expression 'tip of the iceberg'." },
+  { question: "Does the shape of an object affect buoyancy?", answer: "The shape of an object does not change the buoyant force directly — only the displaced volume matters. However, shape determines how much fluid an object displaces. A solid steel ball sinks, but the same mass of steel shaped into a hollow hull can displace enough water to float. Shape also affects stability: a wide, flat-bottomed boat is more stable than a narrow one because it has a larger waterplane area, which raises the metacentric height." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Buoyancy Calculator",
+  description: "Calculate buoyant force, float/sink status, and apparent weight using Archimedes' principle (Fb = rho * V * g).",
+  url: physics_buoyancy_url,
+  category: "EducationalApplication",
+  calculator_slug: "buoyancy"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Buoyancy Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Buoyancy Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the buoyant force on an object, determine whether it floats or sinks, and find its apparent weight. Results update in real time.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="buoyancy-calculator ad-engagement" class="space-y-5 mb-8">
+      <div data-card="Buoyancy" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">F<sub>b</sub></div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Archimedes' Principle</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">F<sub>b</sub> = &rho;Vg</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label for="buoyancy-mass" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Object Mass (kg)</label>
+            <input id="buoyancy-mass" type="number" inputmode="decimal" data-buoyancy-calculator-target="mass" data-action="input->buoyancy-calculator#calculate" class="w-full" placeholder="5" step="any" min="0">
+          </div>
+          <div>
+            <label for="buoyancy-volume" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Object Volume (m&sup3;)</label>
+            <input id="buoyancy-volume" type="number" inputmode="decimal" data-buoyancy-calculator-target="volume" data-action="input->buoyancy-calculator#calculate" class="w-full" placeholder="0.005" step="any" min="0">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label for="buoyancy-fluid" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fluid</label>
+            <select id="buoyancy-fluid" data-buoyancy-calculator-target="fluid" data-action="change->buoyancy-calculator#updateCustomField" class="w-full">
+              <option value="water">Fresh Water (998 kg/m&sup3;)</option>
+              <option value="seawater">Seawater (1025 kg/m&sup3;)</option>
+              <option value="mercury">Mercury (13534 kg/m&sup3;)</option>
+              <option value="oil">Oil (900 kg/m&sup3;)</option>
+              <option value="glycerin">Glycerin (1261 kg/m&sup3;)</option>
+              <option value="ethanol">Ethanol (789 kg/m&sup3;)</option>
+              <option value="gasoline">Gasoline (680 kg/m&sup3;)</option>
+              <option value="air">Air (1.204 kg/m&sup3;)</option>
+              <option value="custom">Custom density</option>
+            </select>
+          </div>
+          <div data-buoyancy-calculator-target="customDensityGroup" class="hidden">
+            <label for="buoyancy-custom-density" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Custom Fluid Density (kg/m&sup3;)</label>
+            <input id="buoyancy-custom-density" type="number" inputmode="decimal" data-buoyancy-calculator-target="customDensity" data-action="input->buoyancy-calculator#calculate" class="w-full" placeholder="1000" step="any" min="0">
+          </div>
+        </div>
+
+        <div data-buoyancy-calculator-target="results" class="hidden">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-3">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Buoyant Force</span>
+              <span class="text-lg font-bold text-cyan-600 dark:text-cyan-400" data-buoyancy-calculator-target="resultBuoyantForce" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Object Weight</span>
+              <span class="text-lg font-bold text-amber-600 dark:text-amber-400" data-buoyancy-calculator-target="resultWeight" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Net Force</span>
+              <span class="text-lg font-bold text-violet-600 dark:text-violet-400" data-buoyancy-calculator-target="resultNetForce" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Status</span>
+              <span class="text-lg font-bold" data-buoyancy-calculator-target="resultStatus" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Object Density</span>
+              <span class="text-sm font-bold text-rose-600 dark:text-rose-400" data-buoyancy-calculator-target="resultObjectDensity" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Apparent Weight</span>
+              <span class="text-sm font-bold text-blue-600 dark:text-blue-400" data-buoyancy-calculator-target="resultApparentWeight" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">% Submerged</span>
+              <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400" data-buoyancy-calculator-target="resultPercentSubmerged" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button data-action="click->buoyancy-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "buoyancy" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding Buoyancy and Archimedes' Principle</h2>
+      <p><strong>Buoyancy</strong> is the upward force exerted on an object immersed in a fluid. It was first explained by the Greek mathematician Archimedes around 250 BC, who discovered that the buoyant force equals the weight of the fluid displaced by the object: F<sub>b</sub> = &rho;<sub>fluid</sub> &times; V<sub>object</sub> &times; g. This principle applies to all fluids, including liquids and gases, and is the fundamental reason why ships float, submarines dive and surface, and helium balloons rise in air.</p>
+
+      <p>This calculator determines the buoyant force acting on an object given its mass, volume, and the fluid it is immersed in. It also computes the object's weight, net force, apparent weight when submerged, and the fraction of the object that would be submerged if floating. Choose from common fluids or enter a custom density for any fluid.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Float, Sink, or Neutral Buoyancy</h2>
+      <p>Whether an object floats or sinks depends on the comparison between its density and the fluid's density. If the object's density is less than the fluid's, the buoyant force exceeds the weight and the object <strong>floats</strong>, with only a fraction of its volume submerged. If denser, the object <strong>sinks</strong> because its weight exceeds the buoyant force. If densities are exactly equal, the object is <strong>neutrally buoyant</strong>, hovering at whatever depth it is placed. Submarines achieve controlled buoyancy by filling or emptying ballast tanks to change their effective density.</p>
+
+      <h3>Apparent Weight and Underwater Measurement</h3>
+      <p>The <strong>apparent weight</strong> of a submerged object is its actual weight minus the buoyant force. This explains why objects feel lighter underwater. Jewelers use this principle to determine the density of gems and metals: by weighing an object in air and then in water, the difference reveals the buoyant force, from which the volume and density can be calculated. Hydrostatic weighing is also used in body composition analysis to estimate body fat percentage.</p>
+
+      <h3>Real-World Applications</h3>
+      <p>Ship design relies heavily on buoyancy calculations to ensure vessels float at the correct waterline with their intended cargo. <strong>Hydrometers</strong> use buoyancy to measure fluid density in brewing, winemaking, and battery testing. <strong>Life jackets</strong> and <strong>flotation devices</strong> work by increasing the wearer's volume without significantly increasing mass, lowering average density below that of water. In geology, <strong>isostasy</strong> describes how the Earth's crust floats on the denser mantle, with mountains having deep roots, much like an iceberg with most of its mass below the waterline.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is Archimedes' principle?</h3>
+      <p>Archimedes' principle states that the buoyant force on a submerged object equals the weight of the displaced fluid: F<sub>b</sub> = &rho;Vg.</p>
+
+      <h3>How do you know if an object floats or sinks?</h3>
+      <p>Compare densities: if the object is less dense than the fluid, it floats; if denser, it sinks. Equivalently, it floats when buoyant force exceeds weight.</p>
+
+      <h3>What is apparent weight?</h3>
+      <p>Apparent weight = actual weight - buoyant force. It is the effective weight felt when an object is submerged, which is why things feel lighter in water.</p>
+
+      <h3>What fraction of a floating object is submerged?</h3>
+      <p>The fraction submerged equals &rho;<sub>object</sub> / &rho;<sub>fluid</sub>. Ice in water is about 92% submerged because ice density is about 917 kg/m&sup3;.</p>
+
+      <h3>Does shape affect buoyancy?</h3>
+      <p>Shape does not change the buoyancy formula, but it determines displaced volume. A hollow steel hull displaces more water than a solid steel ball of the same mass, allowing ships to float.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Force Calculator", description: "Calculate force, mass, or acceleration using Newton's second law F = ma.", path: physics_force_path, icon_path: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" },
+      { name: "Pressure Converter", description: "Convert between pressure units including Pa, atm, bar, psi, and mmHg.", path: physics_pressure_converter_path, icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+      { name: "Kinetic Energy Calculator", description: "Calculate kinetic energy, mass, or velocity using KE = 1/2 mv^2.", path: physics_kinetic_energy_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "physics" %>
+
+    <% blog_posts = related_blog_posts("buoyancy-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

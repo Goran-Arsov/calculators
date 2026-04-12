@@ -1,0 +1,177 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Net Pay After Tax Calculator - Take-Home Pay Tool",
+  description: "Calculate your take-home pay after income tax, social security, and medicare for US, UK, Canada, and Australia. Free net pay calculator with instant results.",
+  canonical: finance_net_pay_url,
+  og: {
+    title: "Net Pay After Tax Calculator - Take-Home Pay Tool | CalcWise",
+    description: "Calculate your take-home pay after income tax, social security, and medicare for US, UK, Canada, and Australia.",
+    url: finance_net_pay_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Finance", url: category_url("finance") },
+  { name: "Net Pay After Tax Calculator", url: finance_net_pay_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is net pay calculated?", answer: "Net pay is calculated by subtracting all mandatory deductions from your gross salary. These typically include federal/state income tax, Social Security (or equivalent), Medicare, and any other statutory contributions. The exact deductions depend on your country, income level, and filing status." },
+  { question: "What is the effective tax rate?", answer: "The effective tax rate is the total percentage of your gross income that goes to taxes and deductions. It is calculated as total deductions divided by gross salary times 100. This rate is usually lower than your marginal tax bracket because only a portion of your income is taxed at the highest rate." },
+  { question: "What deductions are taken from a US paycheck?", answer: "US paycheck deductions include federal income tax (based on tax brackets and filing status), Social Security tax (6.2% up to the wage base limit), Medicare tax (1.45% with an additional 0.9% above $200,000), and any applicable state and local income taxes." },
+  { question: "How does the UK tax system differ from the US?", answer: "The UK uses a PAYE (Pay As You Earn) system with a personal allowance of 12,570 pounds that is tax-free. Income above that is taxed at basic (20%), higher (40%), and additional (45%) rates. The UK also deducts National Insurance contributions instead of Social Security and Medicare." },
+  { question: "Why does my net pay vary between pay periods?", answer: "Net pay can vary due to differences in the number of working days per period (for biweekly or semi-monthly pay), tax withholding adjustments, benefit deductions that only apply in certain periods, or changes in pre-tax contributions. Annual bonuses or overtime can also push you into a higher tax bracket temporarily." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Net Pay After Tax Calculator",
+  description: "Calculate take-home pay after income tax, social security, and medicare for multiple countries.",
+  url: finance_net_pay_url,
+  category: "FinanceApplication",
+  calculator_slug: "net-pay"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Finance", url: category_path("finance") },
+  { name: "Net Pay After Tax Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Net Pay After Tax Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your take-home pay after taxes and deductions for the US, UK, Canada, or Australia.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="net-pay-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="net-pay-gross" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Annual Gross Salary</label>
+            <input id="net-pay-gross" type="number" inputmode="decimal" data-net-pay-calculator-target="grossSalary" data-action="input->net-pay-calculator#calculate" class="w-full" placeholder="75000" step="1000" min="0">
+          </div>
+          <div>
+            <label for="net-pay-country" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Country</label>
+            <select id="net-pay-country" data-net-pay-calculator-target="country" data-action="change->net-pay-calculator#calculate" class="w-full">
+              <option value="us">United States</option>
+              <option value="uk">United Kingdom</option>
+              <option value="ca">Canada</option>
+              <option value="au">Australia</option>
+            </select>
+          </div>
+          <div>
+            <label for="net-pay-filing" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Filing Status</label>
+            <select id="net-pay-filing" data-net-pay-calculator-target="filingStatus" data-action="change->net-pay-calculator#calculate" class="w-full">
+              <option value="single">Single</option>
+              <option value="married">Married</option>
+            </select>
+          </div>
+          <div>
+            <label for="net-pay-frequency" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pay Frequency</label>
+            <select id="net-pay-frequency" data-net-pay-calculator-target="payFrequency" data-action="change->net-pay-calculator#calculate" class="w-full">
+              <option value="annual">Annual</option>
+              <option value="monthly" selected>Monthly</option>
+              <option value="biweekly">Biweekly</option>
+              <option value="weekly">Weekly</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Take-Home Pay</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Annual Pay</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-net-pay-calculator-target="netAnnual">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Per Period</span>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-net-pay-calculator-target="netPerPeriod">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Deductions</span>
+              <span class="text-xl font-bold text-red-600 dark:text-red-400" data-net-pay-calculator-target="totalDeductions">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Effective Tax Rate</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-net-pay-calculator-target="effectiveTaxRate">0.00%</span>
+            </div>
+          </div>
+          <hr class="my-4 border-gray-200 dark:border-gray-700">
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Deductions Breakdown</h3>
+          <div class="space-y-2" data-net-pay-calculator-target="deductionsBreakdown"></div>
+        </div>
+      </div>
+      <button data-action="click->net-pay-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "net-pay" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Net Pay Calculator</h2>
+      <p>
+        Enter your annual gross salary, select your country, filing status, and preferred pay frequency. The calculator instantly shows your annual and per-period net pay after all mandatory deductions. It provides a detailed breakdown of each deduction, including income tax, social security or equivalent contributions, and medicare or national insurance.
+      </p>
+      <p>
+        Understanding your net pay is crucial for budgeting and financial planning. Many people focus on their gross salary without realizing that deductions can take 25-40% or more of their earnings. This calculator helps you see the true amount that will arrive in your bank account each pay period.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Tax Systems by Country</h2>
+      <p>
+        The <strong>United States</strong> uses progressive federal income tax brackets, Social Security tax (6.2% up to the wage base), and Medicare tax (1.45% with a 0.9% surcharge above $200,000). The <strong>United Kingdom</strong> has a personal allowance followed by basic, higher, and additional rate bands, plus National Insurance contributions. <strong>Canada</strong> has federal tax brackets, CPP contributions, and Employment Insurance premiums. <strong>Australia</strong> uses progressive tax brackets plus a 2% Medicare levy.
+      </p>
+
+      <h3>Marginal vs. Effective Tax Rate</h3>
+      <p>
+        Your marginal tax rate is the rate applied to your last dollar of income, determined by your highest tax bracket. Your effective tax rate is the actual average rate you pay across all your income. Because lower portions of your income are taxed at lower rates, your effective rate is always lower than your marginal rate. This calculator shows your effective rate for a more accurate picture.
+      </p>
+
+      <h3>Ways to Reduce Your Tax Burden</h3>
+      <p>
+        Consider maximizing contributions to tax-advantaged retirement accounts like 401(k) or IRA in the US, or pension schemes in the UK. Health savings accounts, flexible spending accounts, and charitable deductions can also reduce taxable income. Consult a tax professional for strategies specific to your situation.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is net pay calculated?</h3>
+      <p>Net pay equals gross salary minus all mandatory deductions including income tax, social security, medicare, and other statutory contributions.</p>
+
+      <h3>What is the effective tax rate?</h3>
+      <p>The effective rate is total deductions divided by gross salary. It is lower than your marginal bracket because only a portion of income is taxed at the highest rate.</p>
+
+      <h3>What deductions are taken from a US paycheck?</h3>
+      <p>Federal income tax, Social Security (6.2%), Medicare (1.45%), plus any state and local taxes.</p>
+
+      <h3>How does the UK tax system differ from the US?</h3>
+      <p>The UK uses PAYE with a 12,570 pounds personal allowance, progressive rates of 20%/40%/45%, and National Insurance instead of Social Security and Medicare.</p>
+
+      <h3>Why does my net pay vary between pay periods?</h3>
+      <p>Variations occur due to different working days per period, tax withholding adjustments, benefit deductions, or overtime pushing income into higher brackets.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Paycheck Calculator", description: "Calculate your paycheck after taxes and deductions.", path: finance_paycheck_path, icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
+      { name: "Tax Bracket Calculator", description: "See how your income is taxed across brackets.", path: finance_tax_bracket_path, icon_path: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" },
+      { name: "Salary Calculator", description: "Convert between salary types.", path: finance_salary_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "finance" %>
+
+    <% blog_posts = related_blog_posts("net-pay-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

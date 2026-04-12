@@ -1,0 +1,153 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Sourdough Hydration Calculator - Baker's Percentage Tool",
+  description: "Calculate exact flour, water, starter, and salt amounts for sourdough bread using baker's percentages. Adjust hydration, starter ratio, and dough weight.",
+  canonical: cooking_sourdough_hydration_url,
+  og: {
+    title: "Sourdough Hydration Calculator - Free Online Tool | CalcWise",
+    description: "Calculate exact flour, water, starter, and salt amounts for sourdough bread using baker's percentages.",
+    url: cooking_sourdough_hydration_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Cooking", url: category_url("cooking") },
+  { name: "Sourdough Hydration Calculator", url: cooking_sourdough_hydration_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is baker's percentage in sourdough?", answer: "Baker's percentage expresses each ingredient as a percentage of the total flour weight. Flour is always 100%. If you have 500g flour and 350g water, the hydration is 70%. This system makes it easy to scale recipes to any size." },
+  { question: "What hydration level should I use for sourdough?", answer: "Beginners should start at 65-70% hydration for a manageable dough. Experienced bakers often work at 75-85% for a more open crumb. Above 85% produces ciabatta-like bread with very large holes. Lower hydration (60-65%) is good for sandwich loaves." },
+  { question: "How much starter should I use?", answer: "A typical sourdough recipe uses 15-25% starter relative to total flour. Using less starter (10-15%) extends fermentation time and develops more complex flavors. Using more starter (25-30%) speeds up fermentation." },
+  { question: "Does starter hydration matter?", answer: "Yes. A 100% hydration starter (equal parts flour and water by weight) is most common. If your starter is at a different hydration, the calculator accounts for the flour and water contributed by the starter so your overall dough hydration remains accurate." },
+  { question: "How much salt should I add to sourdough?", answer: "The standard amount is 2% of total flour weight. This is about 10g of salt per 500g of flour. Some bakers prefer 1.8-2.2%. Salt strengthens gluten, controls fermentation rate, and enhances flavor." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Sourdough Hydration Calculator",
+  description: "Calculate flour, water, starter, and salt amounts for sourdough bread using baker's percentages.",
+  url: cooking_sourdough_hydration_url,
+  category: "LifestyleApplication",
+  calculator_slug: "sourdough-hydration"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Cooking", url: category_path("cooking") },
+  { name: "Sourdough Hydration Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Sourdough Hydration Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate precise flour, water, starter, and salt amounts using baker's percentages for perfect sourdough every time.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="sourdough-hydration-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div>
+            <label for="sh-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Dough Weight (g)</label>
+            <input id="sh-weight" type="number" inputmode="decimal" min="100" step="10" placeholder="900" class="w-full" data-sourdough-hydration-calculator-target="totalDoughWeight" data-action="input->sourdough-hydration-calculator#calculate">
+          </div>
+          <div>
+            <label for="sh-hydration" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target Hydration (%)</label>
+            <input id="sh-hydration" type="number" inputmode="decimal" min="50" max="100" step="1" placeholder="72" class="w-full" data-sourdough-hydration-calculator-target="targetHydration" data-action="input->sourdough-hydration-calculator#calculate">
+          </div>
+          <div>
+            <label for="sh-starter-pct" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Starter (% of flour)</label>
+            <input id="sh-starter-pct" type="number" inputmode="decimal" min="5" max="50" step="1" placeholder="20" class="w-full" data-sourdough-hydration-calculator-target="starterPercentage" data-action="input->sourdough-hydration-calculator#calculate">
+          </div>
+          <div>
+            <label for="sh-starter-hyd" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Starter Hydration (%)</label>
+            <input id="sh-starter-hyd" type="number" inputmode="decimal" min="50" max="200" step="1" value="100" placeholder="100" class="w-full" data-sourdough-hydration-calculator-target="starterHydration" data-action="input->sourdough-hydration-calculator#calculate">
+          </div>
+          <div>
+            <label for="sh-salt" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Salt (% of flour)</label>
+            <input id="sh-salt" type="number" inputmode="decimal" min="0" max="5" step="0.1" value="2" placeholder="2" class="w-full" data-sourdough-hydration-calculator-target="saltPercentage" data-action="input->sourdough-hydration-calculator#calculate">
+          </div>
+        </div>
+
+        <div data-sourdough-hydration-calculator-target="results" class="hidden" aria-live="polite" aria-atomic="true">
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Recipe</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Total Flour</span><span class="font-bold text-green-700 dark:text-green-400" data-sourdough-hydration-calculator-target="totalFlour">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Total Water</span><span class="font-bold text-green-700 dark:text-green-400" data-sourdough-hydration-calculator-target="totalWater">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Starter</span><span class="font-bold text-green-700 dark:text-green-400" data-sourdough-hydration-calculator-target="starterAmount">--</span></div>
+              <hr class="border-gray-200 dark:border-gray-700">
+              <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold">What to actually measure:</p>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Added Flour</span><span class="font-bold text-green-700 dark:text-green-400" data-sourdough-hydration-calculator-target="addedFlour">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Added Water</span><span class="font-bold text-green-700 dark:text-green-400" data-sourdough-hydration-calculator-target="addedWater">--</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Salt</span><span class="font-bold text-green-700 dark:text-green-400" data-sourdough-hydration-calculator-target="salt">--</span></div>
+              <hr class="border-gray-200 dark:border-gray-700">
+              <p class="text-xs text-gray-400">(Starter flour: <span data-sourdough-hydration-calculator-target="starterFlour">--</span>, Starter water: <span data-sourdough-hydration-calculator-target="starterWater">--</span>)</p>
+            </div>
+            <button data-action="click->sourdough-hydration-calculator#copy" class="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm transition-all duration-200 text-sm font-medium">Copy Results</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "sourdough-hydration" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Sourdough Hydration Calculator</h2>
+      <p>
+        Enter your desired total dough weight in grams, your target hydration percentage, how much starter you want to use (as a percentage of total flour), your starter's hydration level, and salt percentage. The calculator uses baker's percentages to compute the exact amounts of flour, water, starter, and salt you need. It also separates what comes from the starter versus what you add directly, so you know exactly what to weigh out.
+      </p>
+      <p>
+        Baker's percentage is the standard system professional bakers use worldwide. Every ingredient is expressed as a percentage of the total flour weight. Flour is always 100%. Water at 72% means 72 grams of water for every 100 grams of flour. This makes it easy to scale any recipe up or down by simply changing the total dough weight.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Sourdough Hydration</h2>
+      <p>
+        Hydration is the most important variable in sourdough baking. It determines the texture of the crumb, how the dough handles, and the final bread character. Lower hydration doughs (60-65%) are stiffer and easier to shape, producing tighter crumb breads ideal for sandwiches. Higher hydration doughs (75-85%) are wetter and more difficult to handle but produce bread with an open, airy crumb and crispy crust.
+      </p>
+
+      <h3>The Role of Starter</h3>
+      <p>
+        Your sourdough starter contributes both flour and water to the final dough. A 100% hydration starter is equal parts flour and water by weight. The calculator accounts for this by subtracting the starter's flour and water contributions from the totals, showing you exactly how much additional flour and water to add. This ensures your target hydration is accurate regardless of your starter's hydration level.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is baker's percentage in sourdough?</h3>
+      <p>Baker's percentage expresses each ingredient as a percentage of the total flour weight. Flour is always 100%. If you have 500g flour and 350g water, the hydration is 70%.</p>
+
+      <h3>What hydration level should I use for sourdough?</h3>
+      <p>Beginners should start at 65-70% hydration. Experienced bakers often work at 75-85% for a more open crumb. Above 85% produces ciabatta-like bread.</p>
+
+      <h3>How much starter should I use?</h3>
+      <p>A typical sourdough recipe uses 15-25% starter relative to total flour. Less starter extends fermentation; more speeds it up.</p>
+
+      <h3>Does starter hydration matter?</h3>
+      <p>Yes. The calculator accounts for the flour and water contributed by your starter so the overall dough hydration remains accurate.</p>
+
+      <h3>How much salt should I add to sourdough?</h3>
+      <p>The standard is 2% of total flour weight, which is about 10g per 500g of flour.</p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Pizza Dough Calculator", description: "Calculate exact dough ingredients for pizza.", path: cooking_pizza_dough_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Recipe Scaler", description: "Scale any recipe up or down by servings.", path: cooking_recipe_scaler_path, icon_path: "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" },
+      { name: "Baking Substitution Calculator", description: "Find substitutions for common baking ingredients.", path: cooking_baking_substitution_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "cooking" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

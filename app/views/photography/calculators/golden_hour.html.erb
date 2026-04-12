@@ -1,0 +1,184 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Golden Hour Calculator - Sunrise, Sunset & Blue Hour Times",
+  description: "Calculate golden hour, blue hour, sunrise, and sunset times for any location and date. Plan your outdoor photography sessions with perfect natural lighting. Free calculator.",
+  canonical: photography_golden_hour_url,
+  og: {
+    title: "Golden Hour Calculator - Sunrise, Sunset & Blue Hour Times | CalcWise",
+    description: "Calculate golden hour, blue hour, sunrise, and sunset times for any location and date.",
+    url: photography_golden_hour_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Photography", url: category_url("photography") },
+  { name: "Golden Hour Calculator", url: photography_golden_hour_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is golden hour in photography?", answer: "Golden hour is the period shortly after sunrise and before sunset when the sun is low on the horizon (between about -4 and 6 degrees elevation). The light is warm, soft, and directional, creating long shadows and a golden glow that flatters subjects. Golden hour typically lasts 20-60 minutes depending on latitude and time of year." },
+  { question: "What is blue hour?", answer: "Blue hour is the period before sunrise and after sunset when the sun is between 4 and 6 degrees below the horizon. The sky takes on a deep blue color with cool tones. Blue hour light is diffused and even, ideal for cityscapes, architecture, and moody landscape photography." },
+  { question: "How long does golden hour last?", answer: "Golden hour duration varies by latitude and season. Near the equator, it can be as short as 20-30 minutes. At higher latitudes (40-60 degrees), golden hour can last 45-90 minutes, especially near the solstices. In extreme northern or southern latitudes during summer, golden hour conditions can persist for hours." },
+  { question: "How do latitude and season affect golden hour?", answer: "At higher latitudes, the sun crosses the horizon at a shallower angle, making golden and blue hours longer. Near the equator, the sun rises and sets almost vertically, resulting in brief golden hours. During summer solstice at high latitudes, golden hour is longest; during winter solstice, it is shortest." },
+  { question: "Can I shoot during golden hour on cloudy days?", answer: "Overcast skies block direct golden hour light, but the warm tones still affect the cloud cover, creating dramatic colors. Partial cloud cover during golden hour often produces the most spectacular results, as clouds catch and reflect the warm light across the sky." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Golden Hour Calculator",
+  description: "Calculate golden hour, blue hour, sunrise, and sunset times from latitude, longitude, and date.",
+  url: photography_golden_hour_url,
+  category: "PhotographyApplication",
+  calculator_slug: "golden-hour"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Photography", url: category_path("photography") },
+  { name: "Golden Hour Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Sunset & Golden Hour Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find the exact golden hour, blue hour, sunrise, and sunset times for your location to plan the perfect photography session.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="golden-hour-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="gh-lat" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Latitude</label>
+            <input id="gh-lat" type="number" inputmode="decimal" data-golden-hour-calculator-target="latitude" data-action="input->golden-hour-calculator#calculate" class="w-full" placeholder="40.7128" step="0.0001" min="-90" max="90">
+            <p class="text-xs text-gray-400 mt-1">Positive = North, Negative = South</p>
+          </div>
+          <div>
+            <label for="gh-lon" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Longitude</label>
+            <input id="gh-lon" type="number" inputmode="decimal" data-golden-hour-calculator-target="longitude" data-action="input->golden-hour-calculator#calculate" class="w-full" placeholder="-74.0060" step="0.0001" min="-180" max="180">
+            <p class="text-xs text-gray-400 mt-1">Positive = East, Negative = West</p>
+          </div>
+          <div>
+            <label for="gh-date" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Date</label>
+            <input id="gh-date" type="date" data-golden-hour-calculator-target="date" data-action="input->golden-hour-calculator#calculate" class="w-full">
+          </div>
+          <div>
+            <label for="gh-tz" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Timezone Offset (UTC)</label>
+            <input id="gh-tz" type="number" inputmode="decimal" data-golden-hour-calculator-target="timezoneOffset" data-action="input->golden-hour-calculator#calculate" class="w-full" placeholder="0" step="0.5" min="-12" max="14" value="0">
+            <p class="text-xs text-gray-400 mt-1">e.g. EST = -5, CET = 1, JST = 9</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Sun Times</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sunrise</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-golden-hour-calculator-target="resultSunrise">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sunset</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-golden-hour-calculator-target="resultSunset">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Solar Noon</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-golden-hour-calculator-target="resultSolarNoon">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Day Length</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-golden-hour-calculator-target="resultDayLength">&mdash;</span>
+            </div>
+          </div>
+
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white mt-5 mb-3">Morning Golden Hour</h3>
+          <div class="flex justify-between items-center text-sm">
+            <span class="text-gray-600 dark:text-gray-400" data-golden-hour-calculator-target="resultMorningGoldenStart">&mdash;</span>
+            <span class="text-gray-400">to</span>
+            <span class="text-gray-600 dark:text-gray-400" data-golden-hour-calculator-target="resultMorningGoldenEnd">&mdash;</span>
+          </div>
+
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white mt-4 mb-3">Evening Golden Hour</h3>
+          <div class="flex justify-between items-center text-sm">
+            <span class="text-gray-600 dark:text-gray-400" data-golden-hour-calculator-target="resultEveningGoldenStart">&mdash;</span>
+            <span class="text-gray-400">to</span>
+            <span class="text-gray-600 dark:text-gray-400" data-golden-hour-calculator-target="resultEveningGoldenEnd">&mdash;</span>
+          </div>
+
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white mt-4 mb-3">Morning Blue Hour</h3>
+          <div class="flex justify-between items-center text-sm">
+            <span class="text-gray-600 dark:text-gray-400" data-golden-hour-calculator-target="resultMorningBlueStart">&mdash;</span>
+            <span class="text-gray-400">to</span>
+            <span class="text-gray-600 dark:text-gray-400" data-golden-hour-calculator-target="resultMorningBlueEnd">&mdash;</span>
+          </div>
+
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white mt-4 mb-3">Evening Blue Hour</h3>
+          <div class="flex justify-between items-center text-sm">
+            <span class="text-gray-600 dark:text-gray-400" data-golden-hour-calculator-target="resultEveningBlueStart">&mdash;</span>
+            <span class="text-gray-400">to</span>
+            <span class="text-gray-600 dark:text-gray-400" data-golden-hour-calculator-target="resultEveningBlueEnd">&mdash;</span>
+          </div>
+
+          <button data-action="click->golden-hour-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "golden-hour" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Golden Hour Calculator Works</h2>
+      <p>
+        This calculator uses a solar position algorithm based on the NOAA equations to determine when the sun crosses specific elevation angles. Golden hour occurs when the sun is between about -4 and 6 degrees above the horizon. Blue hour occurs when the sun is between 4 and 6 degrees below the horizon. Enter your latitude, longitude, date, and timezone offset to get precise times for your location.
+      </p>
+      <p>
+        The quality of light changes dramatically during golden hour. As the sun drops lower, its light passes through more atmosphere, scattering blue wavelengths and allowing warm red and orange tones to dominate. This creates the characteristic golden glow that photographers prize for portraits, landscapes, and architectural photography.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Solar Position and Photography</h2>
+      <p>
+        The sun's position relative to the horizon determines the quality, color, and direction of natural light. At solar noon, light is harsh and directly overhead, creating strong shadows. During golden hour, the low angle creates long, dramatic shadows and warm tones. During blue hour, the indirect light produces soft, even illumination with cool tones. Professional photographers plan their shoots around these natural lighting windows to achieve the most compelling images.
+      </p>
+
+      <h3>Tips for Golden Hour Photography</h3>
+      <p>
+        Arrive at your location at least 15 minutes before golden hour begins to set up and scout compositions. Use golden hour for portraits with warm, flattering light and soft shadows. Shoot into the sun for dramatic backlighting and lens flare effects. Use a reflector or fill flash to balance shadows on your subject. Golden hour light changes rapidly, so work efficiently and be prepared to adapt your composition.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is golden hour in photography?</h3>
+      <p>Golden hour is the period shortly after sunrise and before sunset when the sun is low, producing warm, soft, directional light with long shadows and a golden glow.</p>
+
+      <h3>What is blue hour?</h3>
+      <p>Blue hour is the period before sunrise and after sunset when the sun is 4-6 degrees below the horizon, producing a deep blue sky with cool, even lighting.</p>
+
+      <h3>How long does golden hour last?</h3>
+      <p>It varies by latitude and season: 20-30 minutes near the equator, 45-90 minutes at higher latitudes, and potentially hours during summer at extreme latitudes.</p>
+
+      <h3>How do latitude and season affect golden hour?</h3>
+      <p>Higher latitudes have longer golden hours because the sun crosses the horizon at a shallower angle. Near the equator, the sun rises and sets almost vertically.</p>
+
+      <h3>Can I shoot during golden hour on cloudy days?</h3>
+      <p>Overcast skies block direct golden light, but partial cloud cover often produces the most spectacular colors as clouds catch the warm light.</p>
+    </article>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Time-Lapse Interval Calculator", description: "Calculate shooting intervals for time-lapse photography.", path: photography_timelapse_interval_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Exposure Triangle Calculator", description: "Calculate equivalent exposures for any lighting condition.", path: photography_exposure_triangle_path, icon_path: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" },
+      { name: "Depth of Field Calculator", description: "Calculate DoF, near/far focus limits, and hyperfocal distance.", path: photography_depth_of_field_path, icon_path: "M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "photography" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

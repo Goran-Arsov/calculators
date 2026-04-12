@@ -1,0 +1,168 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Swim Pace Calculator - Pace per 100m/100yd & Distance Estimates",
+  description: "Calculate swim pace per 100m and 100yd from any known distance and time. Get estimated times for 50m through 1500m with fatigue adjustments.",
+  canonical: health_swim_pace_url,
+  og: {
+    title: "Swim Pace Calculator - Pace & Distance Estimator | CalcWise",
+    description: "Calculate your swim pace per 100m/100yd and estimate times for various distances from a known swim time.",
+    url: health_swim_pace_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Swim Pace Calculator", url: health_swim_pace_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How is swim pace calculated?", answer: "Swim pace is calculated by dividing total time by distance, then normalizing to per-100 units. For example, if you swim 400 meters in 8 minutes (480 seconds), your pace is (480/400) x 100 = 120 seconds per 100m, or 2:00/100m. The calculator also converts between meters and yards automatically." },
+  { question: "What is a good swim pace per 100m?", answer: "For recreational swimmers, 2:00-2:30 per 100m is common. Intermediate swimmers typically swim 1:40-2:00/100m. Advanced competitive swimmers may be under 1:20/100m, and elite swimmers can hold 1:00-1:10/100m for middle distances. Pace varies significantly with stroke, distance, and pool versus open water." },
+  { question: "How do you convert between meters and yards?", answer: "One meter equals 1.09361 yards. To convert a per-100m pace to per-100y, divide by 1.09361. For example, a 2:00/100m pace equals approximately 1:50/100y. Swimming in a yard pool produces slightly faster times for the same distance because 100 yards is shorter than 100 meters." },
+  { question: "Why do estimated times slow down for longer distances?", answer: "The calculator applies fatigue factors to longer distance estimates. When swimming longer, pace naturally slows due to energy system limitations, lactate accumulation, and muscular fatigue. A swimmer's 100m pace is typically 5-8% faster than their 400m pace, and their 400m pace is roughly 3-6% faster than their 1500m pace." },
+  { question: "What is CSS (Critical Swim Speed)?", answer: "CSS (Critical Swim Speed) is the swimming equivalent of lactate threshold pace. It represents the fastest pace a swimmer can sustain aerobically. CSS is commonly calculated from the difference between 400m and 200m time trials. Training at or near CSS improves aerobic endurance and is a key intensity for distance swimmers." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Swim Pace Calculator",
+  description: "Calculate swim pace per 100m/100yd and estimate times for various distances.",
+  url: health_swim_pace_url,
+  category: "HealthApplication",
+  calculator_slug: "swim-pace"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Swim Pace Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Swim Pace Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your swim pace per 100m and 100yd, plus estimated times for various distances from any known swim effort.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="swim-pace-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="swim-distance" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance</label>
+            <div class="flex gap-2">
+              <input id="swim-distance" type="number" inputmode="decimal" data-swim-pace-calculator-target="distance" data-action="input->swim-pace-calculator#calculate" class="flex-1" placeholder="400" min="1">
+              <select data-swim-pace-calculator-target="poolUnit" data-action="change->swim-pace-calculator#calculate" class="w-24">
+                <option value="meters">meters</option>
+                <option value="yards">yards</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Time</label>
+            <div class="flex gap-2 items-center">
+              <input type="number" inputmode="numeric" data-swim-pace-calculator-target="timeMin" data-action="input->swim-pace-calculator#calculate" class="w-20" placeholder="6" min="0">
+              <span class="text-gray-500">min</span>
+              <input type="number" inputmode="numeric" data-swim-pace-calculator-target="timeSec" data-action="input->swim-pace-calculator#calculate" class="w-20" placeholder="30" min="0" max="59">
+              <span class="text-gray-500">sec</span>
+            </div>
+          </div>
+          <div class="pt-4 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Pace /100m</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-swim-pace-calculator-target="pacePer100m">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Pace /100yd</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-swim-pace-calculator-target="pacePer100y">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Speed</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-swim-pace-calculator-target="speedPerHour">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Estimated Times</h2>
+          <div data-swim-pace-calculator-target="estimatedTimes" class="space-y-0.5"></div>
+          <button data-action="click->swim-pace-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "swim-pace" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Swim Pace Calculator Works</h2>
+      <p>
+        Enter any swim distance and time to calculate your pace per 100 meters and 100 yards. The calculator also estimates your times for standard competitive distances from 50m through 1500m, applying fatigue factors that account for the natural pace slowdown that occurs over longer distances. Results update in real time as you type, with automatic conversion between meters and yards.
+      </p>
+      <p>
+        Knowing your swim pace is essential for structured training, race planning, and tracking improvement over time. Swimmers in all disciplines use pace per 100 as the standard unit of measurement, similar to how runners use pace per kilometer or mile. By establishing your current pace, you can set realistic interval targets, plan race strategy, and monitor fitness gains throughout a training cycle.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Swim Paces</h2>
+      <p>
+        Swim pace is expressed as time per 100 meters or 100 yards. A pace of 1:45/100m means it takes 1 minute and 45 seconds to cover 100 meters. Because 100 yards is shorter than 100 meters (by about 8.6%), your per-100y time will always be faster than your per-100m time at the same effort. The calculator handles this conversion automatically.
+      </p>
+
+      <h3>Distance Estimation and Fatigue Factors</h3>
+      <p>
+        The calculator estimates times for other distances by applying scientifically-based fatigue factors to your base pace. Sprint distances (50m) use about 92% of your base pace due to higher intensity, while longer distances apply increasing slowdown factors. For example, a 1500m estimate uses approximately 106% of your 400m pace. These factors are averages and individual variation exists based on training background and stroke efficiency.
+      </p>
+
+      <h3>Meters vs. Yards Pools</h3>
+      <p>
+        Short course yards (SCY) pools are 25 yards, short course meters (SCM) pools are 25 meters, and long course meters (LCM) pools are 50 meters. Times in SCY pools are fastest due to more turns (which provide push-off advantages) and shorter pool length. LCM times are slowest. When comparing times across pool types, conversion factors must account for both distance and turn differences.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How is swim pace calculated?</h3>
+      <p>Divide total time by distance, then multiply by 100. A 400m swim in 8 minutes gives (480/400) x 100 = 120 seconds = 2:00/100m.</p>
+
+      <h3>What is a good swim pace?</h3>
+      <p>Recreational: 2:00-2:30/100m. Intermediate: 1:40-2:00. Advanced: under 1:20. Elite: 1:00-1:10/100m for middle distances.</p>
+
+      <h3>How do you convert meters to yards?</h3>
+      <p>Divide your per-100m pace by 1.09361 to get per-100y. Example: 2:00/100m equals about 1:50/100y.</p>
+
+      <h3>Why are longer distance estimates slower?</h3>
+      <p>Fatigue factors account for pace slowdown due to energy system limitations and muscle fatigue over increasing distances.</p>
+
+      <h3>What is CSS?</h3>
+      <p>Critical Swim Speed is your aerobic threshold pace, similar to FTP in cycling. It represents the fastest sustainable pace for aerobic training.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Pace Calculator", description: "Calculate running pace, time, or distance from two known values.", path: health_pace_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" },
+      { name: "Heart Rate Zone Calculator", description: "Calculate heart rate training zones using the Karvonen method.", path: health_heart_rate_zone_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <% blog_posts = related_blog_posts("swim-pace-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

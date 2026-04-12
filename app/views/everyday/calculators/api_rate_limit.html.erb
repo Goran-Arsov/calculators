@@ -1,0 +1,155 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "API Rate Limit Calculator - Requests Per Second & Quota",
+  description: "Calculate API rate limits: requests per second, minute, hour, and day. Track quota usage, time until reset, and safe request rates. Free online tool.",
+  canonical: everyday_api_rate_limit_url,
+  og: {
+    title: "API Rate Limit Calculator - Requests Per Second & Quota | CalcWise",
+    description: "Calculate API rate limits, quota usage, and safe request rates. Free online tool.",
+    url: everyday_api_rate_limit_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "API Rate Limit Calculator", url: everyday_api_rate_limit_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is an API rate limit?", answer: "An API rate limit restricts the number of requests a client can make within a given time window. For example, 1000 requests per hour means you can make at most 1000 API calls in any 60-minute period. Rate limits protect servers from overload, ensure fair usage among clients, and prevent abuse. Exceeding the limit typically results in HTTP 429 (Too Many Requests) responses." },
+  { question: "How do I calculate requests per second from a rate limit?", answer: "Divide the total allowed requests by the window duration in seconds. For example, 1000 requests per hour equals 1000 / 3600 = 0.2778 requests per second. This tells you the sustained rate at which you can make requests without exceeding the limit. For burst scenarios, you may be able to make requests faster initially but must slow down to stay within the overall limit." },
+  { question: "What is a safe request rate?", answer: "A safe request rate is typically 80% of the maximum allowed rate, giving you a buffer to avoid accidentally hitting the limit. If the calculated rate is 0.28 requests per second, a safe rate would be about 0.22 requests per second. This accounts for timing variations, clock skew, and concurrent requests from multiple processes or servers." },
+  { question: "What is burst limiting?", answer: "Burst limiting allows a higher rate of requests for short periods while enforcing a lower sustained rate. For example, an API might allow 10 requests per second in bursts but only 100 requests per minute sustained. This accommodates applications that need to make several rapid requests occasionally without allowing sustained high-frequency access." },
+  { question: "How should I handle rate limit errors?", answer: "When you receive a 429 response, check the Retry-After header for when you can resume requests. Implement exponential backoff: wait 1 second, then 2, then 4, and so on. Many APIs include X-RateLimit-Remaining and X-RateLimit-Reset headers to help you track your quota proactively. Design your application to respect these limits rather than handling errors reactively." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "API Rate Limit Calculator",
+  description: "Calculate requests per second, daily quota usage, time until reset, and safe request rates.",
+  url: everyday_api_rate_limit_url,
+  category: "UtilityApplication",
+  calculator_slug: "api-rate-limit"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "API Rate Limit Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">API Rate Limit Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate requests per second, daily quotas, usage percentage, and safe request rates from your API rate limit.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="api-rate-limit-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rate Limit (requests)</label>
+            <input type="number" inputmode="numeric" data-api-rate-limit-calculator-target="rateLimit" data-action="input->api-rate-limit-calculator#calculate" class="w-full" placeholder="1000" min="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Window (seconds)</label>
+            <input type="number" inputmode="numeric" data-api-rate-limit-calculator-target="windowSeconds" data-action="input->api-rate-limit-calculator#calculate" class="w-full" placeholder="3600" min="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current Usage (requests used)</label>
+            <input type="number" inputmode="numeric" data-api-rate-limit-calculator-target="currentUsage" data-action="input->api-rate-limit-calculator#calculate" class="w-full" placeholder="0" min="0" value="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Burst Limit <span class="text-gray-400 font-normal">(optional)</span></label>
+            <input type="number" inputmode="numeric" data-api-rate-limit-calculator-target="burstLimit" data-action="input->api-rate-limit-calculator#calculate" class="w-full" placeholder="50" min="0">
+          </div>
+        </div>
+
+        <div aria-live="polite" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Requests/sec</span><span class="font-bold text-blue-600 dark:text-blue-400" data-api-rate-limit-calculator-target="resultRps">-</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Requests/min</span><span class="font-bold text-blue-600 dark:text-blue-400" data-api-rate-limit-calculator-target="resultRpm">-</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Requests/hour</span><span class="font-bold text-blue-600 dark:text-blue-400" data-api-rate-limit-calculator-target="resultRph">-</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Requests/day</span><span class="font-bold text-blue-600 dark:text-blue-400" data-api-rate-limit-calculator-target="resultRpd">-</span></div>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Remaining</span><span class="font-bold text-green-600 dark:text-green-400" data-api-rate-limit-calculator-target="resultRemaining">-</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Usage</span><span class="font-bold text-amber-600 dark:text-amber-400" data-api-rate-limit-calculator-target="resultUsage">-</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Min interval</span><span class="font-bold text-blue-600 dark:text-blue-400" data-api-rate-limit-calculator-target="resultTimePerReq">-</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Time until reset</span><span class="font-bold text-blue-600 dark:text-blue-400" data-api-rate-limit-calculator-target="resultReset">-</span></div>
+            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Safe rate (80%)</span><span class="font-bold text-green-600 dark:text-green-400" data-api-rate-limit-calculator-target="resultSafeRps">-</span></div>
+            <div class="flex justify-between hidden" data-burst-row><span class="text-gray-600 dark:text-gray-400">Burst</span><span class="font-bold text-purple-600 dark:text-purple-400" data-api-rate-limit-calculator-target="resultBurst">-</span></div>
+          </div>
+          <button data-action="click->api-rate-limit-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm text-sm font-medium transition-all duration-200">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "api-rate-limit" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding API Rate Limits</h2>
+      <p>
+        API rate limits control how many requests a client can make within a specific time window. They protect backend services from overload, ensure fair access for all users, and prevent abuse. Most APIs specify their limits in the documentation and return rate limit headers with each response, including the total limit, remaining requests, and reset time.
+      </p>
+      <p>
+        This calculator converts a rate limit into practical metrics. Enter the maximum number of requests and the window duration in seconds to see the effective rate per second, minute, hour, and day. Add your current usage to track remaining quota and determine whether you need to throttle your requests.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Implementing Rate Limiting in Your Applications</h2>
+      <p>
+        When consuming rate-limited APIs, implement a token bucket or leaky bucket algorithm to pace your requests. The safe rate shown in the results uses an 80% factor to provide a buffer against timing variations and concurrent requests. Use the minimum interval between requests to configure delays in your request loops.
+      </p>
+
+      <h3>Common Rate Limit Headers</h3>
+      <p>
+        Most APIs include rate limit information in response headers. The <code>X-RateLimit-Limit</code> header shows the maximum requests allowed. <code>X-RateLimit-Remaining</code> shows how many requests are left. <code>X-RateLimit-Reset</code> shows when the window resets, usually as a Unix timestamp. The <code>Retry-After</code> header appears in 429 responses and tells you how long to wait.
+      </p>
+
+      <h3>Handling 429 Errors</h3>
+      <p>
+        When you exceed the rate limit, the API returns a 429 Too Many Requests response. Implement exponential backoff: wait 1 second after the first 429, 2 seconds after the second, 4 seconds after the third, up to a maximum wait time. Always check the Retry-After header first, as it provides the exact wait time needed.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is an API rate limit?</h3>
+      <p>A restriction on how many requests a client can make in a given time window, typically returning HTTP 429 when exceeded.</p>
+
+      <h3>How do I calculate requests per second?</h3>
+      <p>Divide the total allowed requests by the window in seconds. 1000 requests per hour = 1000/3600 = 0.278 req/s.</p>
+
+      <h3>What is a safe request rate?</h3>
+      <p>Typically 80% of the maximum rate, providing a buffer for timing variations and concurrent requests.</p>
+
+      <h3>What is burst limiting?</h3>
+      <p>Allows higher short-term request rates while enforcing a lower sustained rate. Useful for applications that need occasional rapid requests.</p>
+
+      <h3>How should I handle rate limit errors?</h3>
+      <p>Check the Retry-After header, implement exponential backoff, and use rate limit headers proactively to avoid hitting limits.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "API Response Time Calculator", description: "Estimate API response times from latency and processing.", path: everyday_api_response_time_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Uptime Calculator", description: "Calculate uptime percentage from downtime duration.", path: everyday_uptime_calculator_path, icon_path: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Database Size Estimator", description: "Estimate database storage requirements.", path: everyday_database_size_path, icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("api-rate-limit-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

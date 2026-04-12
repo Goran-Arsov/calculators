@@ -1,0 +1,176 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pendulum Calculator - Free Period & Frequency Tool",
+  description: "Calculate the period, frequency, and length of a simple pendulum using T = 2pi*sqrt(L/g). Free online pendulum physics calculator with real-time results.",
+  canonical: physics_pendulum_url,
+  og: {
+    title: "Pendulum Calculator - Free Period & Frequency Tool | CalcWise",
+    description: "Calculate the period, frequency, and length of a simple pendulum. Results update in real time.",
+    url: physics_pendulum_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Physics", url: category_url("physics") },
+  { name: "Pendulum Calculator", url: physics_pendulum_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the formula for the period of a simple pendulum?", answer: "The period of a simple pendulum is T = 2*pi*sqrt(L/g), where T is the period in seconds, L is the length of the pendulum in meters, and g is the acceleration due to gravity (approximately 9.81 m/s^2 on Earth). This formula assumes small oscillation angles (less than about 15 degrees), a massless string, and no air resistance. The period depends only on the length and gravity, not on the mass of the bob." },
+  { question: "Does the mass of a pendulum affect its period?", answer: "No, the mass of the pendulum bob does not affect the period of oscillation for a simple pendulum. The period depends only on the length of the string and the gravitational acceleration. This is because the gravitational force and inertial mass cancel out in the equation of motion, just like objects of different masses fall at the same rate in a vacuum. This was famously demonstrated by Galileo." },
+  { question: "What is the frequency of a pendulum?", answer: "The frequency of a pendulum is the number of complete oscillations per second, calculated as f = 1/T, where T is the period. For example, a pendulum with a period of 2 seconds has a frequency of 0.5 Hz, meaning it completes one full swing back and forth every 2 seconds. The angular frequency omega = 2*pi*f = sqrt(g/L) is also commonly used in physics equations." },
+  { question: "How does gravity affect a pendulum?", answer: "The acceleration due to gravity directly affects the period of a pendulum. Stronger gravity (higher g) results in a shorter period (faster swinging), while weaker gravity produces a longer period. On the Moon, where g is approximately 1.62 m/s^2, a pendulum swings about 2.5 times slower than on Earth. This relationship allows pendulums to be used for measuring local gravitational acceleration with high precision." },
+  { question: "What is the simple pendulum approximation?", answer: "The simple pendulum formula T = 2*pi*sqrt(L/g) is an approximation valid for small angles of oscillation, typically less than 15 degrees. For larger angles, the true period is longer than predicted by this formula. The exact period requires an elliptic integral. At 15 degrees the error is about 0.5%, at 30 degrees about 1.7%, and at 90 degrees about 18%. For most practical purposes and physics problems, the small-angle approximation is sufficient." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Pendulum Calculator",
+  description: "Calculate the period, frequency, and length of a simple pendulum using T = 2pi*sqrt(L/g).",
+  url: physics_pendulum_url,
+  category: "EducationalApplication",
+  calculator_slug: "pendulum"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Physics", url: category_path("physics") },
+  { name: "Pendulum Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pendulum Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the period, frequency, or length of a simple pendulum. Enter your values and results update in real time.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="pendulum-calculator ad-engagement" class="space-y-5 mb-8">
+      <div data-card="Pendulum" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">T</div>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Simple Pendulum</h2>
+          <span class="text-sm text-gray-400 dark:text-gray-500 ml-auto font-mono">T = 2&pi;&radic;(L/g)</span>
+        </div>
+
+        <div class="mb-4">
+          <label for="pendulum-mode" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Solve for</label>
+          <select id="pendulum-mode" data-pendulum-calculator-target="mode" data-action="change->pendulum-calculator#updateFields" class="w-full">
+            <option value="find_period">Period (T)</option>
+            <option value="find_length">Length (L)</option>
+            <option value="find_gravity">Gravity (g)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div data-pendulum-calculator-target="lengthGroup">
+            <label for="pendulum-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Length (m)</label>
+            <input id="pendulum-length" type="number" inputmode="decimal" data-pendulum-calculator-target="length" data-action="input->pendulum-calculator#calculate" class="w-full" placeholder="1.0" step="any" min="0">
+          </div>
+          <div data-pendulum-calculator-target="gravityGroup">
+            <label for="pendulum-gravity" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Gravity (m/s&sup2;)</label>
+            <input id="pendulum-gravity" type="number" inputmode="decimal" data-pendulum-calculator-target="gravity" data-action="input->pendulum-calculator#calculate" class="w-full" placeholder="9.80665" step="any" min="0">
+            <p class="text-xs text-gray-400 mt-1">Leave blank for Earth (9.80665)</p>
+          </div>
+          <div data-pendulum-calculator-target="periodGroup">
+            <label for="pendulum-period" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Period (s)</label>
+            <input id="pendulum-period" type="number" inputmode="decimal" data-pendulum-calculator-target="period" data-action="input->pendulum-calculator#calculate" class="w-full" placeholder="2.0" step="any" min="0">
+          </div>
+        </div>
+
+        <div data-pendulum-calculator-target="results" class="hidden">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Period (T)</span>
+              <span class="text-xl font-bold text-violet-600 dark:text-violet-400" data-pendulum-calculator-target="resultPeriod" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Frequency (f)</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400" data-pendulum-calculator-target="resultFrequency" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Angular Freq (&omega;)</span>
+              <span class="text-xl font-bold text-amber-600 dark:text-amber-400" data-pendulum-calculator-target="resultAngularFreq" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Length (L)</span>
+              <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400" data-pendulum-calculator-target="resultLength" data-result>&mdash;</span>
+            </div>
+            <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-xl p-4 text-center">
+              <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Gravity (g)</span>
+              <span class="text-xl font-bold text-rose-600 dark:text-rose-400" data-pendulum-calculator-target="resultGravity" data-result>&mdash;</span>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button data-action="click->pendulum-calculator#copy" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "pendulum" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding the Simple Pendulum</h2>
+      <p>A <strong>simple pendulum</strong> consists of a point mass (the bob) suspended from a fixed pivot by a massless, inextensible string. When displaced from its equilibrium position and released, it oscillates back and forth under the influence of gravity. The motion is a form of <strong>simple harmonic motion</strong> for small angles of displacement, and the period T = 2&pi;&radic;(L/g) depends only on the pendulum length and local gravitational acceleration, not on the mass of the bob or the amplitude of the swing.</p>
+
+      <p>This calculator lets you solve for the period, length, or gravitational acceleration of a simple pendulum. Enter any two known values and the third is computed automatically, along with the frequency and angular frequency. The default gravity value is 9.80665 m/s&sup2; (standard gravity on Earth), but you can change it to model pendulums on the Moon, Mars, or any other environment.</p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Period, Frequency, and Angular Frequency</h2>
+      <p>The <strong>period</strong> (T) is the time for one complete back-and-forth oscillation. The <strong>frequency</strong> (f = 1/T) is the number of oscillations per second, measured in hertz (Hz). The <strong>angular frequency</strong> (&omega; = 2&pi;f = &radic;(g/L)) expresses the rate of oscillation in radians per second and appears naturally in the mathematical description of simple harmonic motion. A one-meter pendulum on Earth has a period of approximately 2.006 seconds, which is why grandfather clocks use pendulums close to one meter long to achieve a two-second period.</p>
+
+      <h3>Historical Significance</h3>
+      <p>Galileo Galilei first studied pendulum motion in the late 1500s, reportedly observing the swing of a chandelier in the Pisa Cathedral. Christiaan Huygens built the first practical pendulum clock in 1656, revolutionizing timekeeping. Pendulums were later used to measure the Earth's gravitational field with high precision, revealing that gravity varies slightly with latitude and altitude. Jean Foucault's famous pendulum demonstration in 1851 proved the rotation of the Earth by showing that the swing plane of a long pendulum slowly rotates relative to the floor.</p>
+
+      <h3>Limitations and Real-World Factors</h3>
+      <p>The simple pendulum formula assumes small oscillation angles (typically less than 15&deg;), a massless string, no air resistance, and a point mass. Real pendulums experience air drag, have strings with finite mass, and may swing at large angles where the period increases beyond the small-angle prediction. Physical (compound) pendulums distribute mass along their length, requiring a modified formula using the moment of inertia. Despite these limitations, the simple pendulum remains an excellent model for understanding oscillatory motion and is widely used in education, engineering, and geophysics.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the period formula for a simple pendulum?</h3>
+      <p>T = 2&pi;&radic;(L/g), where L is the string length in meters and g is gravitational acceleration. The period depends only on length and gravity, not on mass.</p>
+
+      <h3>Does mass affect the period?</h3>
+      <p>No. The mass of the bob cancels out in the derivation. Heavy and light bobs on identical strings swing with the same period, just as objects of different masses fall at the same rate.</p>
+
+      <h3>What is the frequency of a pendulum?</h3>
+      <p>Frequency f = 1/T, the number of complete oscillations per second in hertz. A 1-meter pendulum on Earth has f of approximately 0.499 Hz.</p>
+
+      <h3>How does gravity affect a pendulum?</h3>
+      <p>Stronger gravity shortens the period (faster swing). On the Moon (g = 1.62 m/s&sup2;), a pendulum swings about 2.5 times slower than on Earth.</p>
+
+      <h3>When does the simple pendulum formula break down?</h3>
+      <p>At large angles (above roughly 15&deg;), air resistance, string mass, or when the bob is not a point mass. For large angles, the true period is longer than T = 2&pi;&radic;(L/g) predicts.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Spring Constant Calculator", description: "Calculate the spring constant using Hooke's Law or oscillation method.", path: physics_spring_constant_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" },
+      { name: "Force Calculator", description: "Calculate force, mass, or acceleration using Newton's second law F = ma.", path: physics_force_path, icon_path: "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" },
+      { name: "Velocity Calculator", description: "Calculate velocity, distance, or time using the fundamental motion equation v = d/t.", path: physics_velocity_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "physics" %>
+
+    <% blog_posts = related_blog_posts("pendulum-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

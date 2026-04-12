@@ -1,0 +1,193 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Septic Tank Size Calculator - Free Online Tool",
+  description: "Calculate the minimum septic tank size based on bedrooms, occupants, and daily water usage. Get recommended tank size and drain field estimates.",
+  canonical: construction_septic_tank_size_url,
+  og: {
+    title: "Septic Tank Size Calculator - Free Online Tool | CalcWise",
+    description: "Calculate minimum septic tank size from bedrooms, occupants, and water usage. Instant tank sizing estimates.",
+    url: construction_septic_tank_size_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Septic Tank Size Calculator", url: construction_septic_tank_size_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What size septic tank do I need for a 3-bedroom house?", answer: "Most building codes require a minimum 1,000-gallon septic tank for homes with 1 to 3 bedrooms. This is based on an assumed occupancy of 2 persons per bedroom and 75 gallons of water usage per person per day. For a 3-bedroom home with 6 occupants using 450 gallons per day, a 1,000-gallon tank provides just over 2 days of capacity, which is the minimum recommended for proper settling and treatment." },
+  { question: "How is septic tank size determined?", answer: "Septic tank size is determined by two methods, and the larger result is used. The bedroom method uses a base of 1,000 gallons for 1-3 bedrooms plus 250 gallons per additional bedroom. The flow method estimates daily water usage (occupants times 75 gallons each) and requires the tank to hold at least 2 days of flow. Additional capacity of 10% each is added for garbage disposals and hot tubs. The result is rounded up to the next standard tank size." },
+  { question: "What are standard septic tank sizes?", answer: "Standard precast concrete and fiberglass septic tanks are manufactured in increments: 1,000, 1,250, 1,500, 1,750, 2,000, 2,500, 3,000, 3,500, 4,000, and 5,000 gallons. The 1,000-gallon tank is the most common for residential use. Tanks above 3,000 gallons are typically used for commercial applications or large homes. Always round up to the next standard size from your calculated minimum." },
+  { question: "Does a garbage disposal affect septic tank size?", answer: "Yes, a garbage disposal increases the organic load on the septic system by approximately 50% and the water usage by about 10%. Most codes and septic designers recommend increasing the tank size by 10% when a garbage disposal is present. Some jurisdictions require a minimum 1,250 or 1,500 gallon tank for any home with a garbage disposal. The additional solids from food waste also mean more frequent pumping is needed." },
+  { question: "How do I estimate drain field size?", answer: "Drain field size depends on daily sewage flow and soil percolation rate (perc rate). A conservative estimate uses 2 square feet of drain field per gallon per day of flow. For a 3-bedroom home producing 450 gallons per day, the drain field would be approximately 900 square feet. However, actual sizing requires a soil percolation test performed by a licensed professional, as clay soils may need 3-4 times more area than sandy soils." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Septic Tank Size Calculator",
+  description: "Calculate minimum septic tank size from bedrooms, occupants, and daily water usage.",
+  url: construction_septic_tank_size_url,
+  category: "HomeApplication",
+  calculator_slug: "septic_tank_size"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Septic Tank Size Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Septic Tank Size Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Calculate the minimum septic tank size based on bedrooms, occupants, and daily water usage, with standard tank recommendations and drain field estimates.</p>
+    <div class="mb-8 px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-sm text-amber-800 dark:text-amber-300">
+      <strong>How it works:</strong> Enter the number of bedrooms (required). Optionally provide the actual occupant count and daily water usage in gallons. Check the boxes for garbage disposal and hot tub if applicable. The calculator uses both the bedroom-based method and flow-based method, taking the larger result, then recommends the next standard tank size. <br class="mb-1"><strong>Note:</strong> Septic system design is regulated by local health departments. These estimates are for planning purposes. Always obtain a professional site evaluation and perc test before installation.
+    </div>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="septic-tank-size-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="st-bedrooms" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Bedrooms</label>
+            <input id="st-bedrooms" type="number" inputmode="numeric" data-septic-tank-size-calculator-target="bedrooms" data-action="input->septic-tank-size-calculator#calculate" class="w-full" placeholder="3" step="1" min="1" max="10">
+          </div>
+          <div>
+            <label for="st-occupants" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Occupants (optional)</label>
+            <input id="st-occupants" type="number" inputmode="numeric" data-septic-tank-size-calculator-target="occupants" data-action="input->septic-tank-size-calculator#calculate" class="w-full" placeholder="Defaults to 2 per bedroom" step="1" min="1">
+          </div>
+          <div>
+            <label for="st-water" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Daily Water Usage (gal, optional)</label>
+            <input id="st-water" type="number" inputmode="decimal" data-septic-tank-size-calculator-target="dailyWater" data-action="input->septic-tank-size-calculator#calculate" class="w-full" placeholder="Defaults to 75 gal/person" step="1" min="0">
+          </div>
+          <div class="flex items-center gap-3">
+            <input id="st-disposal" type="checkbox" data-septic-tank-size-calculator-target="garbageDisposal" data-action="change->septic-tank-size-calculator#calculate" class="rounded border-gray-300 dark:border-gray-600 text-green-600 focus:ring-green-500">
+            <label for="st-disposal" class="text-sm font-medium text-gray-600 dark:text-gray-400">Garbage disposal (+10%)</label>
+          </div>
+          <div class="flex items-center gap-3">
+            <input id="st-hottub" type="checkbox" data-septic-tank-size-calculator-target="hotTub" data-action="change->septic-tank-size-calculator#calculate" class="rounded border-gray-300 dark:border-gray-600 text-green-600 focus:ring-green-500">
+            <label for="st-hottub" class="text-sm font-medium text-gray-600 dark:text-gray-400">Hot tub (+10%)</label>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Estimated Occupants</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-septic-tank-size-calculator-target="resultOccupants">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Daily Flow</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-septic-tank-size-calculator-target="resultDailyFlow">0 gal/day</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Bedroom-Based</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-septic-tank-size-calculator-target="resultBedroomBased">0 gal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Flow-Based</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-septic-tank-size-calculator-target="resultFlowBased">0 gal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Required Minimum</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-septic-tank-size-calculator-target="resultRequired">0 gal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Recommended Tank</span>
+              <span class="text-2xl font-bold text-green-600 dark:text-green-400" data-septic-tank-size-calculator-target="resultRecommended">0 gal</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Drain Field Est.</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-septic-tank-size-calculator-target="resultDrainfield">0 ft</span>
+            </div>
+          </div>
+          <button data-action="click->septic-tank-size-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "septic_tank_size" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Septic Tank Size Calculator</h2>
+      <p>
+        Proper septic tank sizing is essential for system longevity and environmental protection. An undersized tank does not provide adequate settling time, allowing solids to enter the drain field and causing premature failure. Enter the number of bedrooms in your home, which is the primary sizing metric used by building codes nationwide. Optionally, enter the actual number of occupants and daily water usage if you have this information. If left blank, the calculator assumes 2 occupants per bedroom and 75 gallons of water usage per person per day, which are standard design parameters.
+      </p>
+      <p>
+        The calculator uses two sizing methods: the bedroom-based method (1,000 gallons for 1-3 bedrooms, plus 250 gallons per additional bedroom) and the flow-based method (2 days of daily flow). The larger result determines the minimum size, which is then adjusted upward for garbage disposals and hot tubs. The final recommendation is the next available standard tank size above the calculated minimum.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Septic System Sizing Fundamentals</h2>
+      <p>
+        A septic tank must be large enough to hold incoming wastewater for at least 24 to 48 hours, allowing solids to settle to the bottom (sludge) and grease to float to the top (scum). The clarified liquid in the middle flows out to the drain field for soil treatment. Most codes require the tank to hold at least two days of average daily flow, with a minimum of 1,000 gallons regardless of house size. This minimum ensures adequate treatment even during periods of higher-than-average water use such as holidays and guests.
+      </p>
+
+      <h3>Impact of Water Fixtures and Habits</h3>
+      <p>
+        Modern water-saving fixtures can significantly reduce daily flow compared to the standard 75 gallons per person estimate. Low-flow toilets use 1.28 gallons per flush versus 3.5 for older models. Low-flow showerheads use 2 gallons per minute versus 5. High-efficiency washing machines use 15 gallons per load versus 40. If your home has all water-saving fixtures, actual usage may be 40-50 gallons per person per day. Conversely, homes with older fixtures, multiple showers, and frequent laundry may exceed the 75-gallon estimate.
+      </p>
+
+      <h3>Drain Field Sizing Considerations</h3>
+      <p>
+        The drain field is the most expensive component of a septic system and its size depends on both daily flow volume and soil percolation rate. Sandy soils absorb water quickly and need less area, while clay soils absorb slowly and need more. A perc test (percolation test) performed by a licensed professional determines the soil absorption rate. This calculator provides a conservative estimate assuming moderate soil conditions, but actual drain field design requires professional soil analysis and must comply with local health department regulations.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What size tank for a 3-bedroom house?</h3>
+      <p>
+        1,000 gallons is the minimum for 1-3 bedrooms per most codes. With a garbage disposal, a 1,250-gallon tank is recommended. This assumes 6 occupants using 450 gallons per day.
+      </p>
+
+      <h3>How is septic tank size determined?</h3>
+      <p>
+        The larger of two methods is used: bedroom-based (1,000 gal base + 250 gal per bedroom above 3) and flow-based (2 days of daily flow). Add 10% each for garbage disposals and hot tubs, then round up to the next standard size.
+      </p>
+
+      <h3>What are standard tank sizes?</h3>
+      <p>
+        Precast concrete and fiberglass tanks come in 1,000, 1,250, 1,500, 1,750, 2,000, 2,500, 3,000, 3,500, 4,000, and 5,000 gallons. The 1,000-gallon tank is most common for residential use.
+      </p>
+
+      <h3>Does a garbage disposal affect sizing?</h3>
+      <p>
+        Yes. A garbage disposal increases organic load by about 50% and water usage by 10%. Most codes require a 10% larger tank. Some jurisdictions mandate a minimum 1,250 or 1,500 gallon tank with a disposal.
+      </p>
+
+      <h3>How do I estimate drain field size?</h3>
+      <p>
+        A conservative estimate is 2 square feet per gallon per day. For 450 gpd, that is about 900 sq ft. Actual sizing requires a perc test since clay soils may need 3-4 times more area than sandy soils.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Plumbing Calculator", description: "Calculate pipe sizes, fittings, and plumbing material needs.", path: construction_plumbing_path, icon_path: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" },
+      { name: "Drainage Slope Calculator", description: "Calculate required slope and drop for drainage pipes.", path: construction_drainage_slope_path, icon_path: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" },
+      { name: "Water Heater Sizing Calculator", description: "Calculate the right water heater size for your household.", path: construction_water_heater_sizing_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("septic-tank-size-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

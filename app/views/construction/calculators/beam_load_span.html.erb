@@ -1,0 +1,183 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Beam Load Span Calculator - Free Online Tool",
+  description: "Calculate maximum beam moment, required section modulus, and recommended beam size for a given span and load. Supports wood and steel beams.",
+  canonical: construction_beam_load_span_url,
+  og: {
+    title: "Beam Load Span Calculator - Free Online Tool | CalcWise",
+    description: "Calculate beam size requirements for a given span and load. Instant structural estimates for wood and steel beams.",
+    url: construction_beam_load_span_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Beam Load Span Calculator", url: construction_beam_load_span_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate beam size for a given span?", answer: "For a simply supported beam with a uniformly distributed load, the maximum bending moment is M = wL squared / 8, where w is the load per unit length and L is the span. The required section modulus is S = M / Fb, where Fb is the allowable bending stress for the beam material. Select a beam whose section modulus equals or exceeds the required value. For example, a 12-foot span carrying 200 plf in Douglas Fir requires a section modulus of about 24 cubic inches, satisfied by a 2x12 or 4x8." },
+  { question: "What is the maximum span for a 2x10 beam?", answer: "The maximum span depends on the load and wood species. For Douglas Fir-Larch (No. 2, Fb = 1350 PSI) carrying a typical floor load of 50 plf (dead + live), a single 2x10 (S = 21.39 cubic inches) can span approximately 10-12 feet. For header beams carrying greater loads, the span decreases. Always verify with local building codes, which may require additional safety factors or deflection limits." },
+  { question: "What does 'pounds per linear foot' (PLF) mean?", answer: "Pounds per linear foot (PLF) is the total load distributed along each foot of a beam's length. It includes both dead load (the weight of the structure itself, typically 10-20 PLF for residential floors) and live load (people, furniture, and snow, typically 40 PLF for floors and 20-30 PLF for roofs). For a beam supporting a 12-foot-wide floor section, the total PLF would be 12 feet times the per-square-foot load." },
+  { question: "What is section modulus and why does it matter?", answer: "Section modulus (S) measures a beam cross-section's resistance to bending, expressed in cubic inches. A higher section modulus means the beam can resist greater bending moments without exceeding the allowable stress. It is calculated as S = bd squared / 6 for rectangular sections, where b is the width and d is the depth. Deeper beams have dramatically higher section moduli because depth is squared in the formula." },
+  { question: "What is the difference between LVL and solid lumber beams?", answer: "Laminated Veneer Lumber (LVL) beams are engineered wood products made from thin veneers of wood bonded together under heat and pressure. LVL has an allowable bending stress of approximately 2600 PSI compared to 1350 PSI for Douglas Fir No. 2, meaning LVL can span farther or carry heavier loads in the same size. LVL is also more consistent, with fewer defects like knots and grain deviation that weaken solid lumber." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Beam Load Span Calculator",
+  description: "Calculate maximum beam moment, required section modulus, and recommended beam size for a given span and load.",
+  url: construction_beam_load_span_url,
+  category: "HomeApplication",
+  calculator_slug: "beam_load_span"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Beam Load Span Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Beam Load Span Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Calculate the maximum bending moment, required section modulus, and recommended beam size for a simply supported beam with a uniformly distributed load.</p>
+    <div class="mb-8 px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl text-sm text-amber-800 dark:text-amber-300">
+      <strong>How it works:</strong> Enter the beam span in feet, the total uniformly distributed load in pounds per linear foot (PLF), and select the beam material. The calculator computes the maximum bending moment, required section modulus, and recommends the smallest standard lumber size that satisfies the strength requirement. <br class="mb-1"><strong>Note:</strong> This is a simplified calculation for initial sizing only. It does not check deflection, shear, bearing, or lateral stability. Always consult a licensed structural engineer for final beam design.
+    </div>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="beam-load-span-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="bl-span" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Beam Span (ft)</label>
+            <input id="bl-span" type="number" inputmode="decimal" data-beam-load-span-calculator-target="span" data-action="input->beam-load-span-calculator#calculate" class="w-full" placeholder="12" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="bl-load" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Load (lbs per linear foot)</label>
+            <input id="bl-load" type="number" inputmode="decimal" data-beam-load-span-calculator-target="load" data-action="input->beam-load-span-calculator#calculate" class="w-full" placeholder="200" step="1" min="0">
+          </div>
+          <div>
+            <label for="bl-material" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Beam Material</label>
+            <select id="bl-material" data-beam-load-span-calculator-target="material" data-action="change->beam-load-span-calculator#calculate" class="w-full">
+              <option value="douglas_fir">Douglas Fir-Larch (No. 2)</option>
+              <option value="southern_pine">Southern Pine (No. 2)</option>
+              <option value="spruce">Spruce-Pine-Fir (No. 2)</option>
+              <option value="lvl">LVL (Laminated Veneer Lumber)</option>
+              <option value="steel_a36">Steel A36</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Material</span>
+              <span class="text-lg font-bold text-green-600 dark:text-green-400" data-beam-load-span-calculator-target="resultMaterialLabel">--</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Allowable Stress (Fb)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-beam-load-span-calculator-target="resultAllowableStress">0 PSI</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Max Moment</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-beam-load-span-calculator-target="resultMoment">0 ft-lbs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Required Section Modulus</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-beam-load-span-calculator-target="resultSectionModulus">0 in&sup3;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Recommended Size</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-beam-load-span-calculator-target="resultRecommended">--</span>
+            </div>
+          </div>
+          <button data-action="click->beam-load-span-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "beam_load_span" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Beam Load Span Calculator</h2>
+      <p>
+        This calculator performs a simplified bending stress analysis for a simply supported beam carrying a uniformly distributed load. Enter the clear span in feet, the total load in pounds per linear foot (PLF) which includes both dead and live loads, and select the beam material. The calculator determines the maximum bending moment using the formula M = wL&sup2;/8, then divides by the material's allowable bending stress (Fb) to find the required section modulus. It recommends the smallest standard lumber size whose section modulus meets or exceeds the requirement.
+      </p>
+      <p>
+        The total load in PLF represents everything the beam must carry per foot of its length. For a floor beam, this includes the weight of the floor itself (dead load, typically 10-20 PLF) plus the live load from occupants and furniture (typically 40 PLF for residential floors). If the beam supports a tributary width of 12 feet with a 50 PSF total load, the beam load would be 600 PLF.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Beam Materials and Allowable Stresses</h2>
+      <p>
+        Different beam materials have different allowable bending stresses. Douglas Fir-Larch No. 2 is the most common structural lumber with an Fb of 1,350 PSI. Southern Pine No. 2 is slightly stronger at 1,500 PSI. Spruce-Pine-Fir is more economical at 1,150 PSI but requires larger members. LVL (Laminated Veneer Lumber) offers significantly higher strength at 2,600 PSI, making it ideal for long spans and heavy loads where solid lumber would be impractically large. Steel A36 beams have an allowable bending stress of 21,600 PSI and are used where wood beams cannot meet the structural requirements.
+      </p>
+
+      <h3>Understanding Section Modulus</h3>
+      <p>
+        The section modulus (S) is a geometric property that measures a beam's resistance to bending. For rectangular sections like lumber, S = bd&sup2;/6, where b is the width and d is the depth. Because depth is squared, doubling the depth of a beam increases its section modulus by four times. This is why deeper beams are much stronger in bending than wider beams. A 2x12 has a section modulus of 31.64 cubic inches, more than four times the 7.56 cubic inches of a 2x6, even though the cross-sectional area is only about twice as large.
+      </p>
+
+      <h3>Limitations of This Calculator</h3>
+      <p>
+        This calculator checks bending stress only. A complete beam design must also verify deflection (typically limited to L/360 for floors), shear stress at the supports, bearing capacity where the beam sits on its supports, and lateral-torsional buckling for deep, narrow beams. For critical structural members, always have a licensed engineer perform the complete design, including load path analysis and connection details.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I determine beam size for a span?</h3>
+      <p>
+        Calculate the maximum moment M = wL&sup2;/8, then divide by the allowable stress to get the required section modulus. Select the smallest beam whose section modulus exceeds this value. A 12-foot span with 200 PLF in Douglas Fir needs about 24 in&sup3;, satisfied by a 2x12 or 4x8.
+      </p>
+
+      <h3>What is the max span for a 2x10?</h3>
+      <p>
+        A Douglas Fir 2x10 (S = 21.39 in&sup3;) carrying 50 PLF can span approximately 10-12 feet. Higher loads or lower-grade lumber reduce the allowable span. Always check deflection limits as well.
+      </p>
+
+      <h3>What does PLF mean?</h3>
+      <p>
+        Pounds per linear foot (PLF) is the total distributed load along each foot of beam length. It includes dead load (structure weight) plus live load (occupants, furniture, snow). Multiply tributary width by per-square-foot loads to get PLF.
+      </p>
+
+      <h3>What is section modulus?</h3>
+      <p>
+        Section modulus measures a beam cross-section's resistance to bending, in cubic inches. For rectangular beams, S = bd&sup2;/6. Deeper beams have much higher section moduli because depth is squared.
+      </p>
+
+      <h3>What is the difference between LVL and solid lumber?</h3>
+      <p>
+        LVL has an allowable bending stress of about 2,600 PSI vs 1,350 PSI for Douglas Fir, meaning it can span farther or carry heavier loads at the same size. LVL is also more consistent with fewer natural defects.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Lumber Calculator", description: "Calculate board feet, linear feet, and lumber costs.", path: construction_lumber_path, icon_path: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" },
+      { name: "Deck Calculator", description: "Calculate decking boards, joists, and posts for your deck project.", path: construction_deck_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+      { name: "Staircase Calculator", description: "Calculate rise, run, and stringer dimensions for stairs.", path: construction_staircase_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("beam-load-span-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

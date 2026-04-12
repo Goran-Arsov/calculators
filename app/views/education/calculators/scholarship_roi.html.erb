@@ -1,0 +1,172 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Scholarship ROI Calculator - Hourly Return on Applications",
+  description: "Calculate your hourly return on time spent applying for scholarships. Compare scholarship earnings to part-time work and determine if applying is worth your time.",
+  canonical: education_scholarship_roi_url,
+  og: {
+    title: "Scholarship ROI Calculator - Hourly Return on Applications | CalcWise",
+    description: "Calculate your hourly return on time spent applying for scholarships. Compare scholarship earnings to part-time work and determine if applying is worth your time.",
+    url: education_scholarship_roi_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Education", url: category_url("education") },
+  { name: "Scholarship ROI Calculator", url: education_scholarship_roi_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many hours does the average scholarship application take?", answer: "Most scholarship applications take 2-5 hours to complete, including writing essays, gathering documents, and filling out forms. Complex applications with multiple essays or portfolio requirements can take 8-15 hours. Reusing and adapting existing essays across similar applications can significantly reduce time per application." },
+  { question: "What is a good success rate for scholarship applications?", answer: "The average scholarship acceptance rate ranges from 5-20% depending on the scholarship's competitiveness and applicant pool. Local and niche scholarships tend to have higher acceptance rates (15-30%) because fewer students apply, while national scholarships with large awards may have rates below 5%." },
+  { question: "Is it better to apply for many small scholarships or a few large ones?", answer: "A mixed strategy works best. Small local scholarships ($500-$2,000) have higher win rates and less competition. Large national scholarships offer bigger payoffs but lower odds. Apply for both, but prioritize scholarships where you closely match the eligibility criteria for the highest effective hourly return." },
+  { question: "When should I start applying for scholarships?", answer: "Start applying during your junior year of high school for entering college students. Many deadlines fall between October and March for the following academic year. College students should apply year-round as new opportunities arise each semester. Starting early gives you more time to perfect essays and apply to more scholarships." },
+  { question: "Do scholarship winnings affect financial aid?", answer: "Outside scholarships can sometimes reduce institutional financial aid. Many colleges use outside scholarships to reduce loans and work-study first, preserving grants. Contact your financial aid office to understand their policy before accepting outside scholarships to ensure they supplement rather than replace existing aid." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Scholarship ROI Calculator",
+  description: "Calculate the hourly return on time spent applying for scholarships and compare it to part-time employment.",
+  url: education_scholarship_roi_url,
+  category: "FinanceApplication",
+  calculator_slug: "scholarship-roi"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Education", url: category_path("education") },
+  { name: "Scholarship ROI Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Scholarship ROI Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the hourly return on time spent applying for scholarships and compare it to working a part-time job.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="scholarship-roi-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="sroi-amount" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Scholarship Amount ($)</label>
+            <input id="sroi-amount" type="number" inputmode="decimal" data-scholarship-roi-calculator-target="scholarshipAmount" data-action="input->scholarship-roi-calculator#calculate" class="w-full" placeholder="5000" step="500" min="0">
+          </div>
+          <div>
+            <label for="sroi-hours" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Hours Spent</label>
+            <input id="sroi-hours" type="number" inputmode="decimal" data-scholarship-roi-calculator-target="hoursSpent" data-action="input->scholarship-roi-calculator#calculate" class="w-full" placeholder="10" step="1" min="0">
+          </div>
+          <div>
+            <label for="sroi-apps" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of Applications</label>
+            <input id="sroi-apps" type="number" inputmode="numeric" data-scholarship-roi-calculator-target="numApplications" data-action="input->scholarship-roi-calculator#calculate" class="w-full" placeholder="5" step="1" min="1" value="1">
+          </div>
+          <div>
+            <label for="sroi-rate" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Estimated Success Rate (%)</label>
+            <input id="sroi-rate" type="number" inputmode="decimal" data-scholarship-roi-calculator-target="successRate" data-action="input->scholarship-roi-calculator#calculate" class="w-full" placeholder="20" step="5" min="0" max="100" value="100">
+          </div>
+          <div>
+            <label for="sroi-costs" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Application Costs ($)</label>
+            <input id="sroi-costs" type="number" inputmode="decimal" data-scholarship-roi-calculator-target="applicationCosts" data-action="input->scholarship-roi-calculator#calculate" class="w-full" placeholder="0" step="10" min="0" value="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">ROI Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Expected Value</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-scholarship-roi-calculator-target="expectedValue">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Net Gain</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-scholarship-roi-calculator-target="netGain">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Hourly Return</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-scholarship-roi-calculator-target="hourlyReturn">$0.00/hr</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">ROI</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-scholarship-roi-calculator-target="roiPercentage">0%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Hours per Application</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-scholarship-roi-calculator-target="hoursPerApplication">0 hrs</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Part-Time Equivalent</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-scholarship-roi-calculator-target="partTimeEquivalent">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Scholarship Advantage</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-scholarship-roi-calculator-target="scholarshipAdvantage">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Worth It?</span>
+              <span class="text-sm font-bold" data-scholarship-roi-calculator-target="worthIt">N/A</span>
+            </div>
+          </div>
+          <button data-action="click->scholarship-roi-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "scholarship-roi" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Scholarship ROI Calculator</h2>
+      <p>
+        Enter the scholarship amount, total hours you plan to spend on applications, the number of applications, and your estimated success rate. The calculator computes your expected hourly return and compares it to minimum wage ($15/hour) to help you decide whether applying for scholarships is a better use of your time than working a part-time job. Factor in application costs such as transcript fees, postage, or test scores to get an accurate net return.
+      </p>
+      <p>
+        The success rate is critical for accurate results. National scholarships with large applicant pools typically have acceptance rates of 1-5%, while local community scholarships may accept 15-30% of applicants. Research historical award data when available, or use conservative estimates to avoid overestimating returns.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Maximizing Your Scholarship Application Strategy</h2>
+      <p>
+        The most efficient scholarship strategy focuses on applications where you closely match the eligibility criteria. Niche scholarships targeting specific demographics, majors, hobbies, or backgrounds often have fewer applicants and higher acceptance rates. Reusing and adapting core essay content across multiple applications dramatically reduces the time investment per application while maintaining quality.
+      </p>
+
+      <h3>Building a Scholarship Application System</h3>
+      <p>
+        Create a master essay library with responses to common prompts like leadership experience, community service, career goals, and overcoming challenges. Maintain a spreadsheet tracking deadlines, requirements, and submission status. Set aside dedicated scholarship application time each week rather than scrambling before deadlines. This systematic approach increases both output and quality.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many hours does the average scholarship application take?</h3>
+      <p>Most scholarship applications take 2-5 hours to complete, including writing essays, gathering documents, and filling out forms. Complex applications with multiple essays or portfolio requirements can take 8-15 hours.</p>
+
+      <h3>What is a good success rate for scholarship applications?</h3>
+      <p>The average scholarship acceptance rate ranges from 5-20% depending on the scholarship's competitiveness and applicant pool. Local and niche scholarships tend to have higher acceptance rates (15-30%).</p>
+
+      <h3>Is it better to apply for many small scholarships or a few large ones?</h3>
+      <p>A mixed strategy works best. Small local scholarships ($500-$2,000) have higher win rates and less competition. Large national scholarships offer bigger payoffs but lower odds.</p>
+
+      <h3>When should I start applying for scholarships?</h3>
+      <p>Start applying during your junior year of high school. Many deadlines fall between October and March for the following academic year. College students should apply year-round.</p>
+
+      <h3>Do scholarship winnings affect financial aid?</h3>
+      <p>Outside scholarships can sometimes reduce institutional financial aid. Many colleges use outside scholarships to reduce loans and work-study first, preserving grants.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "College Cost Comparison Calculator", description: "Compare total cost of two colleges side by side.", path: education_college_cost_comparison_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Student Loan Forgiveness Calculator", description: "Estimate savings under PSLF and IDR forgiveness programs.", path: education_student_loan_forgiveness_path, icon_path: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" },
+      { name: "Credit Transfer Calculator", description: "Calculate transferable credits and cost savings.", path: education_credit_transfer_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "education" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

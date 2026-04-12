@@ -1,0 +1,199 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Horse Feed Calculator - Daily Hay, Grain & Supplement Guide",
+  description: "Calculate daily hay, grain, and supplement amounts for your horse based on body weight and activity level. Includes forage, energy, salt, mineral, and water recommendations.",
+  canonical: pets_horse_feed_url,
+  og: {
+    title: "Horse Feed Calculator - Daily Hay, Grain & Supplement Guide | CalcWise",
+    description: "Calculate daily forage, grain, supplements, and water needs for horses based on weight and activity level.",
+    url: pets_horse_feed_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Pets", url: category_url("pets") },
+  { name: "Horse Feed Calculator", url: pets_horse_feed_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much hay should a horse eat per day?", answer: "A horse should eat 1.5% to 2% of its body weight in forage (hay or pasture) per day as a minimum. For a 1,000-pound horse, that is 15 to 20 pounds of hay daily. Horses in moderate to heavy work may need the higher end of this range. Forage should make up at least 50% of the total diet (by weight) to maintain healthy digestive function, as horses are designed to eat fibrous material continuously throughout the day." },
+  { question: "When does a horse need grain in addition to hay?", answer: "Horses at maintenance (light riding or no work) generally do not need grain if they are receiving adequate quality hay and a vitamin/mineral supplement. Grain becomes necessary when energy demands exceed what forage alone can provide — typically at moderate or higher work levels. Horses in heavy training, competition, breeding mares, growing foals, and hard-keeping horses may need 0.5% to 1.2% of body weight in concentrate feed daily." },
+  { question: "How much water does a horse need per day?", answer: "An average 1,000-pound horse drinks 5 to 10 gallons of water per day at maintenance. Water needs increase significantly with exercise, hot weather, and lactation — working horses may drink 15-20 gallons daily in summer. As a rule of thumb, provide 0.5 to 1 gallon per 100 pounds of body weight. Always provide unlimited access to clean, fresh water. Inadequate water intake is a leading cause of impaction colic." },
+  { question: "Does my horse need a salt block or loose salt?", answer: "Yes, all horses need supplemental sodium chloride (salt) because hay and grain alone do not provide enough. A 1,000-pound horse needs approximately 1 to 2 ounces of salt per day at rest, and more during exercise or in hot weather. Loose salt is preferred over salt blocks because horses may not lick blocks enough to meet their needs. Many horse owners offer both free-choice loose salt and a salt block. Electrolyte supplements may be needed for horses in heavy work." },
+  { question: "What is the forage-to-grain ratio for horses?", answer: "The ideal forage-to-grain ratio depends on the horse's workload. At maintenance, the diet should be nearly 100% forage with minimal or no grain. Light work calls for about 80-85% forage and 15-20% grain. Moderate work shifts to 70-75% forage and 25-30% grain. Heavy work may be 60-65% forage and 35-40% grain. Even in high-performance horses, forage should never drop below 50% of total intake to prevent digestive issues like gastric ulcers and hindgut acidosis." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Horse Feed Calculator",
+  description: "Calculate daily hay, grain, supplement, salt, and water requirements for horses based on body weight and activity level.",
+  url: pets_horse_feed_url,
+  category: "HealthApplication",
+  calculator_slug: "horse-feed"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Pets", url: category_path("pets") },
+  { name: "Horse Feed Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Horse Feed Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate daily hay, grain, salt, mineral, and water requirements for your horse based on body weight and activity level.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="horse-feed-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="horse-feed-weight" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Horse's Weight (lbs)</label>
+            <input id="horse-feed-weight" type="number" inputmode="decimal" data-horse-feed-calculator-target="weight" data-action="input->horse-feed-calculator#calculate" class="w-full" placeholder="1000" step="10" min="200" max="2500">
+          </div>
+          <div>
+            <label for="horse-feed-activity" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Activity Level</label>
+            <select id="horse-feed-activity" data-horse-feed-calculator-target="activityLevel" data-action="change->horse-feed-calculator#calculate" class="w-full" aria-label="Activity Level">
+              <option value="maintenance" selected>Maintenance (pasture / light trail)</option>
+              <option value="light">Light (pleasure riding 1-3x/week)</option>
+              <option value="moderate">Moderate (regular schooling / lessons)</option>
+              <option value="heavy">Heavy (competition training)</option>
+              <option value="intense">Intense (racing / endurance)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Daily Requirements</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Forage (Hay)</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-horse-feed-calculator-target="forageLbs">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Grain / Concentrate</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-horse-feed-calculator-target="grainLbs">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Feed</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-horse-feed-calculator-target="totalFeedLbs">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Daily Energy</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-horse-feed-calculator-target="dailyEnergyMcal">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Salt</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-horse-feed-calculator-target="saltOz">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Mineral Supplement</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-horse-feed-calculator-target="mineralOz">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Water</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-horse-feed-calculator-target="waterGallons">&mdash;</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Forage Ratio</span>
+              <span class="font-bold text-green-600 dark:text-green-400" data-horse-feed-calculator-target="forageRatio">&mdash;</span>
+            </div>
+          </div>
+          <button data-action="click->horse-feed-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "horse-feed" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Horse Feed Calculator</h2>
+      <p>
+        Our free horse feed calculator determines daily forage, grain, salt, mineral supplement, and water requirements based on your horse's body weight and activity level. Enter the horse's weight in pounds and select the activity level that best describes their workload. The calculator instantly displays all daily nutritional requirements, including the forage-to-total-feed ratio. Results update in real time as you adjust inputs.
+      </p>
+      <p>
+        Proper nutrition is the foundation of equine health and performance. Feeding too little forage can lead to digestive issues including colic and gastric ulcers. Overfeeding grain can cause laminitis, a painful and potentially life-threatening hoof condition. This calculator provides science-based guidelines that you can use as a starting point, then fine-tune with your equine veterinarian or nutritionist.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding Equine Nutrition</h2>
+      <p>
+        Horses are hindgut fermenters evolved to eat fibrous plant material continuously throughout the day. The equine digestive system is designed to process a nearly constant stream of forage — going more than 4-6 hours without eating can lead to excess stomach acid production and increase the risk of gastric ulcers. This is why forage (hay and/or pasture) should always form the foundation of any horse's diet.
+      </p>
+
+      <h3>Forage: The Foundation</h3>
+      <p>
+        The National Research Council recommends a minimum of <strong>1.5% of body weight in forage per day</strong>, with 2% or more being ideal for most horses. For a 1,000-pound horse, that translates to 15-20 pounds of hay daily. Quality matters as much as quantity — good grass hay provides 800-900 calories per pound, while alfalfa provides 1,000-1,100 calories per pound. A hay analysis from your local extension service helps you understand exactly what your forage provides.
+      </p>
+
+      <h3>When to Add Grain</h3>
+      <p>
+        Horses at maintenance or in light work often do not need grain at all if they receive adequate quality forage and a ration balancer or vitamin/mineral supplement. Grain becomes necessary when caloric demands from moderate to heavy exercise exceed what forage alone provides. The calculator estimates grain needs based on activity level, starting at 0% of body weight for maintenance and increasing to 1.2% for intense work.
+      </p>
+
+      <h3>Supplements, Salt, and Water</h3>
+      <p>
+        All horses need supplemental salt (sodium chloride) because forage and grain do not provide enough. A 1,000-pound horse needs approximately 1-2 ounces per day at rest. Mineral supplements fill gaps that forage and grain may not cover, particularly selenium, copper, zinc, and vitamins A, D, and E. Water requirements range from 5 to 10+ gallons per day and increase dramatically with exercise and hot weather.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much hay should a horse eat per day?</h3>
+      <p>
+        A horse should eat 1.5% to 2% of its body weight in forage per day. For a 1,000-pound horse, that is 15-20 pounds of hay daily. Forage should make up at least 50% of the total diet.
+      </p>
+
+      <h3>When does a horse need grain in addition to hay?</h3>
+      <p>
+        Horses at maintenance generally do not need grain with adequate quality hay and supplements. Grain becomes necessary at moderate or higher work levels when energy demands exceed what forage provides.
+      </p>
+
+      <h3>How much water does a horse need per day?</h3>
+      <p>
+        An average 1,000-pound horse drinks 5-10 gallons per day at rest. Working horses may need 15-20 gallons daily in summer. Provide 0.5-1 gallon per 100 pounds of body weight.
+      </p>
+
+      <h3>Does my horse need a salt block or loose salt?</h3>
+      <p>
+        Yes, all horses need supplemental salt. A 1,000-pound horse needs 1-2 ounces daily. Loose salt is preferred because horses may not lick blocks enough to meet needs.
+      </p>
+
+      <h3>What is the forage-to-grain ratio for horses?</h3>
+      <p>
+        At maintenance: nearly 100% forage. Light work: 80-85% forage. Moderate work: 70-75% forage. Heavy work: 60-65% forage. Forage should never drop below 50% of total intake.
+      </p>
+
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%# Related calculators %>
+    <%= render "shared/related_calculators", related: [
+      { name: "Puppy Weight Predictor", description: "Predict your puppy's adult weight based on current weight and breed size.", path: pets_puppy_weight_predictor_path, icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
+      { name: "Pet Insurance ROI Calculator", description: "Compare pet insurance costs vs potential vet bills.", path: pets_pet_insurance_roi_path, icon_path: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" },
+      { name: "Cat Food Calculator", description: "Calculate daily calorie needs and food portions for your cat.", path: pets_cat_food_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "pets" %>
+
+    <% blog_posts = related_blog_posts("horse-feed-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,201 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Running Pace Zone Calculator - 5 Training Zones from Race Time",
+  description: "Calculate 5 running training pace zones from your race time or threshold pace. Get personalized zones for easy, aerobic, tempo, VO2max, and speed training.",
+  canonical: health_running_pace_zone_url,
+  og: {
+    title: "Running Pace Zone Calculator - Training Zones | CalcWise",
+    description: "Calculate 5 personalized running pace zones from race time or threshold pace. Optimize your training with scientifically-based pace targets.",
+    url: health_running_pace_zone_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Running Pace Zone Calculator", url: health_running_pace_zone_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What are running pace zones?", answer: "Running pace zones are ranges of training paces that correspond to different physiological adaptations. There are typically 5 zones: Zone 1 (Easy/Recovery) at 125-140% of threshold pace, Zone 2 (Aerobic/Endurance) at 110-125%, Zone 3 (Tempo/Threshold) at 97-110%, Zone 4 (VO2max/Interval) at 88-97%, and Zone 5 (Speed/Repetition) at 78-88%. Training in the right zone ensures you stress the correct energy systems." },
+  { question: "How do I find my threshold pace?", answer: "Threshold pace is the fastest pace you can sustain for about 60 minutes in a race. You can estimate it from a recent race time: 5K pace is roughly 94% of threshold, 10K pace is close to threshold, and half marathon pace is about 4% slower than threshold. Alternatively, run a 20-minute time trial at maximum sustainable effort; your average pace is approximately your threshold pace." },
+  { question: "What is the difference between threshold pace and race pace?", answer: "Threshold pace (also called lactate threshold pace) is the pace at which lactate begins to accumulate faster than it can be cleared. It corresponds roughly to 10K race pace for recreational runners and is slightly faster than half marathon pace. For elite runners, threshold pace is closer to half marathon pace because they can sustain a higher percentage of their threshold for longer." },
+  { question: "How much of my training should be in Zone 2?", answer: "Most elite coaches recommend the 80/20 rule: approximately 80% of your weekly running volume should be in Zone 1-2 (easy/aerobic), with only 20% in Zones 3-5 (moderate to hard). This polarized approach builds a strong aerobic base while allowing adequate recovery, leading to better long-term improvement than doing most runs at moderate intensity." },
+  { question: "Can I use these zones for treadmill running?", answer: "Yes, these zones apply to treadmill running. However, treadmill pace often feels slightly easier due to lack of wind resistance and the belt moving underfoot. A common adjustment is to set the treadmill incline to 1% to approximate outdoor running effort. You can also use heart rate monitoring alongside pace zones for more accurate intensity control indoors." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Running Pace Zone Calculator",
+  description: "Calculate 5 personalized running training pace zones from race time or threshold pace.",
+  url: health_running_pace_zone_url,
+  category: "HealthApplication",
+  calculator_slug: "running-pace-zone"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Running Pace Zone Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Running Pace Zone Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate your five running training zones from a recent race time or known threshold pace for targeted, effective training.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="running-pace-zone-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Input Method</label>
+            <select data-running-pace-zone-calculator-target="mode" data-action="change->running-pace-zone-calculator#toggleMode" class="w-full">
+              <option value="race">From Race Time</option>
+              <option value="threshold">From Threshold Pace</option>
+            </select>
+          </div>
+          <div data-running-pace-zone-calculator-target="thresholdFields" class="hidden space-y-3">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400">Threshold Pace (/km)</label>
+            <div class="flex gap-2">
+              <input type="number" inputmode="numeric" data-running-pace-zone-calculator-target="thresholdMin" data-action="input->running-pace-zone-calculator#calculate" class="w-20" placeholder="5" min="0">
+              <span class="self-center text-gray-500">:</span>
+              <input type="number" inputmode="numeric" data-running-pace-zone-calculator-target="thresholdSec" data-action="input->running-pace-zone-calculator#calculate" class="w-20" placeholder="00" min="0" max="59">
+            </div>
+          </div>
+          <div data-running-pace-zone-calculator-target="raceFields" class="space-y-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Race Distance</label>
+              <select data-running-pace-zone-calculator-target="raceDistance" data-action="change->running-pace-zone-calculator#calculate" class="w-full">
+                <option value="5k">5K</option>
+                <option value="10k">10K</option>
+                <option value="half_marathon">Half Marathon</option>
+                <option value="marathon">Marathon</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Race Time</label>
+              <div class="flex gap-2 items-center">
+                <input type="number" inputmode="numeric" data-running-pace-zone-calculator-target="raceTimeH" data-action="input->running-pace-zone-calculator#calculate" class="w-16" placeholder="0" min="0">
+                <span class="text-gray-500">h</span>
+                <input type="number" inputmode="numeric" data-running-pace-zone-calculator-target="raceTimeM" data-action="input->running-pace-zone-calculator#calculate" class="w-16" placeholder="25" min="0" max="59">
+                <span class="text-gray-500">m</span>
+                <input type="number" inputmode="numeric" data-running-pace-zone-calculator-target="raceTimeS" data-action="input->running-pace-zone-calculator#calculate" class="w-16" placeholder="00" min="0" max="59">
+                <span class="text-gray-500">s</span>
+              </div>
+            </div>
+          </div>
+          <div class="pt-2">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Threshold Pace</span>
+              <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-running-pace-zone-calculator-target="thresholdPace">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Training Zones</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Zone 1 – Easy</span>
+              <span class="text-lg font-bold text-green-500" data-running-pace-zone-calculator-target="zone1">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Zone 2 – Aerobic</span>
+              <span class="text-lg font-bold text-lime-500" data-running-pace-zone-calculator-target="zone2">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Zone 3 – Tempo</span>
+              <span class="text-lg font-bold text-yellow-500" data-running-pace-zone-calculator-target="zone3">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Zone 4 – VO2max</span>
+              <span class="text-lg font-bold text-orange-500" data-running-pace-zone-calculator-target="zone4">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Zone 5 – Speed</span>
+              <span class="text-lg font-bold text-red-500" data-running-pace-zone-calculator-target="zone5">—</span>
+            </div>
+          </div>
+          <button data-action="click->running-pace-zone-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "running-pace-zone" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Running Pace Zone Calculator Works</h2>
+      <p>
+        This calculator generates five personalized training pace zones based on either a recent race result or your known threshold pace. Enter a 5K, 10K, half marathon, or marathon time, and the calculator estimates your threshold pace using established conversion factors, then derives zone boundaries as percentages of that threshold. Alternatively, enter your threshold pace directly if you know it from a recent time trial or lab test.
+      </p>
+      <p>
+        Training with pace zones ensures each workout targets the intended physiological system. Running too fast on easy days undermines recovery, while running too slow on hard days fails to provide sufficient stimulus for improvement. Zone-based training, particularly the polarized approach where 80% of volume is easy and 20% is hard, has been shown to produce the best long-term results for runners at all levels.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the Five Training Zones</h2>
+      <p>
+        <strong>Zone 1 (125-140% of threshold pace) - Easy/Recovery:</strong> Comfortable, conversational pace for recovery runs and warm-ups. This zone builds aerobic base without taxing the body. Most of your weekly mileage should be here.
+      </p>
+      <p>
+        <strong>Zone 2 (110-125% of threshold pace) - Aerobic/Endurance:</strong> Moderate pace for long runs and steady-state aerobic development. You can speak in short sentences. This zone improves fat metabolism and mitochondrial density.
+      </p>
+      <p>
+        <strong>Zone 3 (97-110% of threshold pace) - Tempo/Threshold:</strong> Comfortably hard pace at or near your lactate threshold. Sustained efforts of 20-40 minutes in this zone improve your ability to clear lactate and sustain faster paces.
+      </p>
+      <p>
+        <strong>Zone 4 (88-97% of threshold pace) - VO2max/Interval:</strong> Hard intervals of 3-5 minutes to improve maximal oxygen uptake. These are run at approximately 3K-5K race pace with recovery between efforts.
+      </p>
+      <p>
+        <strong>Zone 5 (78-88% of threshold pace) - Speed/Repetition:</strong> Very fast repeats of 200-400 meters to develop speed, running economy, and neuromuscular coordination. Full recovery between reps is essential.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What are running pace zones?</h3>
+      <p>Running pace zones are training pace ranges corresponding to different intensity levels from easy recovery to maximum speed, each targeting specific physiological adaptations.</p>
+
+      <h3>How do I find my threshold pace?</h3>
+      <p>Estimate from a recent race (10K pace is close to threshold) or run a 20-minute time trial at maximum sustainable effort.</p>
+
+      <h3>How much training should be easy?</h3>
+      <p>Most elite coaches recommend 80% easy (Zone 1-2) and 20% hard (Zone 3-5) for optimal improvement and recovery.</p>
+
+      <h3>Can I use these for treadmill running?</h3>
+      <p>Yes, but treadmill pace often feels easier. Set 1% incline to approximate outdoor effort, or use heart rate monitoring for more accurate intensity control.</p>
+
+      <h3>How often should I update my zones?</h3>
+      <p>Update your zones whenever you run a new race or time trial, typically every 8-12 weeks. As fitness improves, your threshold pace will get faster and zones will shift accordingly.</p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Pace Calculator", description: "Calculate running pace, time, or distance from two known values.", path: health_pace_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Heart Rate Zone Calculator", description: "Calculate heart rate training zones using the Karvonen method.", path: health_heart_rate_zone_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" },
+      { name: "Calorie Calculator", description: "Estimate your daily calorie needs based on your age, weight, height, and activity level.", path: health_calorie_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <% blog_posts = related_blog_posts("running-pace-zone-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

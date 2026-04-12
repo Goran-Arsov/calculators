@@ -1,0 +1,173 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Color Contrast Checker WCAG - Check AA/AAA Compliance",
+  description: "Check WCAG 2.1 color contrast ratio between foreground and background colors. Test AA and AAA compliance for normal and large text. Free accessibility tool.",
+  canonical: everyday_color_contrast_checker_url,
+  og: {
+    title: "Color Contrast Checker WCAG - AA/AAA Compliance | CalcWise",
+    description: "Check WCAG 2.1 contrast ratio. Test AA and AAA compliance for text accessibility.",
+    url: everyday_color_contrast_checker_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Everyday", url: category_url("everyday") },
+  { name: "Color Contrast Checker", url: everyday_color_contrast_checker_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the WCAG contrast ratio?", answer: "The WCAG contrast ratio measures the difference in perceived brightness between two colors. It ranges from 1:1 (no contrast, same color) to 21:1 (maximum contrast, black on white). The ratio is calculated using the relative luminance of each color with the formula (L1 + 0.05) / (L2 + 0.05), where L1 is the lighter color's luminance and L2 is the darker color's luminance." },
+  { question: "What are the WCAG AA and AAA requirements?", answer: "WCAG AA requires a minimum contrast ratio of 4.5:1 for normal text and 3:1 for large text (18px bold or 24px regular). WCAG AAA requires 7:1 for normal text and 4.5:1 for large text. AA is the recommended minimum for most websites, while AAA provides enhanced accessibility for users with more severe visual impairments." },
+  { question: "How is relative luminance calculated?", answer: "Relative luminance uses the formula L = 0.2126R + 0.7152G + 0.0722B, where R, G, B are linearized sRGB values. Linearization converts each 8-bit color channel (0-255) to a 0-1 range, then applies a gamma correction: values <= 0.04045 are divided by 12.92, and values > 0.04045 use ((value + 0.055) / 1.055)^2.4. The coefficients reflect the human eye's sensitivity to each color." },
+  { question: "What counts as large text?", answer: "According to WCAG, large text is defined as 18 points (24 CSS pixels) or larger for regular weight, or 14 points (approximately 18.66 CSS pixels) or larger for bold weight. Large text has a lower contrast requirement because its larger size makes it inherently more readable, even with less contrast between foreground and background." },
+  { question: "Why is color contrast important for accessibility?", answer: "Approximately 300 million people worldwide have color vision deficiency, and many more have low vision or read screens in challenging conditions like bright sunlight. Sufficient contrast ensures that text is readable by the widest possible audience. Many countries legally require websites to meet WCAG AA standards, making contrast compliance both an ethical and legal concern." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Color Contrast Checker WCAG",
+  description: "Check WCAG 2.1 AA and AAA contrast ratio between foreground and background colors.",
+  url: everyday_color_contrast_checker_url,
+  category: "UtilityApplication",
+  calculator_slug: "color-contrast-checker"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Everyday", url: category_path("everyday") },
+  { name: "Color Contrast Checker" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Color Contrast Checker WCAG</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Check the contrast ratio between two colors against WCAG 2.1 AA and AAA accessibility standards.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="color-contrast-checker-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Foreground (Text) Color</label>
+            <div class="flex gap-2 items-center">
+              <input type="color" value="#000000" data-action="input->color-contrast-checker-calculator#calculate" class="w-10 h-10 rounded border-0 cursor-pointer"
+                     oninput="this.nextElementSibling.value = this.value">
+              <input type="text" data-color-contrast-checker-calculator-target="foreground" data-action="input->color-contrast-checker-calculator#calculate" class="flex-1 font-mono" placeholder="#000000" value="#000000">
+            </div>
+            <div data-color-contrast-checker-calculator-target="fgPreview" class="mt-2 w-full h-6 rounded" style="background-color: #000000;"></div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Background Color</label>
+            <div class="flex gap-2 items-center">
+              <input type="color" value="#FFFFFF" data-action="input->color-contrast-checker-calculator#calculate" class="w-10 h-10 rounded border-0 cursor-pointer"
+                     oninput="this.nextElementSibling.value = this.value">
+              <input type="text" data-color-contrast-checker-calculator-target="background" data-action="input->color-contrast-checker-calculator#calculate" class="flex-1 font-mono" placeholder="#FFFFFF" value="#FFFFFF">
+            </div>
+            <div data-color-contrast-checker-calculator-target="bgPreview" class="mt-2 w-full h-6 rounded" style="background-color: #FFFFFF;"></div>
+          </div>
+          <button data-action="click->color-contrast-checker-calculator#swap" class="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium transition-all duration-200">Swap Colors</button>
+        </div>
+
+        <div aria-live="polite" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Contrast Ratio</h2>
+          <div class="text-center mb-4">
+            <span class="text-4xl font-bold text-blue-600 dark:text-blue-400" data-color-contrast-checker-calculator-target="resultRatio">21:1</span>
+          </div>
+
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">AA Normal (4.5:1)</span>
+              <span data-color-contrast-checker-calculator-target="resultAaNormal" class="font-bold text-green-600">Pass</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">AA Large (3:1)</span>
+              <span data-color-contrast-checker-calculator-target="resultAaLarge" class="font-bold text-green-600">Pass</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">AAA Normal (7:1)</span>
+              <span data-color-contrast-checker-calculator-target="resultAaaNormal" class="font-bold text-green-600">Pass</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">AAA Large (4.5:1)</span>
+              <span data-color-contrast-checker-calculator-target="resultAaaLarge" class="font-bold text-green-600">Pass</span>
+            </div>
+          </div>
+
+          <div data-color-contrast-checker-calculator-target="preview" class="mt-4 p-4 rounded-xl text-center font-medium" style="color: #000000; background-color: #FFFFFF;">
+            Sample text preview
+          </div>
+
+          <div data-color-contrast-checker-calculator-target="error" class="hidden mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 text-sm"></div>
+          <button data-action="click->color-contrast-checker-calculator#copy" class="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm text-sm font-medium transition-all duration-200">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "color-contrast-checker" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Understanding WCAG Color Contrast</h2>
+      <p>
+        The Web Content Accessibility Guidelines (WCAG) define minimum contrast ratios to ensure text is readable by people with visual impairments. The contrast ratio measures the difference in perceived brightness between foreground and background colors. A ratio of 1:1 means no difference (same color), while 21:1 is the maximum (pure black on pure white).
+      </p>
+      <p>
+        This tool calculates the exact contrast ratio using the WCAG 2.1 algorithm. It linearizes sRGB color values, computes relative luminance using the formula L = 0.2126R + 0.7152G + 0.0722B, and then calculates the ratio as (L1 + 0.05) / (L2 + 0.05). The results show whether your color combination passes AA and AAA standards for both normal and large text.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>WCAG Compliance Levels</h2>
+      <p>
+        AA compliance is the minimum recommended standard. It requires 4.5:1 contrast for normal text (under 18pt or 14pt bold) and 3:1 for large text. AAA compliance provides enhanced accessibility with 7:1 for normal text and 4.5:1 for large text. Most websites aim for AA compliance at minimum, with AAA being the gold standard for organizations committed to maximum accessibility.
+      </p>
+
+      <h3>The Luminance Formula</h3>
+      <p>
+        The relative luminance formula weights the three color channels differently because the human eye is most sensitive to green light, somewhat sensitive to red, and least sensitive to blue. The coefficients 0.2126 (red), 0.7152 (green), and 0.0722 (blue) reflect this biological reality. Before applying these weights, each color value undergoes gamma correction to convert from the non-linear sRGB space to linear light values.
+      </p>
+
+      <h3>Tips for Improving Contrast</h3>
+      <p>
+        If your color combination fails a WCAG level, try darkening the foreground or lightening the background. For colored text on colored backgrounds, increasing the lightness difference between the two colors improves contrast. Avoid placing text on busy backgrounds or images without a semi-transparent overlay. Test your colors in both light and dark modes to ensure accessibility in all contexts.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the WCAG contrast ratio?</h3>
+      <p>A measure of brightness difference between two colors, ranging from 1:1 to 21:1, calculated from relative luminance values.</p>
+
+      <h3>What are the AA and AAA requirements?</h3>
+      <p>AA: 4.5:1 normal text, 3:1 large text. AAA: 7:1 normal text, 4.5:1 large text. AA is the minimum recommended standard.</p>
+
+      <h3>How is relative luminance calculated?</h3>
+      <p>L = 0.2126R + 0.7152G + 0.0722B with linearized sRGB values. The coefficients reflect human eye sensitivity to each color.</p>
+
+      <h3>What is large text?</h3>
+      <p>18pt (24px) regular weight or 14pt (18.66px) bold weight. Large text has lower contrast requirements due to its inherent readability.</p>
+
+      <h3>Why is contrast important?</h3>
+      <p>300 million people have color vision deficiency. Sufficient contrast ensures text readability for everyone, including in challenging viewing conditions.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Color Converter", description: "Convert between HEX, RGB, HSL color formats.", path: everyday_color_converter_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
+      { name: "Color Palette Picker", description: "Generate harmonious color palettes.", path: everyday_color_palette_picker_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
+      { name: "CSS Box Shadow Generator", description: "Generate CSS box-shadow values visually.", path: everyday_css_box_shadow_path, icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "everyday" %>
+    <% blog_posts = related_blog_posts("color-contrast-checker") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

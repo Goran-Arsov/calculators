@@ -1,0 +1,182 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Hearing Loss Decibel Exposure Calculator - NIOSH & OSHA Standards",
+  description: "Calculate safe noise exposure time at any decibel level using NIOSH and OSHA standards. Find out if your noise exposure exceeds recommended limits.",
+  canonical: health_hearing_loss_exposure_url,
+  og: {
+    title: "Hearing Loss Decibel Exposure Calculator | CalcWise",
+    description: "Calculate safe noise exposure time using NIOSH and OSHA standards. Enter decibel level to find maximum safe duration and noise dose percentage.",
+    url: health_hearing_loss_exposure_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%# JSON-LD schemas %>
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Health", url: category_url("health") },
+  { name: "Hearing Loss Exposure Calculator", url: health_hearing_loss_exposure_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the NIOSH recommended noise exposure limit?", answer: "NIOSH (National Institute for Occupational Safety and Health) recommends a maximum exposure of 85 decibels for 8 hours using a 3 dB exchange rate. This means every 3 dB increase above 85 dB cuts the safe exposure time in half. At 88 dB, safe exposure is 4 hours. At 91 dB, it is 2 hours. At 100 dB, it is only 15 minutes." },
+  { question: "What is the difference between NIOSH and OSHA standards?", answer: "NIOSH uses a base of 85 dB for 8 hours with a 3 dB exchange rate, which is more protective. OSHA uses a base of 90 dB for 8 hours with a 5 dB exchange rate. The NIOSH standard is considered more scientifically accurate because it is based on equal energy, while OSHA's standard is a regulatory minimum that may not prevent all hearing damage." },
+  { question: "What is the 3 dB exchange rate?", answer: "The 3 dB exchange rate means that every 3 dB increase in sound level doubles the sound energy and halves the safe exposure time. This is based on the equal energy principle: the total noise dose (intensity multiplied by time) should remain constant. NIOSH uses this rate, while OSHA uses a less protective 5 dB rate." },
+  { question: "What decibel level causes immediate hearing damage?", answer: "Sounds above 120 dB can cause pain and immediate hearing damage. Impulse noises like gunshots (140-165 dB) or explosions can cause instantaneous permanent damage. Even brief exposure to sounds above 130 dB can rupture the eardrum. Any noise above 85 dB can cause damage with prolonged exposure." },
+  { question: "How loud are common everyday sounds?", answer: "Normal conversation is about 60 dB, a vacuum cleaner is 70 dB, city traffic is 80 dB, a lawn mower is 85 dB (the NIOSH threshold), a motorcycle is 95 dB, a concert or nightclub is 105 dB, a chainsaw is 110 dB, and an ambulance siren is 120 dB. Sounds above 85 dB require hearing protection with prolonged exposure." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Hearing Loss Decibel Exposure Calculator",
+  description: "Calculate safe noise exposure time using NIOSH and OSHA occupational standards.",
+  url: health_hearing_loss_exposure_url,
+  category: "HealthApplication",
+  calculator_slug: "hearing-loss-exposure"
+) %>
+
+<%# Breadcrumbs %>
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Health", url: category_path("health") },
+  { name: "Hearing Loss Exposure Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Hearing Loss Decibel Exposure Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate safe noise exposure time at any decibel level using NIOSH and OSHA occupational health standards.</p>
+
+    <%# Ad: leaderboard %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <%# Calculator UI %>
+    <div data-controller="hearing-loss-exposure-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="hearing-db" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Decibel Level (dB)</label>
+            <input id="hearing-db" type="number" inputmode="decimal" data-hearing-loss-exposure-calculator-target="decibelLevel" data-action="input->hearing-loss-exposure-calculator#calculate" class="w-full" placeholder="85" min="1" max="200" step="1">
+          </div>
+          <div>
+            <label for="hearing-hours" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Your Exposure Duration (hours, optional)</label>
+            <input id="hearing-hours" type="number" inputmode="decimal" data-hearing-loss-exposure-calculator-target="exposureHours" data-action="input->hearing-loss-exposure-calculator#calculate" class="w-full" placeholder="8" min="0" step="0.5">
+          </div>
+          <div>
+            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Risk Level</span>
+            <div data-hearing-loss-exposure-calculator-target="riskLevel" class="text-sm font-semibold mt-1">—</div>
+          </div>
+          <div class="pt-2">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Sound Level Reference</h3>
+            <div data-hearing-loss-exposure-calculator-target="comparison" class="space-y-0.5"></div>
+          </div>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Safe Exposure Limits</h2>
+          <div class="space-y-4">
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4">
+              <h3 class="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">NIOSH (85 dB / 3 dB rate)</h3>
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-gray-600 dark:text-gray-400">Safe Time</span>
+                <span class="text-lg font-bold text-blue-600 dark:text-blue-400" data-hearing-loss-exposure-calculator-target="nioshSafe">—</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Noise Dose</span>
+                <span class="text-lg font-bold" data-hearing-loss-exposure-calculator-target="nioshDose">—</span>
+              </div>
+            </div>
+            <div class="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-4">
+              <h3 class="text-sm font-semibold text-orange-700 dark:text-orange-300 mb-2">OSHA (90 dB / 5 dB rate)</h3>
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-gray-600 dark:text-gray-400">Safe Time</span>
+                <span class="text-lg font-bold text-orange-600 dark:text-orange-400" data-hearing-loss-exposure-calculator-target="oshaSafe">—</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400">Noise Dose</span>
+                <span class="text-lg font-bold" data-hearing-loss-exposure-calculator-target="oshaDose">—</span>
+              </div>
+            </div>
+          </div>
+          <button data-action="click->hearing-loss-exposure-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%# Ad: in_results %>
+    <%= render "shared/calculator_rating", slug: "hearing-loss-exposure" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <%# SEO Article Content %>
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Hearing Loss Exposure Calculator Works</h2>
+      <p>
+        This calculator uses the standard occupational noise formulas from NIOSH and OSHA to determine how long you can safely be exposed to a given decibel level. Enter the noise level in decibels and optionally your actual exposure duration to see if you are within safe limits. The calculator shows results for both NIOSH (more protective, 3 dB exchange rate) and OSHA (regulatory minimum, 5 dB exchange rate) standards.
+      </p>
+      <p>
+        Noise-induced hearing loss is one of the most common occupational health conditions and is entirely preventable. The key principle is that both the intensity and duration of noise exposure determine the risk. A louder sound for a shorter time can cause the same damage as a quieter sound over a longer period. This is why occupational standards define safe exposure as a combination of decibel level and time.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Understanding the NIOSH and OSHA Standards</h2>
+      <p>
+        NIOSH recommends a maximum of 85 dB for 8 hours, using a 3 dB exchange rate. This means every 3 dB increase halves the safe time: 88 dB for 4 hours, 91 dB for 2 hours, 94 dB for 1 hour, and so on. The formula is: Safe Time = 8 / 2^((dB - 85) / 3). This 3 dB rate is based on the equal energy principle and is considered more scientifically accurate.
+      </p>
+      <p>
+        OSHA's permissible exposure limit is 90 dB for 8 hours with a 5 dB exchange rate. The formula is: Safe Time = 8 / 2^((dB - 90) / 5). This is less protective than NIOSH but is the legally enforceable standard in many workplaces. Both organizations agree that hearing protection must be provided when exposures approach or exceed these limits.
+      </p>
+
+      <h3>Common Noise Levels and Safe Exposure</h3>
+      <p>
+        At 85 dB (lawn mower), NIOSH allows 8 hours. At 95 dB (motorcycle), safe exposure drops to about 47 minutes under NIOSH. At 105 dB (concert), you have less than 5 minutes of safe exposure. At 110 dB (chainsaw), NIOSH allows only about 1.5 minutes. These dramatically short safe times for common activities highlight why hearing protection is so important.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the NIOSH noise exposure limit?</h3>
+      <p>
+        NIOSH recommends 85 dB for 8 hours maximum, with every 3 dB increase halving the safe time. At 100 dB, safe exposure is only about 15 minutes.
+      </p>
+
+      <h3>What is the difference between NIOSH and OSHA?</h3>
+      <p>
+        NIOSH uses 85 dB/3 dB (more protective, science-based). OSHA uses 90 dB/5 dB (regulatory minimum). NIOSH is recommended for preventing hearing loss; OSHA is the legal requirement.
+      </p>
+
+      <h3>What level causes immediate damage?</h3>
+      <p>
+        Sounds above 120 dB can cause pain and immediate damage. Impulse noises like gunshots (140-165 dB) can cause instantaneous permanent hearing loss.
+      </p>
+
+      <h3>How loud are common sounds?</h3>
+      <p>
+        Conversation is 60 dB, city traffic 80 dB, lawn mower 85 dB, motorcycle 95 dB, concert 105 dB, chainsaw 110 dB, ambulance siren 120 dB.
+      </p>
+
+      <h3>What is noise dose percentage?</h3>
+      <p>
+        Noise dose is your actual exposure time divided by the safe exposure time, expressed as a percentage. A dose over 100% means you have exceeded the recommended limit and are at increased risk of hearing damage.
+      </p>
+
+    <%= render "shared/print_button" %>
+    <%= render "shared/calculation_email_capture" %>
+</article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Blood Pressure Calculator", description: "Check your blood pressure category and get health recommendations.", path: health_blood_pressure_path, icon_path: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" },
+      { name: "Biological Age Calculator", description: "Estimate your biological age based on lifestyle factors.", path: health_biological_age_path, icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+      { name: "Sleep Calculator", description: "Calculate optimal bedtime and wake-up times based on sleep cycles.", path: health_sleep_path, icon_path: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "health" %>
+
+    <% blog_posts = related_blog_posts("hearing-loss-exposure-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+
+  </div>
+
+  <%# Sidebar %>
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

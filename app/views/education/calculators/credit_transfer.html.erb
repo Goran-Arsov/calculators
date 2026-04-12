@@ -1,0 +1,184 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Credit Transfer Calculator - Transferable Credits & Savings",
+  description: "Calculate how many college credits will transfer, remaining credits needed, estimated time to graduate, and cost savings when switching schools.",
+  canonical: education_credit_transfer_url,
+  og: {
+    title: "Credit Transfer Calculator - Transferable Credits & Savings | CalcWise",
+    description: "Calculate how many college credits will transfer, remaining credits needed, estimated time to graduate, and cost savings when switching schools.",
+    url: education_credit_transfer_url,
+    type: "website",
+    site_name: "CalcWise"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Education", url: category_url("education") },
+  { name: "Credit Transfer Calculator", url: education_credit_transfer_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many credits typically transfer between colleges?", answer: "Transfer rates vary widely. Between community colleges and in-state public universities with articulation agreements, 80-100% of credits often transfer. Between unrelated four-year institutions, expect 50-75% of credits to transfer. Credits are more likely to transfer if the courses have equivalent offerings at the receiving institution." },
+  { question: "What determines if a credit will transfer?", answer: "The receiving institution evaluates each course for equivalency with their own curriculum. Factors include course content, credit hours, grade earned (typically C or higher), accreditation of the sending institution, and whether the course fulfills a requirement in your new degree program. General education courses transfer most reliably." },
+  { question: "Do AP and CLEP credits transfer?", answer: "Most colleges accept AP credits for scores of 3 or higher, though selective institutions may require 4 or 5. CLEP credits are accepted by about 2,900 colleges. However, transfer policies vary by institution, and some departments may not accept standardized exam credits for major-specific courses." },
+  { question: "How can I maximize credit transfer?", answer: "Research the receiving institution's transfer credit policies before enrolling. Use articulation agreements and transfer guides. Take courses that have clear equivalents at your target school. Maintain a GPA above the minimum transfer threshold. Keep all syllabi and course descriptions as they may be needed for course-by-course evaluation." },
+  { question: "What happens to credits that do not transfer?", answer: "Non-transferable credits may still appear on your transcript as elective credit, which counts toward total credit hours but may not fulfill specific degree requirements. In the worst case, you may need to retake equivalent courses at the new institution, adding time and cost to your degree." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Credit Transfer Calculator",
+  description: "Calculate transferable college credits, remaining requirements, estimated time to graduation, and cost savings when transferring schools.",
+  url: education_credit_transfer_url,
+  category: "EducationalApplication",
+  calculator_slug: "credit-transfer"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Education", url: category_path("education") },
+  { name: "Credit Transfer Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Credit Transfer Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate transferable credits, remaining requirements, estimated graduation timeline, and cost savings when switching colleges.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="credit-transfer-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="ct-total-earned" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Total Credits Earned</label>
+            <input id="ct-total-earned" type="number" inputmode="numeric" data-credit-transfer-calculator-target="totalCreditsEarned" data-action="input->credit-transfer-calculator#calculate" class="w-full" placeholder="60" step="1" min="0">
+          </div>
+          <div>
+            <label for="ct-transferable" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Transferable Credits</label>
+            <input id="ct-transferable" type="number" inputmode="numeric" data-credit-transfer-calculator-target="transferableCredits" data-action="input->credit-transfer-calculator#calculate" class="w-full" placeholder="48" step="1" min="0">
+          </div>
+          <div>
+            <label for="ct-degree-required" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Degree Credits Required</label>
+            <input id="ct-degree-required" type="number" inputmode="numeric" data-credit-transfer-calculator-target="degreeCreditsRequired" data-action="input->credit-transfer-calculator#calculate" class="w-full" value="120" step="1" min="1">
+          </div>
+          <div>
+            <label for="ct-cost-old" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Cost per Credit (Previous School) ($)</label>
+            <input id="ct-cost-old" type="number" inputmode="decimal" data-credit-transfer-calculator-target="costPerCreditOld" data-action="input->credit-transfer-calculator#calculate" class="w-full" placeholder="150" step="10" min="0">
+          </div>
+          <div>
+            <label for="ct-cost-new" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Cost per Credit (New School) ($)</label>
+            <input id="ct-cost-new" type="number" inputmode="decimal" data-credit-transfer-calculator-target="costPerCreditNew" data-action="input->credit-transfer-calculator#calculate" class="w-full" placeholder="350" step="10" min="0">
+          </div>
+          <div>
+            <label for="ct-per-semester" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Credits per Semester</label>
+            <input id="ct-per-semester" type="number" inputmode="numeric" data-credit-transfer-calculator-target="creditsPerSemester" data-action="input->credit-transfer-calculator#calculate" class="w-full" value="15" step="1" min="1">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Transfer Analysis</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Transfer Rate</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-credit-transfer-calculator-target="transferRate">0%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Credits Lost</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-credit-transfer-calculator-target="creditsLost">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Remaining Credits</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-credit-transfer-calculator-target="remainingCredits">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Remaining Semesters</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-credit-transfer-calculator-target="remainingSemesters">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Remaining Time</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-credit-transfer-calculator-target="remainingYears">0 years</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost of Remaining</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-credit-transfer-calculator-target="costOfRemaining">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost w/o Transfer</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-credit-transfer-calculator-target="costIfNoTransfer">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Cost Savings</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-credit-transfer-calculator-target="costSavings">$0.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Time Saved</span>
+              <span class="text-xl font-bold text-green-600 dark:text-green-400" data-credit-transfer-calculator-target="timeSavedSemesters">0 semesters</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Value of Lost Credits</span>
+              <span class="text-xl font-bold text-amber-600 dark:text-amber-400" data-credit-transfer-calculator-target="valueOfLostCredits">$0.00</span>
+            </div>
+          </div>
+          <button data-action="click->credit-transfer-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl shadow-sm shadow-green-500/20 hover:shadow-md hover:shadow-green-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "credit-transfer" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Credit Transfer Calculator</h2>
+      <p>
+        Enter the total credits you have earned at your current or previous institution and the number you expect to transfer to your new school. Specify the degree requirements at the new institution (typically 120 credits for a bachelor's degree) and the cost per credit at both schools. The calculator computes your transfer rate, remaining time to graduation, cost savings from transferred credits, and the financial value of any credits lost in the transfer process.
+      </p>
+      <p>
+        To determine your transferable credits, request a preliminary transfer credit evaluation from the admissions office of the receiving institution. Many schools offer online tools where you can look up course equivalencies. Articulation agreements between community colleges and state universities provide the most predictable transfer outcomes, often guaranteeing that specific courses transfer as direct equivalents.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Maximizing Your Credit Transfer</h2>
+      <p>
+        The community college to university pathway remains one of the most cost-effective strategies in higher education. Students who complete an associate degree at a community college and transfer to a four-year institution can save 40-60% on their total degree cost. Many states have guaranteed transfer agreements that accept all credits from a completed associate degree, eliminating credit loss entirely.
+      </p>
+
+      <h3>When Credits Are Lost in Transfer</h3>
+      <p>
+        Credits are most commonly lost when the receiving institution has no equivalent course, when the grade is below their minimum transfer threshold (usually a C), or when the sending institution lacks proper accreditation. Specialized or highly technical courses are less likely to transfer than general education requirements. Keeping detailed syllabi and course descriptions can help the evaluation process.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many credits typically transfer between colleges?</h3>
+      <p>Between community colleges and in-state public universities with articulation agreements, 80-100% of credits often transfer. Between unrelated four-year institutions, expect 50-75% of credits to transfer.</p>
+
+      <h3>What determines if a credit will transfer?</h3>
+      <p>The receiving institution evaluates each course for equivalency. Factors include course content, credit hours, grade earned, accreditation of the sending institution, and whether the course fulfills a requirement.</p>
+
+      <h3>Do AP and CLEP credits transfer?</h3>
+      <p>Most colleges accept AP credits for scores of 3 or higher. CLEP credits are accepted by about 2,900 colleges. Policies vary by institution and department.</p>
+
+      <h3>How can I maximize credit transfer?</h3>
+      <p>Research the receiving institution's policies before enrolling. Use articulation agreements, take courses with clear equivalents, maintain a good GPA, and keep all syllabi.</p>
+
+      <h3>What happens to credits that do not transfer?</h3>
+      <p>Non-transferable credits may still appear as elective credit, counting toward total hours but not specific requirements. In the worst case, you may need to retake equivalent courses.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "College Cost Comparison Calculator", description: "Compare total cost of two colleges side by side.", path: education_college_cost_comparison_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+      { name: "Student Loan Forgiveness Calculator", description: "Estimate savings under PSLF and IDR programs.", path: education_student_loan_forgiveness_path, icon_path: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" },
+      { name: "Tuition Savings 529 Calculator", description: "Project 529 plan growth with tax-free earnings.", path: education_tuition_savings_529_path, icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "education" %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
