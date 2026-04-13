@@ -49,6 +49,26 @@ export default class extends Controller {
   }
 
   keydown(event) {
+    // Enter and Escape work even when the dropdown is empty/hidden.
+    if (event.key === "Enter") {
+      event.preventDefault()
+      const options = this.listTarget.querySelectorAll(".search-option")
+      // If the user picked an option with the arrow keys, follow it.
+      if (this.selectedIndex >= 0 && options[this.selectedIndex]) {
+        options[this.selectedIndex].click()
+        return
+      }
+      // Otherwise navigate to the full results page for the typed query.
+      this.goToResults()
+      return
+    }
+
+    if (event.key === "Escape") {
+      this.hide()
+      this.inputTarget.blur()
+      return
+    }
+
     const options = this.listTarget.querySelectorAll(".search-option")
     if (!options.length) return
 
@@ -60,32 +80,22 @@ export default class extends Controller {
       event.preventDefault()
       this.selectedIndex = Math.max(this.selectedIndex - 1, 0)
       this.highlight(options)
-    } else if (event.key === "Enter") {
-      event.preventDefault()
-      if (this.dropdownTarget.classList.contains("hidden")) {
-        this.search()
-        var freshOptions = this.listTarget.querySelectorAll(".search-option")
-        if (freshOptions.length > 0) freshOptions[0].click()
-      } else if (this.selectedIndex >= 0 && options[this.selectedIndex]) {
-        options[this.selectedIndex].click()
-      } else if (options.length > 0) {
-        options[0].click()
-      }
-    } else if (event.key === "Escape") {
-      this.hide()
-      this.inputTarget.blur()
     }
   }
 
   submitSearch() {
     const options = this.listTarget.querySelectorAll(".search-option")
-    if (options.length > 0) {
-      if (this.selectedIndex >= 0 && options[this.selectedIndex]) {
-        options[this.selectedIndex].click()
-      } else {
-        options[0].click()
-      }
+    if (this.selectedIndex >= 0 && options[this.selectedIndex]) {
+      options[this.selectedIndex].click()
+      return
     }
+    this.goToResults()
+  }
+
+  goToResults() {
+    const query = this.inputTarget.value.trim()
+    if (query.length === 0) return
+    window.location.href = `/search?q=${encodeURIComponent(query)}`
   }
 
   highlight(options) {

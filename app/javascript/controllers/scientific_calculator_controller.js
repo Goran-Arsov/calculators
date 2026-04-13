@@ -318,6 +318,10 @@ export default class extends Controller {
 
   // --- Keyboard support ---
   handleKeydown(event) {
+    // Don't hijack typing in form fields elsewhere on the page (e.g. the navbar search).
+    const tag = event.target.tagName
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || event.target.isContentEditable) return
+
     const key = event.key
 
     if (/^[\d.+\-*/^%()]$/.test(key)) {

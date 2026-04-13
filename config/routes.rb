@@ -46,6 +46,9 @@ Rails.application.routes.draw do
   # Browse all
   get "browse", to: "browse#index", as: :browse
 
+  # Search by name across calculators and tools
+  get "search", to: "search#index", as: :search
+
   # IT Tools
   get "information-technology", to: "it_tools#index", as: :it_tools
 
