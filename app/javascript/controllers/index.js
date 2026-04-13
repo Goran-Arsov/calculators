@@ -388,6 +388,7 @@ import PasswordStrengthCalculatorController from "controllers/password_strength_
 import ScreenSizeCalculatorController from "controllers/screen_size_calculator_controller"
 import BandwidthCalculatorController from "controllers/bandwidth_calculator_controller"
 import UnitPriceCalculatorController from "controllers/unit_price_calculator_controller"
+import SplitBillCalculatorController from "controllers/split_bill_calculator_controller"
 
 // Suite controllers
 // Cooking calculators
@@ -715,6 +716,7 @@ application.register("password-strength-calculator", PasswordStrengthCalculatorC
 application.register("screen-size-calculator", ScreenSizeCalculatorController)
 application.register("bandwidth-calculator", BandwidthCalculatorController)
 application.register("unit-price-calculator", UnitPriceCalculatorController)
+application.register("split-bill-calculator", SplitBillCalculatorController)
 application.register("secure-random-calculator", SecureRandomCalculatorController)
 application.register("uuid-generator-calculator", UuidGeneratorCalculatorController)
 application.register("hash-generator-calculator", HashGeneratorCalculatorController)
