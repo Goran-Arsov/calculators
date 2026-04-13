@@ -9,8 +9,8 @@
       <%= button_to "Log Out", admin_logout_path, method: :delete, class: "px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 border border-gray-300 dark:border-gray-700 rounded-lg hover:border-red-300 dark:hover:border-red-700 transition-colors" %>
     </div>
   </div>
-  <p class="text-gray-500 dark:text-gray-400 mb-8">
-    <%= pluralize(@total, "photo") %> · all converted to JPG, max 2000 px<% if @total_pages > 1 %> · page <%= @page %> of <%= @total_pages %><% end %>.
+  <p class="text-gray-500 dark:text-gray-400 mb-6">
+    <%= pluralize(@total, "photo") %><% if @active_tag %> tagged "<%= @active_tag %>"<% end %> · all converted to JPG, max 2000 px<% if @total_pages > 1 %> · page <%= @page %> of <%= @total_pages %><% end %>.
   </p>
 
   <% if flash[:notice] %>
@@ -18,6 +18,24 @@
   <% end %>
   <% if flash[:alert] %>
     <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-sm"><%= flash[:alert] %></div>
+  <% end %>
+
+  <% if @all_tags.any? %>
+    <div class="mb-6 flex flex-wrap items-center gap-2">
+      <span class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mr-1">Tags</span>
+      <% if @active_tag %>
+        <%= link_to "All photos", admin_photos_path, class: "px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-700 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+      <% else %>
+        <span class="px-3 py-1 text-xs font-semibold bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full">All photos</span>
+      <% end %>
+      <% @all_tags.each do |tag| %>
+        <% if tag == @active_tag %>
+          <span class="px-3 py-1 text-xs font-semibold bg-blue-600 text-white rounded-full"><%= tag %></span>
+        <% else %>
+          <%= link_to tag, admin_photos_path(tag: tag), class: "px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-700 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+        <% end %>
+      <% end %>
+    </div>
   <% end %>
 
   <% if @photos.any? %>
@@ -40,6 +58,13 @@
               </p>
             <% end %>
             <p class="text-xs text-gray-400 dark:text-gray-500"><%= photo.created_at.strftime("%Y-%m-%d %H:%M") %></p>
+            <% if photo.tags.present? %>
+              <div class="mt-1.5 flex flex-wrap gap-1">
+                <% photo.tags.each do |tag| %>
+                  <span class="px-1.5 py-0.5 text-[10px] font-medium text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 rounded"><%= tag %></span>
+                <% end %>
+              </div>
+            <% end %>
             <%= button_to "Delete", admin_photo_path(photo), method: :delete,
                   data: { turbo_confirm: "Delete this photo?" },
                   class: "mt-2 w-full px-2 py-1 text-xs text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" %>
@@ -51,7 +76,7 @@
     <% if @total_pages > 1 %>
       <nav class="mt-8 flex items-center justify-between">
         <% if @page > 1 %>
-          <%= link_to "← Previous", admin_photos_path(page: @page - 1), class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+          <%= link_to "← Previous", admin_photos_path(page: @page - 1, tag: @active_tag), class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
         <% else %>
           <span class="px-4 py-2 text-sm font-medium text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-lg cursor-not-allowed">← Previous</span>
         <% end %>
@@ -59,7 +84,7 @@
         <span class="text-sm text-gray-500 dark:text-gray-400">Page <%= @page %> of <%= @total_pages %></span>
 
         <% if @page < @total_pages %>
-          <%= link_to "Next →", admin_photos_path(page: @page + 1), class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+          <%= link_to "Next →", admin_photos_path(page: @page + 1, tag: @active_tag), class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
         <% else %>
           <span class="px-4 py-2 text-sm font-medium text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-lg cursor-not-allowed">Next →</span>
         <% end %>

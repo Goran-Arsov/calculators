@@ -12,8 +12,9 @@ class PhotoUploader
   MAX_DIMENSION = 2000
   JPG_QUALITY = 95
 
-  def initialize(uploaded_file)
+  def initialize(uploaded_file, tags: [])
     @uploaded_file = uploaded_file
+    @tags = Array(tags)
   end
 
   def call
@@ -48,7 +49,8 @@ class PhotoUploader
       width: width,
       height: height,
       jpg_quality: JPG_QUALITY,
-      max_dimension: MAX_DIMENSION
+      max_dimension: MAX_DIMENSION,
+      tags: @tags
     )
   rescue StandardError => e
     Rails.logger.error("[PhotoUploader] error: #{e.class}: #{e.message}")

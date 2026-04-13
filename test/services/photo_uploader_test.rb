@@ -92,6 +92,18 @@ class PhotoUploaderTest < ActiveSupport::TestCase
     assert_nil PhotoUploader.new(nil).call
   end
 
+  test "persists passed tags (normalized by the model)" do
+    source = generate_image(500, 500, "png")
+
+    photo = PhotoUploader.new(fake_upload(source, "tagged.png"), tags: [ "Sunset", " beach " ]).call
+
+    assert_not_nil photo
+    assert_equal [ "sunset", "beach" ], photo.tags
+  ensure
+    source&.close
+    source&.unlink
+  end
+
   private
 
   def generate_image(width, height, format)

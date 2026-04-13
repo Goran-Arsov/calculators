@@ -6,11 +6,14 @@ module Admin
     PER_PAGE = 60
 
     def index
-      @total = Photo.count
+      @all_tags = Photo.all_tags
+      @active_tag = params[:tag].to_s.strip.downcase.presence
+      scope = @active_tag ? Photo.with_tag(@active_tag) : Photo.all
+      @total = scope.count
       @page = [ params[:page].to_i, 1 ].max
       @total_pages = [ (@total.to_f / PER_PAGE).ceil, 1 ].max
       @page = @total_pages if @page > @total_pages
-      @photos = Photo.order(created_at: :desc).limit(PER_PAGE).offset((@page - 1) * PER_PAGE)
+      @photos = scope.order(created_at: :desc).limit(PER_PAGE).offset((@page - 1) * PER_PAGE)
     end
 
     def new
@@ -30,7 +33,8 @@ module Admin
         return
       end
 
-      photo = PhotoUploader.new(uploaded).call
+      tags = parse_tags(params[:photo]&.dig(:tags))
+      photo = PhotoUploader.new(uploaded, tags: tags).call
 
       if photo
         redirect_to admin_photos_path, notice: "Uploaded #{photo.original_filename}."
@@ -57,6 +61,13 @@ module Admin
       photo = Photo.find(params[:id])
       photo.destroy
       redirect_to admin_photos_path, notice: "Photo deleted."
+    end
+
+    private
+
+    def parse_tags(raw)
+      return [] if raw.blank?
+      raw.to_s.split(",").map { |t| t.strip.downcase }.reject(&:empty?).uniq.first(Photo::MAX_TAGS)
     end
   end
 end
