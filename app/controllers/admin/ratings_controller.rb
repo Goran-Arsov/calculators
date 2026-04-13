@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 module Admin
-  class RatingsController < ApplicationController
-    skip_before_action :set_http_cache
-
-    before_action :authenticate_admin, except: [ :login, :submit_login ]
+  class RatingsController < BaseController
+    skip_before_action :authenticate_admin, only: [ :login, :submit_login ]
     rate_limit to: 5, within: 1.minute, by: -> { request.remote_ip }, only: :submit_login,
                with: -> { redirect_to admin_login_path, alert: "Too many attempts. Try again later." }
 
@@ -71,10 +69,6 @@ module Admin
     end
 
     private
-
-    def authenticate_admin
-      redirect_to admin_login_path unless admin_signed_in?
-    end
 
     def admin_signed_in?
       session[:admin_authenticated] == true

@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 module Admin
-  class PhotosController < ApplicationController
+  class PhotosController < BaseController
     MAX_UPLOAD_BYTES = 50.megabytes
     PER_PAGE = 60
-
-    skip_before_action :set_http_cache
-    before_action :authenticate_admin
 
     def index
       @total = Photo.count
@@ -60,12 +57,6 @@ module Admin
       photo = Photo.find(params[:id])
       photo.destroy
       redirect_to admin_photos_path, notice: "Photo deleted."
-    end
-
-    private
-
-    def authenticate_admin
-      redirect_to admin_login_path unless session[:admin_authenticated] == true
     end
   end
 end

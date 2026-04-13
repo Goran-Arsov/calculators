@@ -57,6 +57,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :photos, only: [ :index, :new, :create, :show, :destroy ]
+    resources :notes, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
   end
 
   # API

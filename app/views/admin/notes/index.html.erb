@@ -1,0 +1,86 @@
+<% content_for :title, "My Notes" %>
+
+<div class="max-w-4xl mx-auto py-10 px-4">
+  <div class="flex items-center justify-between mb-2">
+    <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white">My Notes</h1>
+    <div class="flex gap-2">
+      <%= link_to "New Note", new_admin_note_path, class: "px-4 py-2 text-sm font-medium bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white rounded-lg shadow-sm transition-colors" %>
+      <%= link_to "My Photos", admin_photos_path, class: "px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+      <%= button_to "Log Out", admin_logout_path, method: :delete, class: "px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 border border-gray-300 dark:border-gray-700 rounded-lg hover:border-red-300 dark:hover:border-red-700 transition-colors" %>
+    </div>
+  </div>
+  <p class="text-gray-500 dark:text-gray-400 mb-8">
+    <%= pluralize(@total, "note") %> · plain text<% if @total_pages > 1 %> · page <%= @page %> of <%= @total_pages %><% end %>.
+  </p>
+
+  <% if flash[:notice] %>
+    <div class="mb-4 p-3 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg text-sm"><%= flash[:notice] %></div>
+  <% end %>
+  <% if flash[:alert] %>
+    <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-sm"><%= flash[:alert] %></div>
+  <% end %>
+
+  <% sort_tabs = [ [ "latest", "Latest" ], [ "name", "Name" ], [ "size", "Size" ] ] %>
+  <div class="mb-4 flex items-center gap-2">
+    <span class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Sort</span>
+    <div class="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+      <% sort_tabs.each do |key, label| %>
+        <% if key == @sort %>
+          <span class="px-3 py-1 text-xs font-semibold bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-md shadow-sm"><%= label %></span>
+        <% else %>
+          <%= link_to label, admin_notes_path(sort: key), class: "px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-md transition-colors" %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @notes.any? %>
+    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+      <ul class="divide-y divide-gray-200 dark:divide-gray-800">
+        <% @notes.each do |note| %>
+          <li class="p-4 flex items-center justify-between gap-4">
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-gray-900 dark:text-white truncate" title="<%= note.title %>">
+                <%= note.title.presence || note.filename %>
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                <%= number_to_human_size(note.byte_size) %> · <%= note.created_at.strftime("%Y-%m-%d %H:%M") %>
+              </p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <%= link_to "View", admin_note_path(note), target: "_blank", rel: "noopener", class: "px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors" %>
+              <%= link_to "Download", admin_note_path(note, download: 1), class: "px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+              <%= link_to "Edit", edit_admin_note_path(note), class: "px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+              <%= button_to "Delete", admin_note_path(note), method: :delete,
+                    data: { turbo_confirm: "Delete this note?" },
+                    class: "px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <% if @total_pages > 1 %>
+      <nav class="mt-8 flex items-center justify-between">
+        <% if @page > 1 %>
+          <%= link_to "← Previous", admin_notes_path(page: @page - 1, sort: @sort), class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+        <% else %>
+          <span class="px-4 py-2 text-sm font-medium text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-lg cursor-not-allowed">← Previous</span>
+        <% end %>
+
+        <span class="text-sm text-gray-500 dark:text-gray-400">Page <%= @page %> of <%= @total_pages %></span>
+
+        <% if @page < @total_pages %>
+          <%= link_to "Next →", admin_notes_path(page: @page + 1, sort: @sort), class: "px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" %>
+        <% else %>
+          <span class="px-4 py-2 text-sm font-medium text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-lg cursor-not-allowed">Next →</span>
+        <% end %>
+      </nav>
+    <% end %>
+  <% else %>
+    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-12 text-center">
+      <p class="text-gray-500 dark:text-gray-400">No notes yet.</p>
+      <%= link_to "Write your first one", new_admin_note_path, class: "inline-block mt-3 text-blue-600 dark:text-blue-400 font-medium hover:underline" %>
+    </div>
+  <% end %>
+</div>
