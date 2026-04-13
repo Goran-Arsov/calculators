@@ -402,6 +402,15 @@ import FreezerStorageCalculatorController from "controllers/freezer_storage_calc
 import MealPrepCostCalculatorController from "controllers/meal_prep_cost_calculator_controller"
 import MacrosPerRecipeCalculatorController from "controllers/macros_per_recipe_calculator_controller"
 
+// Pets calculators
+import CatAgeCalculatorController from "controllers/cat_age_calculator_controller"
+import CatFoodCalculatorController from "controllers/cat_food_calculator_controller"
+import FishTankCalculatorController from "controllers/fish_tank_calculator_controller"
+import HorseFeedCalculatorController from "controllers/horse_feed_calculator_controller"
+import PetInsuranceRoiCalculatorController from "controllers/pet_insurance_roi_calculator_controller"
+import PetMedicationDosageCalculatorController from "controllers/pet_medication_dosage_calculator_controller"
+import PuppyWeightPredictorCalculatorController from "controllers/puppy_weight_predictor_calculator_controller"
+
 import SuiteStepperController from "controllers/suite_stepper_controller"
 
 // UI controllers
@@ -818,6 +827,15 @@ application.register("canning-altitude-calculator", CanningAltitudeCalculatorCon
 application.register("freezer-storage-calculator", FreezerStorageCalculatorController)
 application.register("meal-prep-cost-calculator", MealPrepCostCalculatorController)
 application.register("macros-per-recipe-calculator", MacrosPerRecipeCalculatorController)
+
+// Pets calculators
+application.register("cat-age-calculator", CatAgeCalculatorController)
+application.register("cat-food-calculator", CatFoodCalculatorController)
+application.register("fish-tank-calculator", FishTankCalculatorController)
+application.register("horse-feed-calculator", HorseFeedCalculatorController)
+application.register("pet-insurance-roi-calculator", PetInsuranceRoiCalculatorController)
+application.register("pet-medication-dosage-calculator", PetMedicationDosageCalculatorController)
+application.register("puppy-weight-predictor-calculator", PuppyWeightPredictorCalculatorController)
 
 // Suites
 application.register("suite-stepper", SuiteStepperController)
