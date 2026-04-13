@@ -7,6 +7,7 @@ module Admin
     def index
       @sort = Note::SORT_OPTIONS.include?(params[:sort]) ? params[:sort] : "latest"
       @total = Note.count
+      @columns = [ 1 + (@total / 50), 4 ].min
       @page = [ params[:page].to_i, 1 ].max
       @total_pages = [ (@total.to_f / PER_PAGE).ceil, 1 ].max
       @page = @total_pages if @page > @total_pages
@@ -36,22 +37,28 @@ module Admin
     end
 
     def show
-      note = Note.find(params[:id])
+      @note = Note.find(params[:id])
 
-      unless note.exists_on_disk?
+      unless @note.exists_on_disk?
         head :not_found
         return
       end
 
-      send_file note.disk_path,
-        type: "text/plain; charset=utf-8",
-        disposition: params[:download].present? ? "attachment" : "inline",
-        filename: "#{note.title.presence || 'note'}.txt"
+      if params[:download].present?
+        send_file @note.disk_path,
+          type: "text/plain; charset=utf-8",
+          disposition: "attachment",
+          filename: "#{@note.title.presence || 'note'}.txt"
+      else
+        @body = @note.read_body.to_s
+        set_meta_tags title: @note.title.presence || "Untitled note"
+      end
     end
 
     def edit
       @note = Note.find(params[:id])
       @body = @note.read_body.to_s
+      set_meta_tags title: "Edit: #{@note.title.presence || 'Untitled note'}"
     end
 
     def update

@@ -120,8 +120,11 @@ document.addEventListener("turbo:before-cache", () => {
   })
 })
 
-// Turbo navigation loading indicator
-document.addEventListener("turbo:before-fetch-request", () => {
+// Turbo navigation loading indicator.
+// Use turbo:visit (fires only on real navigations) rather than
+// turbo:before-fetch-request, which also fires on hover prefetches and
+// would leave the cursor stuck in a "progress" state on link-heavy pages.
+document.addEventListener("turbo:visit", () => {
   document.body.setAttribute("aria-busy", "true")
 })
 
