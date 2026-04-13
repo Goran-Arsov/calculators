@@ -10,5 +10,5 @@ pin "qrcode-generator" # @2.0.4
 
 # PDF generation for invoices — loaded dynamically on demand.
 # html2canvas-pro supports modern CSS (oklch from Tailwind v4); plain html2canvas does not.
-pin "jspdf", to: "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm"
+pin "jspdf", to: "https://cdn.jsdelivr.net/npm/jspdf@4.2.1/+esm"
 pin "html2canvas-pro", to: "https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/+esm"
