@@ -2,12 +2,12 @@ require "test_helper"
 
 class RefactoredCalcsRenderTest < ActionDispatch::IntegrationTest
   REFACTORED = [
-    [:alcohol, %w[hydrometer_correction ibu priming_sugar srm yeast_pitch]],
-    [:automotive, %w[ev_charging_cost ev_vs_gas_comparison oil_change_interval towing_capacity zero_to_sixty]],
-    [:construction, %w[attic_ventilation baseboard bathroom_remodel beam_load_span brick_block cabinet_door carpet concrete concrete_mix deck drainage_slope drywall fence flooring gravel_mulch grout gutter hvac_btu insulation kitchen_remodel lumber paint plumbing pool_volume rebar_spacing retaining_wall roofing septic_tank_size siding solar_panel_layout sqft_cost staircase tile wallpaper water_heater_sizing wood_moisture wood_shrinkage wood_weight]],
-    [:cooking, %w[meat_cooking_time smoke_time]],
-    [:health, %w[alcohol_burnoff running_pace_zone]],
-    [:pets, %w[cat_food fish_tank horse_feed pet_medication_dosage puppy_weight_predictor]]
+    [ :alcohol, %w[hydrometer_correction ibu priming_sugar srm yeast_pitch] ],
+    [ :automotive, %w[ev_charging_cost ev_vs_gas_comparison oil_change_interval towing_capacity zero_to_sixty] ],
+    [ :construction, %w[attic_ventilation baseboard bathroom_remodel beam_load_span brick_block cabinet_door carpet concrete concrete_mix deck drainage_slope drywall fence flooring gravel_mulch grout gutter hvac_btu insulation kitchen_remodel lumber paint plumbing pool_volume rebar_spacing retaining_wall roofing septic_tank_size siding solar_panel_layout sqft_cost staircase tile wallpaper water_heater_sizing wood_moisture wood_shrinkage wood_weight] ],
+    [ :cooking, %w[meat_cooking_time smoke_time] ],
+    [ :health, %w[alcohol_burnoff running_pace_zone] ],
+    [ :pets, %w[cat_food fish_tank horse_feed pet_medication_dosage puppy_weight_predictor] ]
   ].freeze
 
   REFACTORED.each do |category, calcs|
