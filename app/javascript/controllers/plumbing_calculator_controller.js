@@ -10,15 +10,26 @@ const FIXTURE_UNITS = {
 }
 
 const PIPE_SIZE_TABLE = [
-  { min: 1, max: 6, size: '3/4"' },
-  { min: 7, max: 15, size: '1"' },
-  { min: 16, max: 30, size: '1-1/4"' },
-  { min: 31, max: 50, size: '1-1/2"' }
+  { min: 1, max: 6, imperial: '3/4"', metric: "DN20" },
+  { min: 7, max: 15, imperial: '1"', metric: "DN25" },
+  { min: 16, max: 30, imperial: '1-1/4"', metric: "DN32" },
+  { min: 31, max: 50, imperial: '1-1/2"', metric: "DN40" }
 ]
+
+const FALLBACK = { imperial: '2"', metric: "DN50" }
 
 export default class extends Controller {
   static targets = ["numToilets", "numSinks", "numShowers", "numBathtubs", "numDishwashers", "numWashingMachines",
+    "unitSystem",
     "resultTotalUnits", "resultMainPipe", "resultSupplyLine", "resultBreakdown"]
+
+  connect() {
+    this.calculate()
+  }
+
+  switchUnits() {
+    this.calculate()
+  }
 
   calculate() {
     const toilets = parseInt(this.numToiletsTarget.value) || 0
@@ -37,15 +48,20 @@ export default class extends Controller {
 
     const totalUnits = toiletUnits + sinkUnits + showerUnits + bathtubUnits + dishwasherUnits + washingMachineUnits
 
-    let mainPipe = '2"'
+    const metric = this.unitSystemTarget.value === "metric"
+    const labelKey = metric ? "metric" : "imperial"
+
+    let mainPipe = FALLBACK[labelKey]
     for (const entry of PIPE_SIZE_TABLE) {
       if (totalUnits >= entry.min && totalUnits <= entry.max) {
-        mainPipe = entry.size
+        mainPipe = entry[labelKey]
         break
       }
     }
 
-    const supplyLine = totalUnits >= 20 ? '1"' : '3/4"'
+    const supplyLine = totalUnits >= 20
+      ? (metric ? "DN25" : '1"')
+      : (metric ? "DN20" : '3/4"')
 
     this.resultTotalUnitsTarget.textContent = totalUnits
     this.resultMainPipeTarget.textContent = mainPipe

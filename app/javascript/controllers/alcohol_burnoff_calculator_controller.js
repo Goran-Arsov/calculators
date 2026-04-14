@@ -1,8 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 import { prefillFromUrl } from "utils/url_prefill"
+import { LB_TO_KG } from "utils/units"
 
 export default class extends Controller {
   static targets = ["drinks", "weight", "gender", "hours",
+                     "unitSystem", "weightLabel",
                      "peakBac", "currentBac", "hoursUntilSober", "bacLevel"]
 
   static genderFactor = { male: 0.68, female: 0.55 }
@@ -10,24 +12,41 @@ export default class extends Controller {
   static eliminationRate = 0.015
 
   connect() {
-    prefillFromUrl(this, { drinks: "drinks", weight: "weight", gender: "gender", hours: "hours" })
+    prefillFromUrl(this, { drinks: "drinks", weight: "weight", gender: "gender", hours: "hours", unit: "unitSystem" })
+    this.updateLabels()
     this.calculate()
+  }
+
+  switchUnits() {
+    const toImperial = this.unitSystemTarget.value === "imperial"
+    const n = parseFloat(this.weightTarget.value)
+    if (Number.isFinite(n)) {
+      this.weightTarget.value = (toImperial ? n / LB_TO_KG : n * LB_TO_KG).toFixed(1)
+    }
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const imperial = this.unitSystemTarget.value === "imperial"
+    this.weightLabelTarget.textContent = imperial ? "Body Weight (lbs)" : "Body Weight (kg)"
   }
 
   calculate() {
     const drinks = parseFloat(this.drinksTarget.value) || 0
-    const weight = parseFloat(this.weightTarget.value) || 0
+    const weightRaw = parseFloat(this.weightTarget.value) || 0
     const gender = this.genderTarget.value
     const hours = parseFloat(this.hoursTarget.value) || 0
 
-    if (drinks <= 0 || weight <= 0) {
+    if (drinks <= 0 || weightRaw <= 0) {
       this.clearResults()
       return
     }
 
+    const weightKg = this.unitSystemTarget.value === "imperial" ? weightRaw * LB_TO_KG : weightRaw
     const factor = this.constructor.genderFactor[gender] || 0.68
     const alcoholGrams = drinks * this.constructor.alcoholGramsPerDrink
-    const weightGrams = weight * 1000
+    const weightGrams = weightKg * 1000
 
     const peakBac = (alcoholGrams / (weightGrams * factor)) * 100
     const currentBac = Math.max(peakBac - (this.constructor.eliminationRate * hours), 0)
