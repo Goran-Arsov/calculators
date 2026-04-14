@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { GAL_TO_L } from "utils/units"
 
 export default class extends Controller {
   static targets = [
@@ -6,26 +7,45 @@ export default class extends Controller {
     "resultCells", "resultPlato", "resultPitchRate",
     "resultDryGroup", "resultLiquidGroup",
     "resultDryPacks", "resultDryGrams", "resultViability",
-    "resultLiquidPacks", "resultStarter"
+    "resultLiquidPacks", "resultStarter",
+    "unitSystem", "volumeLabel"
   ]
 
   connect() {
+    this.updateLabels()
     this.calculate()
   }
 
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const n = parseFloat(this.volumeTarget.value)
+    if (Number.isFinite(n)) {
+      this.volumeTarget.value = (toMetric ? n * GAL_TO_L : n / GAL_TO_L).toFixed(2)
+    }
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.volumeLabelTarget.textContent = metric ? "Batch Volume (L)" : "Batch Volume (gal)"
+  }
+
   calculate() {
-    const volume = parseFloat(this.volumeTarget.value) || 0
+    const metric = this.unitSystemTarget.value === "metric"
+    const volumeInput = parseFloat(this.volumeTarget.value) || 0
     const og = parseFloat(this.ogTarget.value) || 0
     const beerType = this.beerTypeTarget.value
     const yeastType = this.yeastTypeTarget.value
     const age = parseInt(this.ageTarget.value) || 0
 
-    if (volume <= 0 || og <= 1.0 || og > 1.15) {
+    if (volumeInput <= 0 || og <= 1.0 || og > 1.15) {
       this.clearResults()
       return
     }
 
-    const volumeMl = volume * 3785.41
+    const volumeL = metric ? volumeInput : volumeInput * GAL_TO_L
+    const volumeMl = volumeL * 1000.0
     const plato = (og - 1.0) * 1000.0 / 4.0
     const lager = beerType.includes("lager")
     const highGrav = og >= 1.06

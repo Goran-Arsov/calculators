@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { LB_TO_KG, GAL_TO_L } from "utils/units"
 
 export default class extends Controller {
   static targets = [
@@ -7,16 +8,48 @@ export default class extends Controller {
     "malt2Weight", "malt2Lov",
     "malt3Weight", "malt3Lov",
     "malt4Weight", "malt4Lov",
-    "resultMcu", "resultSrm", "resultEbc", "resultStyle", "resultSwatch"
+    "resultMcu", "resultSrm", "resultEbc", "resultStyle", "resultSwatch",
+    "unitSystem", "batchVolumeLabel",
+    "malt1WeightLabel", "malt2WeightLabel", "malt3WeightLabel", "malt4WeightLabel"
   ]
 
   connect() {
+    this.updateLabels()
     this.calculate()
   }
 
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const convert = (el, factor) => {
+      const n = parseFloat(el.value)
+      if (Number.isFinite(n)) el.value = (toMetric ? n * factor : n / factor).toFixed(2)
+    }
+    convert(this.batchVolumeTarget, GAL_TO_L)
+    convert(this.malt1WeightTarget, LB_TO_KG)
+    convert(this.malt2WeightTarget, LB_TO_KG)
+    convert(this.malt3WeightTarget, LB_TO_KG)
+    convert(this.malt4WeightTarget, LB_TO_KG)
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.batchVolumeLabelTarget.textContent = metric ? "Batch Volume (L)" : "Batch Volume (gal)"
+    const weightLabel = metric ? "Weight (kg)" : "Weight (lb)"
+    this.malt1WeightLabelTarget.textContent = weightLabel
+    this.malt2WeightLabelTarget.textContent = weightLabel
+    this.malt3WeightLabelTarget.textContent = weightLabel
+    this.malt4WeightLabelTarget.textContent = weightLabel
+  }
+
   calculate() {
-    const volume = parseFloat(this.batchVolumeTarget.value) || 0
-    if (volume <= 0) { this.clearResults(); return }
+    const metric = this.unitSystemTarget.value === "metric"
+    const volumeInput = parseFloat(this.batchVolumeTarget.value) || 0
+    if (volumeInput <= 0) { this.clearResults(); return }
+
+    // Morey's equation expects weight in pounds and volume in gallons.
+    const volumeGal = metric ? volumeInput / GAL_TO_L : volumeInput
 
     const malts = [
       [this.malt1WeightTarget, this.malt1LovTarget],
@@ -27,14 +60,15 @@ export default class extends Controller {
 
     let totalColor = 0
     malts.forEach(([w, l]) => {
-      const weight = parseFloat(w.value) || 0
+      const weightInput = parseFloat(w.value) || 0
+      const weightLb = metric ? weightInput / LB_TO_KG : weightInput
       const lov = parseFloat(l.value) || 0
-      if (weight > 0 && lov > 0) totalColor += weight * lov
+      if (weightLb > 0 && lov > 0) totalColor += weightLb * lov
     })
 
     if (totalColor <= 0) { this.clearResults(); return }
 
-    const mcu = totalColor / volume
+    const mcu = totalColor / volumeGal
     const srm = 1.4922 * Math.pow(mcu, 0.6859)
     const ebc = srm * 1.97
 

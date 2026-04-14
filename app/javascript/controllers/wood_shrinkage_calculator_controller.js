@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { IN_TO_CM } from "utils/units"
 
 const SPECIES = {
   red_oak:            { name: "Red Oak",            tangential: 8.6,  radial: 4.0 },
@@ -23,8 +24,29 @@ const FSP = 30.0
 export default class extends Controller {
   static targets = [
     "species", "direction", "initialDimension", "initialMc", "finalMc",
+    "unitSystem", "dimensionLabel",
     "resultShrinkagePct", "resultChange", "resultFinalDim"
   ]
+
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const n = parseFloat(this.initialDimensionTarget.value)
+    if (Number.isFinite(n)) {
+      this.initialDimensionTarget.value = (toMetric ? n * IN_TO_CM : n / IN_TO_CM).toFixed(3)
+    }
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.dimensionLabelTarget.textContent = metric ? "Initial Dimension (cm)" : "Initial Dimension (in)"
+  }
 
   calculate() {
     const speciesKey = this.speciesTarget.value
@@ -59,6 +81,9 @@ export default class extends Controller {
       return
     }
 
+    const metric = this.unitSystemTarget.value === "metric"
+    const unit = metric ? " cm" : " in"
+
     const S = speciesData[direction]
     const effectiveInitial = Math.min(initialMc, FSP)
     const effectiveFinal = Math.min(finalMc, FSP)
@@ -69,8 +94,8 @@ export default class extends Controller {
     const finalDimension = initialDimension - dimensionChange
 
     this.resultShrinkagePctTarget.textContent = `${(shrinkageFraction * 100).toFixed(3)}%`
-    this.resultChangeTarget.textContent = dimensionChange.toFixed(4)
-    this.resultFinalDimTarget.textContent = finalDimension.toFixed(4)
+    this.resultChangeTarget.textContent = `${dimensionChange.toFixed(4)}${unit}`
+    this.resultFinalDimTarget.textContent = `${finalDimension.toFixed(4)}${unit}`
   }
 
   selectedDirection() {

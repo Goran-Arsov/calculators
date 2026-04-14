@@ -8,9 +8,8 @@ export default class extends Controller {
                      "resultTransport", "resultActivities"]
 
   connect() {
-    if (prefillFromUrl(this, { dailyBudget: "dailyBudget", numDays: "numDays", numTravelers: "numTravelers" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { dailyBudget: "dailyBudget", numDays: "numDays", numTravelers: "numTravelers" })
+    this.calculate()
   }
 
   calculate() {

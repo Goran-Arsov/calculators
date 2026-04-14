@@ -10,9 +10,8 @@ export default class extends Controller {
   ]
 
   connect() {
-    if (prefillFromUrl(this, { grossSalary: "grossSalary" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { grossSalary: "grossSalary" })
+    this.calculate()
   }
 
   calculate() {

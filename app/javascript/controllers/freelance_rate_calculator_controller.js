@@ -11,13 +11,12 @@ export default class extends Controller {
   ]
 
   connect() {
-    if (prefillFromUrl(this, {
+    prefillFromUrl(this, {
       targetIncome: "targetIncome", annualExpenses: "annualExpenses",
       billableHours: "billableHours", weeksVacation: "weeksVacation",
       taxRate: "taxRate", profitMargin: "profitMargin"
-    })) {
-      this.calculate()
-    }
+    })
+    this.calculate()
   }
 
   calculate() {

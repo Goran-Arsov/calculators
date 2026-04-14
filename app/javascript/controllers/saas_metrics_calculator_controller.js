@@ -11,12 +11,11 @@ export default class extends Controller {
   ]
 
   connect() {
-    if (prefillFromUrl(this, {
+    prefillFromUrl(this, {
       monthlySubscriptions: "monthlySubscriptions", totalCustomers: "totalCustomers",
       newCustomers: "newCustomers", churnedCustomers: "churnedCustomers", cac: "cac"
-    })) {
-      this.calculate()
-    }
+    })
+    this.calculate()
   }
 
   calculate() {

@@ -16,9 +16,8 @@ export default class extends Controller {
   }
 
   connect() {
-    if (prefillFromUrl(this, { petType: "petType", size: "size", ownershipYears: "ownershipYears" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { petType: "petType", size: "size", ownershipYears: "ownershipYears" })
+    this.calculate()
     this.toggleSize()
   }
 

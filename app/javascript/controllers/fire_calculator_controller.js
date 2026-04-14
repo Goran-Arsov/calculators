@@ -10,15 +10,14 @@ export default class extends Controller {
   ]
 
   connect() {
-    if (prefillFromUrl(this, {
+    prefillFromUrl(this, {
       expenses: "annualExpenses",
       savings: "annualSavings",
       portfolio: "currentPortfolio",
       return_rate: "expectedReturnRate",
       swr: "safeWithdrawalRate"
-    })) {
-      this.calculate()
-    }
+    })
+    this.calculate()
   }
 
   calculate() {

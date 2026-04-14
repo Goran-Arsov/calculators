@@ -1,8 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
+import { LB_TO_KG } from "utils/units"
 
 export default class extends Controller {
   static targets = ["petType", "weight", "medication",
-                     "medicationName", "minDose", "maxDose", "frequency", "doseRange"]
+                     "medicationName", "minDose", "maxDose", "frequency", "doseRange",
+                     "unitSystem", "weightLabel"]
 
   static medications = {
     benadryl: {
@@ -42,12 +44,33 @@ export default class extends Controller {
     }
   }
 
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const n = parseFloat(this.weightTarget.value)
+    if (Number.isFinite(n)) {
+      this.weightTarget.value = (toMetric ? n * LB_TO_KG : n / LB_TO_KG).toFixed(2)
+    }
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.weightLabelTarget.textContent = metric ? "Pet's Weight (kg)" : "Pet's Weight (lbs)"
+  }
+
   calculate() {
+    const metric = this.unitSystemTarget.value === "metric"
     const petType = this.petTypeTarget.value
-    const weightLbs = parseFloat(this.weightTarget.value) || 0
+    const weightInput = parseFloat(this.weightTarget.value) || 0
     const medication = this.medicationTarget.value
 
-    if (weightLbs <= 0 || !medication) {
+    if (weightInput <= 0 || !medication) {
       this.clearResults()
       return
     }
@@ -64,7 +87,7 @@ export default class extends Controller {
       return
     }
 
-    const weightKg = weightLbs * 0.453592
+    const weightKg = metric ? weightInput : weightInput * LB_TO_KG
     const minDose = weightKg * dosageInfo.min
     const maxDose = weightKg * dosageInfo.max
 

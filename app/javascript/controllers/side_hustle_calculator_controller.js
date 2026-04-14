@@ -13,9 +13,8 @@ export default class extends Controller {
   static SE_TAX_RATE = 0.153
 
   connect() {
-    if (prefillFromUrl(this, { gross_revenue: "grossRevenue", business_expenses: "businessExpenses", tax_rate: "taxRate", hours: "hoursPerWeek" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { gross_revenue: "grossRevenue", business_expenses: "businessExpenses", tax_rate: "taxRate", hours: "hoursPerWeek" })
+    this.calculate()
   }
 
   calculate() {

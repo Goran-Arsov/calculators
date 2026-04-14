@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { GAL_TO_L } from "utils/units"
 
 export default class extends Controller {
   static targets = [
@@ -8,22 +9,42 @@ export default class extends Controller {
     "hop3Weight", "hop3Aa", "hop3Time",
     "hop4Weight", "hop4Aa", "hop4Time",
     "resultTotal", "resultCategory",
-    "resultHop1", "resultHop2", "resultHop3", "resultHop4"
+    "resultHop1", "resultHop2", "resultHop3", "resultHop4",
+    "unitSystem", "batchVolumeLabel"
   ]
 
   connect() {
+    this.updateLabels()
     this.calculate()
   }
 
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const n = parseFloat(this.batchVolumeTarget.value)
+    if (Number.isFinite(n)) {
+      this.batchVolumeTarget.value = (toMetric ? n * GAL_TO_L : n / GAL_TO_L).toFixed(2)
+    }
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.batchVolumeLabelTarget.textContent = metric ? "Batch (L)" : "Batch (gal)"
+  }
+
   calculate() {
-    const volume = parseFloat(this.batchVolumeTarget.value) || 0
+    const metric = this.unitSystemTarget.value === "metric"
+    const volumeInput = parseFloat(this.batchVolumeTarget.value) || 0
     const og = parseFloat(this.ogTarget.value) || 0
 
-    if (volume <= 0 || og <= 1.0) {
+    if (volumeInput <= 0 || og <= 1.0) {
       this.clearResults()
       return
     }
 
+    // Tinseth's formula uses batch volume in gallons internally.
+    const volumeGal = metric ? volumeInput / GAL_TO_L : volumeInput
     const bigness = 1.65 * Math.pow(0.000125, og - 1.0)
 
     const hops = [
@@ -41,7 +62,7 @@ export default class extends Controller {
       if (weight > 0 && aa > 0 && time >= 0) {
         const boilFactor = (1.0 - Math.exp(-0.04 * time)) / 4.15
         const utilization = bigness * boilFactor
-        const ibus = (aa * weight * utilization * 7489.0) / volume
+        const ibus = (aa * weight * utilization * 7489.0) / volumeGal
         total += ibus
         h.r.textContent = ibus.toFixed(1) + " IBU"
       } else {

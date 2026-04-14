@@ -1,10 +1,31 @@
 import { Controller } from "@hotwired/stimulus"
 
+// Wood moisture content is a weight ratio, so both weights must use the same
+// unit and the resulting percentage is unit-independent. The toggle only
+// changes label hints (g vs oz) so users know which unit to enter.
+
 export default class extends Controller {
   static targets = [
     "wetWeight", "dryWeight",
+    "unitSystem", "wetLabel", "dryLabel",
     "resultMc", "resultWater", "resultCategory", "resultSuitable"
   ]
+
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  switchUnits() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.wetLabelTarget.textContent = metric ? "Wet Weight (g)" : "Wet Weight (oz)"
+    this.dryLabelTarget.textContent = metric ? "Oven-Dry Weight (g)" : "Oven-Dry Weight (oz)"
+  }
 
   calculate() {
     const wet = parseFloat(this.wetWeightTarget.value) || 0
@@ -20,8 +41,11 @@ export default class extends Controller {
     const category = this.categorize(mc)
     const suitable = this.suitability(category)
 
+    const metric = this.unitSystemTarget.value === "metric"
+    const unit = metric ? " g" : " oz"
+
     this.resultMcTarget.textContent = `${mc.toFixed(2)}%`
-    this.resultWaterTarget.textContent = water.toFixed(2)
+    this.resultWaterTarget.textContent = `${water.toFixed(2)}${unit}`
     this.resultCategoryTarget.textContent = category
     this.resultSuitableTarget.textContent = suitable
   }

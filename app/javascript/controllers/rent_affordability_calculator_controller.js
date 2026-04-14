@@ -9,13 +9,12 @@ export default class extends Controller {
   ]
 
   connect() {
-    if (prefillFromUrl(this, {
+    prefillFromUrl(this, {
       income: "monthlyIncome",
       debts: "monthlyDebts",
       savings_pct: "savingsGoalPercent"
-    })) {
-      this.calculate()
-    }
+    })
+    this.calculate()
   }
 
   calculate() {

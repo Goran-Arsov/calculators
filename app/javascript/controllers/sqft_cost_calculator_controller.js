@@ -1,23 +1,49 @@
 import { Controller } from "@hotwired/stimulus"
+import { SQFT_TO_SQM } from "utils/units"
+
+const SQFT_PER_SQM = 1 / SQFT_TO_SQM
+const SQFT_PER_ACRE = 43560
 
 export default class extends Controller {
   static targets = [
     "totalCost", "areaSqft",
+    "unitSystem", "areaLabel",
     "costPerSqft", "costPerSqm", "costPerAcre",
     "areaSqm", "areaAcres"
   ]
 
-  calculate() {
-    const totalCost = parseFloat(this.totalCostTarget.value) || 0
-    const areaSqft = parseFloat(this.areaSqftTarget.value) || 0
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
 
-    if (totalCost <= 0 || areaSqft <= 0) {
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const n = parseFloat(this.areaSqftTarget.value)
+    if (Number.isFinite(n)) {
+      this.areaSqftTarget.value = (toMetric ? n * SQFT_TO_SQM : n / SQFT_TO_SQM).toFixed(2)
+    }
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.areaLabelTarget.textContent = metric ? "Area (m²)" : "Area (sqft)"
+  }
+
+  calculate() {
+    const metric = this.unitSystemTarget.value === "metric"
+    const totalCost = parseFloat(this.totalCostTarget.value) || 0
+    const areaInput = parseFloat(this.areaSqftTarget.value) || 0
+
+    if (totalCost <= 0 || areaInput <= 0) {
       this.clearResults()
       return
     }
 
-    const SQFT_PER_SQM = 10.7639
-    const SQFT_PER_ACRE = 43560
+    // Canonical area in sqft
+    const areaSqft = metric ? areaInput / SQFT_TO_SQM : areaInput
 
     const costPerSqft = totalCost / areaSqft
     const areaSqm = areaSqft / SQFT_PER_SQM

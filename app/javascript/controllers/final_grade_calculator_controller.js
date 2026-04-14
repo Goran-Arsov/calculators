@@ -8,13 +8,12 @@ export default class extends Controller {
   ]
 
   connect() {
-    if (prefillFromUrl(this, {
+    prefillFromUrl(this, {
       current_grade: "currentGrade",
       final_weight: "finalWeight",
       desired_grade: "desiredGrade"
-    })) {
-      this.calculate()
-    }
+    })
+    this.calculate()
   }
 
   calculate() {

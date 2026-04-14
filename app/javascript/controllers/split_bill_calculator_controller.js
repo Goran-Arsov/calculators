@@ -6,9 +6,8 @@ export default class extends Controller {
                      "resultTip", "resultTax", "resultTotal", "resultPerPerson"]
 
   connect() {
-    if (prefillFromUrl(this, { subtotal: "subtotal", tipPercent: "tipPercent", taxPercent: "taxPercent", numPeople: "numPeople" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { subtotal: "subtotal", tipPercent: "tipPercent", taxPercent: "taxPercent", numPeople: "numPeople" })
+    this.calculate()
   }
 
   calculate() {

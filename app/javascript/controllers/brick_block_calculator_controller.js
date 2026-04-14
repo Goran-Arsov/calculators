@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { FT_TO_M, SQFT_TO_SQM } from "utils/units"
 
 const UNIT_TYPES = {
   standard_brick: { length: 8.0, height: 2.25, mortar: 0.375, label: "Standard Brick", isCmu: false },
@@ -12,19 +13,52 @@ const WASTE_FACTOR = 1.10
 
 export default class extends Controller {
   static targets = ["wallLength", "wallHeight", "unitType", "openings",
+    "unitSystem", "wallLengthLabel", "wallHeightLabel", "openingsLabel", "unitsPerAreaHeading",
     "resultGrossArea", "resultNetArea", "resultUnitsPerSqft",
     "resultUnitsNeeded", "resultWasteUnits", "resultMortarBags"]
 
-  calculate() {
-    const wallLength = parseFloat(this.wallLengthTarget.value) || 0
-    const wallHeight = parseFloat(this.wallHeightTarget.value) || 0
-    const unitKey = this.unitTypeTarget.value || "standard_brick"
-    const openings = parseFloat(this.openingsTarget.value) || 0
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
 
-    if (wallLength <= 0 || wallHeight <= 0 || !UNIT_TYPES[unitKey]) {
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const convert = (el, factor) => {
+      const n = parseFloat(el.value)
+      if (Number.isFinite(n)) el.value = (toMetric ? n * factor : n / factor).toFixed(2)
+    }
+    convert(this.wallLengthTarget, FT_TO_M)
+    convert(this.wallHeightTarget, FT_TO_M)
+    convert(this.openingsTarget, SQFT_TO_SQM)
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.wallLengthLabelTarget.textContent = metric ? "Wall Length (m)" : "Wall Length (ft)"
+    this.wallHeightLabelTarget.textContent = metric ? "Wall Height (m)" : "Wall Height (ft)"
+    this.openingsLabelTarget.textContent = metric ? "Openings (m²)" : "Openings (sq ft)"
+    this.unitsPerAreaHeadingTarget.textContent = metric ? "Units Per m²" : "Units Per Sq Ft"
+  }
+
+  calculate() {
+    const metric = this.unitSystemTarget.value === "metric"
+    const wallLengthInput = parseFloat(this.wallLengthTarget.value) || 0
+    const wallHeightInput = parseFloat(this.wallHeightTarget.value) || 0
+    const unitKey = this.unitTypeTarget.value || "standard_brick"
+    const openingsInput = parseFloat(this.openingsTarget.value) || 0
+
+    if (wallLengthInput <= 0 || wallHeightInput <= 0 || !UNIT_TYPES[unitKey]) {
       this.clearResults()
       return
     }
+
+    // Convert metric inputs to imperial for internal math.
+    const wallLength = metric ? wallLengthInput / FT_TO_M : wallLengthInput
+    const wallHeight = metric ? wallHeightInput / FT_TO_M : wallHeightInput
+    const openings = metric ? openingsInput / SQFT_TO_SQM : openingsInput
 
     const unit = UNIT_TYPES[unitKey]
     const grossArea = wallLength * wallHeight
@@ -33,7 +67,7 @@ export default class extends Controller {
 
     const unitWithMortarLength = unit.length + unit.mortar
     const unitWithMortarHeight = unit.height + unit.mortar
-    const unitsPerSqft = (144 / (unitWithMortarLength * unitWithMortarHeight)).toFixed(2)
+    const unitsPerSqft = 144 / (unitWithMortarLength * unitWithMortarHeight)
 
     const unitsNeededRaw = Math.ceil(netArea * unitsPerSqft)
     const unitsNeeded = Math.ceil(unitsNeededRaw * WASTE_FACTOR)
@@ -46,17 +80,28 @@ export default class extends Controller {
       mortarBags = Math.ceil(unitsNeeded / 140)
     }
 
-    this.resultGrossAreaTarget.textContent = `${grossArea.toFixed(1)} ft\u00B2`
-    this.resultNetAreaTarget.textContent = `${netArea.toFixed(1)} ft\u00B2`
-    this.resultUnitsPerSqftTarget.textContent = unitsPerSqft
+    if (metric) {
+      const grossM2 = grossArea * SQFT_TO_SQM
+      const netM2 = netArea * SQFT_TO_SQM
+      const unitsPerM2 = unitsPerSqft / SQFT_TO_SQM
+      this.resultGrossAreaTarget.textContent = `${grossM2.toFixed(2)} m\u00B2`
+      this.resultNetAreaTarget.textContent = `${netM2.toFixed(2)} m\u00B2`
+      this.resultUnitsPerSqftTarget.textContent = unitsPerM2.toFixed(2)
+    } else {
+      this.resultGrossAreaTarget.textContent = `${grossArea.toFixed(1)} ft\u00B2`
+      this.resultNetAreaTarget.textContent = `${netArea.toFixed(1)} ft\u00B2`
+      this.resultUnitsPerSqftTarget.textContent = unitsPerSqft.toFixed(2)
+    }
     this.resultUnitsNeededTarget.textContent = unitsNeeded.toLocaleString()
     this.resultWasteUnitsTarget.textContent = wasteUnits.toLocaleString()
     this.resultMortarBagsTarget.textContent = mortarBags
   }
 
   clearResults() {
-    this.resultGrossAreaTarget.textContent = "0 ft\u00B2"
-    this.resultNetAreaTarget.textContent = "0 ft\u00B2"
+    const metric = this.unitSystemTarget.value === "metric"
+    const unit = metric ? "m\u00B2" : "ft\u00B2"
+    this.resultGrossAreaTarget.textContent = `0 ${unit}`
+    this.resultNetAreaTarget.textContent = `0 ${unit}`
     this.resultUnitsPerSqftTarget.textContent = "0"
     this.resultUnitsNeededTarget.textContent = "0"
     this.resultWasteUnitsTarget.textContent = "0"

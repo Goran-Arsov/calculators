@@ -12,9 +12,8 @@ export default class extends Controller {
   static riskMonths = { stable: 3, moderate: 6, high_risk: 9 }
 
   connect() {
-    if (prefillFromUrl(this, { expenses: "monthlyExpenses", risk: "riskLevel", savings: "currentSavings", contribution: "monthlyContribution" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { expenses: "monthlyExpenses", risk: "riskLevel", savings: "currentSavings", contribution: "monthlyContribution" })
+    this.calculate()
   }
 
   calculate() {

@@ -5,9 +5,8 @@ export default class extends Controller {
   static targets = ["bill", "tipPercent", "split", "resultTip", "resultTotal", "resultPerPerson"]
 
   connect() {
-    if (prefillFromUrl(this, { bill: "bill", tipPercent: "tipPercent", split: "split" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { bill: "bill", tipPercent: "tipPercent", split: "split" })
+    this.calculate()
   }
 
   calculate() {

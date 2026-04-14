@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { SQFT_TO_SQM } from "utils/units"
 
 const TIERS = {
   minor: { label: "Minor (cosmetic refresh)", perSqft: 150 },
@@ -25,24 +26,60 @@ const fmt = n => `$${Math.round(n).toLocaleString()}`
 
 export default class extends Controller {
   static targets = ["size", "tier", "customCabinets", "movePlumbing", "moveElectrical",
+                    "unitSystem", "sizeLabel",
                     "resultTotal", "resultLow", "resultHigh", "resultBase", "resultAddOns",
                     "breakdownList"]
 
-  connect() { this.calculate() }
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const convert = (el, factor) => {
+      const n = parseFloat(el.value)
+      if (Number.isFinite(n)) el.value = (toMetric ? n * factor : n / factor).toFixed(2)
+    }
+    convert(this.sizeTarget, SQFT_TO_SQM)
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.sizeLabelTarget.textContent = metric ? "Kitchen size (m²)" : "Kitchen size (sq ft)"
+    // Rebuild tier select labels.
+    const current = this.tierTarget.value
+    const unit = metric ? "m²" : "sq ft"
+    const options = [
+      ["minor", `Minor (cosmetic refresh) — $${metric ? Math.round(150 / SQFT_TO_SQM) : 150}/${unit}`],
+      ["midrange", `Midrange — $${metric ? Math.round(225 / SQFT_TO_SQM) : 225}/${unit}`],
+      ["major", `Major (full remodel) — $${metric ? Math.round(350 / SQFT_TO_SQM) : 350}/${unit}`],
+      ["luxury", `Luxury — $${metric ? Math.round(550 / SQFT_TO_SQM) : 550}/${unit}`]
+    ]
+    this.tierTarget.innerHTML = options.map(([v, label]) =>
+      `<option value="${v}"${v === current ? " selected" : ""}>${label}</option>`
+    ).join("")
+  }
 
   calculate() {
-    const size = parseFloat(this.sizeTarget.value)
+    const metric = this.unitSystemTarget.value === "metric"
+    const sizeInput = parseFloat(this.sizeTarget.value)
     const tier = TIERS[this.tierTarget.value]
     const custom = this.customCabinetsTarget.checked
     const plumb = this.movePlumbingTarget.checked
     const elec = this.moveElectricalTarget.checked
 
-    if (!Number.isFinite(size) || size <= 0 || !tier) {
+    if (!Number.isFinite(sizeInput) || sizeInput <= 0 || !tier) {
       this.clear()
       return
     }
 
-    let base = size * tier.perSqft
+    // Imperial math internally.
+    const sizeSqft = metric ? sizeInput / SQFT_TO_SQM : sizeInput
+
+    let base = sizeSqft * tier.perSqft
     if (custom) base *= CUSTOM_MULT
     let addOns = 0
     if (plumb) addOns += MOVE_PLUMBING

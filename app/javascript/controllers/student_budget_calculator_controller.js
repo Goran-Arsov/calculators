@@ -10,7 +10,7 @@ export default class extends Controller {
   ]
 
   connect() {
-    if (prefillFromUrl(this, {
+    prefillFromUrl(this, {
       tuition: "tuition",
       room_and_board: "roomAndBoard",
       books_supplies: "booksSupplies",
@@ -19,9 +19,8 @@ export default class extends Controller {
       financial_aid: "financialAid",
       work_income: "workIncome",
       other_scholarships: "otherScholarships"
-    })) {
-      this.calculate()
-    }
+    })
+    this.calculate()
   }
 
   calculate() {

@@ -1,23 +1,61 @@
 import { Controller } from "@hotwired/stimulus"
+import { LB_TO_KG } from "utils/units"
 
 export default class extends Controller {
   static targets = [
     "gvwr", "curbWeight", "passengersWeight", "cargoWeight", "tongueWeightPct",
+    "unitSystem",
+    "gvwrLabel", "curbWeightLabel", "passengersWeightLabel", "cargoWeightLabel",
     "maxPayload", "currentPayload", "remainingPayload", "payloadPct",
     "maxTowing", "safeTowing", "maxTongueWeight", "gcwr"
   ]
 
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const convert = (el) => {
+      const n = parseFloat(el.value)
+      if (Number.isFinite(n)) el.value = Math.round(toMetric ? n * LB_TO_KG : n / LB_TO_KG)
+    }
+    convert(this.gvwrTarget)
+    convert(this.curbWeightTarget)
+    convert(this.passengersWeightTarget)
+    convert(this.cargoWeightTarget)
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    const unit = metric ? "kg" : "lbs"
+    if (this.hasGvwrLabelTarget) this.gvwrLabelTarget.textContent = `GVWR (${unit})`
+    if (this.hasCurbWeightLabelTarget) this.curbWeightLabelTarget.textContent = `Curb Weight (${unit})`
+    if (this.hasPassengersWeightLabelTarget) this.passengersWeightLabelTarget.textContent = `Passengers Weight (${unit})`
+    if (this.hasCargoWeightLabelTarget) this.cargoWeightLabelTarget.textContent = `Cargo Weight (${unit})`
+  }
+
   calculate() {
-    const gvwr = parseFloat(this.gvwrTarget.value) || 0
-    const curb = parseFloat(this.curbWeightTarget.value) || 0
-    const passengers = parseFloat(this.passengersWeightTarget.value) || 0
-    const cargo = parseFloat(this.cargoWeightTarget.value) || 0
+    const metric = this.unitSystemTarget.value === "metric"
+    const gvwrInput = parseFloat(this.gvwrTarget.value) || 0
+    const curbInput = parseFloat(this.curbWeightTarget.value) || 0
+    const passengersInput = parseFloat(this.passengersWeightTarget.value) || 0
+    const cargoInput = parseFloat(this.cargoWeightTarget.value) || 0
     const tonguePct = (parseFloat(this.tongueWeightPctTarget.value) || 10) / 100
 
-    if (gvwr <= 0 || curb <= 0 || curb >= gvwr) {
+    if (gvwrInput <= 0 || curbInput <= 0 || curbInput >= gvwrInput) {
       this.clearResults()
       return
     }
+
+    // Math internally in lbs
+    const gvwr = metric ? gvwrInput / LB_TO_KG : gvwrInput
+    const curb = metric ? curbInput / LB_TO_KG : curbInput
+    const passengers = metric ? passengersInput / LB_TO_KG : passengersInput
+    const cargo = metric ? cargoInput / LB_TO_KG : cargoInput
 
     const maxPayload = gvwr - curb
     const currentPayload = passengers + cargo
@@ -29,18 +67,22 @@ export default class extends Controller {
     const maxTongue = maxTowing * tonguePct
     const gcwr = gvwr + maxTowing
 
-    this.maxPayloadTarget.textContent = this.fmt(maxPayload) + " lbs"
-    this.currentPayloadTarget.textContent = this.fmt(currentPayload) + " lbs"
-    this.remainingPayloadTarget.textContent = this.fmt(remainingPayload) + " lbs"
+    const unit = metric ? "kg" : "lbs"
+    const toDisplay = (lb) => metric ? lb * LB_TO_KG : lb
+
+    this.maxPayloadTarget.textContent = this.fmt(toDisplay(maxPayload)) + " " + unit
+    this.currentPayloadTarget.textContent = this.fmt(toDisplay(currentPayload)) + " " + unit
+    this.remainingPayloadTarget.textContent = this.fmt(toDisplay(remainingPayload)) + " " + unit
     this.payloadPctTarget.textContent = payloadPct.toFixed(1) + "%"
-    this.maxTowingTarget.textContent = this.fmt(maxTowing) + " lbs"
-    this.safeTowingTarget.textContent = this.fmt(safeTowing) + " lbs"
-    this.maxTongueWeightTarget.textContent = this.fmt(maxTongue) + " lbs"
-    this.gcwrTarget.textContent = this.fmt(gcwr) + " lbs"
+    this.maxTowingTarget.textContent = this.fmt(toDisplay(maxTowing)) + " " + unit
+    this.safeTowingTarget.textContent = this.fmt(toDisplay(safeTowing)) + " " + unit
+    this.maxTongueWeightTarget.textContent = this.fmt(toDisplay(maxTongue)) + " " + unit
+    this.gcwrTarget.textContent = this.fmt(toDisplay(gcwr)) + " " + unit
   }
 
   clearResults() {
-    const zero = "0 lbs"
+    const unit = this.unitSystemTarget.value === "metric" ? "kg" : "lbs"
+    const zero = "0 " + unit
     this.maxPayloadTarget.textContent = zero
     this.currentPayloadTarget.textContent = zero
     this.remainingPayloadTarget.textContent = zero

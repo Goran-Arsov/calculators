@@ -11,13 +11,12 @@ export default class extends Controller {
   ]
 
   connect() {
-    if (prefillFromUrl(this, {
+    prefillFromUrl(this, {
       vehicle_price: "vehiclePrice", down_payment: "downPaymentBuy", loan_rate: "loanRate",
       loan_term: "loanTermMonths", lease_payment: "leaseMonthlyPayment", lease_term: "leaseTermMonths",
       lease_down: "leaseDownPayment", resale: "estimatedResaleValue"
-    })) {
-      this.calculate()
-    }
+    })
+    this.calculate()
   }
 
   calculate() {

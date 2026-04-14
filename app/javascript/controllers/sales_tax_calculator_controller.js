@@ -9,9 +9,8 @@ export default class extends Controller {
   ]
 
   connect() {
-    if (prefillFromUrl(this, { subtotal: "subtotal", taxRate: "taxRate" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { subtotal: "subtotal", taxRate: "taxRate" })
+    this.calculate()
   }
 
   calculate() {

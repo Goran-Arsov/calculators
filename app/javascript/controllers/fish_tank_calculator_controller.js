@@ -1,24 +1,56 @@
 import { Controller } from "@hotwired/stimulus"
+import { IN_TO_CM } from "utils/units"
 
 export default class extends Controller {
   static targets = ["length", "width", "height", "tankShape", "fishCount", "avgFishInches",
                      "volumeGallons", "volumeLiters", "maxFishInches", "stockingPercentage",
-                     "stockingLevel", "filterGph", "heaterWatts"]
+                     "stockingLevel", "filterGph", "heaterWatts",
+                     "unitSystem", "lengthLabel", "widthLabel", "heightLabel",
+                     "avgFishLabel", "maxFishLabel"]
 
   static GALLONS_PER_CUBIC_INCH = 0.004329
   static LITERS_PER_GALLON = 3.78541
   static FILTER_TURNOVER = 4
   static HEATER_WATTS_PER_GALLON = 5
 
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const convert = (el, factor) => {
+      const n = parseFloat(el.value)
+      if (Number.isFinite(n)) el.value = (toMetric ? n * factor : n / factor).toFixed(2)
+    }
+    convert(this.lengthTarget, IN_TO_CM)
+    convert(this.widthTarget, IN_TO_CM)
+    convert(this.heightTarget, IN_TO_CM)
+    convert(this.avgFishInchesTarget, IN_TO_CM)
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.lengthLabelTarget.textContent = metric ? "Length / Diameter (cm)" : "Length / Diameter (inches)"
+    this.widthLabelTarget.textContent = metric ? "Width (cm)" : "Width (inches)"
+    this.heightLabelTarget.textContent = metric ? "Height (cm)" : "Height (inches)"
+    this.avgFishLabelTarget.textContent = metric ? "Average Fish Size (cm)" : "Average Fish Size (inches)"
+    this.maxFishLabelTarget.textContent = metric ? "Max Fish (cm)" : "Max Fish (inches)"
+  }
+
   calculate() {
-    const length = parseFloat(this.lengthTarget.value) || 0
-    const width = parseFloat(this.widthTarget.value) || 0
-    const height = parseFloat(this.heightTarget.value) || 0
+    const metric = this.unitSystemTarget.value === "metric"
+    const lengthIn = this.toInches(parseFloat(this.lengthTarget.value) || 0, metric)
+    const widthIn = this.toInches(parseFloat(this.widthTarget.value) || 0, metric)
+    const heightIn = this.toInches(parseFloat(this.heightTarget.value) || 0, metric)
     const shape = this.tankShapeTarget.value
     const fishCount = parseInt(this.fishCountTarget.value) || 0
-    const avgFishInches = parseFloat(this.avgFishInchesTarget.value) || 2
+    const avgFishIn = this.toInches(parseFloat(this.avgFishInchesTarget.value) || 2, metric)
 
-    if (length <= 0 || width <= 0 || height <= 0) {
+    if (lengthIn <= 0 || widthIn <= 0 || heightIn <= 0) {
       this.clearResults()
       return
     }
@@ -26,35 +58,43 @@ export default class extends Controller {
     let cubicInches
     switch (shape) {
       case "bow_front":
-        cubicInches = length * width * height * 1.1
+        cubicInches = lengthIn * widthIn * heightIn * 1.1
         break
       case "cylinder":
-        cubicInches = Math.PI * Math.pow(length / 2, 2) * height
+        cubicInches = Math.PI * Math.pow(lengthIn / 2, 2) * heightIn
         break
       case "hexagonal":
-        const side = length / 2
-        cubicInches = (3 * Math.sqrt(3) / 2) * Math.pow(side, 2) * height
+        const side = lengthIn / 2
+        cubicInches = (3 * Math.sqrt(3) / 2) * Math.pow(side, 2) * heightIn
         break
       default:
-        cubicInches = length * width * height
+        cubicInches = lengthIn * widthIn * heightIn
     }
 
     const effectiveCubicInches = cubicInches * 0.9
     const volumeGallons = effectiveCubicInches * this.constructor.GALLONS_PER_CUBIC_INCH
     const volumeLiters = volumeGallons * this.constructor.LITERS_PER_GALLON
-    const maxFishInches = Math.floor(volumeGallons)
-    const currentFishInches = fishCount * avgFishInches
+    const maxFishInchesInt = Math.floor(volumeGallons)
+    const currentFishInches = fishCount * avgFishIn
     const stockingPct = volumeGallons > 0 ? (currentFishInches / volumeGallons) * 100 : 0
     const filterGph = Math.ceil(volumeGallons * this.constructor.FILTER_TURNOVER)
     const heaterWatts = Math.ceil(volumeGallons * this.constructor.HEATER_WATTS_PER_GALLON)
 
     this.volumeGallonsTarget.textContent = `${volumeGallons.toFixed(1)} gal`
     this.volumeLitersTarget.textContent = `${volumeLiters.toFixed(1)} L`
-    this.maxFishInchesTarget.textContent = `${maxFishInches} inches`
+    if (metric) {
+      this.maxFishInchesTarget.textContent = `${(maxFishInchesInt * IN_TO_CM).toFixed(1)} cm`
+    } else {
+      this.maxFishInchesTarget.textContent = `${maxFishInchesInt} inches`
+    }
     this.stockingPercentageTarget.textContent = `${stockingPct.toFixed(1)}%`
     this.stockingLevelTarget.textContent = this.getStockingLevel(stockingPct)
     this.filterGphTarget.textContent = `${filterGph} GPH`
     this.heaterWattsTarget.textContent = `${heaterWatts} watts`
+  }
+
+  toInches(value, metric) {
+    return metric ? value / IN_TO_CM : value
   }
 
   getStockingLevel(pct) {
@@ -78,7 +118,7 @@ export default class extends Controller {
   copy() {
     const text = [
       `Volume: ${this.volumeGallonsTarget.textContent} (${this.volumeLitersTarget.textContent})`,
-      `Max Fish (inches): ${this.maxFishInchesTarget.textContent}`,
+      `${this.maxFishLabelTarget.textContent}: ${this.maxFishInchesTarget.textContent}`,
       `Stocking: ${this.stockingPercentageTarget.textContent} - ${this.stockingLevelTarget.textContent}`,
       `Filter Needed: ${this.filterGphTarget.textContent}`,
       `Heater Needed: ${this.heaterWattsTarget.textContent}`

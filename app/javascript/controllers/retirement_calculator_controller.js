@@ -5,9 +5,8 @@ export default class extends Controller {
   static targets = ["currentAge", "retirementAge", "currentSavings", "monthlyContribution", "rate", "projectedSavings", "monthlyIncome", "yearsToRetire"]
 
   connect() {
-    if (prefillFromUrl(this, { age: "currentAge", retireAge: "retirementAge", savings: "currentSavings", monthly: "monthlyContribution", rate: "rate" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { age: "currentAge", retireAge: "retirementAge", savings: "currentSavings", monthly: "monthlyContribution", rate: "rate" })
+    this.calculate()
   }
 
   calculate() {

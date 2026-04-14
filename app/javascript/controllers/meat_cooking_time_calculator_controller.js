@@ -1,9 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
+import { LB_TO_KG, fToC } from "utils/units"
 
 export default class extends Controller {
   static targets = [
     "meatType", "cut", "weight", "doneness", "method",
     "cutOptions", "donenessOptions", "methodOptions",
+    "unitSystem", "weightLabel",
     "results", "totalTime", "internalTemp", "restTime", "minutesPerLb"
   ]
 
@@ -90,7 +92,25 @@ export default class extends Controller {
   }
 
   connect() {
+    this.updateLabels()
     this.updateCutOptions()
+  }
+
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const weight = parseFloat(this.weightTarget.value)
+    if (Number.isFinite(weight) && weight > 0) {
+      this.weightTarget.value = (toMetric ? weight * LB_TO_KG : weight / LB_TO_KG).toFixed(2)
+    }
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    if (this.hasWeightLabelTarget) {
+      this.weightLabelTarget.textContent = metric ? "Weight (kg)" : "Weight (lbs)"
+    }
   }
 
   updateCutOptions() {
@@ -145,13 +165,14 @@ export default class extends Controller {
   }
 
   calculate() {
+    const metric = this.unitSystemTarget.value === "metric"
     const meat = this.meatTypeTarget.value
     const cut = this.cutOptionsTarget.value
     const doneness = this.donenessOptionsTarget.value
     const method = this.methodOptionsTarget.value
-    const weight = parseFloat(this.weightTarget.value) || 0
+    const weightInput = parseFloat(this.weightTarget.value) || 0
 
-    if (!meat || !cut || !doneness || !method || weight <= 0) {
+    if (!meat || !cut || !doneness || !method || weightInput <= 0) {
       this.resultsTarget.classList.add("hidden")
       return
     }
@@ -162,24 +183,33 @@ export default class extends Controller {
       return
     }
 
-    const totalMinutes = Math.round(data.mpl * weight)
+    // Math internally in lbs / °F
+    const weightLbs = metric ? weightInput / LB_TO_KG : weightInput
+    const totalMinutes = Math.round(data.mpl * weightLbs)
     const hours = Math.floor(totalMinutes / 60)
     const minutes = totalMinutes % 60
 
-    const restTime = this.getRestTime(meat, cut, weight)
+    const restTime = this.getRestTime(meat, cut, weightLbs)
 
     this.totalTimeTarget.textContent = hours > 0 ? `${hours}h ${minutes}m` : `${minutes} minutes`
-    this.internalTempTarget.textContent = `${data.temp} °F`
+    if (metric) {
+      this.internalTempTarget.textContent = `${Math.round(fToC(data.temp))} °C`
+      // mpl is min per lb; express as min per kg for metric
+      const mplKg = data.mpl / LB_TO_KG
+      this.minutesPerLbTarget.textContent = `${mplKg.toFixed(1)} min/kg`
+    } else {
+      this.internalTempTarget.textContent = `${data.temp} °F`
+      this.minutesPerLbTarget.textContent = `${data.mpl} min/lb`
+    }
     this.restTimeTarget.textContent = `${restTime} minutes`
-    this.minutesPerLbTarget.textContent = `${data.mpl} min/lb`
     this.resultsTarget.classList.remove("hidden")
   }
 
-  getRestTime(meat, cut, weight) {
-    if (meat === "beef") return weight >= 3 ? 20 : 10
+  getRestTime(meat, cut, weightLbs) {
+    if (meat === "beef") return weightLbs >= 3 ? 20 : 10
     if (meat === "pork" && cut === "pulled_pork") return 30
     if (meat === "pork") return 10
-    if (meat === "turkey") return weight >= 10 ? 30 : 20
+    if (meat === "turkey") return weightLbs >= 10 ? 30 : 20
     if (meat === "lamb") return 15
     return 10
   }

@@ -8,9 +8,8 @@ export default class extends Controller {
                      "resultAttire", "resultStationery", "resultOther"]
 
   connect() {
-    if (prefillFromUrl(this, { totalBudget: "totalBudget", guestCount: "guestCount" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { totalBudget: "totalBudget", guestCount: "guestCount" })
+    this.calculate()
   }
 
   calculate() {

@@ -10,13 +10,12 @@ export default class extends Controller {
   ]
 
   connect() {
-    if (prefillFromUrl(this, {
+    prefillFromUrl(this, {
       age: "currentAge", retireAge: "retirementAge", savings: "currentSavings",
       monthly: "monthlyContribution", rate: "returnRate", inflation: "inflationRate",
       years: "yearsInRetirement"
-    })) {
-      this.calculate()
-    } else {
+    })
+    this.calculate() else {
       this.calculate()
     }
   }

@@ -1,14 +1,40 @@
 import { Controller } from "@hotwired/stimulus"
+import { MI_TO_KM } from "utils/units"
+
+const DAILY_COMMUTE_MI = 40
+const MILES_PER_KWH = 3.5
 
 export default class extends Controller {
   static targets = [
     "batteryCapacity", "currentCharge", "targetCharge",
     "electricityRate", "chargerType", "chargerEfficiency",
+    "unitSystem", "distanceHeading", "distancePerUnitHeading",
     "energyNeeded", "energyFromGrid", "chargingCost", "chargeTime",
     "costPerMile", "milesAdded", "monthlyCost"
   ]
 
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  switchUnits() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    if (this.hasDistanceHeadingTarget) {
+      this.distanceHeadingTarget.textContent = metric ? "Kilometers Added" : "Miles Added"
+    }
+    if (this.hasDistancePerUnitHeadingTarget) {
+      this.distancePerUnitHeadingTarget.textContent = metric ? "Cost per km" : "Cost per Mile"
+    }
+  }
+
   calculate() {
+    const metric = this.unitSystemTarget.value === "metric"
     const battery = parseFloat(this.batteryCapacityTarget.value) || 0
     const currentPct = (parseFloat(this.currentChargeTarget.value) || 0) / 100
     const targetPct = (parseFloat(this.targetChargeTarget.value) || 80) / 100
@@ -28,20 +54,27 @@ export default class extends Controller {
     const power = { level1: 1.4, level2: 7.2, dc_fast: 150, supercharger: 250 }[chargerType] || 7.2
     const chargeTimeHrs = energyFromGrid / power
 
-    const milesPerKwh = 3.5
-    const milesAdded = energyNeeded * milesPerKwh
+    const milesAdded = energyNeeded * MILES_PER_KWH
     const costPerMile = milesAdded > 0 ? cost / milesAdded : 0
 
-    // Monthly estimate based on 40 mile daily commute
-    const dailyKwh = 40 / milesPerKwh / efficiency
+    // Monthly estimate based on typical daily commute
+    const dailyKwh = DAILY_COMMUTE_MI / MILES_PER_KWH / efficiency
     const monthlyCost = dailyKwh * rate * 30
 
     this.energyNeededTarget.textContent = energyNeeded.toFixed(2) + " kWh"
     this.energyFromGridTarget.textContent = energyFromGrid.toFixed(2) + " kWh"
     this.chargingCostTarget.textContent = "$" + cost.toFixed(2)
-    this.costPerMileTarget.textContent = "$" + costPerMile.toFixed(3)
-    this.milesAddedTarget.textContent = milesAdded.toFixed(1) + " mi"
     this.monthlyCostTarget.textContent = "$" + monthlyCost.toFixed(2)
+
+    if (metric) {
+      const kmAdded = milesAdded * MI_TO_KM
+      const costPerKm = kmAdded > 0 ? cost / kmAdded : 0
+      this.milesAddedTarget.textContent = kmAdded.toFixed(1) + " km"
+      this.costPerMileTarget.textContent = "$" + costPerKm.toFixed(3)
+    } else {
+      this.milesAddedTarget.textContent = milesAdded.toFixed(1) + " mi"
+      this.costPerMileTarget.textContent = "$" + costPerMile.toFixed(3)
+    }
 
     if (chargeTimeHrs < 1) {
       this.chargeTimeTarget.textContent = Math.round(chargeTimeHrs * 60) + " min"
@@ -51,17 +84,18 @@ export default class extends Controller {
   }
 
   clearResults() {
+    const metric = this.unitSystemTarget.value === "metric"
     this.energyNeededTarget.textContent = "0.00 kWh"
     this.energyFromGridTarget.textContent = "0.00 kWh"
     this.chargingCostTarget.textContent = "$0.00"
     this.chargeTimeTarget.textContent = "0 min"
     this.costPerMileTarget.textContent = "$0.000"
-    this.milesAddedTarget.textContent = "0.0 mi"
+    this.milesAddedTarget.textContent = metric ? "0.0 km" : "0.0 mi"
     this.monthlyCostTarget.textContent = "$0.00"
   }
 
   copy() {
-    const text = `Energy Needed: ${this.energyNeededTarget.textContent}\nCharging Cost: ${this.chargingCostTarget.textContent}\nCharge Time: ${this.chargeTimeTarget.textContent}\nCost per Mile: ${this.costPerMileTarget.textContent}\nMonthly Estimate: ${this.monthlyCostTarget.textContent}`
+    const text = `Energy Needed: ${this.energyNeededTarget.textContent}\nCharging Cost: ${this.chargingCostTarget.textContent}\nCharge Time: ${this.chargeTimeTarget.textContent}\nCost per Unit: ${this.costPerMileTarget.textContent}\nMonthly Estimate: ${this.monthlyCostTarget.textContent}`
     navigator.clipboard.writeText(text)
   }
 }

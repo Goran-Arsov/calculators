@@ -1,9 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
+import { LB_TO_KG } from "utils/units"
 
 export default class extends Controller {
   static targets = ["currentWeight", "ageWeeks", "breedSize",
                      "predictedWeight", "predictedWeightKg", "growthPercentage",
-                     "remainingGrowth", "weeksToAdult", "breedRange"]
+                     "remainingGrowth", "weeksToAdult", "breedRange",
+                     "unitSystem", "currentWeightLabel", "predictedWeightLabel",
+                     "predictedWeightAltLabel", "breedRangeLabel"]
 
   static growthCurves = {
     toy:    { 8: 0.47, 12: 0.60, 16: 0.72, 20: 0.82, 24: 0.90, 32: 0.95, 40: 0.98, 52: 1.0 },
@@ -21,12 +24,36 @@ export default class extends Controller {
     giant:  { min: 90, max: 200 }
   }
 
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const n = parseFloat(this.currentWeightTarget.value)
+    if (Number.isFinite(n)) {
+      this.currentWeightTarget.value = (toMetric ? n * LB_TO_KG : n / LB_TO_KG).toFixed(2)
+    }
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.currentWeightLabelTarget.textContent = metric ? "Current Weight (kg)" : "Current Weight (lbs)"
+    this.predictedWeightLabelTarget.textContent = metric ? "Predicted Adult Weight (kg)" : "Predicted Adult Weight"
+    this.predictedWeightAltLabelTarget.textContent = metric ? "In Pounds" : "In Kilograms"
+    this.breedRangeLabelTarget.textContent = metric ? "Breed Range (kg)" : "Breed Range"
+  }
+
   calculate() {
-    const weight = parseFloat(this.currentWeightTarget.value) || 0
+    const metric = this.unitSystemTarget.value === "metric"
+    const weightInput = parseFloat(this.currentWeightTarget.value) || 0
     const ageWeeks = parseInt(this.ageWeeksTarget.value) || 0
     const breedSize = this.breedSizeTarget.value
 
-    if (weight <= 0 || ageWeeks < 4) {
+    if (weightInput <= 0 || ageWeeks < 4) {
       this.clearResults()
       return
     }
@@ -38,22 +65,31 @@ export default class extends Controller {
       return
     }
 
+    const weightLbs = metric ? weightInput / LB_TO_KG : weightInput
     const growthPct = this.interpolate(curve, ageWeeks)
-    let predictedWeight = weight / growthPct
-    predictedWeight = Math.max(range.min, Math.min(predictedWeight, range.max * 1.2))
-    const predictedWeightKg = predictedWeight * 0.453592
+    let predictedLbs = weightLbs / growthPct
+    predictedLbs = Math.max(range.min, Math.min(predictedLbs, range.max * 1.2))
+    const predictedKg = predictedLbs * LB_TO_KG
     const remainingGrowthPct = (1 - growthPct) * 100
 
     const weeks = Object.keys(curve).map(Number).sort((a, b) => a - b)
     const adultWeek = weeks.find(w => curve[w] >= 1.0) || weeks[weeks.length - 1]
     const weeksToAdult = Math.max(adultWeek - ageWeeks, 0)
 
-    this.predictedWeightTarget.textContent = `${predictedWeight.toFixed(1)} lbs`
-    this.predictedWeightKgTarget.textContent = `${predictedWeightKg.toFixed(1)} kg`
+    if (metric) {
+      this.predictedWeightTarget.textContent = `${predictedKg.toFixed(1)} kg`
+      this.predictedWeightKgTarget.textContent = `${predictedLbs.toFixed(1)} lbs`
+      const rangeMinKg = range.min * LB_TO_KG
+      const rangeMaxKg = range.max * LB_TO_KG
+      this.breedRangeTarget.textContent = `${rangeMinKg.toFixed(1)}-${rangeMaxKg.toFixed(1)} kg`
+    } else {
+      this.predictedWeightTarget.textContent = `${predictedLbs.toFixed(1)} lbs`
+      this.predictedWeightKgTarget.textContent = `${predictedKg.toFixed(1)} kg`
+      this.breedRangeTarget.textContent = `${range.min}-${range.max} lbs`
+    }
     this.growthPercentageTarget.textContent = `${(growthPct * 100).toFixed(1)}%`
     this.remainingGrowthTarget.textContent = `${remainingGrowthPct.toFixed(1)}%`
     this.weeksToAdultTarget.textContent = `${weeksToAdult} weeks`
-    this.breedRangeTarget.textContent = `${range.min}-${range.max} lbs`
   }
 
   interpolate(curve, ageWeeks) {

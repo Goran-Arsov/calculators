@@ -51,9 +51,8 @@ export default class extends Controller {
   }
 
   connect() {
-    if (prefillFromUrl(this, { estate_value: "estateValue", state: "state", relationship: "relationship" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { estate_value: "estateValue", state: "state", relationship: "relationship" })
+    this.calculate()
   }
 
   calculate() {

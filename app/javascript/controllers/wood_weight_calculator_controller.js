@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { FT_TO_M, IN_TO_CM, LB_TO_KG, CUFT_TO_CUM } from "utils/units"
 
 const SPECIES_DENSITY = {
   red_oak:            { name: "Red Oak",            density_lb_ft3: 44.0 },
@@ -23,17 +24,41 @@ const SPECIES_DENSITY = {
   purpleheart:        { name: "Purpleheart",        density_lb_ft3: 56.0 }
 }
 
-const LB_TO_KG = 0.453592
-const FT3_TO_M3 = 0.0283168
 const LB_FT3_TO_KG_M3 = 16.0185
 
 export default class extends Controller {
   static targets = [
     "species", "thickness", "width", "length", "quantity",
+    "unitSystem", "thicknessLabel", "widthLabel", "lengthLabel",
     "resultDensity", "resultWeightEach",
     "resultTotalWeightLb", "resultTotalWeightKg",
     "resultVolumeFt3", "resultVolumeM3"
   ]
+
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const convert = (el, factor) => {
+      const n = parseFloat(el.value)
+      if (Number.isFinite(n)) el.value = (toMetric ? n * factor : n / factor).toFixed(2)
+    }
+    convert(this.thicknessTarget, IN_TO_CM)
+    convert(this.widthTarget, IN_TO_CM)
+    convert(this.lengthTarget, FT_TO_M)
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.thicknessLabelTarget.textContent = metric ? "Thickness (cm)" : "Thickness (inches)"
+    this.widthLabelTarget.textContent = metric ? "Width (cm)" : "Width (inches)"
+    this.lengthLabelTarget.textContent = metric ? "Length (m)" : "Length (feet)"
+  }
 
   calculate() {
     const speciesKey = this.speciesTarget.value
@@ -43,32 +68,47 @@ export default class extends Controller {
       return
     }
 
-    const thickness = parseFloat(this.thicknessTarget.value) || 0
-    const width = parseFloat(this.widthTarget.value) || 0
-    const length = parseFloat(this.lengthTarget.value) || 0
+    const metric = this.unitSystemTarget.value === "metric"
+    const rawThickness = parseFloat(this.thicknessTarget.value) || 0
+    const rawWidth = parseFloat(this.widthTarget.value) || 0
+    const rawLength = parseFloat(this.lengthTarget.value) || 0
     const quantity = parseInt(this.quantityTarget.value) || 1
 
-    if (thickness <= 0 || width <= 0 || length <= 0 || quantity < 1) {
+    if (rawThickness <= 0 || rawWidth <= 0 || rawLength <= 0 || quantity < 1) {
       this.clearResults()
       return
     }
+
+    // Canonical: inches / feet
+    const thickness = metric ? rawThickness / IN_TO_CM : rawThickness
+    const width = metric ? rawWidth / IN_TO_CM : rawWidth
+    const length = metric ? rawLength / FT_TO_M : rawLength
 
     const density = speciesData.density_lb_ft3
     const volumePer = (thickness * width * (length * 12)) / 1728
     const weightPer = volumePer * density
 
     const totalVolumeFt3 = volumePer * quantity
-    const totalVolumeM3 = totalVolumeFt3 * FT3_TO_M3
+    const totalVolumeM3 = totalVolumeFt3 * CUFT_TO_CUM
     const totalWeightLb = weightPer * quantity
     const totalWeightKg = totalWeightLb * LB_TO_KG
     const densityKgM3 = density * LB_FT3_TO_KG_M3
+    const weightPerKg = weightPer * LB_TO_KG
 
     this.resultDensityTarget.textContent = `${density.toFixed(2)} lb/ft³ (${densityKgM3.toFixed(2)} kg/m³)`
-    this.resultWeightEachTarget.textContent = `${weightPer.toFixed(2)} lb`
-    this.resultTotalWeightLbTarget.textContent = `${totalWeightLb.toFixed(2)} lb`
-    this.resultTotalWeightKgTarget.textContent = `${totalWeightKg.toFixed(2)} kg`
-    this.resultVolumeFt3Target.textContent = `${totalVolumeFt3.toFixed(4)} ft³`
-    this.resultVolumeM3Target.textContent = `${totalVolumeM3.toFixed(4)} m³`
+    if (metric) {
+      this.resultWeightEachTarget.textContent = `${weightPerKg.toFixed(2)} kg`
+      this.resultTotalWeightLbTarget.textContent = `${totalWeightKg.toFixed(2)} kg`
+      this.resultTotalWeightKgTarget.textContent = `${totalWeightLb.toFixed(2)} lb`
+      this.resultVolumeFt3Target.textContent = `${totalVolumeM3.toFixed(4)} m³`
+      this.resultVolumeM3Target.textContent = `${totalVolumeFt3.toFixed(4)} ft³`
+    } else {
+      this.resultWeightEachTarget.textContent = `${weightPer.toFixed(2)} lb`
+      this.resultTotalWeightLbTarget.textContent = `${totalWeightLb.toFixed(2)} lb`
+      this.resultTotalWeightKgTarget.textContent = `${totalWeightKg.toFixed(2)} kg`
+      this.resultVolumeFt3Target.textContent = `${totalVolumeFt3.toFixed(4)} ft³`
+      this.resultVolumeM3Target.textContent = `${totalVolumeM3.toFixed(4)} m³`
+    }
   }
 
   clearResults() {

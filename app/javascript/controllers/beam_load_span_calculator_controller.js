@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { FT_TO_M, LB_TO_KG, PSI_TO_KPA } from "utils/units"
 
 const MATERIALS = {
   southern_pine: { fb: 1500, label: "Southern Pine (No. 2)" },
@@ -23,20 +24,56 @@ const LUMBER_SECTIONS = [
   { size: "6x12", s: 121.23 }
 ]
 
+const IN3_TO_CM3 = 16.387064
+// Force conversion: 1 lb-force ≈ 0.45359237 kgf (as weight/mass equivalent).
+const PLF_TO_KGF_PER_M = LB_TO_KG / FT_TO_M // ≈ 1.4882
+// ft-lbs to N·m (kgf·m approximation)
+const LB_FT_TO_KGF_M = LB_TO_KG * FT_TO_M * (1 / FT_TO_M) // = LB_TO_KG; use kgf·m
+const FTLBS_TO_NM = 1.3558179
+
 export default class extends Controller {
   static targets = ["span", "load", "material",
+    "unitSystem", "spanLabel", "loadLabel",
     "resultMoment", "resultSectionModulus", "resultRecommended",
     "resultMaterialLabel", "resultAllowableStress"]
 
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  switchUnits() {
+    const toMetric = this.unitSystemTarget.value === "metric"
+    const convert = (el, factor) => {
+      const n = parseFloat(el.value)
+      if (Number.isFinite(n)) el.value = (toMetric ? n * factor : n / factor).toFixed(2)
+    }
+    convert(this.spanTarget, FT_TO_M)
+    convert(this.loadTarget, PLF_TO_KGF_PER_M)
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.spanLabelTarget.textContent = metric ? "Beam Span (m)" : "Beam Span (ft)"
+    this.loadLabelTarget.textContent = metric ? "Load (kg per linear meter)" : "Load (lbs per linear foot)"
+  }
+
   calculate() {
-    const spanFt = parseFloat(this.spanTarget.value) || 0
-    const loadPlf = parseFloat(this.loadTarget.value) || 0
+    const metric = this.unitSystemTarget.value === "metric"
+    const spanInput = parseFloat(this.spanTarget.value) || 0
+    const loadInput = parseFloat(this.loadTarget.value) || 0
     const materialKey = this.materialTarget.value || "douglas_fir"
 
-    if (spanFt <= 0 || loadPlf <= 0 || !MATERIALS[materialKey]) {
+    if (spanInput <= 0 || loadInput <= 0 || !MATERIALS[materialKey]) {
       this.clearResults()
       return
     }
+
+    // Math is in imperial internally.
+    const spanFt = metric ? spanInput / FT_TO_M : spanInput
+    const loadPlf = metric ? loadInput / PLF_TO_KGF_PER_M : loadInput
 
     const mat = MATERIALS[materialKey]
     const fb = mat.fb
@@ -44,30 +81,42 @@ export default class extends Controller {
 
     const wPerIn = loadPlf / 12
     const maxMomentLbIn = (wPerIn * spanIn * spanIn) / 8
-    const requiredS = (maxMomentLbIn / fb).toFixed(2)
+    const requiredS = maxMomentLbIn / fb
     const maxMomentFtLbs = Math.round(maxMomentLbIn / 12)
 
     let recommended = "Exceeds standard sizes"
     for (const section of LUMBER_SECTIONS) {
       if (section.s >= requiredS) {
-        recommended = `${section.size} (S = ${section.s} in\u00B3)`
+        recommended = metric
+          ? `${section.size} (S = ${(section.s * IN3_TO_CM3).toFixed(1)} cm\u00B3)`
+          : `${section.size} (S = ${section.s} in\u00B3)`
         break
       }
     }
 
-    this.resultMomentTarget.textContent = `${maxMomentFtLbs.toLocaleString()} ft-lbs`
-    this.resultSectionModulusTarget.textContent = `${requiredS} in\u00B3`
-    this.resultRecommendedTarget.textContent = recommended
     this.resultMaterialLabelTarget.textContent = mat.label
-    this.resultAllowableStressTarget.textContent = `${fb.toLocaleString()} PSI`
+    if (metric) {
+      const momentNm = maxMomentFtLbs * FTLBS_TO_NM
+      const reqSCm3 = requiredS * IN3_TO_CM3
+      const fbKpa = fb * PSI_TO_KPA
+      this.resultMomentTarget.textContent = `${Math.round(momentNm).toLocaleString()} N·m`
+      this.resultSectionModulusTarget.textContent = `${reqSCm3.toFixed(2)} cm\u00B3`
+      this.resultAllowableStressTarget.textContent = `${Math.round(fbKpa).toLocaleString()} kPa`
+    } else {
+      this.resultMomentTarget.textContent = `${maxMomentFtLbs.toLocaleString()} ft-lbs`
+      this.resultSectionModulusTarget.textContent = `${requiredS.toFixed(2)} in\u00B3`
+      this.resultAllowableStressTarget.textContent = `${fb.toLocaleString()} PSI`
+    }
+    this.resultRecommendedTarget.textContent = recommended
   }
 
   clearResults() {
-    this.resultMomentTarget.textContent = "0 ft-lbs"
-    this.resultSectionModulusTarget.textContent = "0 in\u00B3"
+    const metric = this.unitSystemTarget.value === "metric"
+    this.resultMomentTarget.textContent = metric ? "0 N·m" : "0 ft-lbs"
+    this.resultSectionModulusTarget.textContent = metric ? "0 cm\u00B3" : "0 in\u00B3"
     this.resultRecommendedTarget.textContent = "--"
     this.resultMaterialLabelTarget.textContent = "--"
-    this.resultAllowableStressTarget.textContent = "0 PSI"
+    this.resultAllowableStressTarget.textContent = metric ? "0 kPa" : "0 PSI"
   }
 
   copy() {

@@ -65,15 +65,14 @@ export default class extends Controller {
   }
 
   connect() {
-    if (prefillFromUrl(this, {
+    prefillFromUrl(this, {
       purchase: "purchasePrice",
       sale: "salePrice",
       months: "holdingPeriodMonths",
       income: "annualIncome",
       status: "filingStatus"
-    })) {
-      this.calculate()
-    }
+    })
+    this.calculate()
   }
 
   calculate() {

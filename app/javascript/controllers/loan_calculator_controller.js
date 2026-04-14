@@ -6,9 +6,8 @@ export default class extends Controller {
   static targets = ["amount", "rate", "years", "monthlyPayment", "totalPaid", "totalInterest", "numPayments"]
 
   connect() {
-    if (prefillFromUrl(this, { amount: "amount", rate: "rate", term: "years" })) {
-      this.calculate()
-    }
+    prefillFromUrl(this, { amount: "amount", rate: "rate", term: "years" })
+    this.calculate()
   }
 
   calculate() {

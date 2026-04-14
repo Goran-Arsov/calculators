@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { GAL_TO_L } from "utils/units"
 
 const FIXTURE = {
   shower: 10,
@@ -21,12 +22,29 @@ const TANK_TABLE = [
 ]
 
 export default class extends Controller {
-  static targets = ["people", "bathrooms", "showers", "baths", "dishwasher", "clothesWasher",
-                    "resultPeak", "resultTank", "resultFhr", "resultTankless"]
+  static targets = [
+    "people", "bathrooms", "showers", "baths", "dishwasher", "clothesWasher",
+    "unitSystem", "tanklessHeading",
+    "resultPeak", "resultTank", "resultFhr", "resultTankless"
+  ]
 
-  connect() { this.calculate() }
+  connect() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  switchUnits() {
+    this.updateLabels()
+    this.calculate()
+  }
+
+  updateLabels() {
+    const metric = this.unitSystemTarget.value === "metric"
+    this.tanklessHeadingTarget.textContent = metric ? "Tankless L/min" : "Tankless GPM"
+  }
 
   calculate() {
+    const metric = this.unitSystemTarget.value === "metric"
     const people = parseInt(this.peopleTarget.value, 10)
     const bathrooms = parseInt(this.bathroomsTarget.value, 10)
     const showers = parseInt(this.showersTarget.value, 10)
@@ -41,23 +59,33 @@ export default class extends Controller {
     }
 
     const showerCount = Number.isFinite(showers) && showers >= 0 ? showers : people
-    let peak = showerCount * FIXTURE.shower
-    peak += baths * FIXTURE.bath
-    peak += people * FIXTURE.handWash
-    peak += FIXTURE.kitchenSink
-    if (dishwasher) peak += FIXTURE.dishwasher
-    if (clothesWasher) peak += FIXTURE.clothesWasher
+    let peakGal = showerCount * FIXTURE.shower
+    peakGal += baths * FIXTURE.bath
+    peakGal += people * FIXTURE.handWash
+    peakGal += FIXTURE.kitchenSink
+    if (dishwasher) peakGal += FIXTURE.dishwasher
+    if (clothesWasher) peakGal += FIXTURE.clothesWasher
 
     const row = TANK_TABLE.find(r => people >= r.people[0] && people <= r.people[1] &&
                                      bathrooms >= r.baths[0] && bathrooms <= r.baths[1])
-    const tank = row ? row.gal : 80
-    let tankless = 5.0
-    if (dishwasher || clothesWasher) tankless += 1.5
+    const tankGal = row ? row.gal : 80
+    let tanklessGpm = 5.0
+    if (dishwasher || clothesWasher) tanklessGpm += 1.5
 
-    this.resultPeakTarget.textContent = `${peak.toFixed(0)} gal`
-    this.resultTankTarget.textContent = `${tank} gal`
-    this.resultFhrTarget.textContent = `${peak.toFixed(0)} gal / hr`
-    this.resultTanklessTarget.textContent = `${tankless.toFixed(1)} GPM`
+    if (metric) {
+      const peakL = peakGal * GAL_TO_L
+      const tankL = tankGal * GAL_TO_L
+      const tanklessLpm = tanklessGpm * GAL_TO_L
+      this.resultPeakTarget.textContent = `${peakL.toFixed(0)} L`
+      this.resultTankTarget.textContent = `${tankL.toFixed(0)} L`
+      this.resultFhrTarget.textContent = `${peakL.toFixed(0)} L / hr`
+      this.resultTanklessTarget.textContent = `${tanklessLpm.toFixed(1)} L/min`
+    } else {
+      this.resultPeakTarget.textContent = `${peakGal.toFixed(0)} gal`
+      this.resultTankTarget.textContent = `${tankGal} gal`
+      this.resultFhrTarget.textContent = `${peakGal.toFixed(0)} gal / hr`
+      this.resultTanklessTarget.textContent = `${tanklessGpm.toFixed(1)} GPM`
+    }
   }
 
   clear() {
@@ -67,7 +95,7 @@ export default class extends Controller {
   }
 
   copy() {
-    const text = `Water heater sizing:\nPeak-hour demand: ${this.resultPeakTarget.textContent}\nRecommended tank: ${this.resultTankTarget.textContent}\nRequired FHR: ${this.resultFhrTarget.textContent}\nTankless GPM: ${this.resultTanklessTarget.textContent}`
+    const text = `Water heater sizing:\nPeak-hour demand: ${this.resultPeakTarget.textContent}\nRecommended tank: ${this.resultTankTarget.textContent}\nRequired FHR: ${this.resultFhrTarget.textContent}\n${this.tanklessHeadingTarget.textContent}: ${this.resultTanklessTarget.textContent}`
     navigator.clipboard.writeText(text)
   }
 }
