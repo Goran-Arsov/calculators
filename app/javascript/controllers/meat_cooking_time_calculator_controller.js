@@ -3,7 +3,7 @@ import { LB_TO_KG, fToC } from "utils/units"
 
 export default class extends Controller {
   static targets = [
-    "meatType", "cut", "weight", "doneness", "method",
+    "meatType", "weight",
     "cutOptions", "donenessOptions", "methodOptions",
     "unitSystem", "weightLabel",
     "results", "totalTime", "internalTemp", "restTime", "minutesPerLb"

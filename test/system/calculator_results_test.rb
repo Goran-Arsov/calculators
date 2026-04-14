@@ -12,7 +12,7 @@ class CalculatorResultsTest < ApplicationSystemTestCase
     fill_in "mortgage-loan-term", with: "30"
 
     # Stimulus reacts on input — wait for the result target to update from its default "$0.00"
-    assert_selector "[data-mortgage-calculator-target='monthlyPayment']", wait: 5
+    assert_selector "[data-mortgage-calculator-target='monthlyPayment']", text: /[1-9]/, wait: 5
     monthly = find("[data-mortgage-calculator-target='monthlyPayment']").text
     assert_not_equal "$0.00", monthly, "Monthly payment should have been computed"
     assert_match(/\$[\d,]+\.\d{2}/, monthly, "Monthly payment should be formatted as currency")
@@ -37,7 +37,7 @@ class CalculatorResultsTest < ApplicationSystemTestCase
     fill_in "bmi-weight", with: "70"
     fill_in "bmi-height", with: "175"
 
-    assert_selector "[data-bmi-calculator-target='bmi']", wait: 5
+    assert_selector "[data-bmi-calculator-target='bmi']", text: /[1-9]/, wait: 5
     bmi_value = find("[data-bmi-calculator-target='bmi']").text
     assert_no_match(/\A\u2014\z/, bmi_value, "BMI should not be the default dash")
     # BMI for 70 kg / 1.75 m = ~22.9
@@ -58,7 +58,7 @@ class CalculatorResultsTest < ApplicationSystemTestCase
     fill_in "percentage-value-x", with: "15"
     fill_in "percentage-value-y", with: "200"
 
-    assert_selector "[data-percentage-calculator-target='result']", wait: 5
+    assert_selector "[data-percentage-calculator-target='result']", text: /[1-9]/, wait: 5
     result = find("[data-percentage-calculator-target='result']").text
     assert_not_equal "--", result, "Result should have been computed"
     # 15% of 200 = 30
@@ -75,7 +75,7 @@ class CalculatorResultsTest < ApplicationSystemTestCase
     # Tip percentage field already has a default value of 18
     # Split field already defaults to 1
 
-    assert_selector "[data-tip-calculator-target='resultTip']", wait: 5
+    assert_selector "[data-tip-calculator-target='resultTip']", text: /[1-9]/, wait: 5
     tip_amount = find("[data-tip-calculator-target='resultTip']").text
     assert_not_equal "$0.00", tip_amount, "Tip amount should have been computed"
     # 18% of $85 = $15.30
@@ -101,7 +101,7 @@ class CalculatorResultsTest < ApplicationSystemTestCase
     fill_in "loan-annual-interest-rate", with: "7.5"
     fill_in "loan-loan-term", with: "5"
 
-    assert_selector "[data-loan-calculator-target='monthlyPayment']", wait: 5
+    assert_selector "[data-loan-calculator-target='monthlyPayment']", text: /[1-9]/, wait: 5
     monthly = find("[data-loan-calculator-target='monthlyPayment']").text
     assert_not_equal "$0.00", monthly, "Monthly payment should have been computed"
     assert_match(/\$[\d,]+\.\d{2}/, monthly, "Monthly payment should be formatted as currency")
@@ -124,7 +124,7 @@ class CalculatorResultsTest < ApplicationSystemTestCase
     fill_in "compound-interest-time-period", with: "10"
     # Default frequency is Monthly (12x/year)
 
-    assert_selector "[data-compound-interest-calculator-target='futureValue']", wait: 5
+    assert_selector "[data-compound-interest-calculator-target='futureValue']", text: /[1-9]/, wait: 5
     future_value = find("[data-compound-interest-calculator-target='futureValue']").text
     assert_not_equal "$0.00", future_value, "Future value should have been computed"
     assert_match(/\$[\d,]+\.\d{2}/, future_value, "Future value should be formatted as currency")
@@ -147,7 +147,7 @@ class CalculatorResultsTest < ApplicationSystemTestCase
     fill_in "body-fat-neck", with: "38"
     fill_in "body-fat-height", with: "175"
 
-    assert_selector "[data-body-fat-calculator-target='bodyFat']", wait: 5
+    assert_selector "[data-body-fat-calculator-target='bodyFat']", text: /[1-9]/, wait: 5
     body_fat = find("[data-body-fat-calculator-target='bodyFat']").text
     assert_no_match(/\A\u2014\z/, body_fat, "Body fat should not be the default dash")
     assert_match(/\d+(\.\d+)?%?/, body_fat, "Body fat should contain a number")
@@ -168,7 +168,7 @@ class CalculatorResultsTest < ApplicationSystemTestCase
     fill_in "fraction-numerator-2", with: "1"
     fill_in "fraction-denominator-2", with: "3"
 
-    assert_selector "[data-fraction-calculator-target='resultFraction']", wait: 5
+    assert_selector "[data-fraction-calculator-target='resultFraction']", text: /[1-9]/, wait: 5
     fraction_result = find("[data-fraction-calculator-target='resultFraction']").text
     assert_not_equal "--", fraction_result, "Fraction result should have been computed"
     # 1/2 + 1/3 = 5/6
@@ -189,7 +189,7 @@ class CalculatorResultsTest < ApplicationSystemTestCase
     execute_script("document.getElementById('age-birth-date').value = '1990-01-15'")
     execute_script("document.getElementById('age-birth-date').dispatchEvent(new Event('input', { bubbles: true }))")
 
-    assert_selector "[data-age-calculator-target='resultYears']", wait: 5
+    assert_selector "[data-age-calculator-target='resultYears']", text: /[1-9]/, wait: 5
     years = find("[data-age-calculator-target='resultYears']").text
     assert_no_match(/\A\u2014\z/, years, "Years should not be the default dash")
     # Born 1990-01-15 means the person is 36 years old (in 2026)
@@ -214,7 +214,7 @@ class CalculatorResultsTest < ApplicationSystemTestCase
     fill_in "calorie-weight", with: "75"
     fill_in "calorie-height", with: "180"
 
-    assert_selector "[data-calorie-calculator-target='bmr']", wait: 5
+    assert_selector "[data-calorie-calculator-target='bmr']", text: /[1-9]/, wait: 5
     bmr = find("[data-calorie-calculator-target='bmr']").text
     assert_no_match(/\A\u2014 cal\z/, bmr, "BMR should not be the default dash")
     assert_match(/\d+/, bmr, "BMR should contain a numeric value")
