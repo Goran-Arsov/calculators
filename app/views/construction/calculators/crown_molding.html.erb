@@ -1,0 +1,178 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Crown Molding Calculator - Linear Feet & Stick Count",
+  description: "Free crown molding calculator. Enter room dimensions and door openings to get linear feet of trim needed, waste allowance, and exact stick count.",
+  canonical: construction_crown_molding_url,
+  og: {
+    title: "Crown Molding Calculator | Calc Hammer",
+    description: "Calculate crown molding linear feet and stick count for any room.",
+    url: construction_crown_molding_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Crown Molding Calculator", url: construction_crown_molding_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate crown molding for a room?", answer: "Measure the room perimeter: 2 × (length + width). For a 12 × 14 ft room that is 52 linear feet. Subtract any door openings where the molding stops (typically 3 ft each for a standard interior door). Add 10-15% for waste from miter cuts, corner joints, and imperfect pieces. Divide by your stick length (8, 10, 12, or 16 ft) and round up to get the number of sticks to buy." },
+  { question: "Does crown molding run over doors?", answer: "In most residential work, yes — crown molding is continuous around the room, including over door headers. This gives a cleaner look than stopping at each doorway. If you do stop the molding at openings, subtract the opening widths from the perimeter. The calculator supports both with the door openings input — enter 0 to run continuous, or enter total opening widths to deduct." },
+  { question: "How much waste should I add for crown molding?", answer: "10% for simple rectangular rooms with few corners. 15% for rooms with many corners, returns, or cathedral ceilings where you have to custom-cut angled pieces. 20% if you are new to crown molding — bad cuts are common the first few pieces. Buying a little extra is always cheaper than running back to the lumber yard mid-project." },
+  { question: "What stick lengths should I buy?", answer: "Longer sticks (14, 16 ft) minimize joints but are harder to handle and transport. 12 ft is the most common compromise. 8 ft works in small rooms where you cut the full wall length from one stick. Always try to span each wall with a single stick to avoid joints; plan the layout before buying." },
+  { question: "Are inside and outside corners different?", answer: "Yes — inside corners are typically coped (one end cope-cut to fit the profile of the adjoining piece) rather than mitered. Outside corners are always 45° miters. Coping prevents gaps that open up as the wood moves seasonally. Plan to cope only one end per stick and leave the other end square or mitered for the next corner." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Crown Molding Calculator",
+  description: "Calculate linear feet of crown molding or trim, waste allowance, and exact stick count for any room.",
+  url: construction_crown_molding_url,
+  category: "HomeApplication",
+  calculator_slug: "crown-molding-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Crown Molding Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Crown Molding Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate linear feet and stick count for crown molding, chair rail, or any continuous trim in a room. Supports imperial and metric dimensions.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="crown-molding-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-crown-molding-calculator-target="unitSystem" data-action="change->crown-molding-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (ft)</option>
+              <option value="metric">Metric (m)</option>
+            </select>
+          </div>
+          <div>
+            <label for="cm-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-crown-molding-calculator-target="lengthLabel">Room length (ft)</span></label>
+            <input id="cm-length" type="number" inputmode="decimal" data-crown-molding-calculator-target="length" data-action="input->crown-molding-calculator#calculate" class="w-full" value="14" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="cm-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-crown-molding-calculator-target="widthLabel">Room width (ft)</span></label>
+            <input id="cm-width" type="number" inputmode="decimal" data-crown-molding-calculator-target="width" data-action="input->crown-molding-calculator#calculate" class="w-full" value="12" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="cm-doors" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-crown-molding-calculator-target="doorsLabel">Total door openings (ft)</span></label>
+            <input id="cm-doors" type="number" inputmode="decimal" data-crown-molding-calculator-target="doors" data-action="input->crown-molding-calculator#calculate" class="w-full" value="0" step="0.5" min="0">
+            <p class="text-xs text-gray-500 mt-1">Leave 0 if the molding runs continuous over doors.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-crown-molding-calculator-target="stickLabel">Stick length (ft)</span></label>
+            <select data-crown-molding-calculator-target="stick" data-action="change->crown-molding-calculator#calculate" class="w-full">
+              <option value="8">8 ft</option>
+              <option value="10">10 ft</option>
+              <option value="12" selected>12 ft</option>
+              <option value="14">14 ft</option>
+              <option value="16">16 ft</option>
+            </select>
+          </div>
+          <div>
+            <label for="cm-waste" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Waste factor (%)</label>
+            <input id="cm-waste" type="number" inputmode="decimal" data-crown-molding-calculator-target="waste" data-action="input->crown-molding-calculator#calculate" class="w-full" value="15" step="1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Perimeter</span>
+              <span class="text-base font-bold text-rose-700 dark:text-rose-400" data-crown-molding-calculator-target="resultPerimeter">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Net linear (minus doors)</span>
+              <span class="text-base font-bold text-rose-700 dark:text-rose-400" data-crown-molding-calculator-target="resultNet">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">With waste</span>
+              <span class="text-base font-bold text-rose-700 dark:text-rose-400" data-crown-molding-calculator-target="resultWithWaste">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-rose-200/50 dark:border-rose-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Sticks to buy</span>
+              <span class="text-2xl font-extrabold text-rose-700 dark:text-rose-400" data-crown-molding-calculator-target="resultSticks">—</span>
+            </div>
+          </div>
+          <button data-action="click->crown-molding-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-rose-600 to-pink-700 hover:from-rose-700 hover:to-pink-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "crown-molding-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Calculate Crown Molding</h2>
+      <p>
+        The math is simple but the waste factor matters a lot. Start with the room perimeter: <strong>2 × (length + width)</strong>. For a 12 × 14 ft room, perimeter = 52 ft. If the crown molding stops at each door opening, subtract the total width of openings (usually 3 ft per standard interior door). Add 10-15% waste for miter cuts, corners, and culls. Divide by your chosen stick length and round up. For 52 ft with 10% waste and 12 ft sticks: 52 × 1.10 ÷ 12 = 4.77 → 5 sticks.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Stick Length Strategy</h2>
+      <p>
+        The shorter your sticks, the more joints you'll have, and the more waste you'll generate from cutoffs. On a 14 ft wall with 10 ft sticks, you have to join two pieces mid-wall; with a 14 ft stick, one piece covers it. Try to buy long enough sticks that each wall is covered by one continuous piece. In small rooms (under 8 ft per wall), 8-footers work fine. In typical living rooms, 12 ft is the sweet spot. For great rooms and open-plan spaces, 14 or 16 ft sticks are worth the extra handling.
+      </p>
+
+      <h3>Inside Corners and Coping</h3>
+      <p>
+        Crown molding professionals cope inside corners rather than mitering them. The cope cut follows the exact profile of the adjoining piece so they mate perfectly even when the wall isn't perfectly 90°. Plan your stick layout so you cope one end and leave the other end square (to be coped against by the next piece). This means every stick is cut once with a cope and once square — not both ends mitered.
+      </p>
+
+      <h3>Outside Corners</h3>
+      <p>
+        Outside corners are always 45° miters. Cut both mating sticks with opposing 45s so they form a clean 90° outside angle. Outside corners waste a bit more material because you can't use the mitered-off end. Account for this in your waste factor — rooms with multiple outside corners need 15-20% waste.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Should I run crown over doors?</h3>
+      <p>Yes — continuous crown around the room looks cleaner. Only stop at doors if there is no head room above them.</p>
+
+      <h3>What spring angle of crown should I use?</h3>
+      <p>38° or 45° spring angle — check before buying. Different spring angles need different miter saw settings and have different coverage.</p>
+
+      <h3>Can I use MDF crown molding?</h3>
+      <p>Yes — MDF is cheaper and paint-ready. Pine is easier to cope. Hardwood (oak, maple) is for stain-grade finishes.</p>
+
+      <h3>Do I need to buy extra sticks for cutoffs?</h3>
+      <p>The waste factor covers cutoffs. If you're new to coping, buy one extra stick as a practice/mistake buffer.</p>
+
+      <h3>How do I measure a room with many corners?</h3>
+      <p>Perimeter still equals the sum of all wall lengths — just add them up one by one. The calculator handles rectangular rooms; for L-shaped or complex rooms, sum the wall lengths manually and enter half the total as length and half as width.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Baseboard Calculator", description: "Calculate linear feet of baseboard or trim.", path: construction_baseboard_path, icon_path: "M3 20h18v2H3zM3 16h18v1H3z" },
+      { name: "Miter Angle Calculator", description: "Calculate miter angles for any polygon.", path: construction_miter_angle_path, icon_path: "M4 5a1 1 0 011-1h14" },
+      { name: "Caulk Calculator", description: "Calculate caulk tubes for crown molding joints.", path: construction_caulk_path, icon_path: "M7 21a4 4 0 01-4-4V5" },
+      { name: "Paint Calculator", description: "Calculate gallons of paint for molding and walls.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5" },
+      { name: "Lumber Calculator", description: "Calculate board feet and cost for lumber.", path: construction_lumber_path, icon_path: "M4 6h16M4 12h16M4 18h7" },
+      { name: "Drywall Calculator", description: "Calculate drywall sheets for the walls.", path: construction_drywall_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("crown-molding-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

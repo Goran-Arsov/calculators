@@ -1,0 +1,169 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Chimney Flue Calculator - NFPA 211 Size from BTU",
+  description: "Free chimney flue calculator. Enter appliance BTU/hr and type (wood, gas, oil, pellet) to get required flue area, round diameter, and minimum chimney height per NFPA 211.",
+  canonical: construction_chimney_flue_url,
+  og: {
+    title: "Chimney Flue Calculator | Calc Hammer",
+    description: "Required flue area, round diameter, and chimney height for any appliance.",
+    url: construction_chimney_flue_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Chimney Flue Calculator", url: construction_chimney_flue_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I size a chimney flue?", answer: "The required flue cross-section area depends on the appliance type and BTU output. Wood stoves and fireplaces need about 1 sq in of flue area per 30,000 BTU/hr. Gas appliances with Category I draft hoods need about 1 sq in per 75,000 BTU/hr. Oil appliances need 1 sq in per 40,000 BTU/hr. Divide the BTU by the appropriate factor to get the required area." },
+  { question: "How tall does a chimney need to be?", answer: "NFPA 211 requires chimneys to extend at least 3 feet above the highest point where they pass through the roof, and at least 2 feet higher than any part of the roof within 10 feet horizontally. For a wood stove, the total chimney height should be at least 15 feet from the flue collar to the cap for adequate draft. Gas appliances can work with shorter chimneys (5-10 ft) because they produce lower flue gas temperatures." },
+  { question: "What is the 3-2-10 rule?", answer: "The universal chimney height rule: the chimney must be at least 3 ft above where it exits the roof AND at least 2 ft higher than anything within 10 ft horizontally. This prevents downdraft, wind-caused backdraft, and smoke spillage onto the roof. Measure from the highest point of the roof penetration, not the average roof height." },
+  { question: "Can a chimney be oversized?", answer: "Yes — an oversized flue cools exhaust gases too much, causing condensation, creosote buildup in wood systems, and reduced draft. For wood burning, never exceed 3× the required flue area. Modern EPA-certified stoves often specify a 6 inch flue regardless of BTU output because they are designed around that size. Always follow the stove manufacturer's listed flue size if specified." },
+  { question: "Does chimney height affect draft?", answer: "Yes, significantly. Draft is driven by the temperature difference between the flue gases and outside air multiplied by the chimney height. A 15 ft chimney has 50% more draft than a 10 ft chimney at the same temperature. If your appliance is puffing smoke into the room, the first fix is usually to lengthen the chimney." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Chimney Flue Calculator",
+  description: "Calculate required chimney flue area, round diameter, and height for wood, gas, oil, or pellet appliances.",
+  url: construction_chimney_flue_url,
+  category: "HomeApplication",
+  calculator_slug: "chimney-flue-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Chimney Flue Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Chimney Flue Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the required chimney flue area, round diameter, and minimum chimney height for wood, gas, oil, or pellet appliances. Based on NFPA 211 sizing guidance. Imperial and metric units.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="chimney-flue-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-chimney-flue-calculator-target="unitSystem" data-action="change->chimney-flue-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (BTU/hr, in)</option>
+              <option value="metric">Metric (W, cm)</option>
+            </select>
+          </div>
+          <div>
+            <label for="cf-btu" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-chimney-flue-calculator-target="btuLabel">Appliance heat output (BTU/hr)</span></label>
+            <input id="cf-btu" type="number" inputmode="decimal" data-chimney-flue-calculator-target="btu" data-action="input->chimney-flue-calculator#calculate" class="w-full" value="60000" step="5000" min="0">
+            <p class="text-xs text-gray-500 mt-1">Check the nameplate on your stove, furnace, or fireplace.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Appliance type</label>
+            <select data-chimney-flue-calculator-target="appliance" data-action="change->chimney-flue-calculator#calculate" class="w-full">
+              <option value="wood" selected>Wood stove / fireplace</option>
+              <option value="pellet">Pellet stove</option>
+              <option value="oil">Oil furnace / boiler</option>
+              <option value="gas">Gas (Category I draft hood)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Required area</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-chimney-flue-calculator-target="resultArea">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-orange-200/50 dark:border-orange-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Round diameter</span>
+              <span class="text-2xl font-extrabold text-orange-700 dark:text-orange-400" data-chimney-flue-calculator-target="resultRound">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Square liner</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-chimney-flue-calculator-target="resultSquare">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Commercial size</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-chimney-flue-calculator-target="resultCommercial">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-orange-200/50 dark:border-orange-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Min chimney height</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-chimney-flue-calculator-target="resultHeight">—</span>
+            </div>
+          </div>
+          <button data-action="click->chimney-flue-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-orange-600 to-red-700 hover:from-orange-700 hover:to-red-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "chimney-flue-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Chimney Flue Sizing</h2>
+      <p>
+        NFPA 211 is the standard for chimneys, fireplaces, vents, and solid-fuel-burning appliances. The basic rule is: the flue cross-section area must be large enough that the appliance's exhaust gases can escape without back-pressure, but not so large that they cool and condense inside the chimney. The simplified relationship is <strong>required flue area = BTU/hr ÷ flue capacity factor</strong>, where the capacity factor depends on appliance type and exhaust gas temperature.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Capacity by Appliance Type</h2>
+      <p>
+        <strong>Wood stoves and fireplaces</strong> have the lowest capacity at about 30,000 BTU/hr per sq in because wood produces high flue gas temperatures and large volumes. <strong>Pellet stoves</strong> run around 50,000 BTU/hr per sq in — they burn cleaner but still need substantial flue area. <strong>Oil furnaces and boilers</strong> use 40,000 BTU/hr per sq in. <strong>Gas appliances with Category I draft hoods</strong> get 75,000 BTU/hr per sq in because gas exhaust is cooler and cleaner. Modern high-efficiency condensing appliances use sealed PVC or stainless venting — those are sized by manufacturer tables, not this calculator.
+      </p>
+
+      <h3>The 3-2-10 Rule for Chimney Height</h3>
+      <p>
+        All masonry and prefab chimneys must follow NFPA 211's 3-2-10 rule: the chimney top must be at least <strong>3 feet above the highest point</strong> where it passes through the roof AND at least <strong>2 feet above any obstruction within 10 feet horizontally</strong>. This prevents roof-induced downdraft and ensures smoke clears the eddy zone created by wind flowing over the ridge. On a steep-pitched roof with the chimney on the leeward side, the 2 ft clearance can force a very tall chimney.
+      </p>
+
+      <h3>Minimum Overall Chimney Height</h3>
+      <p>
+        Draft is what pulls exhaust up the chimney, and draft scales with chimney height. Wood stoves need at least 15 ft of total height (flue collar to cap) for reliable draft; shorter chimneys may work in warm weather but fail on windy or cold days. Gas appliances tolerate shorter chimneys (5-10 ft) because they push exhaust with a draft inducer or integral fan. Oil burners sit in the middle at 10 ft minimum. Always follow the appliance manufacturer's listed minimum — most specify a value on the nameplate.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Can the chimney be too big?</h3>
+      <p>Yes. Oversized flues cool exhaust below the dew point, causing creosote and condensation. Never exceed 3× the required area.</p>
+
+      <h3>Should I follow this calculator or the stove manual?</h3>
+      <p>The manual. Modern EPA-certified stoves specify exactly the flue size they were tested with (usually 6 inches regardless of BTU).</p>
+
+      <h3>What if I want to use an existing masonry chimney?</h3>
+      <p>Check its actual flue size. If it is too big, install a stainless steel chimney liner sized to the appliance requirement.</p>
+
+      <h3>Does a chimney cap matter?</h3>
+      <p>Yes — a cap keeps rain, birds, and debris out, and a properly designed cap does not restrict flow. A bad cap can reduce effective flue area by 20%.</p>
+
+      <h3>How do I calculate a masonry chimney with a square liner?</h3>
+      <p>Use the square side length from the calculator. Standard clay tile liners come in 8×8, 8×12, 12×12, 12×16, and 16×20. Round up to the next standard size.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "HVAC BTU Calculator", description: "Size AC tonnage for a room.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Heat Loss Calculator", description: "Whole-house heat loss for heater sizing.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Attic Ventilation Calculator", description: "Calculate soffit and ridge vent net free area.", path: construction_attic_ventilation_path, icon_path: "M3 12l9-9 9 9M5 10v10h14V10" },
+      { name: "Insulation Calculator", description: "Calculate R-value, thickness, and quantity.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" },
+      { name: "Duct Size Calculator", description: "Calculate HVAC duct size from airflow.", path: construction_duct_size_path, icon_path: "M4 4h16v4H4z" },
+      { name: "Brick and Block Calculator", description: "Calculate bricks for a masonry chimney.", path: construction_brick_block_path, icon_path: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("chimney-flue-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -58,4 +58,16 @@ namespace :construction do
   get "roof-pitch-calculator", to: "calculators#roof_pitch", as: :roof_pitch
   get "stud-count-calculator", to: "calculators#stud_count", as: :stud_count
   get "plywood-sheets-calculator", to: "calculators#plywood_sheets", as: :plywood_sheets
+
+  # Pro trades — framing, electrical, plumbing, HVAC, concrete, finish
+  get "joist-calculator", to: "calculators#joist", as: :joist
+  get "voltage-drop-calculator", to: "calculators#voltage_drop", as: :voltage_drop
+  get "conduit-fill-calculator", to: "calculators#conduit_fill", as: :conduit_fill
+  get "pipe-friction-loss-calculator", to: "calculators#pipe_friction_loss", as: :pipe_friction_loss
+  get "heat-loss-calculator", to: "calculators#heat_loss", as: :heat_loss
+  get "duct-size-calculator", to: "calculators#duct_size", as: :duct_size
+  get "spread-footing-calculator", to: "calculators#spread_footing", as: :spread_footing
+  get "caulk-calculator", to: "calculators#caulk", as: :caulk
+  get "crown-molding-calculator", to: "calculators#crown_molding", as: :crown_molding
+  get "chimney-flue-calculator", to: "calculators#chimney_flue", as: :chimney_flue
 end

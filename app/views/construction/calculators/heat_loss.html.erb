@@ -1,0 +1,223 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Heat Loss Calculator - Whole House BTU/hr & kW",
+  description: "Free whole-house heat loss calculator. Enter wall, roof, window, and floor areas + R-values to size heaters, heat pumps, and radiators in BTU/hr and kilowatts.",
+  canonical: construction_heat_loss_url,
+  og: {
+    title: "Heat Loss Calculator | Calc Hammer",
+    description: "Whole-house heat loss for heater and heat pump sizing.",
+    url: construction_heat_loss_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Heat Loss Calculator", url: construction_heat_loss_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate heat loss for a house?", answer: "For each part of the building envelope, compute Q = U × A × ΔT. U is 1 divided by the R-value, A is the area, and ΔT is the difference between your indoor design temperature and the coldest outdoor temperature of the year. Add the numbers for walls, roof, windows, and floor, plus a term for air infiltration, and you get the whole-house heat loss in BTU/hr." },
+  { question: "What is a design temperature?", answer: "The design temperature is a statistical extreme — typically the 99% winter heating design temperature, meaning only 1% of hours per year are colder. For example, Minneapolis has a winter design temp of −11 °F; Dallas is 22 °F; Miami is 44 °F. Look up your local design temps from ASHRAE or a climate data service." },
+  { question: "How big a furnace do I need?", answer: "Size the furnace to your design heat loss. A well-insulated 2,000 sq ft house in a cold climate typically loses 40,000-60,000 BTU/hr at design conditions. An older house with poor insulation may lose 80,000-100,000 BTU/hr. Oversizing by more than 20% causes short-cycling and reduced efficiency, so match the output closely to the calculated load." },
+  { question: "What is the difference between heat loss and Manual J?", answer: "ACCA Manual J is a detailed room-by-room heat loss and gain calculation that accounts for orientation, shading, air tightness, and many other factors. It is required for HVAC contractors by code in many jurisdictions. This calculator is a 'Manual J lite' that gives a whole-house estimate suitable for planning and budgeting — not a substitute for a full Manual J when sizing equipment professionally." },
+  { question: "How much does air infiltration matter?", answer: "In an average house, infiltration is 20-40% of total heat loss. A leaky 1960s house at 1.0 ACH loses far more through air leaks than through the walls. A modern tight house at 0.25 ACH may lose only 10% of its total to infiltration. A blower door test gives the actual number; 0.5 ACH is a reasonable average for a typical existing home." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Heat Loss Calculator",
+  description: "Calculate whole-house heat loss in BTU/hr and kilowatts for heater and heat pump sizing.",
+  url: construction_heat_loss_url,
+  category: "HomeApplication",
+  calculator_slug: "heat-loss-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Heat Loss Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Heat Loss Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate whole-house heat loss for sizing furnaces, heat pumps, boilers, and radiators. Uses the standard Q = U × A × ΔT equation for walls, roof, windows, floor, and air infiltration. Imperial and metric units.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="heat-loss-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-heat-loss-calculator-target="unitSystem" data-action="change->heat-loss-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (sq ft, °F, BTU/hr)</option>
+              <option value="metric">Metric (m², °C, W)</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-loss-calculator-target="wallAreaLabel">Wall area (sq ft)</span></label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="wallArea" data-action="input->heat-loss-calculator#calculate" class="w-full" value="1200" step="1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-loss-calculator-target="wallRLabel">Wall R-value</span></label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="wallR" data-action="input->heat-loss-calculator#calculate" class="w-full" value="13" step="0.5" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-loss-calculator-target="roofAreaLabel">Roof area (sq ft)</span></label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="roofArea" data-action="input->heat-loss-calculator#calculate" class="w-full" value="1500" step="1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-loss-calculator-target="roofRLabel">Roof R-value</span></label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="roofR" data-action="input->heat-loss-calculator#calculate" class="w-full" value="38" step="0.5" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-loss-calculator-target="windowAreaLabel">Window area (sq ft)</span></label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="windowArea" data-action="input->heat-loss-calculator#calculate" class="w-full" value="150" step="1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-loss-calculator-target="windowULabel">Window U (BTU/h·ft²·°F)</span></label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="windowU" data-action="input->heat-loss-calculator#calculate" class="w-full" value="0.35" step="0.01" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-loss-calculator-target="floorAreaLabel">Floor area (sq ft)</span></label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="floorArea" data-action="input->heat-loss-calculator#calculate" class="w-full" value="1500" step="1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-loss-calculator-target="floorRLabel">Floor R-value</span></label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="floorR" data-action="input->heat-loss-calculator#calculate" class="w-full" value="19" step="0.5" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-loss-calculator-target="volumeLabel">House volume (cu ft)</span></label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="volume" data-action="input->heat-loss-calculator#calculate" class="w-full" value="12000" step="100" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Infiltration (ACH)</label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="ach" data-action="input->heat-loss-calculator#calculate" class="w-full" value="0.5" step="0.05" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-loss-calculator-target="indoorLabel">Indoor design temp (°F)</span></label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="indoorT" data-action="input->heat-loss-calculator#calculate" class="w-full" value="70" step="1">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-loss-calculator-target="outdoorLabel">Outdoor design temp (°F)</span></label>
+              <input type="number" inputmode="decimal" data-heat-loss-calculator-target="outdoorT" data-action="input->heat-loss-calculator#calculate" class="w-full" value="10" step="1">
+            </div>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Walls</span>
+              <span class="text-base font-bold text-red-700 dark:text-red-400" data-heat-loss-calculator-target="resultWall">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Roof</span>
+              <span class="text-base font-bold text-red-700 dark:text-red-400" data-heat-loss-calculator-target="resultRoof">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Windows</span>
+              <span class="text-base font-bold text-red-700 dark:text-red-400" data-heat-loss-calculator-target="resultWindow">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Floor</span>
+              <span class="text-base font-bold text-red-700 dark:text-red-400" data-heat-loss-calculator-target="resultFloor">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Infiltration</span>
+              <span class="text-base font-bold text-red-700 dark:text-red-400" data-heat-loss-calculator-target="resultInfil">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-red-200/50 dark:border-red-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Total heat loss</span>
+              <span class="text-2xl font-extrabold text-red-700 dark:text-red-400" data-heat-loss-calculator-target="resultTotalBtu">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Heater size</span>
+              <span class="text-base font-bold text-red-700 dark:text-red-400" data-heat-loss-calculator-target="resultTotalKw">—</span>
+            </div>
+          </div>
+          <button data-action="click->heat-loss-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-red-600 to-orange-700 hover:from-red-700 hover:to-orange-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "heat-loss-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>The Heat Loss Formula</h2>
+      <p>
+        Heat flows from warm to cold through every surface of your building, and the rate depends on three things: the area of the surface, how well it resists heat flow (its U-value or R-value), and the temperature difference across it. The formula is <strong>Q = U × A × ΔT</strong>, where Q is heat loss in BTU/hr, U is in BTU/(h·ft²·°F), A is area in sq ft, and ΔT is the temperature difference in °F. U and R are reciprocals: U = 1/R. Higher R-value means better insulation means lower U means less heat loss.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Typical R-Values</h2>
+      <p>
+        <strong>Walls:</strong> 2x4 with fiberglass batts = R-13; 2x6 with dense-pack cellulose = R-20; 2x6 with closed-cell foam = R-23; double-stud with 9" cellulose = R-35. <strong>Roofs:</strong> R-19 is outdated; modern code is R-38 to R-60 in cold climates. <strong>Floors:</strong> over a vented crawl R-19 to R-30; over a heated basement use 0 (don't count). <strong>Windows:</strong> single-pane U-1.2; double-pane air U-0.50; double-pane argon low-E U-0.30; triple-pane argon low-E U-0.20.
+      </p>
+
+      <h3>Indoor and Outdoor Design Temperatures</h3>
+      <p>
+        Use 68-72 °F indoors (70 °F is standard). Outdoor design is the 99% winter design temperature from ASHRAE — the temperature that the outside air is colder than only 1% of the time. Examples: Anchorage −15 °F, Minneapolis −11 °F, Chicago −2 °F, New York 14 °F, Atlanta 22 °F, Houston 32 °F. Metric: −26 °C, −24 °C, −19 °C, −10 °C, −6 °C, 0 °C.
+      </p>
+
+      <h3>Air Infiltration</h3>
+      <p>
+        Even well-built houses leak. The calculator uses the rule <strong>Q = 0.018 × ACH × V × ΔT</strong>, where ACH is air changes per hour and V is the house volume. Typical values: 1950s house = 1.0 ACH, 1980s code = 0.5 ACH, modern energy-efficient = 0.25 ACH, passive house = 0.05 ACH (must be measured by blower door test). Infiltration is 10-40% of total heat loss and is often the biggest single item you can improve.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is this a Manual J calculation?</h3>
+      <p>No — it is a simplified whole-house estimate. A full ACCA Manual J is room-by-room, accounts for orientation, internal gains, and more. Use this for planning; hire a pro for code compliance.</p>
+
+      <h3>What size furnace should I buy?</h3>
+      <p>Match output BTU/hr to the calculated design heat loss. A little oversizing (10-20%) is OK for cold snaps; more than that causes short cycling.</p>
+
+      <h3>Should I include the basement?</h3>
+      <p>Yes if it is heated. Use the basement wall area below grade and an R-value that accounts for both the foundation wall and surrounding soil.</p>
+
+      <h3>Why doesn't solar gain help?</h3>
+      <p>It does, but only during the day. Heat loss calcs target the worst-case nighttime scenario at the design temp.</p>
+
+      <h3>How do I convert between U-metric and U-imperial?</h3>
+      <p>U (metric, W/m²·K) × 5.678 = U (imperial, BTU/h·ft²·°F). The calculator does this automatically.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "HVAC BTU Calculator", description: "Size AC tonnage for a room.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Insulation Calculator", description: "Calculate insulation thickness, R-value, and cost.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" },
+      { name: "Window U-Value Calculator", description: "Calculate window U-value and R-value.", path: construction_window_u_value_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" },
+      { name: "Duct Size Calculator", description: "Calculate round or rectangular duct size.", path: construction_duct_size_path, icon_path: "M4 4h16v4H4z" },
+      { name: "Water Heater Sizing Calculator", description: "Calculate tank or tankless water heater size.", path: construction_water_heater_sizing_path, icon_path: "M12 2v2m0 16v2" },
+      { name: "Voltage Drop Calculator", description: "NEC voltage drop for heating circuits.", path: construction_voltage_drop_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("heat-loss-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

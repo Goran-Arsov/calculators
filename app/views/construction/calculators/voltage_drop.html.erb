@@ -1,0 +1,203 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Voltage Drop Calculator - NEC 3% Branch & 5% Feeder",
+  description: "Free NEC voltage drop calculator. Enter wire AWG, distance, amps, and voltage to get voltage drop in volts and percent, with 3%/5% code check for copper or aluminum wire.",
+  canonical: construction_voltage_drop_url,
+  og: {
+    title: "Voltage Drop Calculator | Calc Hammer",
+    description: "Calculate NEC voltage drop percentage for any wire run.",
+    url: construction_voltage_drop_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Voltage Drop Calculator", url: construction_voltage_drop_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate voltage drop?", answer: "For single-phase circuits, voltage drop = 2 × length × current × resistance / 1000, where length is one-way feet, current is in amps, and resistance is ohms per 1000 ft from NEC Chapter 9 Table 8. Three-phase uses √3 instead of 2. Divide the result by the source voltage to get the percentage drop." },
+  { question: "What is the NEC limit on voltage drop?", answer: "NEC 210.19(A) Informational Note 4 recommends a maximum 3% drop on branch circuits and 5% total drop on feeders plus branches combined. These are guidelines, not strict requirements, but most jurisdictions and utilities enforce them." },
+  { question: "Why does voltage drop matter?", answer: "Excessive drop reduces motor torque, dims lights, overheats equipment, and wastes energy as heat in the wire. Motors running at reduced voltage draw more current to maintain power, which shortens their life and can trip breakers. Sensitive electronics may reset or malfunction below 5% drop." },
+  { question: "When do I need to upsize wire for voltage drop?", answer: "Common cases: long branch circuits (over ~100 ft for 120 V), subpanels to detached buildings, motor feeders, EV chargers in remote garages, well pumps, and any circuit where calculated drop exceeds 3%. Going up one AWG size typically cuts drop by 20-30%." },
+  { question: "Is copper or aluminum better for long runs?", answer: "Copper has about 60% the resistance of aluminum per AWG, so shorter runs typically use copper. For very long runs aluminum can be cost-effective at a larger size; for example, a 2/0 aluminum feeder may replace a 1 AWG copper feeder with similar drop at lower cost. Always use antioxidant paste on aluminum terminations." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Voltage Drop Calculator",
+  description: "Calculate NEC voltage drop percentage and line loss for any AWG wire run.",
+  url: construction_voltage_drop_url,
+  category: "HomeApplication",
+  calculator_slug: "voltage-drop-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Voltage Drop Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Voltage Drop Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate NEC voltage drop in volts and percent for any copper or aluminum wire run. Supports single-phase and three-phase, 14 AWG through 500 kcmil, imperial and metric distances.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="voltage-drop-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Distance units</label>
+            <select data-voltage-drop-calculator-target="unitSystem" data-action="change->voltage-drop-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (ft)</option>
+              <option value="metric">Metric (m)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wire size (AWG / kcmil)</label>
+            <select data-voltage-drop-calculator-target="awg" data-action="change->voltage-drop-calculator#calculate" class="w-full">
+              <option value="14">14 AWG</option>
+              <option value="12" selected>12 AWG</option>
+              <option value="10">10 AWG</option>
+              <option value="8">8 AWG</option>
+              <option value="6">6 AWG</option>
+              <option value="4">4 AWG</option>
+              <option value="3">3 AWG</option>
+              <option value="2">2 AWG</option>
+              <option value="1">1 AWG</option>
+              <option value="1/0">1/0</option>
+              <option value="2/0">2/0</option>
+              <option value="3/0">3/0</option>
+              <option value="4/0">4/0</option>
+              <option value="250">250 kcmil</option>
+              <option value="350">350 kcmil</option>
+              <option value="500">500 kcmil</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Material</label>
+            <select data-voltage-drop-calculator-target="material" data-action="change->voltage-drop-calculator#calculate" class="w-full">
+              <option value="cu" selected>Copper (Cu)</option>
+              <option value="al">Aluminum (Al)</option>
+            </select>
+          </div>
+          <div>
+            <label for="vd-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-voltage-drop-calculator-target="lengthLabel">One-way length (ft)</span></label>
+            <input id="vd-length" type="number" inputmode="decimal" data-voltage-drop-calculator-target="length" data-action="input->voltage-drop-calculator#calculate" class="w-full" value="100" step="1" min="0">
+            <p class="text-xs text-gray-500 mt-1">Measure from panel to load, one way.</p>
+          </div>
+          <div>
+            <label for="vd-amps" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current (A)</label>
+            <input id="vd-amps" type="number" inputmode="decimal" data-voltage-drop-calculator-target="amps" data-action="input->voltage-drop-calculator#calculate" class="w-full" value="20" step="1" min="0">
+          </div>
+          <div>
+            <label for="vd-voltage" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Source voltage (V)</label>
+            <input id="vd-voltage" type="number" inputmode="decimal" data-voltage-drop-calculator-target="voltage" data-action="input->voltage-drop-calculator#calculate" class="w-full" value="120" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Phase</label>
+            <select data-voltage-drop-calculator-target="phase" data-action="change->voltage-drop-calculator#calculate" class="w-full">
+              <option value="single" selected>Single-phase</option>
+              <option value="three">Three-phase</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Voltage drop</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-voltage-drop-calculator-target="resultVdVolts">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-orange-200/50 dark:border-orange-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Percent drop</span>
+              <span class="text-3xl font-extrabold text-orange-700 dark:text-orange-400" data-voltage-drop-calculator-target="resultVdPct">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">End voltage</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-voltage-drop-calculator-target="resultEndVolts">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-orange-200/50 dark:border-orange-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">NEC branch 3%</span>
+              <span data-voltage-drop-calculator-target="resultBranch">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">NEC total 5%</span>
+              <span data-voltage-drop-calculator-target="resultTotal">—</span>
+            </div>
+          </div>
+          <button data-action="click->voltage-drop-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "voltage-drop-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>The Voltage Drop Formula</h2>
+      <p>
+        Voltage drop happens because every length of wire has some resistance, and Ohm's law (V = I × R) tells us that current flowing through that resistance produces a voltage loss. The longer the run, the more the loss. For single-phase circuits the formula is <strong>Vd = 2 × L × I × R ÷ 1000</strong>, where L is one-way length in feet, I is current in amps, and R is the resistance of the wire in ohms per 1000 ft (from NEC Chapter 9 Table 8). Three-phase circuits substitute √3 ≈ 1.732 for the 2 because current flows through two conductors at a time rather than making a complete round trip.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>NEC Voltage Drop Recommendations</h2>
+      <p>
+        NEC 210.19(A) Informational Note 4 and 215.2(A)(4) Note 2 recommend voltage drop not exceed <strong>3% on branch circuits</strong> and <strong>5% on the combination of feeder plus branch</strong>. These are informational — the code does not technically require them in most installations — but they are enforced by many jurisdictions, utility interconnection agreements, and best-practice standards. Exceed them and motors stall, LED drivers flicker, and breakers trip on inrush.
+      </p>
+
+      <h3>Common Scenarios</h3>
+      <p>
+        A 20 A 120 V circuit on 12 AWG copper loses about 6.6% over 100 ft one-way — way above the 3% branch limit. The fix: upsize to 10 AWG (about 4.1% drop, still over), to 8 AWG (2.6% drop, OK), or shorten the run. A 50 A 240 V EV charger on 6 AWG copper at 200 ft drops 4.1% — OK for a feeder+branch combined, borderline for a standalone branch. Go to 4 AWG for comfort.
+      </p>
+
+      <h3>Copper vs Aluminum</h3>
+      <p>
+        Aluminum has roughly 60% higher resistance per AWG than copper, so a 2/0 aluminum feeder is about equivalent to a 1 AWG copper feeder in voltage drop. Aluminum is cheaper per foot but requires anti-oxidant paste on terminations and CO/ALR-rated devices. For runs over 100 ft, larger aluminum often wins on total installed cost. Copper stays the default for branch circuits and service drops to small loads.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Do I use one-way or round-trip distance?</h3>
+      <p>One-way distance from the panel to the load. The formula has a factor of 2 built in for single-phase round-trip.</p>
+
+      <h3>Does the NEC enforce 3% voltage drop?</h3>
+      <p>No — it is "recommended" in an Informational Note, not a Rule. Most local jurisdictions still check it on long runs.</p>
+
+      <h3>What AWG is used for 100 A service?</h3>
+      <p>2 AWG copper or 1/0 aluminum USE/SER, per NEC Table 310.12 residential service conductors. Check voltage drop separately for long runs.</p>
+
+      <h3>How does temperature affect voltage drop?</h3>
+      <p>NEC Table 8 values are at 75 °C. Hotter conductors have higher resistance; this calculator uses the table value as a standard approximation.</p>
+
+      <h3>Why does my calculation differ from my meter reading?</h3>
+      <p>Real-world wires have AC impedance (resistance + reactance), temperature variation, and loose terminations. This tool gives a design-stage DC resistance estimate.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Electrical Load Calculator", description: "Calculate total electrical load and panel size per NEC.", path: construction_electrical_load_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Wire Gauge Calculator", description: "AWG diameter, area, resistance, and ampacity reference.", path: construction_plumbing_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "Conduit Fill Calculator", description: "Calculate NEC max wire count per conduit size.", path: construction_conduit_fill_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "HVAC BTU Calculator", description: "Size AC tonnage from room area and insulation.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Heat Loss Calculator", description: "Calculate whole-house heat loss for heater sizing.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Solar Panel Layout Calculator", description: "Calculate solar panel count and kW for your roof.", path: construction_solar_panel_layout_path, icon_path: "M12 3v1m0 16v1" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("voltage-drop-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

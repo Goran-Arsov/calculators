@@ -1,0 +1,197 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Conduit Fill Calculator - NEC Chapter 9 Max Wires",
+  description: "Free NEC conduit fill calculator. Enter conduit type, trade size, wire AWG, and count to see fill percent and the maximum THWN-2 wires allowed per NEC Chapter 9.",
+  canonical: construction_conduit_fill_url,
+  og: {
+    title: "Conduit Fill Calculator | Calc Hammer",
+    description: "NEC conduit fill percent and max wire count for EMT, IMC, RMC, and PVC.",
+    url: construction_conduit_fill_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Conduit Fill Calculator", url: construction_conduit_fill_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is conduit fill?", answer: "Conduit fill is the percentage of a conduit's internal cross-sectional area that the insulated wires occupy. NEC Chapter 9 Table 1 limits fill to 53% for a single conductor, 31% for two, and 40% for three or more conductors. These limits allow for pulling friction, heat dissipation, and derating factors." },
+  { question: "What conduit size do I need for three 12 AWG THWN-2 wires?", answer: "Each 12 AWG THWN-2 wire has a cross-section of 0.0133 sq in. Three wires total 0.0399 sq in, which at 40% fill needs a conduit with at least 0.0998 sq in interior area. 1/2\" EMT has 0.304 sq in — far more than needed. You can easily run three 12 AWG wires in 1/2\" EMT." },
+  { question: "Why is the limit 40% for three or more wires?", answer: "With multiple wires, the irregular packing leaves unused space and increases pulling friction. 40% is the historical safe pulling limit established through manufacturer testing. Single-conductor fill can go as high as 53% because there's no interaction. Two-conductor is limited to 31% because of the 'jam ratio' — two wires of certain sizes can physically wedge against the conduit walls during pulling." },
+  { question: "Does conduit fill include ground wires?", answer: "Yes — all current-carrying and grounding conductors count toward the fill. The equipment grounding conductor is usually sized smaller than the phase wires, so look up its actual area from NEC Chapter 9 Table 5 and add it to the total." },
+  { question: "What is THWN-2 vs THHN?", answer: "THHN is a dry-location rated 90 °C conductor. THHN/THWN dual-rated conductors are rated for wet locations at 75 °C. THWN-2 is the newer designation for 90 °C wet rating. Most residential and commercial installations use THHN/THWN-2 dual-rated wire. Conduit fill dimensions are nearly identical across these types." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Conduit Fill Calculator",
+  description: "Calculate NEC conduit fill percentage and max wire count for EMT, IMC, RMC, and PVC conduit.",
+  url: construction_conduit_fill_url,
+  category: "HomeApplication",
+  calculator_slug: "conduit-fill-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Conduit Fill Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Conduit Fill Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate NEC Chapter 9 conduit fill percentage and the maximum number of THWN-2 wires allowed. Supports EMT, IMC, RMC, and PVC-40 in 1/2" through 4" trade sizes. Results shown in both sq in and mm².</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="conduit-fill-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Conduit type</label>
+            <select data-conduit-fill-calculator-target="conduit" data-action="change->conduit-fill-calculator#calculate" class="w-full">
+              <option value="emt" selected>EMT (thin-wall)</option>
+              <option value="imc">IMC (intermediate)</option>
+              <option value="rmc">RMC (rigid metal)</option>
+              <option value="pvc40">PVC Schedule 40</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Trade size</label>
+            <select data-conduit-fill-calculator-target="size" data-action="change->conduit-fill-calculator#calculate" class="w-full">
+              <option value="1/2" selected>1/2"</option>
+              <option value="3/4">3/4"</option>
+              <option value="1">1"</option>
+              <option value="1-1/4">1-1/4"</option>
+              <option value="1-1/2">1-1/2"</option>
+              <option value="2">2"</option>
+              <option value="2-1/2">2-1/2"</option>
+              <option value="3">3"</option>
+              <option value="4">4"</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wire size (THWN-2)</label>
+            <select data-conduit-fill-calculator-target="awg" data-action="change->conduit-fill-calculator#calculate" class="w-full">
+              <option value="14">14 AWG</option>
+              <option value="12" selected>12 AWG</option>
+              <option value="10">10 AWG</option>
+              <option value="8">8 AWG</option>
+              <option value="6">6 AWG</option>
+              <option value="4">4 AWG</option>
+              <option value="3">3 AWG</option>
+              <option value="2">2 AWG</option>
+              <option value="1">1 AWG</option>
+              <option value="1/0">1/0</option>
+              <option value="2/0">2/0</option>
+              <option value="3/0">3/0</option>
+              <option value="4/0">4/0</option>
+              <option value="250">250 kcmil</option>
+              <option value="350">350 kcmil</option>
+              <option value="500">500 kcmil</option>
+            </select>
+          </div>
+          <div>
+            <label for="conduit-count" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of wires</label>
+            <input id="conduit-count" type="number" inputmode="numeric" data-conduit-fill-calculator-target="count" data-action="input->conduit-fill-calculator#calculate" class="w-full" value="4" step="1" min="1">
+            <p class="text-xs text-gray-500 mt-1">Include all current-carrying and equipment grounding conductors.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Area used</span>
+              <span class="text-base font-bold text-indigo-700 dark:text-indigo-400" data-conduit-fill-calculator-target="resultUsed">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-indigo-200/50 dark:border-indigo-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Fill percent</span>
+              <span class="text-3xl font-extrabold text-indigo-700 dark:text-indigo-400" data-conduit-fill-calculator-target="resultUsedPct">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">NEC limit</span>
+              <span class="text-base font-bold text-indigo-700 dark:text-indigo-400" data-conduit-fill-calculator-target="resultMaxPct">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Max wires (this AWG)</span>
+              <span class="text-base font-bold text-indigo-700 dark:text-indigo-400" data-conduit-fill-calculator-target="resultMaxWires">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-indigo-200/50 dark:border-indigo-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Code check</span>
+              <span data-conduit-fill-calculator-target="resultOk">—</span>
+            </div>
+          </div>
+          <button data-action="click->conduit-fill-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-700 hover:to-blue-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "conduit-fill-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How NEC Conduit Fill Works</h2>
+      <p>
+        The National Electrical Code limits how densely you can pack insulated wires into a conduit. The limits are designed to prevent overheating (wires in a tight bundle can't shed heat) and physical damage during pulling (friction between wires and the conduit wall rips insulation). NEC Chapter 9 Table 1 sets the maximum fill at <strong>53% for one wire, 31% for two wires, and 40% for three or more wires</strong>.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Math</h2>
+      <p>
+        Conduit fill percentage = (total wire area ÷ conduit internal area) × 100. Total wire area is the number of wires times the cross-sectional area of each wire from <strong>NEC Chapter 9 Table 5</strong>. Conduit internal area comes from <strong>NEC Chapter 9 Table 4</strong>. For example, four 12 AWG THWN-2 wires (each 0.0133 sq in) total 0.0532 sq in. In 1/2" EMT (0.304 sq in) that is 17.5% fill — well under the 40% limit.
+      </p>
+
+      <h3>Why the Different Percentages?</h3>
+      <p>
+        A single wire has no interference from other conductors, so it can fill up to 53% of the conduit. Two wires hit the "jam ratio" — certain wire-to-conduit ratios physically wedge during pulling and shred insulation. 31% keeps you outside the jam zone. Three or more wires distribute friction across multiple contact points; 40% is the practical limit where pulls still work without jamming.
+      </p>
+
+      <h3>Conduit Types</h3>
+      <p>
+        EMT (Electrical Metallic Tubing) is the most common thin-wall steel conduit for dry indoor use. IMC (Intermediate Metal Conduit) is thicker and rated for all locations. RMC (Rigid Metal Conduit) is the heaviest and used for wet/exposed conditions, mast risers, and hazardous locations. PVC Schedule 40 is nonmetallic for underground, wet, or corrosive environments. Each has slightly different internal dimensions, so the same trade size has different fill capacity.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Does the ground wire count in conduit fill?</h3>
+      <p>Yes. Include every conductor — phase, neutral, and equipment grounding — when calculating fill.</p>
+
+      <h3>Can I mix wire sizes in one conduit?</h3>
+      <p>Yes. Sum the area of each wire individually (from Table 5) and compare the total to the conduit's fill allowance.</p>
+
+      <h3>What about derating for more than 3 current-carrying conductors?</h3>
+      <p>Separate issue — NEC 310.15(C)(1) requires ampacity derating when 4+ current-carrying wires share a conduit. Check both fill AND ampacity.</p>
+
+      <h3>Can I use a smaller conduit for a short run?</h3>
+      <p>Fill limits apply regardless of length. The reason is pulling friction and heat, both of which scale with length.</p>
+
+      <h3>Why is my 1/2" EMT only allowed nine 12 AWG wires?</h3>
+      <p>0.304 sq in × 40% = 0.1216 sq in max fill ÷ 0.0133 sq in per wire = 9 wires. NEC limits this by table and the math agrees.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Voltage Drop Calculator", description: "Calculate NEC voltage drop for any wire run.", path: construction_voltage_drop_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Electrical Load Calculator", description: "Calculate total electrical load and panel size.", path: construction_electrical_load_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Plumbing Pipe Size Calculator", description: "Calculate plumbing pipe size per UPC fixture units.", path: construction_plumbing_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "Pipe Friction Loss Calculator", description: "Calculate water pressure loss in pipes.", path: construction_pipe_friction_loss_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "HVAC BTU Calculator", description: "Calculate cooling BTU per room area.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Duct Size Calculator", description: "Calculate round or rectangular duct size.", path: construction_duct_size_path, icon_path: "M4 4h16v4H4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("conduit-fill-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

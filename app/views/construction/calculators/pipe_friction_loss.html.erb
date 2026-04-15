@@ -1,0 +1,178 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Pipe Friction Loss Calculator - Water Pressure Drop",
+  description: "Free pipe friction loss calculator. Calculate water pressure drop and head loss in PVC, copper, PEX, steel, and galvanized pipe using the Hazen-Williams equation.",
+  canonical: construction_pipe_friction_loss_url,
+  og: {
+    title: "Pipe Friction Loss Calculator | Calc Hammer",
+    description: "Calculate water pressure loss in PVC, copper, PEX, and steel pipe.",
+    url: construction_pipe_friction_loss_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Pipe Friction Loss Calculator", url: construction_pipe_friction_loss_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate pipe friction loss?", answer: "Use the Hazen-Williams equation for water: hf = 4.52 × Q^1.852 / (C^1.852 × d^4.87), where hf is head loss per foot of pipe, Q is flow in gpm, C is the pipe's roughness coefficient, and d is the inside diameter in inches. Multiply by pipe length to get total head loss, then convert to psi using 1 ft of water = 0.4331 psi." },
+  { question: "What is the C-factor for common pipe materials?", answer: "PVC and PEX have C = 150 (smoothest). New copper is 140. New steel is 120. Old galvanized is 100. Old cast iron is 100. A higher C means less friction loss for the same flow and pipe size. The C-factor also drops over time as mineral deposits build up on the inside of the pipe." },
+  { question: "What is a safe water velocity for pipes?", answer: "Keep cold water velocity under 8 ft/s (2.4 m/s) and hot water under 5 ft/s to prevent erosion corrosion, water hammer, and noise. Very high velocities can carve channels in copper pipe over years. Quick formula: v (ft/s) = 0.4085 × gpm ÷ d² (inches). The calculator shows velocity and flags if it exceeds 8 ft/s." },
+  { question: "Why does pipe size matter so much?", answer: "Friction loss goes up with the 4.87th power of the inverse of diameter. Cutting diameter in half increases friction loss by about 30×. A 1/2\" pipe carrying 10 gpm loses about 28 psi per 100 ft; a 3/4\" pipe carries the same flow with about 6 psi loss per 100 ft. Always upsize long runs — bigger pipe is cheap compared to pump or pressure boost equipment." },
+  { question: "Does hot water flow differently than cold?", answer: "Slightly. Hot water has lower viscosity and density, so friction loss drops by about 5-10% compared to cold water at the same flow. The calculator assumes cold water (60 °F) as the standard design basis. For hot water, treat the result as a conservative upper bound." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Pipe Friction Loss Calculator",
+  description: "Calculate water pressure drop and head loss in PVC, copper, PEX, steel, and galvanized pipe.",
+  url: construction_pipe_friction_loss_url,
+  category: "HomeApplication",
+  calculator_slug: "pipe-friction-loss-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Pipe Friction Loss Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Pipe Friction Loss Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate water pressure drop and head loss for any pipe run using the Hazen-Williams equation. Supports PVC, copper, PEX, steel, galvanized, and cast iron. Imperial and metric units.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="pipe-friction-loss-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-pipe-friction-loss-calculator-target="unitSystem" data-action="change->pipe-friction-loss-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (gpm, in, ft)</option>
+              <option value="metric">Metric (L/min, mm, m)</option>
+            </select>
+          </div>
+          <div>
+            <label for="pfl-flow" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-pipe-friction-loss-calculator-target="flowLabel">Flow (GPM)</span></label>
+            <input id="pfl-flow" type="number" inputmode="decimal" data-pipe-friction-loss-calculator-target="flow" data-action="input->pipe-friction-loss-calculator#calculate" class="w-full" value="10" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="pfl-diameter" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-pipe-friction-loss-calculator-target="diameterLabel">Inside diameter (inches)</span></label>
+            <input id="pfl-diameter" type="number" inputmode="decimal" data-pipe-friction-loss-calculator-target="diameter" data-action="input->pipe-friction-loss-calculator#calculate" class="w-full" value="1.0" step="0.125" min="0">
+          </div>
+          <div>
+            <label for="pfl-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-pipe-friction-loss-calculator-target="lengthLabel">Pipe length (ft)</span></label>
+            <input id="pfl-length" type="number" inputmode="decimal" data-pipe-friction-loss-calculator-target="length" data-action="input->pipe-friction-loss-calculator#calculate" class="w-full" value="100" step="1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pipe material</label>
+            <select data-pipe-friction-loss-calculator-target="material" data-action="change->pipe-friction-loss-calculator#calculate" class="w-full">
+              <option value="pvc" selected>PVC (C=150)</option>
+              <option value="pex">PEX (C=150)</option>
+              <option value="copper">Copper (C=140)</option>
+              <option value="steel">Steel (C=120)</option>
+              <option value="galvanized">Galvanized (C=100)</option>
+              <option value="cast_iron">Cast iron (C=100)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Head loss</span>
+              <span class="text-base font-bold text-cyan-700 dark:text-cyan-400" data-pipe-friction-loss-calculator-target="resultHead">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-cyan-200/50 dark:border-cyan-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Pressure loss</span>
+              <span class="text-2xl font-extrabold text-cyan-700 dark:text-cyan-400" data-pipe-friction-loss-calculator-target="resultPsi">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Per 100 ft</span>
+              <span class="text-base font-bold text-cyan-700 dark:text-cyan-400" data-pipe-friction-loss-calculator-target="resultPer100">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-cyan-200/50 dark:border-cyan-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Velocity</span>
+              <span class="text-base font-bold text-cyan-700 dark:text-cyan-400" data-pipe-friction-loss-calculator-target="resultVelocity">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Velocity check</span>
+              <span data-pipe-friction-loss-calculator-target="resultVelocityOk">—</span>
+            </div>
+          </div>
+          <button data-action="click->pipe-friction-loss-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-700 hover:to-blue-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "pipe-friction-loss-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>The Hazen-Williams Equation</h2>
+      <p>
+        Hazen-Williams is the standard empirical formula for water flow in pipes, widely used for plumbing, irrigation, and fire protection design. The imperial form is <strong>hf = 4.52 × Q<sup>1.852</sup> / (C<sup>1.852</sup> × d<sup>4.87</sup>)</strong>, where hf is the head loss in feet of water per foot of pipe, Q is flow in gpm, C is the pipe roughness coefficient, and d is the inside diameter in inches. Multiply by pipe length to get total head loss. The equation is accurate for water at typical temperatures (40-75 °F) and flow conditions common in buildings.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>C-Factor by Material</h2>
+      <p>
+        <strong>PVC and PEX: C = 150</strong> (smoothest). <strong>Copper: C = 140</strong>. <strong>New black steel: C = 120</strong>. <strong>Galvanized steel or old cast iron: C = 100</strong>. Higher C means smoother walls and less friction. C drops over time as mineral scale, biofilm, or corrosion build up — old galvanized pipe that started at C = 120 may drop to C = 80 after 30 years, doubling its friction loss. For new installations use the fresh values; for retrofit design, drop 10-20% to account for aging.
+      </p>
+
+      <h3>Why Diameter Matters So Much</h3>
+      <p>
+        Friction loss is proportional to 1/d<sup>4.87</sup>, meaning if you double the pipe diameter you cut the loss by a factor of 30. A 1/2" pipe at 10 gpm loses about 28 psi per 100 ft. A 3/4" pipe at the same flow loses about 6 psi per 100 ft. A 1" pipe loses only 1.5 psi per 100 ft. That is why plumbing designers always upsize trunk lines and only go smaller on branches close to fixtures.
+      </p>
+
+      <h3>Velocity Limits</h3>
+      <p>
+        Keep water velocity under 8 ft/s (2.4 m/s) for cold water and under 5 ft/s for hot water. Above these limits, the water carves channels in the pipe walls (erosion corrosion), causes loud water hammer when valves close, and generates audible hissing. Recirculating hot water lines should target 2-4 ft/s for quiet operation. Fire sprinkler mains are allowed up to 20 ft/s because of the intermittent flow.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Should I use actual ID or nominal pipe size?</h3>
+      <p>Use the actual inside diameter. Nominal sizes are different from real sizes, especially in copper (Type K, L, M have different walls) and PVC (Schedule 40 vs 80).</p>
+
+      <h3>Does this work for air or other fluids?</h3>
+      <p>No — Hazen-Williams is calibrated for water only. Air and gas flow uses Darcy-Weisbach or other equations.</p>
+
+      <h3>How do I size a well pump?</h3>
+      <p>Add up static head + friction loss + pressure tank requirement. This calculator handles the friction part for any well-to-house pipe run.</p>
+
+      <h3>Can I chain multiple pipe sizes?</h3>
+      <p>Yes — calculate each segment separately at the same flow rate, then sum the losses.</p>
+
+      <h3>What about fittings?</h3>
+      <p>Each elbow, tee, or valve adds an "equivalent length" of straight pipe — typically 1-5 ft each. Add these to the straight run for a realistic total.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Plumbing Pipe Size Calculator", description: "Calculate plumbing pipe size per UPC fixture units.", path: construction_plumbing_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "Water Heater Sizing Calculator", description: "Calculate tank or tankless water heater size.", path: construction_water_heater_sizing_path, icon_path: "M12 2v2m0 16v2M4 12H2" },
+      { name: "Pool Volume Calculator", description: "Calculate pool volume in gallons and liters.", path: construction_pool_volume_path, icon_path: "M4 14s2 2 4 2 4-2 6-2" },
+      { name: "Drainage Slope Calculator", description: "Calculate drainage pipe slope.", path: construction_drainage_slope_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "Duct Size Calculator", description: "Calculate HVAC duct size from airflow.", path: construction_duct_size_path, icon_path: "M4 4h16v4H4z" },
+      { name: "Septic Tank Size Calculator", description: "Calculate septic tank size from bedrooms.", path: construction_septic_tank_size_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("pipe-friction-loss-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

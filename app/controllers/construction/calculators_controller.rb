@@ -57,5 +57,17 @@ module Construction
     def roof_pitch; end
     def stud_count; end
     def plywood_sheets; end
+
+    # Pro trades
+    def joist; end
+    def voltage_drop; end
+    def conduit_fill; end
+    def pipe_friction_loss; end
+    def heat_loss; end
+    def duct_size; end
+    def spread_footing; end
+    def caulk; end
+    def crown_molding; end
+    def chimney_flue; end
   end
 end

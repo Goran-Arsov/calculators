@@ -1,0 +1,175 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Caulk Calculator - Tubes of Sealant for Any Joint",
+  description: "Free caulk calculator. Enter joint length, width, and depth to get the exact number of caulk tubes or sausage packs needed for any sealant job.",
+  canonical: construction_caulk_url,
+  og: {
+    title: "Caulk Calculator | Calc Hammer",
+    description: "Calculate tubes of caulk or sealant for any joint.",
+    url: construction_caulk_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Caulk Calculator", url: construction_caulk_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many linear feet does a tube of caulk cover?", answer: "A standard 10.1 fl oz caulk tube holds about 18.2 cubic inches of sealant. At a typical 1/4 in × 1/4 in joint (0.0625 sq in cross-section), one tube covers roughly 24 linear feet. Bigger joints use up tubes faster: a 1/2 in × 1/2 in joint uses one tube per 6 linear feet. 20 and 28 fl oz sausage packs cover about 2× and 2.8× as much." },
+  { question: "How do I calculate how much caulk I need?", answer: "Multiply the joint length (in inches) by the width and depth to get the joint volume in cubic inches. Divide by the tube volume (18.2 cu in for a standard 10.1 oz tube) and round up, then add 10-20% for waste and bead shape variation. For 30 ft of 1/4 in × 1/4 in joint: 360 × 0.25 × 0.25 = 22.5 cu in ÷ 18.2 ≈ 1.2 tubes → buy 2." },
+  { question: "What is the correct bead size for caulking?", answer: "Window and door trim: 1/8 in to 3/16 in bead. Bathtub and tile joints: 1/4 in. Expansion joints in concrete or siding: 1/2 in wide × 1/4 in deep over a backer rod. Cornice and wide gaps: up to 3/4 in. The rule of thumb for good performance is joint depth = half of joint width (with backer rod), so the caulk can stretch and compress without tearing loose." },
+  { question: "Should I use a backer rod?", answer: "Yes, for joints wider than 1/4 in. A closed-cell foam backer rod prevents three-sided adhesion (which makes caulk tear), sets the correct depth-to-width ratio (1:2), and saves sealant. Push the rod into the joint with a blunt tool until it sits about half the joint width below the surface, then caulk over it." },
+  { question: "How long does caulk last?", answer: "Silicone: 20+ years outdoors. Polyurethane: 10-15 years. Latex acrylic: 5-10 years. The lifespan depends on movement, UV exposure, and joint prep. Caulk fails in three modes — adhesion (peeling off), cohesion (tearing in the middle), or hardening (losing flexibility). Clean, dry joints and proper depth-to-width ratio maximize lifespan." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Caulk Calculator",
+  description: "Calculate tubes of caulk or sealant needed for any joint length, width, and depth.",
+  url: construction_caulk_url,
+  category: "HomeApplication",
+  calculator_slug: "caulk-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Caulk Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Caulk Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate how many tubes of caulk or sealant you need for any joint. Supports 10.1 oz cartridges, 20 oz and 28 oz sausage packs, imperial and metric joint dimensions.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="caulk-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-caulk-calculator-target="unitSystem" data-action="change->caulk-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (ft, inches)</option>
+              <option value="metric">Metric (m, mm)</option>
+            </select>
+          </div>
+          <div>
+            <label for="caulk-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-caulk-calculator-target="lengthLabel">Total joint length (ft)</span></label>
+            <input id="caulk-length" type="number" inputmode="decimal" data-caulk-calculator-target="length" data-action="input->caulk-calculator#calculate" class="w-full" value="30" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="caulk-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-caulk-calculator-target="widthLabel">Joint width (inches)</span></label>
+            <input id="caulk-width" type="number" inputmode="decimal" data-caulk-calculator-target="width" data-action="input->caulk-calculator#calculate" class="w-full" value="0.25" step="0.0625" min="0">
+          </div>
+          <div>
+            <label for="caulk-depth" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-caulk-calculator-target="depthLabel">Joint depth (inches)</span></label>
+            <input id="caulk-depth" type="number" inputmode="decimal" data-caulk-calculator-target="depth" data-action="input->caulk-calculator#calculate" class="w-full" value="0.25" step="0.0625" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tube size</label>
+            <select data-caulk-calculator-target="tube" data-action="change->caulk-calculator#calculate" class="w-full">
+              <option value="10.1" selected>10.1 fl oz cartridge (standard)</option>
+              <option value="20">20 fl oz sausage pack</option>
+              <option value="28">28 fl oz sausage pack</option>
+            </select>
+          </div>
+          <div>
+            <label for="caulk-waste" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Waste factor (%)</label>
+            <input id="caulk-waste" type="number" inputmode="decimal" data-caulk-calculator-target="waste" data-action="input->caulk-calculator#calculate" class="w-full" value="15" step="1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-lime-50 to-green-50 dark:from-lime-900/20 dark:to-green-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Joint volume</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-caulk-calculator-target="resultJoint">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Tube volume</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-caulk-calculator-target="resultTubeVolume">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Yield per tube</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-caulk-calculator-target="resultLinearPerTube">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-green-200/50 dark:border-green-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Tubes needed</span>
+              <span class="text-3xl font-extrabold text-green-700 dark:text-green-400" data-caulk-calculator-target="resultTubes">—</span>
+            </div>
+          </div>
+          <button data-action="click->caulk-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-lime-700 hover:from-green-700 hover:to-lime-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "caulk-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Calculate Caulk Tubes</h2>
+      <p>
+        The calculation is straightforward: compute the total volume of sealant you need to fill, then divide by the volume of your chosen tube. <strong>Joint volume = length × width × depth</strong>, all in the same units. A standard 10.1 fl oz caulk cartridge holds about 18.2 cubic inches of sealant. Divide your joint volume by 18.2, round up, and add 10-20% for bead shape variation and waste from tooling the bead. Always buy one extra tube beyond the calculation — tubes dry out partway through, drop and split, or run out on the last 3 ft of baseboard.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Joint Sizing and Depth-to-Width Ratio</h2>
+      <p>
+        A well-sized joint has a depth-to-width ratio of about 1:2 — a 1/2 inch wide joint should be 1/4 inch deep. This ratio lets the caulk flex without tearing. Narrow joints (under 1/4 in) can be depth-equal or slightly shallower. Very wide joints (over 1/2 in) require a closed-cell foam backer rod behind the caulk to set the right depth and prevent three-sided adhesion. A backer rod is not optional on exterior expansion joints — without it the caulk will crack within a few freeze-thaw cycles.
+      </p>
+
+      <h3>Common Caulking Jobs</h3>
+      <p>
+        <strong>Window and door trim:</strong> 1/8 inch bead, one tube covers about 96 ft. <strong>Bathtub and tile:</strong> 1/4 inch × 1/4 inch, one tube covers 24 ft. <strong>Exterior siding expansion joints:</strong> 3/8 inch × 1/4 inch with backer rod, one tube covers 16 ft. <strong>Concrete control joints:</strong> 1/2 inch × 1/4 inch with backer rod, one tube covers 12 ft. <strong>Crown molding and baseboard:</strong> 1/8 inch paintable acrylic, one tube covers about 100 linear feet.
+      </p>
+
+      <h3>Tube Types</h3>
+      <p>
+        <strong>10.1 fl oz cartridges</strong> (standard caulk gun size) are the most common. <strong>20 fl oz sausage packs</strong> are popular with pros because they change out faster and waste less packaging. <strong>28 fl oz packs</strong> are used for large expansion joints and cost less per ounce. Buy sausage packs if you will use more than 4 tubes worth — they save time and money.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many linear feet per 10 oz tube?</h3>
+      <p>At 1/4 × 1/4 joint: 24 ft. At 1/8 × 1/8: 96 ft. At 1/2 × 1/4: 12 ft. Depends entirely on bead size.</p>
+
+      <h3>What waste factor should I use?</h3>
+      <p>10% for straight runs with few stops. 20-25% for lots of corners, detail work, or when applying caulk outdoors in cold weather (tubes set faster).</p>
+
+      <h3>Do different caulks yield differently?</h3>
+      <p>Tube volume is the same for a given package size regardless of chemistry. Silicone, latex, polyurethane — 10.1 oz cartridge holds 10.1 oz of sealant in all of them.</p>
+
+      <h3>Is a tube the same as a cartridge?</h3>
+      <p>Yes — caulk "tube" and "cartridge" are interchangeable for the standard 10.1 fl oz size. "Sausage pack" specifically means the flexible foil bag (20 or 28 oz) that needs a bulk gun.</p>
+
+      <h3>Should I buy more than calculated?</h3>
+      <p>Yes — always buy at least one extra tube. Opened tubes don't store well and you will always need a little more than you think.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Crown Molding Calculator", description: "Calculate linear feet of crown molding or trim.", path: construction_crown_molding_path, icon_path: "M3 20h18v2H3zM3 16h18v1H3z" },
+      { name: "Baseboard Calculator", description: "Calculate linear feet of baseboard or trim molding.", path: construction_baseboard_path, icon_path: "M3 20h18v2H3zM3 16h18v1H3z" },
+      { name: "Paint Calculator", description: "Calculate gallons of paint for any room.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4z" },
+      { name: "Drywall Calculator", description: "Calculate drywall sheets and joint compound.", path: construction_drywall_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Grout Calculator", description: "Calculate pounds and bags of grout for tile.", path: construction_grout_path, icon_path: "M4 4h4v4H4z" },
+      { name: "Wallpaper Calculator", description: "Calculate rolls of wallpaper needed for a room.", path: construction_wallpaper_path, icon_path: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("caulk-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

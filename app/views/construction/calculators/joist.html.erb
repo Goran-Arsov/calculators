@@ -1,0 +1,196 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Joist Calculator - Floor Joist Count, Span & Board Feet",
+  description: "Free joist calculator. Enter room dimensions to get floor joist count, linear feet, board feet, and the maximum IRC span for 2x6, 2x8, 2x10, and 2x12 joists.",
+  canonical: construction_joist_url,
+  og: {
+    title: "Joist Calculator - IRC Max Span | Calc Hammer",
+    description: "Calculate floor joist count, linear feet, board feet, and max IRC span.",
+    url: construction_joist_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Joist Calculator", url: construction_joist_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many floor joists do I need?", answer: "Divide the longer dimension (the wall the joists run parallel to) by your spacing and add one. A 16 ft × 12 ft room with joists at 16\" OC needs 16 × 12 / 16 = 12, plus one at the far end = 13 joists. The joists span the shorter 12 ft dimension." },
+  { question: "What is the maximum span for a 2x10 floor joist?", answer: "Per IRC Table R502.3.1(1), a 2x10 SPF #2 joist at 16\" OC with 40 psf live load and 10 psf dead load can span about 15 ft 5 in. Southern Yellow Pine and Douglas Fir #2 reach about 16 ft 2 in. Tighter 12\" OC spacing extends spans; wider 24\" OC reduces them." },
+  { question: "Should I use 2x8, 2x10, or 2x12 joists?", answer: "For spans up to about 12 ft use 2x8, 12 to 16 ft use 2x10, and 16 to 20 ft use 2x12. Always check the IRC table for your species, spacing, and load. For living areas use 40 psf live load; for attics with storage use 30 psf; for decks use 40 psf snow or live." },
+  { question: "What does 'L/360 deflection' mean?", answer: "It means the joist is allowed to deflect no more than 1/360 of its span under live load. A 12 ft span can deflect up to 12 ft × 12 in ÷ 360 = 0.4 inches. This prevents bouncy floors and cracked finishes. Some designers prefer L/480 for tiled floors." },
+  { question: "How far apart should joists be?", answer: "16 inches on center is the residential standard — it lets you use 3/4\" plywood or OSB subfloor and matches standard wall and truss spacing. 12\" OC is used for heavier loads or longer spans; 24\" OC is used with engineered I-joists or 7/8\"+ subfloor." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Joist Calculator",
+  description: "Calculate floor joist count, linear feet, board feet, and the maximum IRC span for any room.",
+  url: construction_joist_url,
+  category: "HomeApplication",
+  calculator_slug: "joist-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Joist Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Joist Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate floor joist count, linear feet, board feet, and the maximum IRC span for 2x6, 2x8, 2x10, or 2x12 joists. Imperial and metric supported.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="joist-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-joist-calculator-target="unitSystem" data-action="change->joist-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (ft)</option>
+              <option value="metric">Metric (m)</option>
+            </select>
+          </div>
+          <div>
+            <label for="joist-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-joist-calculator-target="lengthLabel">Room length (ft)</span></label>
+            <input id="joist-length" type="number" inputmode="decimal" data-joist-calculator-target="length" data-action="input->joist-calculator#calculate" class="w-full" value="16" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="joist-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-joist-calculator-target="widthLabel">Room width (ft)</span></label>
+            <input id="joist-width" type="number" inputmode="decimal" data-joist-calculator-target="width" data-action="input->joist-calculator#calculate" class="w-full" value="12" step="0.1" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Joist size</label>
+            <select data-joist-calculator-target="size" data-action="change->joist-calculator#calculate" class="w-full">
+              <option value="2x6">2x6</option>
+              <option value="2x8">2x8</option>
+              <option value="2x10" selected>2x10</option>
+              <option value="2x12">2x12</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Spacing</label>
+            <select data-joist-calculator-target="spacing" data-action="change->joist-calculator#calculate" class="w-full">
+              <option value="12">12" OC</option>
+              <option value="16" selected>16" OC</option>
+              <option value="24">24" OC</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Species / grade</label>
+            <select data-joist-calculator-target="species" data-action="change->joist-calculator#calculate" class="w-full">
+              <option value="spf_2" selected>SPF #2 (Spruce-Pine-Fir)</option>
+              <option value="syp_2">SYP #2 (Southern Yellow Pine)</option>
+              <option value="df_2">DF #2 (Douglas Fir-Larch)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Span</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-joist-calculator-target="resultSpan">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Carry direction</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-joist-calculator-target="resultCarry">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Joist count</span>
+              <span class="text-3xl font-extrabold text-amber-700 dark:text-amber-400" data-joist-calculator-target="resultCount">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Total linear</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-joist-calculator-target="resultLinear">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Board feet</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-joist-calculator-target="resultBoard">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Max IRC span</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-joist-calculator-target="resultMaxSpan">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Code check</span>
+              <span class="text-base font-bold" data-joist-calculator-target="resultOk">—</span>
+            </div>
+          </div>
+          <button data-action="click->joist-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-orange-700 hover:from-amber-700 hover:to-orange-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "joist-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Use the Joist Calculator</h2>
+      <p>
+        Enter the room dimensions, pick your joist size, spacing, and species. The calculator assumes joists run across the shorter dimension (the "span") and are spaced along the longer wall (the "carry"). It reports the number of joists, total linear feet for ordering, and board feet for pricing. Crucially, it also checks your span against the IRC maximum for the chosen size, spacing, species, and a standard 40 psf live / 10 psf dead residential load.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>IRC Span Tables (40 psf live / 10 psf dead)</h2>
+      <p>
+        The International Residential Code (IRC) Table R502.3.1(1) is the authoritative reference for floor joist spans. A <strong>2x8 SPF #2</strong> joist at 16" OC can span about 12 ft 8 in. A <strong>2x10 SPF #2</strong> at 16" OC spans about 15 ft 5 in. A <strong>2x12 SPF #2</strong> at 16" OC spans about 17 ft 10 in. Southern Yellow Pine #2 and Douglas Fir #2 are slightly stronger than SPF and allow a few extra inches. Going from 16" to 12" OC adds roughly 10-15 percent to the allowed span; going to 24" OC cuts it by a similar amount.
+      </p>
+
+      <h3>Live Load and Dead Load</h3>
+      <p>
+        Live load is the non-permanent load — people, furniture, storage. 40 psf is the residential standard for living areas. Dead load is the weight of the floor itself — 10 psf covers typical framing, subfloor, underlayment, and light finish. Tile or stone floors may push dead load higher and reduce spans. Sleeping rooms can use 30 psf live load per IRC, extending spans slightly, but most builders stick with 40 psf across the whole structure for uniformity.
+      </p>
+
+      <h3>Deflection Limits</h3>
+      <p>
+        Span tables are keyed to a deflection limit of L/360 under live load — one inch of deflection per 360 inches of span. For a 12 ft span that is 0.4 inches. Tighter limits like L/480 give stiffer floors and are recommended for tile, stone, or long spans where bounce would be objectionable. You can achieve L/480 by going up one lumber size or dropping from 16" to 12" OC.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the difference between span and joist length?</h3>
+      <p>Span is the clear distance between supports. Joist length includes the bearing at each end — typically add 3 inches total for the 1.5" seat on each wall.</p>
+
+      <h3>Can I use engineered I-joists instead?</h3>
+      <p>Yes — I-joists (TJI, LPI) span further for the same depth. Consult the manufacturer's span tables; they are not listed in IRC.</p>
+
+      <h3>Do cantilevers count against the span?</h3>
+      <p>Cantilevers are limited to 1/4 of the backspan up to 4 ft. The main span is still measured wall-to-wall.</p>
+
+      <h3>How do I stop floor bounce?</h3>
+      <p>Go up one joist size, reduce spacing to 12" OC, or add mid-span blocking. Engineered I-joists also reduce perceived bounce.</p>
+
+      <h3>Where do I find the full IRC span table?</h3>
+      <p>IRC Table R502.3.1(1) for 30 psf live + 10 psf dead, and R502.3.1(2) for 40 psf live + 10 psf dead. Both are in the International Residential Code.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Stud Count Calculator", description: "Calculate studs and plates for wall framing.", path: construction_stud_count_path, icon_path: "M4 6h16M4 12h16M4 18h16" },
+      { name: "Rafter Length Calculator", description: "Calculate rafter length and angle from run and pitch.", path: construction_rafter_length_path, icon_path: "M3 12l9-9 9 9M5 10v10h14V10" },
+      { name: "Beam Load Span Calculator", description: "Calculate required beam size for a given span and load.", path: construction_beam_load_span_path, icon_path: "M4 5a1 1 0 011-1h14" },
+      { name: "Lumber Calculator", description: "Calculate board feet and cost for framing lumber.", path: construction_lumber_path, icon_path: "M4 6h16M4 12h16M4 18h7" },
+      { name: "Plywood Sheets Calculator", description: "Calculate plywood for subfloors and sheathing.", path: construction_plywood_sheets_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Wood Species Weight Calculator", description: "Calculate the weight of any wood board by species.", path: construction_wood_weight_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("joist-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

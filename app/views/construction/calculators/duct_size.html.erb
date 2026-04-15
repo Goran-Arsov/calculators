@@ -1,0 +1,165 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Duct Size Calculator - Round & Rectangular HVAC Ducts",
+  description: "Free HVAC duct size calculator. Enter airflow (CFM) and velocity to get round and rectangular duct dimensions for residential supply and return ducts.",
+  canonical: construction_duct_size_url,
+  og: {
+    title: "Duct Size Calculator | Calc Hammer",
+    description: "Round or rectangular duct size from airflow and velocity.",
+    url: construction_duct_size_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Duct Size Calculator", url: construction_duct_size_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate HVAC duct size?", answer: "Divide the required airflow (CFM) by the target velocity (fpm) to get the duct's required cross-sectional area in square feet. For a round duct, diameter = 2 × √(area / π). For a rectangular duct with a chosen aspect ratio, short side = √(area / aspect) and long side = short × aspect. Multiply square feet by 144 to get square inches." },
+  { question: "What is a good velocity for residential ducts?", answer: "ACCA Manual D recommends 700-900 fpm for supply trunks, 600-700 fpm for supply branches, and 500-700 fpm for return trunks. Lower velocity gives quieter operation and less static pressure loss but requires larger ducts. Higher velocity lets you use smaller ducts but causes whoosh noise, turbulence, and more fan power." },
+  { question: "What is equivalent round diameter?", answer: "Rectangular ducts have more friction per unit airflow than round ducts of the same area because their corners create turbulence. The ASHRAE equivalent round formula (De = 1.30 × (ab)^0.625 / (a+b)^0.25) gives the round diameter with the same friction loss as a given rectangular duct. Use this to look up friction from round-duct design tables." },
+  { question: "Is round or rectangular better?", answer: "Round ducts are more efficient (less friction per CFM), easier to seal, and often cheaper per foot. Rectangular ducts fit better in tight ceiling and wall cavities. Pro tip: use round whenever you can fit it, and switch to rectangular only where depth is restricted (between joists, above soffits, etc.)." },
+  { question: "How much does aspect ratio matter?", answer: "Aspect ratios up to 3:1 add only 10-15% friction compared to round. At 4:1 the penalty climbs to 25-40%. Beyond 4:1 (very flat ducts) friction escalates and air distribution gets uneven. Keep residential rectangular ducts at 2:1 when possible, 3:1 if constrained, and avoid 4:1+ unless you really have no other option." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Duct Size Calculator",
+  description: "Calculate round or rectangular HVAC duct size from airflow and velocity.",
+  url: construction_duct_size_url,
+  category: "HomeApplication",
+  calculator_slug: "duct-size-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Duct Size Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Duct Size Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate round and rectangular HVAC duct sizes from airflow and velocity. Uses the ASHRAE equivalent-round formula so you can compare rectangular ducts against round-duct friction tables. Imperial and metric units.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="duct-size-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-duct-size-calculator-target="unitSystem" data-action="change->duct-size-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (CFM, fpm, in)</option>
+              <option value="metric">Metric (m³/h, m/s, cm)</option>
+            </select>
+          </div>
+          <div>
+            <label for="duct-cfm" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-duct-size-calculator-target="cfmLabel">Airflow (CFM)</span></label>
+            <input id="duct-cfm" type="number" inputmode="decimal" data-duct-size-calculator-target="cfm" data-action="input->duct-size-calculator#calculate" class="w-full" value="400" step="10" min="0">
+          </div>
+          <div>
+            <label for="duct-velocity" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-duct-size-calculator-target="velocityLabel">Velocity (fpm)</span></label>
+            <input id="duct-velocity" type="number" inputmode="decimal" data-duct-size-calculator-target="velocity" data-action="input->duct-size-calculator#calculate" class="w-full" value="700" step="25" min="0">
+            <p class="text-xs text-gray-500 mt-1">Residential: 600-700 branch, 700-900 trunk.</p>
+          </div>
+          <div>
+            <label for="duct-aspect" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rectangular aspect ratio (long / short)</label>
+            <input id="duct-aspect" type="number" inputmode="decimal" data-duct-size-calculator-target="aspect" data-action="input->duct-size-calculator#calculate" class="w-full" value="2" step="0.5" min="1">
+            <p class="text-xs text-gray-500 mt-1">2:1 is ideal, 3:1 is max for efficiency.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Required area</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-duct-size-calculator-target="resultArea">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-sky-200/50 dark:border-sky-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Round diameter</span>
+              <span class="text-2xl font-extrabold text-sky-700 dark:text-sky-400" data-duct-size-calculator-target="resultRound">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Rectangular (L × S)</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-duct-size-calculator-target="resultRect">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Equivalent round (for friction)</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-duct-size-calculator-target="resultEquiv">—</span>
+            </div>
+          </div>
+          <button data-action="click->duct-size-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "duct-size-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Duct Sizing Works</h2>
+      <p>
+        Duct sizing is a balance between two competing needs: enough cross-section to carry the air without excessive friction loss, and small enough to fit within building cavities and keep material costs down. The fundamental relationship is <strong>airflow = velocity × area</strong>. If you know the airflow you need (from a Manual J load calc → Manual D duct design), and you pick a target velocity, the required area falls out automatically.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Choosing a Velocity</h2>
+      <p>
+        Lower velocities make quieter, more efficient ducts but cost more in material. Higher velocities are cheaper but noisier. ACCA Manual D recommends: supply trunks 700-900 fpm, supply branches 600-700 fpm, return trunks 500-700 fpm, and return grilles 300-500 fpm. In metric: roughly 3.5-4.5 m/s supply trunk, 3.0-3.5 m/s branch, 2.5-3.5 m/s return. Exceeding 900 fpm in residential systems produces audible whoosh at registers.
+      </p>
+
+      <h3>Round vs Rectangular</h3>
+      <p>
+        Round ducts have the lowest friction per unit area because their cross-section has no corners to trip turbulence. They are also easier to seal and generally cheaper. Use round ducts wherever you can fit them. Switch to rectangular only when vertical depth is constrained — between 2x10 joists, in shallow soffits, above dropped ceilings. Keep rectangular aspect ratio at 2:1 when possible, 3:1 at most; above that, friction losses climb sharply.
+      </p>
+
+      <h3>Equivalent Round Diameter</h3>
+      <p>
+        ASHRAE provides a formula to convert a rectangular duct to the round duct diameter with the same friction: <strong>De = 1.30 × (a × b)<sup>0.625</sup> / (a + b)<sup>0.25</sup></strong>, where a and b are the long and short sides. A 20×10 rectangular duct has an equivalent round of about 15 inches. Use this value when looking up friction loss in round-duct design charts.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much CFM does a typical room need?</h3>
+      <p>Rule of thumb: 1 CFM per sq ft for cooling. A 150 sq ft bedroom needs about 150 CFM supply.</p>
+
+      <h3>Do returns need to be as big as supplies?</h3>
+      <p>Roughly yes — returns typically match or slightly exceed total supply at lower velocities. Starving the return is a common mistake that causes static pressure and furnace overheating.</p>
+
+      <h3>Can I use flex duct for everything?</h3>
+      <p>Flex duct adds about 20-30% more friction than rigid metal. Use metal for trunks, flex for short branches to registers.</p>
+
+      <h3>What is static pressure?</h3>
+      <p>Resistance the fan has to overcome. Residential systems design for 0.5 in wc total external static. Oversize ducts or shorten runs if your static is too high.</p>
+
+      <h3>Should I oversize for future upgrades?</h3>
+      <p>Slightly. Bumping a trunk one size (e.g., 8" round to 10" round) adds 40% area and gives headroom for a future higher-capacity unit.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "HVAC BTU Calculator", description: "Calculate AC tonnage and BTU for a room.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Heat Loss Calculator", description: "Whole-house heat loss for heater sizing.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Insulation Calculator", description: "Calculate insulation R-value and thickness.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" },
+      { name: "Attic Ventilation Calculator", description: "Calculate soffit and ridge vent net free area.", path: construction_attic_ventilation_path, icon_path: "M3 12l9-9 9 9M5 10v10h14V10" },
+      { name: "Pipe Friction Loss Calculator", description: "Calculate water pressure loss in pipes.", path: construction_pipe_friction_loss_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "Window U-Value Calculator", description: "Calculate window U-value and R-value.", path: construction_window_u_value_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("duct-size-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

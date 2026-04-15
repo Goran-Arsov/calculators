@@ -1,0 +1,176 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Spread Footing Calculator - Column Load & Soil Bearing",
+  description: "Free spread footing calculator. Enter column load and soil bearing capacity to get required footing size, concrete volume, and actual bearing pressure.",
+  canonical: construction_spread_footing_url,
+  og: {
+    title: "Spread Footing Calculator | Calc Hammer",
+    description: "Size a spread footing for any column load and soil type.",
+    url: construction_spread_footing_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Spread Footing Calculator", url: construction_spread_footing_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I size a spread footing?", answer: "Divide the column load by the soil's allowable bearing pressure to get the required footing area. For a 10,000 lb column on 2,000 psf sandy clay, you need 10,000 ÷ 2,000 = 5 sq ft of footing, which is a 28 in × 28 in square. Increase the area by a safety factor (typically 1.5-2.0) for critical structural elements." },
+  { question: "What is soil bearing capacity?", answer: "The maximum pressure in pounds per square foot (or kPa) the soil can support without settling. IBC Table 1806.2 lists presumptive values: clay 1,500 psf, sandy clay 2,000 psf, sand 2,000 psf, gravel 3,000 psf, crystalline bedrock 12,000 psf. For any structural project get a geotechnical report with site-specific values." },
+  { question: "How deep should a spread footing be?", answer: "Footings must extend below the local frost line (42-48 inches in northern US, 12 inches in the Deep South) and at least 12 inches into undisturbed soil. Minimum thickness is 6 inches for deck posts, 8 inches for single-story houses, 10-12 inches for two-story, and more for heavier loads." },
+  { question: "What is the difference between allowable and ultimate bearing?", answer: "Ultimate bearing is the load at which soil fails. Allowable bearing is ultimate divided by a safety factor (typically 3.0 for settlement and 2.5 for shear failure). IBC and geotech reports give allowable values; always use those for design. Never apply a safety factor twice — to allowable capacity and to load separately." },
+  { question: "Do I need rebar in a spread footing?", answer: "Most residential spread footings over 12 inches deep need rebar (typically #4 or #5 in a grid) to handle bending moments. Deck post footings are often plain concrete with a bolt-down post base. Always follow IRC Section R403 or ACI 332 for residential foundations." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Spread Footing Calculator",
+  description: "Calculate required spread footing size from column load and soil bearing capacity.",
+  url: construction_spread_footing_url,
+  category: "HomeApplication",
+  calculator_slug: "spread-footing-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Spread Footing Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Spread Footing Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Size a spread footing from a column load and soil bearing capacity. Returns required area, square and round footing dimensions, concrete volume, and actual bearing pressure. Imperial and metric units.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="spread-footing-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-spread-footing-calculator-target="unitSystem" data-action="change->spread-footing-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (lb, psf, in)</option>
+              <option value="metric">Metric (kg, kPa, cm)</option>
+            </select>
+          </div>
+          <div>
+            <label for="sf-load" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-spread-footing-calculator-target="loadLabel">Column load (lb)</span></label>
+            <input id="sf-load" type="number" inputmode="decimal" data-spread-footing-calculator-target="load" data-action="input->spread-footing-calculator#calculate" class="w-full" value="10000" step="100" min="0">
+          </div>
+          <div>
+            <label for="sf-bearing" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-spread-footing-calculator-target="bearingLabel">Soil bearing (psf)</span></label>
+            <input id="sf-bearing" type="number" inputmode="decimal" data-spread-footing-calculator-target="bearing" data-action="input->spread-footing-calculator#calculate" class="w-full" value="2000" step="100" min="0">
+            <p class="text-xs text-gray-500 mt-1">Clay 1,500; sandy clay 2,000; sand 2,000; gravel 3,000; rock 12,000.</p>
+          </div>
+          <div>
+            <label for="sf-sf" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Safety factor</label>
+            <input id="sf-sf" type="number" inputmode="decimal" data-spread-footing-calculator-target="safetyFactor" data-action="input->spread-footing-calculator#calculate" class="w-full" value="1.0" step="0.1" min="1">
+          </div>
+          <div>
+            <label for="sf-depth" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-spread-footing-calculator-target="depthLabel">Footing depth (inches)</span></label>
+            <input id="sf-depth" type="number" inputmode="decimal" data-spread-footing-calculator-target="depth" data-action="input->spread-footing-calculator#calculate" class="w-full" value="12" step="0.5" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900/20 dark:to-gray-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Required area</span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-spread-footing-calculator-target="resultArea">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-slate-200/50 dark:border-slate-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Square footing</span>
+              <span class="text-xl font-extrabold text-slate-800 dark:text-slate-200" data-spread-footing-calculator-target="resultSquare">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Round footing</span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-spread-footing-calculator-target="resultRound">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Depth</span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-spread-footing-calculator-target="resultDepth">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-slate-200/50 dark:border-slate-800/50">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Concrete</span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-spread-footing-calculator-target="resultVolume">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Actual bearing</span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-spread-footing-calculator-target="resultActualBearing">—</span>
+            </div>
+          </div>
+          <button data-action="click->spread-footing-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-slate-700 to-gray-800 hover:from-slate-800 hover:to-gray-900 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "spread-footing-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Spread Footings Work</h2>
+      <p>
+        A spread footing is a broad concrete pad that distributes a concentrated column load over a larger area of soil. Because soil can only support a limited pressure before it settles or shears, you need to "spread" the load over enough square footage to keep the pressure under the soil's allowable capacity. The formula is <strong>required area = column load ÷ allowable bearing pressure</strong>. For a 10,000 lb column on 2,000 psf sandy clay, you need 5 sq ft — roughly a 28-inch square pad.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Allowable Soil Bearing Capacity</h2>
+      <p>
+        IBC Table 1806.2 provides "presumptive" allowable bearing values by soil class: <strong>clay</strong> 1,500 psf, <strong>sandy clay and silty sand</strong> 2,000 psf, <strong>sand and gravel</strong> 2,000-3,000 psf, <strong>sedimentary rock</strong> 4,000 psf, and <strong>crystalline bedrock</strong> 12,000 psf. These are conservative numbers you can use without a geotechnical investigation for light residential construction. For anything bigger, a geotech report gives site-specific allowable pressure with safety factors already applied.
+      </p>
+
+      <h3>Minimum Footing Dimensions</h3>
+      <p>
+        IRC Table R403.1 requires minimum footing widths for one- and two-family dwellings: 12 inches wide at the continuous foundation wall for a single-story on 1,500 psf soil, 15 inches for two stories, 23 inches for three stories. Pad footings for isolated columns start at 12 × 12 × 6 inches for light loads and scale up. Never go below 8 inches in any dimension for structural pads — smaller than that and the concrete will punch through under any significant load.
+      </p>
+
+      <h3>Depth and Frost Line</h3>
+      <p>
+        Footings must bear on undisturbed soil below the local frost line to prevent frost heave. Frost depths vary: Canada and northern Minnesota 4-6 ft, northern tier US 3-4 ft, central US 2-3 ft, southern US 1-2 ft, Deep South and California 0.5-1 ft. Check your local building department for the specific value. A footing above the frost line will lift when water freezes underneath it.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What safety factor should I use?</h3>
+      <p>IBC allowable values already include safety factors. For residential work use 1.0. For critical structural elements or where soil conditions are unknown, 1.5-2.0 is common.</p>
+
+      <h3>Do I need rebar in a spread footing?</h3>
+      <p>Most pads over 12 inches thick need a simple rebar grid. Deck post footings are often plain concrete with a metal post base.</p>
+
+      <h3>Can I pour a footing on disturbed soil?</h3>
+      <p>No. Excavate to undisturbed soil, then compact any backfill under the footing with a plate compactor.</p>
+
+      <h3>Square or round footing — which is better?</h3>
+      <p>Square is easier to form and rebar. Round (from a form tube) is popular for deck posts. Both work if sized to the same area.</p>
+
+      <h3>How does a column base connect to the footing?</h3>
+      <p>Anchor bolts cast into the concrete + a steel post base (for wood) or a baseplate (for steel). Always isolate wood from direct concrete contact.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Concrete Calculator", description: "Calculate cubic yards and bags for slabs and footings.", path: construction_concrete_path, icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7" },
+      { name: "Rebar Spacing Calculator", description: "Calculate rebar spacing and weight for concrete slabs.", path: construction_rebar_spacing_path, icon_path: "M4 6h16M4 12h16M4 18h7" },
+      { name: "Beam Load Span Calculator", description: "Calculate required beam size for span and load.", path: construction_beam_load_span_path, icon_path: "M4 5a1 1 0 011-1h14" },
+      { name: "Excavation Calculator", description: "Calculate cubic yards of dirt to remove.", path: construction_excavation_path, icon_path: "M3 7v10a2 2 0 002 2h14" },
+      { name: "Retaining Wall Calculator", description: "Calculate blocks and backfill for retaining walls.", path: construction_retaining_wall_path, icon_path: "M4 6h16M4 12h16M4 18h7" },
+      { name: "Joist Calculator", description: "Calculate floor joists spanning your foundation.", path: construction_joist_path, icon_path: "M4 6h16M4 12h16M4 18h16" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("spread-footing-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
