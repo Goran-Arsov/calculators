@@ -6,6 +6,7 @@ export default class extends Controller {
     "businessIban", "businessSwift",
     "clientName", "clientAddress", "clientEmail",
     "invoiceNumber", "invoiceDate", "dueDate", "dueDatePreset",
+    "currency",
     "lineItems",
     "taxRate", "discountValue", "discountType",
     "notes", "terms",
@@ -80,7 +81,7 @@ export default class extends Controller {
       </div>
       <div class="col-span-2 text-right">
         ${index === 0 ? `<label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">${this.escapeHtml(l.amount)}</label>` : ""}
-        <span class="inline-block py-2 text-sm font-medium text-gray-700 dark:text-gray-300">$0.00</span>
+        <span class="inline-block py-2 text-sm font-medium text-gray-700 dark:text-gray-300">0.00</span>
       </div>
       <div class="col-span-1 text-center">
         ${index === 0 ? '<label class="block text-xs text-transparent mb-1">X</label>' : ""}
@@ -378,8 +379,17 @@ export default class extends Controller {
 
   // --- Helpers ---
 
+  // Plain number formatting with an optional textual currency suffix.
+  // The currency is whatever the user typed (e.g. "USD", "€", "MKD", "ден.") —
+  // no Intl.NumberFormat currency style, so we avoid the hardcoded "$" that
+  // would otherwise appear when no valid ISO code is supplied.
   fmt(value) {
-    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value)
+    const n = new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value)
+    const cur = this.hasCurrencyTarget ? (this.currencyTarget.value || "").trim() : ""
+    return cur ? `${n} ${cur}` : n
   }
 
   escapeHtml(text) {
