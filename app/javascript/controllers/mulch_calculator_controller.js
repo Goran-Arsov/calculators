@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { SQFT_TO_SQM, CUFT_TO_CUM } from "../utils/units"
 
 const CUBIC_FEET_PER_YARD = 27.0
 const BAG_CUBIC_FEET = 2.0
@@ -24,10 +25,11 @@ export default class extends Controller {
     const cubicFeet = area * (depth / 12.0)
     const cubicYards = cubicFeet / CUBIC_FEET_PER_YARD
     const bags = Math.ceil(cubicFeet / BAG_CUBIC_FEET)
+    const cubicMeters = cubicFeet * CUFT_TO_CUM
 
-    this.resultAreaTarget.textContent = `${area.toFixed(1)} sq ft`
-    this.resultCubicFeetTarget.textContent = `${cubicFeet.toFixed(2)} cu ft`
-    this.resultCubicYardsTarget.textContent = `${cubicYards.toFixed(2)} cu yd`
+    this.resultAreaTarget.textContent = `${area.toFixed(1)} sq ft (${(area * SQFT_TO_SQM).toFixed(2)} m²)`
+    this.resultCubicFeetTarget.textContent = `${cubicFeet.toFixed(2)} cu ft (${cubicMeters.toFixed(2)} m³)`
+    this.resultCubicYardsTarget.textContent = `${cubicYards.toFixed(2)} cu yd (${cubicMeters.toFixed(2)} m³)`
     this.resultBagsTarget.textContent = `${bags}`
   }
 

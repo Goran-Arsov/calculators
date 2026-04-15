@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { MI_TO_KM } from "../utils/units"
 
 export default class extends Controller {
   static targets = [
@@ -49,18 +50,18 @@ export default class extends Controller {
     const level2Hours = battery / 7.2
     const dcFastMin = (battery * 0.8 / 150) * 60
 
-    this.baseRangeTarget.textContent = baseRange.toFixed(1) + " mi"
-    this.adjustedRangeTarget.textContent = adjustedRange.toFixed(1) + " mi"
-    this.adjustedEfficiencyTarget.textContent = adjustedEff.toFixed(0) + " Wh/mi"
+    this.baseRangeTarget.textContent = `${baseRange.toFixed(1)} mi (${(baseRange * MI_TO_KM).toFixed(1)} km)`
+    this.adjustedRangeTarget.textContent = `${adjustedRange.toFixed(1)} mi (${(adjustedRange * MI_TO_KM).toFixed(1)} km)`
+    this.adjustedEfficiencyTarget.textContent = `${adjustedEff.toFixed(0)} Wh/mi (${(adjustedEff / MI_TO_KM).toFixed(0)} Wh/km)`
     this.rangeLossTarget.textContent = rangeLoss.toFixed(1) + "%"
     this.level2TimeTarget.textContent = level2Hours.toFixed(1) + " hrs"
     this.dcFastTimeTarget.textContent = Math.round(dcFastMin) + " min"
   }
 
   clearResults() {
-    this.baseRangeTarget.textContent = "0.0 mi"
-    this.adjustedRangeTarget.textContent = "0.0 mi"
-    this.adjustedEfficiencyTarget.textContent = "0 Wh/mi"
+    this.baseRangeTarget.textContent = "0.0 mi (0.0 km)"
+    this.adjustedRangeTarget.textContent = "0.0 mi (0.0 km)"
+    this.adjustedEfficiencyTarget.textContent = "0 Wh/mi (0 Wh/km)"
     this.rangeLossTarget.textContent = "0.0%"
     this.level2TimeTarget.textContent = "0.0 hrs"
     this.dcFastTimeTarget.textContent = "0 min"

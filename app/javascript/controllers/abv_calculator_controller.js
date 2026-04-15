@@ -44,7 +44,7 @@ export default class extends Controller {
   }
 
   copy() {
-    const text = `ABV Calculation:\nABV (Advanced): ${this.resultAbvAdvancedTarget.textContent}\nABV (Simple): ${this.resultAbvSimpleTarget.textContent}\nABW: ${this.resultAbwTarget.textContent}\nApparent Attenuation: ${this.resultAttenuationTarget.textContent}\nCalories per 12 oz: ${this.resultCaloriesTarget.textContent}`
+    const text = `ABV Calculation:\nABV (Advanced): ${this.resultAbvAdvancedTarget.textContent}\nABV (Simple): ${this.resultAbvSimpleTarget.textContent}\nABW: ${this.resultAbwTarget.textContent}\nApparent Attenuation: ${this.resultAttenuationTarget.textContent}\nCalories per 12 oz (355 mL): ${this.resultCaloriesTarget.textContent}`
     navigator.clipboard.writeText(text)
   }
 }

@@ -54,6 +54,7 @@ export default class extends Controller {
   }
 
   inches(n) {
-    return `${Number(n).toFixed(4)}"`
+    const v = Number(n)
+    return `${v.toFixed(4)}" (${(v * 25.4).toFixed(1)} mm)`
   }
 }

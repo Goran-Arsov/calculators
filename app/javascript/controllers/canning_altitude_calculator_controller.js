@@ -1,4 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
+import { FT_TO_M, PSI_TO_KPA } from "../utils/units"
+
+const altitudeWithMeters = (ft) => `${ft} ft (${Math.round(ft * FT_TO_M)} m)`
+const psiWithKpa = (psi) => `${psi} PSI (${(psi * PSI_TO_KPA).toFixed(0)} kPa)`
 
 export default class extends Controller {
   static targets = [
@@ -52,7 +56,7 @@ export default class extends Controller {
     this.extraPsiTarget.textContent = "N/A"
     this.noteTarget.textContent = extra === 0
       ? "No adjustment needed at your altitude."
-      : `Add ${extra} minutes to processing time at ${altitude} ft altitude.`
+      : `Add ${extra} minutes to processing time at ${altitudeWithMeters(altitude)} altitude.`
   }
 
   calculatePressureDial(altitude, baseTime, basePressure) {
@@ -67,9 +71,9 @@ export default class extends Controller {
 
     this.adjustedTimeTarget.textContent = `${baseTime} minutes`
     this.extraMinutesTarget.textContent = "No change"
-    this.adjustedPressureTarget.textContent = `${adjustedPressure} PSI`
-    this.extraPsiTarget.textContent = `+${extraPsi} PSI`
-    this.noteTarget.textContent = `Dial gauge: increase pressure by ${extraPsi} PSI at ${altitude} ft. Process at ${adjustedPressure} PSI for ${baseTime} minutes.`
+    this.adjustedPressureTarget.textContent = psiWithKpa(adjustedPressure)
+    this.extraPsiTarget.textContent = `+${psiWithKpa(extraPsi)}`
+    this.noteTarget.textContent = `Dial gauge: increase pressure by ${psiWithKpa(extraPsi)} at ${altitudeWithMeters(altitude)}. Process at ${psiWithKpa(adjustedPressure)} for ${baseTime} minutes.`
   }
 
   calculatePressureWeighted(altitude, baseTime, basePressure) {
@@ -77,9 +81,9 @@ export default class extends Controller {
 
     this.adjustedTimeTarget.textContent = `${baseTime} minutes`
     this.extraMinutesTarget.textContent = "No change"
-    this.adjustedPressureTarget.textContent = `${adjustedPressure} PSI`
-    this.extraPsiTarget.textContent = altitude > 1000 ? "Use 15 PSI" : "Use 10 PSI"
-    this.noteTarget.textContent = `Weighted gauge: use ${adjustedPressure} PSI at ${altitude} ft. Process for ${baseTime} minutes.`
+    this.adjustedPressureTarget.textContent = psiWithKpa(adjustedPressure)
+    this.extraPsiTarget.textContent = altitude > 1000 ? `Use ${psiWithKpa(15)}` : `Use ${psiWithKpa(10)}`
+    this.noteTarget.textContent = `Weighted gauge: use ${psiWithKpa(adjustedPressure)} at ${altitudeWithMeters(altitude)}. Process for ${baseTime} minutes.`
   }
 
   copy() {

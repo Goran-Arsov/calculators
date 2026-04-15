@@ -1,7 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
+import { CUFT_TO_CUM } from "../utils/units"
 
 const CUBIC_FEET_PER_YARD = 27.0
 const BAG_CUBIC_FEET = 1.5
+
+const withCubicMeters = (cubicFeet) =>
+  `${cubicFeet.toFixed(2)} cu ft (${(cubicFeet * CUFT_TO_CUM).toFixed(3)} m³)`
 
 export default class extends Controller {
   static targets = [
@@ -44,13 +48,13 @@ export default class extends Controller {
     const totalCy = totalCf / CUBIC_FEET_PER_YARD
     const bags = Math.ceil(totalCf / BAG_CUBIC_FEET)
 
-    this.resultPerBedTarget.textContent = `${perBedCf.toFixed(2)} cu ft`
-    this.resultTotalCfTarget.textContent = `${totalCf.toFixed(2)} cu ft`
-    this.resultTotalCyTarget.textContent = `${totalCy.toFixed(2)} cu yd`
+    this.resultPerBedTarget.textContent = withCubicMeters(perBedCf)
+    this.resultTotalCfTarget.textContent = withCubicMeters(totalCf)
+    this.resultTotalCyTarget.textContent = `${totalCy.toFixed(2)} cu yd (${(totalCf * CUFT_TO_CUM).toFixed(3)} m³)`
     this.resultBagsTarget.textContent = `${bags}`
-    this.resultTopsoilTarget.textContent = `${(totalCf * topPct / 100).toFixed(2)} cu ft`
-    this.resultCompostTarget.textContent = `${(totalCf * comPct / 100).toFixed(2)} cu ft`
-    this.resultAerationTarget.textContent = `${(totalCf * aerPct / 100).toFixed(2)} cu ft`
+    this.resultTopsoilTarget.textContent = withCubicMeters(totalCf * topPct / 100)
+    this.resultCompostTarget.textContent = withCubicMeters(totalCf * comPct / 100)
+    this.resultAerationTarget.textContent = withCubicMeters(totalCf * aerPct / 100)
   }
 
   clear() {
@@ -64,7 +68,16 @@ export default class extends Controller {
   }
 
   copy() {
-    const text = `Raised bed soil:\nPer bed: ${this.resultPerBedTarget.textContent}\nTotal: ${this.resultTotalCfTarget.textContent} (${this.resultTotalCyTarget.textContent})\nBags (1.5 cu ft): ${this.resultBagsTarget.textContent}\nTopsoil: ${this.resultTopsoilTarget.textContent}\nCompost: ${this.resultCompostTarget.textContent}\nAeration: ${this.resultAerationTarget.textContent}`
+    const text = [
+      "Raised bed soil:",
+      `Per bed: ${this.resultPerBedTarget.textContent}`,
+      `Total: ${this.resultTotalCfTarget.textContent}`,
+      `Total (yards): ${this.resultTotalCyTarget.textContent}`,
+      `Bags (1.5 cu ft): ${this.resultBagsTarget.textContent}`,
+      `Topsoil: ${this.resultTopsoilTarget.textContent}`,
+      `Compost: ${this.resultCompostTarget.textContent}`,
+      `Aeration: ${this.resultAerationTarget.textContent}`
+    ].join("\n")
     navigator.clipboard.writeText(text)
   }
 }

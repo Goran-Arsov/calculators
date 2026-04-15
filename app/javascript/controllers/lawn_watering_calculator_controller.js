@@ -23,9 +23,10 @@ export default class extends Controller {
     const liters = gallons * LITERS_PER_GALLON
     const daily = gallons / 7
 
+    const dailyLiters = daily * LITERS_PER_GALLON
     this.resultGallonsTarget.textContent = `${gallons.toFixed(0)} gal`
     this.resultLitersTarget.textContent = `${liters.toFixed(0)} L`
-    this.resultDailyTarget.textContent = `${daily.toFixed(0)} gal`
+    this.resultDailyTarget.textContent = `${daily.toFixed(0)} gal (${dailyLiters.toFixed(0)} L)`
     if (Number.isFinite(gpm) && gpm > 0) {
       this.resultMinutesTarget.textContent = `${Math.round(gallons / gpm)} min`
     } else {

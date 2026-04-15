@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { SQFT_TO_SQM } from "../utils/units"
 
 const U_VALUES = {
   single_poly: 1.15,
@@ -40,8 +41,9 @@ export default class extends Controller {
     const btu = surface * delta * u
     const watts = btu * 0.293071
 
-    this.resultSurfaceTarget.textContent = `${surface.toFixed(0)} sq ft`
-    this.resultDeltaTarget.textContent = `${delta.toFixed(0)} °F`
+    this.resultSurfaceTarget.textContent = `${surface.toFixed(0)} sq ft (${(surface * SQFT_TO_SQM).toFixed(1)} m²)`
+    // ΔT in °F is a difference; convert with factor 5/9 (not fToC, which converts absolute temps).
+    this.resultDeltaTarget.textContent = `${delta.toFixed(0)} °F (${(delta * 5 / 9).toFixed(1)} °C)`
     this.resultUTarget.textContent = `${u.toFixed(2)}`
     this.resultBtuTarget.textContent = `${Math.round(btu).toLocaleString()} BTU/hr`
     this.resultWattsTarget.textContent = `${Math.round(watts).toLocaleString()} W`

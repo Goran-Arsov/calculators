@@ -27,7 +27,7 @@ export default class extends Controller {
     const cut4 = this.cutSizeFor("4_at_a_time", finishedSize)
     const cut8 = this.cutSizeFor("8_at_a_time", finishedSize)
 
-    this.resultCutSizeTarget.textContent = cutSize.toFixed(4)
+    this.resultCutSizeTarget.textContent = `${cutSize.toFixed(4)} (${(cutSize * 25.4).toFixed(1)} mm)`
     this.resultCutSizeFractionTarget.textContent = this.toEighthFraction(cutSize)
     this.resultNumHstsTarget.textContent = numHsts
     this.resultMethod2Target.textContent = this.toEighthFraction(cut2)
@@ -59,8 +59,9 @@ export default class extends Controller {
   }
 
   toEighthFraction(value) {
-    if (!value || value <= 0) return "0\""
+    if (!value || value <= 0) return `0" (0 mm)`
     const rounded = Math.round(value * 8) / 8
+    const mm = (value * 25.4).toFixed(1)
     let whole = Math.floor(rounded)
     let fractional = rounded - whole
     if (fractional >= 1.0) {
@@ -73,14 +74,15 @@ export default class extends Controller {
       5: "5/8", 6: "3/4", 7: "7/8"
     }
     const fracStr = fractionMap[eighths]
-    if (fracStr === null) return `${whole}"`
-    if (whole === 0) return `${fracStr}"`
-    return `${whole} ${fracStr}"`
+    const imp = fracStr === null
+      ? `${whole}"`
+      : (whole === 0 ? `${fracStr}"` : `${whole} ${fracStr}"`)
+    return `${imp} (${mm} mm)`
   }
 
   clearResults() {
-    this.resultCutSizeTarget.textContent = "0"
-    this.resultCutSizeFractionTarget.textContent = "0\""
+    this.resultCutSizeTarget.textContent = "0 (0 mm)"
+    this.resultCutSizeFractionTarget.textContent = `0" (0 mm)`
     this.resultNumHstsTarget.textContent = "0"
     this.resultMethod2Target.textContent = "—"
     this.resultMethod4Target.textContent = "—"

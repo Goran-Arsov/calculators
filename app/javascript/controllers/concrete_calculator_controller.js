@@ -5,7 +5,7 @@ export default class extends Controller {
   static targets = ["length", "width", "depth",
                     "unitSystem", "lengthLabel", "widthLabel", "depthLabel",
                     "cubicFeetHeading", "cubicYardsHeading",
-                    "resultCubicFeet", "resultCubicYards", "resultBags60", "resultBags80"]
+                    "resultCubicFeet", "resultCubicYards", "resultBags60", "resultBags80", "resultBags25kg"]
 
   connect() {
     this.updateLabels()
@@ -49,6 +49,8 @@ export default class extends Controller {
     const cubicYards = cubicFeet / 27
     const bags60 = cubicFeet > 0 ? Math.ceil(cubicFeet / 0.45) : 0
     const bags80 = cubicFeet > 0 ? Math.ceil(cubicFeet / 0.6) : 0
+    // 25 kg ≈ 55.1 lb, yielding ~0.4135 cu ft per bag (scaled from the 60 lb / 0.45 cu ft figure).
+    const bags25kg = cubicFeet > 0 ? Math.ceil(cubicFeet / 0.4135) : 0
 
     if (metric) {
       const cubicMeters = cubicFeet * CUFT_TO_CUM
@@ -60,6 +62,7 @@ export default class extends Controller {
     }
     this.resultBags60Target.textContent = bags60
     this.resultBags80Target.textContent = bags80
+    this.resultBags25kgTarget.textContent = bags25kg
   }
 
   copy() {
@@ -67,9 +70,10 @@ export default class extends Controller {
     const cubicYards = this.resultCubicYardsTarget.textContent
     const bags60 = this.resultBags60Target.textContent
     const bags80 = this.resultBags80Target.textContent
+    const bags25kg = this.resultBags25kgTarget.textContent
     const cfLabel = this.cubicFeetHeadingTarget.textContent
     const cyLabel = this.cubicYardsHeadingTarget.textContent
-    const text = `Concrete Estimate:\n${cfLabel}: ${cubicFeet}\n${cyLabel}: ${cubicYards}\n60 lb Bags: ${bags60}\n80 lb Bags: ${bags80}`
+    const text = `Concrete Estimate:\n${cfLabel}: ${cubicFeet}\n${cyLabel}: ${cubicYards}\n60 lb Bags: ${bags60}\n80 lb Bags: ${bags80}\n25 kg Bags: ${bags25kg}`
     navigator.clipboard.writeText(text)
   }
 

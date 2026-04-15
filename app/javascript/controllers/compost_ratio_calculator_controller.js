@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { LB_TO_KG } from "../utils/units"
 
 const BROWN_C = 50.0
 const BROWN_N = 0.5
@@ -26,8 +27,8 @@ export default class extends Controller {
     const nitrogen = (browns * BROWN_N / 100) + (greens * GREEN_N / 100)
     const ratio = carbon / nitrogen
 
-    this.resultCarbonTarget.textContent = `${carbon.toFixed(2)} lb`
-    this.resultNitrogenTarget.textContent = `${nitrogen.toFixed(2)} lb`
+    this.resultCarbonTarget.textContent = `${carbon.toFixed(2)} lb (${(carbon * LB_TO_KG).toFixed(2)} kg)`
+    this.resultNitrogenTarget.textContent = `${nitrogen.toFixed(2)} lb (${(nitrogen * LB_TO_KG).toFixed(2)} kg)`
     this.resultRatioTarget.textContent = `${ratio.toFixed(1)} : 1`
 
     let status

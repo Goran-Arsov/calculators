@@ -21,9 +21,10 @@ export default class extends Controller {
     const poundsFert = poundsOfN / (nPct / 100)
     const kilos = poundsFert * 0.453592
 
-    this.resultNTarget.textContent = `${poundsOfN.toFixed(2)} lb`
-    this.resultPoundsTarget.textContent = `${poundsFert.toFixed(2)} lb`
-    this.resultOuncesTarget.textContent = `${(poundsFert * 16).toFixed(1)} oz`
+    const kilosOfN = poundsOfN * 0.453592
+    this.resultNTarget.textContent = `${poundsOfN.toFixed(2)} lb (${kilosOfN.toFixed(2)} kg)`
+    this.resultPoundsTarget.textContent = `${poundsFert.toFixed(2)} lb (${kilos.toFixed(2)} kg)`
+    this.resultOuncesTarget.textContent = `${(poundsFert * 16).toFixed(1)} oz (${(kilos * 1000).toFixed(0)} g)`
     this.resultKilosTarget.textContent = `${kilos.toFixed(2)} kg`
   }
 

@@ -1,5 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 
+const IN_TO_MM = 25.4
+const MPH_TO_KMH = 1.609344
+
+const formatInches = (v) => `${v.toFixed(2)}" (${(v * IN_TO_MM).toFixed(0)} mm)`
+const formatInchesDelta = (v) => {
+  const sign = v >= 0 ? "+" : ""
+  return `${sign}${v.toFixed(2)}" (${sign}${(v * IN_TO_MM).toFixed(0)} mm)`
+}
+
 export default class extends Controller {
   static targets = [
     "tire1Width", "tire1Aspect", "tire1Rim",
@@ -25,14 +34,14 @@ export default class extends Controller {
     const tire1 = this.computeTire(t1w, t1a, t1r)
     const tire2 = this.computeTire(t2w, t2a, t2r)
 
-    this.tire1DiameterTarget.textContent = tire1.diameter.toFixed(2) + '"'
-    this.tire1CircumferenceTarget.textContent = tire1.circumference.toFixed(2) + '"'
-    this.tire1SidewallTarget.textContent = tire1.sidewall.toFixed(2) + '"'
+    this.tire1DiameterTarget.textContent = formatInches(tire1.diameter)
+    this.tire1CircumferenceTarget.textContent = formatInches(tire1.circumference)
+    this.tire1SidewallTarget.textContent = formatInches(tire1.sidewall)
     this.tire1RevsTarget.textContent = tire1.revs.toFixed(0)
 
-    this.tire2DiameterTarget.textContent = tire2.diameter.toFixed(2) + '"'
-    this.tire2CircumferenceTarget.textContent = tire2.circumference.toFixed(2) + '"'
-    this.tire2SidewallTarget.textContent = tire2.sidewall.toFixed(2) + '"'
+    this.tire2DiameterTarget.textContent = formatInches(tire2.diameter)
+    this.tire2CircumferenceTarget.textContent = formatInches(tire2.circumference)
+    this.tire2SidewallTarget.textContent = formatInches(tire2.sidewall)
     this.tire2RevsTarget.textContent = tire2.revs.toFixed(0)
 
     const dDiff = tire2.diameter - tire1.diameter
@@ -40,10 +49,10 @@ export default class extends Controller {
     const speedoPct = (dDiff / tire1.diameter) * 100
     const actualAt60 = 60 * (1 + speedoPct / 100)
 
-    this.diameterDiffTarget.textContent = (dDiff >= 0 ? "+" : "") + dDiff.toFixed(2) + '"'
-    this.circumferenceDiffTarget.textContent = (cDiff >= 0 ? "+" : "") + cDiff.toFixed(2) + '"'
+    this.diameterDiffTarget.textContent = formatInchesDelta(dDiff)
+    this.circumferenceDiffTarget.textContent = formatInchesDelta(cDiff)
     this.speedoDiffTarget.textContent = (speedoPct >= 0 ? "+" : "") + speedoPct.toFixed(2) + "%"
-    this.actualSpeedTarget.textContent = actualAt60.toFixed(1) + " mph"
+    this.actualSpeedTarget.textContent = `${actualAt60.toFixed(1)} mph (${(actualAt60 * MPH_TO_KMH).toFixed(1)} km/h)`
   }
 
   computeTire(widthMm, aspect, rimIn) {
@@ -56,7 +65,7 @@ export default class extends Controller {
   }
 
   clearResults() {
-    const zero = '0.00"'
+    const zero = formatInches(0)
     this.tire1DiameterTarget.textContent = zero
     this.tire1CircumferenceTarget.textContent = zero
     this.tire1SidewallTarget.textContent = zero
@@ -65,10 +74,10 @@ export default class extends Controller {
     this.tire2CircumferenceTarget.textContent = zero
     this.tire2SidewallTarget.textContent = zero
     this.tire2RevsTarget.textContent = "0"
-    this.diameterDiffTarget.textContent = '0.00"'
-    this.circumferenceDiffTarget.textContent = '0.00"'
+    this.diameterDiffTarget.textContent = zero
+    this.circumferenceDiffTarget.textContent = zero
     this.speedoDiffTarget.textContent = "0.00%"
-    this.actualSpeedTarget.textContent = "60.0 mph"
+    this.actualSpeedTarget.textContent = `60.0 mph (${(60 * MPH_TO_KMH).toFixed(1)} km/h)`
   }
 
   copy() {

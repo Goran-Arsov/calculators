@@ -30,10 +30,12 @@ export default class extends Controller {
     const rate = purpose === "overseed" ? base / 2 : base
     const pounds = (area / 1000) * rate
     const kilos = pounds * 0.453592
+    // lb per 1,000 sq ft → kg per 100 m². 1,000 sq ft = 92.903 m², so 1 lb/1,000 sq ft = 0.4882 kg/100 m².
+    const rateMetric = rate * 0.4882
 
-    this.resultRateTarget.textContent = `${rate.toFixed(2)} lb / 1,000 sq ft`
-    this.resultPoundsTarget.textContent = `${pounds.toFixed(2)} lb`
-    this.resultOuncesTarget.textContent = `${(pounds * 16).toFixed(1)} oz`
+    this.resultRateTarget.textContent = `${rate.toFixed(2)} lb / 1,000 sq ft (${rateMetric.toFixed(2)} kg / 100 m²)`
+    this.resultPoundsTarget.textContent = `${pounds.toFixed(2)} lb (${kilos.toFixed(2)} kg)`
+    this.resultOuncesTarget.textContent = `${(pounds * 16).toFixed(1)} oz (${(kilos * 1000).toFixed(0)} g)`
     this.resultKilosTarget.textContent = `${kilos.toFixed(2)} kg`
   }
 

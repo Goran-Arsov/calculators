@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { SQFT_TO_SQM } from "../utils/units"
 
 const TRI_FACTOR = Math.sqrt(3) / 2
 
@@ -27,7 +28,8 @@ export default class extends Controller {
     const perRow = Math.floor(lengthIn / spacing) + 1
     const plants = rows * perRow
 
-    this.resultAreaTarget.textContent = `${(length * width).toFixed(1)} sq ft`
+    const areaSqft = length * width
+    this.resultAreaTarget.textContent = `${areaSqft.toFixed(1)} sq ft (${(areaSqft * SQFT_TO_SQM).toFixed(2)} m²)`
     this.resultPlantsTarget.textContent = `${plants}`
     this.resultRowsTarget.textContent = `${rows}`
     this.resultPerRowTarget.textContent = `${perRow}`

@@ -36,12 +36,12 @@ export default class extends Controller {
     comLandings = Math.max(comLandings - 1, 0)
 
     this.adaRunTarget.textContent = `${(adaRun / 12).toFixed(1)} ft (${(adaRun * 0.0254).toFixed(2)} m)`
-    this.adaLengthTarget.textContent = `${(adaLength / 12).toFixed(1)} ft`
+    this.adaLengthTarget.textContent = `${(adaLength / 12).toFixed(1)} ft (${(adaLength * 0.0254).toFixed(2)} m)`
     this.adaAngleTarget.textContent = `${adaAngle.toFixed(2)}\u00B0`
     this.adaLandingsTarget.textContent = adaLandings > 0 ? `${adaLandings} landing(s) required` : "No intermediate landings needed"
 
     this.commercialRunTarget.textContent = `${(comRun / 12).toFixed(1)} ft (${(comRun * 0.0254).toFixed(2)} m)`
-    this.commercialLengthTarget.textContent = `${(comLength / 12).toFixed(1)} ft`
+    this.commercialLengthTarget.textContent = `${(comLength / 12).toFixed(1)} ft (${(comLength * 0.0254).toFixed(2)} m)`
     this.commercialAngleTarget.textContent = `${comAngle.toFixed(2)}\u00B0`
     this.commercialLandingsTarget.textContent = comLandings > 0 ? `${comLandings} landing(s) required` : "No intermediate landings needed"
   }

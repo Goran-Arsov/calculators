@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { SQFT_TO_SQM, CUFT_TO_CUM, LB_TO_KG } from "../utils/units"
 
 const CUBIC_FEET_PER_YARD = 27.0
 const POUNDS_PER_CUBIC_FOOT = 75.0
@@ -26,11 +27,12 @@ export default class extends Controller {
     const cubicYards = cubicFeet / CUBIC_FEET_PER_YARD
     const pounds = cubicFeet * POUNDS_PER_CUBIC_FOOT
     const bags = Math.ceil(cubicFeet / BAG_CUBIC_FEET_40LB)
+    const cubicMeters = cubicFeet * CUFT_TO_CUM
 
-    this.resultAreaTarget.textContent = `${area.toFixed(1)} sq ft`
-    this.resultCubicFeetTarget.textContent = `${cubicFeet.toFixed(2)} cu ft`
-    this.resultCubicYardsTarget.textContent = `${cubicYards.toFixed(2)} cu yd`
-    this.resultPoundsTarget.textContent = `${Math.round(pounds)} lb`
+    this.resultAreaTarget.textContent = `${area.toFixed(1)} sq ft (${(area * SQFT_TO_SQM).toFixed(2)} m²)`
+    this.resultCubicFeetTarget.textContent = `${cubicFeet.toFixed(2)} cu ft (${cubicMeters.toFixed(2)} m³)`
+    this.resultCubicYardsTarget.textContent = `${cubicYards.toFixed(2)} cu yd (${cubicMeters.toFixed(2)} m³)`
+    this.resultPoundsTarget.textContent = `${Math.round(pounds)} lb (${Math.round(pounds * LB_TO_KG)} kg)`
     this.resultBagsTarget.textContent = `${bags}`
   }
 
