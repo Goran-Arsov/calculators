@@ -83,7 +83,7 @@ export default class extends Controller {
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">${this.escapeHtml(l.code)}</label>
-            <input type="text" placeholder="SKU-001" class="w-full text-sm" data-field="item_code" data-action="input->${ctrl}#recalculate">
+            <input type="text" placeholder="SKU-001" class="w-full text-sm placeholder-gray-200" data-field="item_code" data-action="input->${ctrl}#recalculate">
           </div>
         </div>
         <div class="pt-5">
@@ -95,15 +95,15 @@ export default class extends Controller {
       <div class="grid grid-cols-3 gap-2 mb-2">
         <div>
           <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">${this.escapeHtml(l.measure)}</label>
-          <input type="text" placeholder="pcs" class="w-full text-sm" data-field="unit" data-action="input->${ctrl}#recalculate">
+          <input type="text" placeholder="pcs, kg,..." class="w-full text-sm placeholder-gray-200" data-field="unit" data-action="input->${ctrl}#recalculate">
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">${this.escapeHtml(l.unitPrice)}</label>
-          <input type="number" placeholder="0.00" min="0" step="0.01" class="w-full text-sm" data-field="unit_price" data-action="input->${ctrl}#recalculate">
+          <input type="number" placeholder="0.00" min="0" step="0.01" class="w-full text-sm placeholder-gray-200" data-field="unit_price" data-action="input->${ctrl}#recalculate">
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">${this.escapeHtml(l.qty)}</label>
-          <input type="number" placeholder="1" min="0" step="0.01" class="w-full text-sm" data-field="qty" data-action="input->${ctrl}#recalculate">
+          <input type="number" placeholder="1" min="0" step="0.01" class="w-full text-sm placeholder-gray-200" data-field="qty" data-action="input->${ctrl}#recalculate">
         </div>
       </div>
       <div class="grid grid-cols-12 gap-2 items-end">
@@ -117,11 +117,11 @@ export default class extends Controller {
         </div>
         <div class="col-span-3">
           <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">${this.escapeHtml(l.discount)} ${this.escapeHtml(l.amount)}</label>
-          <input type="number" placeholder="0" min="0" step="0.01" class="w-full text-sm" data-field="discount_value" data-action="input->${ctrl}#recalculate">
+          <input type="number" placeholder="0" min="0" step="0.01" class="w-full text-sm placeholder-gray-200" data-field="discount_value" data-action="input->${ctrl}#recalculate">
         </div>
         <div class="col-span-2">
           <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">${this.escapeHtml(l.tax)} %</label>
-          <input type="number" placeholder="0" min="0" max="100" step="0.01" class="w-full text-sm" data-field="tax" data-action="input->${ctrl}#recalculate">
+          <input type="number" placeholder="0" min="0" max="100" step="0.01" class="w-full text-sm placeholder-gray-200" data-field="tax" data-action="input->${ctrl}#recalculate">
         </div>
         <div class="col-span-3 text-right">
           <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">${this.escapeHtml(l.total)}</label>
