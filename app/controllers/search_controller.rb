@@ -7,10 +7,20 @@ class SearchController < ApplicationController
     @query = params[:q].to_s.strip
     @results = matching_calculators(@query)
 
+    page_title = @query.present? ? "Search results for \"#{@query}\"" : "Search calculators"
+    page_description = "Find calculators and tools by name across every category on Calc Hammer."
+
     set_meta_tags(
-      title: @query.present? ? "Search results for \"#{@query}\"" : "Search calculators",
-      description: "Find calculators and tools by name across every category on Calc Hammer.",
-      noindex: true
+      title: page_title,
+      description: page_description,
+      noindex: true,
+      og: {
+        title: "#{page_title} | Calc Hammer",
+        description: page_description,
+        url: search_url(q: @query.presence),
+        type: "website",
+        site_name: "Calc Hammer"
+      }
     )
   end
 
