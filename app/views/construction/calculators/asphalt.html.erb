@@ -1,0 +1,168 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Asphalt Calculator - Tons of Hot-Mix for Driveways",
+  description: "Free asphalt calculator: enter length, width, and depth to estimate tons of hot-mix asphalt, cubic yards, and number of 20-ton truckloads for driveways, parking lots, and roads.",
+  canonical: construction_asphalt_url,
+  og: {
+    title: "Asphalt Calculator - Tons of Hot-Mix | Calc Hammer",
+    description: "Estimate tons and truckloads of hot-mix asphalt for driveways, parking lots, and roads.",
+    url: construction_asphalt_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Asphalt Calculator", url: construction_asphalt_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many tons of asphalt do I need?", answer: "Multiply length by width by depth in feet, then multiply by the unit weight of hot-mix asphalt (about 145 pounds per cubic foot for dense-graded mixes) and divide by 2,000 to get US tons. For a 50x12 ft driveway at 3 inches thick, that is 150 cubic feet × 145 lb = 21,750 lb ≈ 10.9 US tons." },
+  { question: "How thick should an asphalt driveway be?", answer: "Residential driveways are typically 2 to 3 inches of compacted asphalt over 4 to 8 inches of compacted aggregate base. Heavier vehicles and commercial traffic require 3 to 4 inches of asphalt. Parking lots for cars use 2 to 3 inches; truck traffic needs 4 inches or more with a stronger base." },
+  { question: "How much does asphalt weigh per cubic yard?", answer: "Dense-graded hot-mix asphalt weighs about 145 lb/ft³, which is roughly 3,915 lb or 1.96 US tons per cubic yard. Metric: about 2,322 kg/m³. Open-graded mixes used for porous pavement are lighter at around 120 lb/ft³." },
+  { question: "How big is a typical asphalt truckload?", answer: "Standard dump trucks haul about 20 US tons (18 metric tonnes) of hot-mix asphalt. Larger trucks and trailer combinations can carry 25 to 30 tons. Plan your pour so trucks arrive at the rate your crew can lay and compact the mix before it cools below ~275°F." },
+  { question: "Can I use this calculator for cold patch or millings?", answer: "Yes, but adjust the density. Cold patch is about 140 lb/ft³, and compacted recycled asphalt pavement (RAP) millings run 120 to 140 lb/ft³. Enter the correct density for the most accurate tonnage estimate." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Asphalt Calculator",
+  description: "Calculate tons of hot-mix asphalt, cubic yards, and truckloads for any paving project.",
+  url: construction_asphalt_url,
+  category: "HomeApplication",
+  calculator_slug: "asphalt-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Asphalt Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Asphalt Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate tons of hot-mix asphalt, cubic yards, and truckloads for driveways, parking lots, and roads. Works in both imperial and metric.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="asphalt-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-asphalt-calculator-target="unitSystem" data-action="change->asphalt-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (ft, in, US tons)</option>
+              <option value="metric">Metric (m, cm, tonnes)</option>
+            </select>
+          </div>
+          <div>
+            <label for="asphalt-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-asphalt-calculator-target="lengthLabel">Length (ft)</span></label>
+            <input id="asphalt-length" type="number" inputmode="decimal" data-asphalt-calculator-target="length" data-action="input->asphalt-calculator#calculate" class="w-full" value="50" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="asphalt-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-asphalt-calculator-target="widthLabel">Width (ft)</span></label>
+            <input id="asphalt-width" type="number" inputmode="decimal" data-asphalt-calculator-target="width" data-action="input->asphalt-calculator#calculate" class="w-full" value="12" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="asphalt-depth" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-asphalt-calculator-target="depthLabel">Depth (inches)</span></label>
+            <input id="asphalt-depth" type="number" inputmode="decimal" data-asphalt-calculator-target="depth" data-action="input->asphalt-calculator#calculate" class="w-full" value="3" step="0.25" min="0">
+          </div>
+          <div>
+            <label for="asphalt-density" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-asphalt-calculator-target="densityLabel">Density (lb/ft³)</span></label>
+            <input id="asphalt-density" type="number" inputmode="decimal" data-asphalt-calculator-target="density" data-action="input->asphalt-calculator#calculate" class="w-full" value="145" step="1" min="0">
+            <p class="text-xs text-gray-500 mt-1">Dense-graded HMA = 145 lb/ft³ (2,322 kg/m³). Leave default unless you know your mix.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900/20 dark:to-gray-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Area</span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-asphalt-calculator-target="resultArea">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><span data-asphalt-calculator-target="volumeHeading">Volume (cu yd)</span></span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-asphalt-calculator-target="resultVolume">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-slate-200/50 dark:border-slate-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm"><span data-asphalt-calculator-target="weightHeading">Weight (US tons)</span></span>
+              <span class="text-2xl font-extrabold text-slate-700 dark:text-slate-300" data-asphalt-calculator-target="resultWeight">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><span data-asphalt-calculator-target="truckHeading">Truckloads (20 t)</span></span>
+              <span class="text-base font-bold text-slate-700 dark:text-slate-300" data-asphalt-calculator-target="resultTrucks">—</span>
+            </div>
+          </div>
+          <button data-action="click->asphalt-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-slate-700 to-gray-800 hover:from-slate-800 hover:to-gray-900 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "asphalt-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Asphalt Calculator Works</h2>
+      <p>
+        Hot-mix asphalt (HMA) is ordered by weight, not volume, so the calculator converts your slab dimensions into tons based on the unit weight of the mix. The formula is: <strong>Tons = (Length × Width × Depth) × Density ÷ 2,000</strong>. Depth is entered in inches (or centimeters) and converted to feet (or meters) inside the calculation. The default density of 145 lb/ft³ (2,322 kg/m³) is the industry standard for dense-graded HMA used on residential driveways and most parking lots.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Recommended Asphalt Thickness</h2>
+      <p>
+        Thickness depends on subgrade quality and expected traffic. Residential driveways for passenger cars typically use 2 inches of compacted asphalt over 4 to 6 inches of compacted aggregate base. Add an inch if you park RVs, boats, or work trucks. Light commercial parking lots use 2.5 to 3 inches of asphalt over 6 to 8 inches of base. Heavy truck traffic needs 4 inches of asphalt minimum and a stiffer base. Always compact the base thoroughly before paving — a weak base will crack the best asphalt in a few winters.
+      </p>
+
+      <h3>Ordering and Truckloads</h3>
+      <p>
+        Standard dump trucks deliver 18 to 22 US tons of hot-mix. The calculator rounds up to full 20-ton trucks by default. Always order 5 to 10 percent more than calculated to cover compaction, spillage at joints, and variation in the subgrade. Running short on a pour is expensive because you pay for a second truck and fight cold joints, which are the first things to fail.
+      </p>
+
+      <h3>Tack Coat and Prime Coat</h3>
+      <p>
+        If you are resurfacing existing pavement, apply a tack coat of emulsified asphalt (about 0.05 gallons per square yard) before placing the new mat. For a fresh aggregate base, a prime coat (0.25 to 0.5 gal per sq yd) penetrates and stabilizes the surface. These are not calculated here but budget them in to avoid early bond failures.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How thick should a residential driveway be?</h3>
+      <p>2 inches of compacted asphalt over 4 to 6 inches of base is standard for passenger cars. Go to 3 inches for heavier vehicles.</p>
+
+      <h3>What density should I enter for recycled asphalt?</h3>
+      <p>Compacted recycled asphalt pavement (RAP) runs about 120 to 140 lb/ft³. Use 130 lb/ft³ if unsure.</p>
+
+      <h3>How much extra asphalt should I order?</h3>
+      <p>Add 5 to 10 percent for waste, compaction, and subgrade variation. Round up to the nearest full ton or truckload.</p>
+
+      <h3>Can I pour asphalt in cold weather?</h3>
+      <p>Hot-mix needs to be laid and compacted above 50 °F air temperature and before the mat cools below 185 °F. Cold patch works year-round but is not a permanent repair.</p>
+
+      <h3>How long before I can drive on new asphalt?</h3>
+      <p>Walk on it after a few hours once it cools. Drive passenger cars after 24 to 48 hours. Heavy vehicles should wait 5 to 7 days for the binder to fully set.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Concrete Calculator", description: "Calculate cubic yards of concrete and bag counts for slabs.", path: construction_concrete_path, icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
+      { name: "Gravel & Mulch Calculator", description: "Calculate gravel base tons for under your asphalt.", path: construction_gravel_mulch_path, icon_path: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" },
+      { name: "Excavation Calculator", description: "Calculate cubic yards of soil to remove before paving.", path: construction_excavation_path, icon_path: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" },
+      { name: "Paver Calculator", description: "Alternative to asphalt — calculate pavers for a patio or driveway.", path: construction_paver_path, icon_path: "M4 4h4v4H4zM10 4h4v4h-4zM16 4h4v4h-4zM4 10h4v4H4z" },
+      { name: "Drainage Slope Calculator", description: "Calculate the slope your driveway needs to drain properly.", path: construction_drainage_slope_path, icon_path: "M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728" },
+      { name: "Sqft Cost Calculator", description: "Cost per square foot for any material or project.", path: construction_sqft_cost_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("asphalt-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

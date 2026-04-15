@@ -1,6 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 import qrcode from "qrcode-generator"
 
+// Emit UTF-8 bytes so non-Latin-1 input (Cyrillic, Greek, CJK, emoji) round-trips
+// through scanners. The library's default truncates each char to one byte.
+qrcode.stringToBytes = function(s) {
+  return Array.from(new TextEncoder().encode(s))
+}
+
 export default class extends Controller {
   static targets = [
     "textInput", "qrOutput", "downloadArea",

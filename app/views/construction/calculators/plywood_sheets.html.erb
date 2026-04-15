@@ -1,0 +1,172 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Plywood Sheets Calculator - 4x8 Sheet Count for Any Surface",
+  description: "Free plywood sheets calculator. Enter length and width to get the exact number of 4x8, 4x10, or 5x10 plywood or OSB sheets needed for subfloors, sheathing, and decking.",
+  canonical: construction_plywood_sheets_url,
+  og: {
+    title: "Plywood Sheets Calculator | Calc Hammer",
+    description: "Calculate plywood sheets needed for subfloors, sheathing, or roof decking.",
+    url: construction_plywood_sheets_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Plywood Sheets Calculator", url: construction_plywood_sheets_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many 4x8 sheets for a floor?", answer: "Divide the floor area (length × width) by 32 (the square feet of one 4x8 sheet) and round up. A 20 × 10 ft room is 200 sq ft, so 200 ÷ 32 = 6.25 → 7 sheets. Add 5 to 10 percent for waste on complex cuts, making 8 sheets a safe buy. The same math works for roof sheathing and wall sheathing." },
+  { question: "Is a 4x8 sheet really 4 by 8 feet?", answer: "Yes — plywood and OSB are sold at full 4-foot by 8-foot dimensions, not the reduced 'nominal' size that applies to dimensional lumber. A 4x8 sheet covers exactly 32 square feet. Metric versions sold outside North America are the same size rounded to 1.22 × 2.44 meters." },
+  { question: "What is the difference between plywood and OSB?", answer: "Plywood is made of thin wood veneers glued in cross-laminated layers. OSB (oriented strand board) is made of wood chips compressed with resin. OSB is cheaper and usually stronger in shear, so it is the standard for wall sheathing, roof sheathing, and subfloors. Plywood is preferred where moisture exposure is a concern (e.g. exposed decking) and for finish work. Both use the same 4x8 sheet size." },
+  { question: "What thickness plywood for subfloor?", answer: "3/4 inch tongue-and-groove plywood or OSB over 16\" OC joists is the residential standard for most floor loads. Use 7/8\" or 1-1/8\" over 19.2\" or 24\" OC joists, or where heavy finishes (tile, stone) are planned. For roof sheathing, 5/8\" is typical at 24\" OC rafter spacing, or 1/2\" at 16\" OC." },
+  { question: "How do I minimize waste when cutting plywood?", answer: "Plan the layout so full sheets cover the majority of the surface and cuts fall near edges where they can be used for other sections. Stagger joints between rows. Draw a cut diagram before you start — it often reduces waste from 10 percent to under 5 percent, saving one or two sheets on larger projects." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Plywood Sheets Calculator",
+  description: "Calculate plywood or OSB sheets needed for any surface area, with waste factor.",
+  url: construction_plywood_sheets_url,
+  category: "HomeApplication",
+  calculator_slug: "plywood-sheets-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Plywood Sheets Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Plywood Sheets Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate how many 4×8, 4×10, or 5×10 plywood or OSB sheets you need for subfloors, sheathing, or roof decking. Imperial and metric supported.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="plywood-sheets-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-plywood-sheets-calculator-target="unitSystem" data-action="change->plywood-sheets-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (ft)</option>
+              <option value="metric">Metric (m)</option>
+            </select>
+          </div>
+          <div>
+            <label for="plywood-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-plywood-sheets-calculator-target="lengthLabel">Surface length (ft)</span></label>
+            <input id="plywood-length" type="number" inputmode="decimal" data-plywood-sheets-calculator-target="length" data-action="input->plywood-sheets-calculator#calculate" class="w-full" value="20" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="plywood-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-plywood-sheets-calculator-target="widthLabel">Surface width (ft)</span></label>
+            <input id="plywood-width" type="number" inputmode="decimal" data-plywood-sheets-calculator-target="width" data-action="input->plywood-sheets-calculator#calculate" class="w-full" value="10" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="plywood-sheet" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Sheet size</label>
+            <select id="plywood-sheet" data-plywood-sheets-calculator-target="sheet" data-action="change->plywood-sheets-calculator#calculate" class="w-full">
+              <option value="4x8" selected>4 × 8 ft (1.22 × 2.44 m) — standard</option>
+              <option value="4x10">4 × 10 ft (1.22 × 3.05 m) — long</option>
+              <option value="5x10">5 × 10 ft (1.52 × 3.05 m) — oversize</option>
+            </select>
+          </div>
+          <div>
+            <label for="plywood-waste" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Waste factor (%)</label>
+            <input id="plywood-waste" type="number" inputmode="decimal" data-plywood-sheets-calculator-target="waste" data-action="input->plywood-sheets-calculator#calculate" class="w-full" value="10" step="1" min="0">
+            <p class="text-xs text-gray-500 mt-1">5% for rectangles with few cuts, 10-15% for complex shapes.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Sheet size</span>
+              <span class="text-sm font-bold text-orange-700 dark:text-orange-400" data-plywood-sheets-calculator-target="resultSheet">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><span data-plywood-sheets-calculator-target="areaHeading">Total area (sq ft)</span></span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-plywood-sheets-calculator-target="resultArea">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-orange-200/50 dark:border-orange-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Full sheets (no waste)</span>
+              <span class="text-xl font-bold text-orange-700 dark:text-orange-400" data-plywood-sheets-calculator-target="resultExact">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Sheets with waste</span>
+              <span class="text-3xl font-extrabold text-orange-700 dark:text-orange-400" data-plywood-sheets-calculator-target="resultWaste">—</span>
+            </div>
+          </div>
+          <button data-action="click->plywood-sheets-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-orange-600 to-red-700 hover:from-orange-700 hover:to-red-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "plywood-sheets-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How the Plywood Sheets Calculator Works</h2>
+      <p>
+        The math is simple: <strong>sheets needed = ceiling(total area ÷ sheet area × (1 + waste factor))</strong>. A 4×8 sheet covers 32 sq ft, a 4×10 covers 40 sq ft, and a 5×10 covers 50 sq ft. The calculator divides your surface area by the chosen sheet area, adds the waste percentage, and rounds up to the nearest whole sheet. It also shows the "full sheets" count (no waste) so you can see the raw minimum before waste allowance.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Sheet Sizes Available</h2>
+      <p>
+        The default <strong>4 × 8 ft</strong> sheet is the universal residential standard and fits every 16" OC framing layout. <strong>4 × 10 ft</strong> sheets reduce seams on taller walls and ceilings and are useful for commercial gypsum work. <strong>5 × 10 ft</strong> oversize sheets are made for industrial floor panels and certain commercial sheathing jobs — they need special handling but reduce joints on large surfaces. Outside North America the same 4×8 sheet is sold at 1.22 × 2.44 meters.
+      </p>
+
+      <h3>Thickness Selection</h3>
+      <p>
+        Common plywood/OSB thicknesses: <strong>1/4"</strong> for cabinet backs and paneling, <strong>3/8"</strong> for light sheathing, <strong>1/2"</strong> for wall sheathing and roof decking at 16" OC, <strong>5/8"</strong> for roof decking at 24" OC, <strong>3/4"</strong> tongue-and-groove for subfloors over 16-19.2" OC joists, and <strong>7/8"</strong> or <strong>1-1/8"</strong> for heavy subfloor loads or 24" OC joists. Match thickness to your framing spacing and expected load.
+      </p>
+
+      <h3>Waste Allowance</h3>
+      <p>
+        For a simple rectangular surface with minimal cuts (rectangular floor, clean roof), use 5 percent waste. For walls with windows and doors, roofs with dormers and valleys, or irregular shapes with many cutouts, use 10 to 15 percent. A good cut list drawn before you start reduces waste significantly — draw every sheet on paper with the cuts needed, and try to use offcuts for smaller pieces elsewhere in the project.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much does a 4x8 sheet cover?</h3>
+      <p>Exactly 32 square feet (2.97 m²) of continuous flat surface.</p>
+
+      <h3>What is T&G plywood?</h3>
+      <p>Tongue-and-groove plywood has shaped edges that interlock between sheets, reducing squeaks and eliminating the need for blocking at joints. Required for most subfloors.</p>
+
+      <h3>Can I use OSB for everything plywood does?</h3>
+      <p>Almost — OSB is not ideal for decking exposed to repeated wetting, for finish surfaces, or for cabinet interiors. For structural sheathing and subfloors, OSB is cheaper and equally strong.</p>
+
+      <h3>How do plywood grades work?</h3>
+      <p>Grades are A (best face) to D (roughest), combined like AA, AB, CD. CDX is common construction grade (C one face, D other face, exterior glue).</p>
+
+      <h3>What does "underlayment grade" mean?</h3>
+      <p>Thin (1/4" or 3/8") plywood used over a structural subfloor to provide a smooth surface for vinyl, linoleum, or tile. Has a sanded face and no voids.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Stud Count Calculator", description: "Calculate studs and plates for wall framing.", path: construction_stud_count_path, icon_path: "M4 6h16M4 12h16M4 18h16" },
+      { name: "Rafter Length Calculator", description: "Calculate rafters before sheathing the roof.", path: construction_rafter_length_path, icon_path: "M3 12l9-9 9 9M5 10v10h14V10" },
+      { name: "Roof Pitch Calculator", description: "Convert between pitch, angle, and grade.", path: construction_roof_pitch_path, icon_path: "M3 12l9-9 9 9" },
+      { name: "Drywall Calculator", description: "Calculate drywall sheets for interior walls.", path: construction_drywall_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Lumber Calculator", description: "Calculate board feet for framing lumber.", path: construction_lumber_path, icon_path: "M4 6h16M4 12h16M4 18h7" },
+      { name: "Insulation Calculator", description: "Calculate insulation after sheathing.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("plywood-sheets-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,172 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Rafter Length Calculator - Run, Rise & Roof Pitch",
+  description: "Free rafter length calculator. Enter the building run and roof pitch to get rafter length, rise, angle, and grade percentage, plus the total length with eave overhang.",
+  canonical: construction_rafter_length_url,
+  og: {
+    title: "Rafter Length Calculator | Calc Hammer",
+    description: "Calculate rafter length, rise, and angle from building run and roof pitch.",
+    url: construction_rafter_length_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Rafter Length Calculator", url: construction_rafter_length_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate rafter length?", answer: "Use the Pythagorean theorem. Rafter length = √(run² + rise²), where run is half the building width and rise = run × (pitch ÷ 12). For a 24 ft wide building with a 6/12 pitch: run = 12, rise = 6, rafter = √(144 + 36) = √180 ≈ 13.42 ft. Add overhang separately if you want the total length of stock to order." },
+  { question: "What is roof pitch?", answer: "Roof pitch is the number of inches of vertical rise for every 12 inches of horizontal run. A 4/12 pitch rises 4 inches over 12 inches of run — a gentle, common residential slope. 6/12 is steeper, 12/12 equals 45 degrees, and 3/12 or lower is considered a low-slope roof and uses different roofing materials (membrane rather than shingles)." },
+  { question: "What is the difference between run and span?", answer: "Span is the total width of the building from outside wall to outside wall. Run is half the span, or half the distance between the two supporting walls. Rafters are laid out from the run (from the wall plate to the ridge), so always use the run — not the span — in the calculator." },
+  { question: "How much overhang should a rafter have?", answer: "Standard eave overhangs are 12 to 24 inches. Shorter overhangs look modern but expose siding to rain, while longer overhangs (up to 36 inches) provide better shade and siding protection in hot or wet climates. Overhang is measured horizontally from the wall to the tip of the rafter tail — the calculator converts this to additional rafter length." },
+  { question: "How do I convert roof pitch to degrees?", answer: "Take the pitch as a fraction (rise ÷ 12) and use arctangent: angle = atan(rise/12). Common conversions: 4/12 = 18.4°, 6/12 = 26.6°, 8/12 = 33.7°, 12/12 = 45°. The calculator shows degrees and percent grade automatically." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Rafter Length Calculator",
+  description: "Calculate rafter length, rise, angle, and grade percentage from building run and roof pitch.",
+  url: construction_rafter_length_url,
+  category: "HomeApplication",
+  calculator_slug: "rafter-length-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Rafter Length Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Rafter Length Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate rafter length, rise, roof angle, and grade from the building run and pitch. Supports imperial and metric dimensions.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="rafter-length-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-rafter-length-calculator-target="unitSystem" data-action="change->rafter-length-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (ft, in)</option>
+              <option value="metric">Metric (m, cm)</option>
+            </select>
+          </div>
+          <div>
+            <label for="rafter-run" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-rafter-length-calculator-target="runLabel">Run (ft, half of building width)</span></label>
+            <input id="rafter-run" type="number" inputmode="decimal" data-rafter-length-calculator-target="run" data-action="input->rafter-length-calculator#calculate" class="w-full" value="12" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="rafter-pitch" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Pitch (rise per 12" run)</label>
+            <input id="rafter-pitch" type="number" inputmode="decimal" data-rafter-length-calculator-target="pitch" data-action="input->rafter-length-calculator#calculate" class="w-full" value="6" step="0.5" min="0">
+            <p class="text-xs text-gray-500 mt-1">Common residential pitches: 4/12, 6/12, 8/12, 12/12.</p>
+          </div>
+          <div>
+            <label for="rafter-overhang" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-rafter-length-calculator-target="overhangLabel">Overhang (inches)</span></label>
+            <input id="rafter-overhang" type="number" inputmode="decimal" data-rafter-length-calculator-target="overhang" data-action="input->rafter-length-calculator#calculate" class="w-full" value="18" step="0.5" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Pitch</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-rafter-length-calculator-target="resultPitch">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><span data-rafter-length-calculator-target="riseHeading">Rise (ft)</span></span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-rafter-length-calculator-target="resultRise">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-sky-200/50 dark:border-sky-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm"><span data-rafter-length-calculator-target="rafterHeading">Rafter length (ft)</span></span>
+              <span class="text-2xl font-extrabold text-sky-700 dark:text-sky-400" data-rafter-length-calculator-target="resultRafter">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><span data-rafter-length-calculator-target="totalHeading">Total with overhang (ft)</span></span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-rafter-length-calculator-target="resultTotal">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Angle</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-rafter-length-calculator-target="resultAngle">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Grade</span>
+              <span class="text-base font-bold text-sky-700 dark:text-sky-400" data-rafter-length-calculator-target="resultGrade">—</span>
+            </div>
+          </div>
+          <button data-action="click->rafter-length-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "rafter-length-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Rafter Length Formula</h2>
+      <p>
+        Rafter length is just the Pythagorean theorem applied to the roof triangle: <strong>rafter² = run² + rise²</strong>. The run is the horizontal distance from the outside wall to the center of the ridge — exactly half the building width for a symmetrical gable roof. The rise is the vertical distance from the top of the wall plate to the top of the ridge board. Once you know both, take the square root of their squares to get the length of lumber you need for the rafter body, plus any overhang at the eave.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Roof Pitch Notation</h2>
+      <p>
+        North American builders describe pitch as rise over 12 inches of run — for example, 6/12 means the roof rises 6 inches for every 12 inches horizontally. A 4/12 pitch is considered low-slope but still suitable for asphalt shingles. 6/12 is the most common pitch for traditional homes. 8/12 and 12/12 are steep slopes used for colonial revival, snow country, and attics you plan to finish later. Below 3/12 you need a waterproof membrane instead of shingles.
+      </p>
+
+      <h3>How Pitch Relates to Angle</h3>
+      <p>
+        Convert pitch to degrees with arctangent: angle = atan(pitch ÷ 12). A 12/12 pitch is exactly 45 degrees. 6/12 is 26.6 degrees. 4/12 is 18.4 degrees. The calculator shows both degrees and grade percentage (pitch × 8.33) so you can cross-check against framing squares and digital angle finders.
+      </p>
+
+      <h3>Ordering Rafter Stock</h3>
+      <p>
+        Always order rafters slightly longer than the calculated length. A good rule is to round up to the next even length (8, 10, 12, 14, 16 ft), which covers the bird's mouth cut at the wall plate and leaves room for the plumb cut at the ridge. For example, a calculated rafter length of 13.42 ft should be cut from 16 ft stock; 14 ft is marginal once cuts are made.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is span the same as run?</h3>
+      <p>No. Span is the full building width; run is half the span (for symmetrical gable roofs).</p>
+
+      <h3>What is a bird's mouth cut?</h3>
+      <p>The notch cut in the bottom of a rafter that sits over the top plate of the wall. It has a seat cut (horizontal) and a heel cut (vertical).</p>
+
+      <h3>How do I cut the ridge plumb cut?</h3>
+      <p>Set a framing square with 12 on the blade and the pitch number on the tongue, then mark along the tongue for the plumb cut.</p>
+
+      <h3>What is the maximum rafter span without support?</h3>
+      <p>Depends on lumber size, grade, spacing, and load. A 2×8 SPF rafter at 16" OC with 20 psf live load spans about 14-15 ft. Consult IRC Table R802.4 for your specific load.</p>
+
+      <h3>Do hip rafters use the same formula?</h3>
+      <p>No — hip rafters run diagonally at 45 degrees in plan, so their run is √2 × the gable run. Use a hip-rafter calculator for that.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Roof Pitch Calculator", description: "Convert between pitch, angle, and grade percentage.", path: construction_roof_pitch_path, icon_path: "M3 12l9-9 9 9" },
+      { name: "Roofing Calculator", description: "Calculate shingles and felt for your roof area.", path: construction_roofing_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10" },
+      { name: "Beam Load Span Calculator", description: "Calculate beam moment and section modulus for roof ridges.", path: construction_beam_load_span_path, icon_path: "M4 5a1 1 0 011-1h14" },
+      { name: "Attic Ventilation Calculator", description: "Calculate net free area for soffit and ridge vents.", path: construction_attic_ventilation_path, icon_path: "M3 12l9-9 9 9M5 10v10h14V10" },
+      { name: "Stud Count Calculator", description: "Calculate studs for the walls that support the rafters.", path: construction_stud_count_path, icon_path: "M4 6h16M4 12h16M4 18h16" },
+      { name: "Plywood Sheets Calculator", description: "Calculate sheathing for the roof deck.", path: construction_plywood_sheets_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("rafter-length-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

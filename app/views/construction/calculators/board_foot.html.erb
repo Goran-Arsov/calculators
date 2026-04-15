@@ -1,0 +1,176 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Board Foot Calculator - Hardwood Lumber BF & m³",
+  description: "Free board foot calculator for hardwood lumber. Enter thickness, width, length, and quantity to get board feet, cubic meters, linear feet, and total cost.",
+  canonical: construction_board_foot_url,
+  og: {
+    title: "Board Foot Calculator - Hardwood Lumber | Calc Hammer",
+    description: "Calculate board feet, cubic meters, and total cost for hardwood lumber.",
+    url: construction_board_foot_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Board Foot Calculator", url: construction_board_foot_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is a board foot?", answer: "A board foot (BF) is a volume unit equal to 144 cubic inches — a piece of wood 1 inch thick, 12 inches wide, and 12 inches long. Hardwood lumber is priced per board foot. The formula is: BF = (thickness in × width in × length ft) ÷ 12. In metric, 1 BF = 0.00236 m³ or 2,360 cm³." },
+  { question: "What does 4/4, 5/4, 6/4, 8/4 mean?", answer: "Hardwood thickness is measured in quarters of an inch before planing. 4/4 (pronounced 'four quarter') is 1 inch nominal thickness, which dresses to about 13/16 inch after planing. 5/4 = 1.25\", 6/4 = 1.5\", 8/4 = 2\", 12/4 = 3\", 16/4 = 4\". Use the nominal thickness for board foot pricing — that is what the mill measured before planing." },
+  { question: "Is board foot the same as square foot?", answer: "No. Square foot measures surface area (length × width only), while board foot includes thickness. A 4/4 (1 inch) board of any given surface area has the same board-foot count as its square-foot count, but thicker boards have higher BF per square foot — 8/4 stock is twice the BF of 4/4 for the same face dimensions." },
+  { question: "How do I convert board feet to cubic meters?", answer: "1 board foot = 0.00236 cubic meters. Multiply total BF by 0.00236 to get m³. For example, 100 BF = 0.236 m³. This is useful for international hardwood imports since most countries outside North America price lumber in cubic meters." },
+  { question: "Are nominal and actual lumber dimensions the same?", answer: "For hardwoods sold as rough lumber, yes — the thickness is the actual unplaned dimension. For softwood construction lumber (2x4, 2x6, etc.), no — a 'nominal' 2x4 is actually 1.5×3.5 inches after planing and drying. When calculating hardwood BF, use the as-sold thickness. For construction lumber, use the nominal dimensions since that is how they are sold." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Board Foot Calculator",
+  description: "Calculate board feet, cubic meters, and total cost for hardwood lumber purchases.",
+  url: construction_board_foot_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "board-foot-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Board Foot Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Board Foot Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate board feet for hardwood lumber pricing. Get BF per piece, total BF, cubic meters, and cost. Works in imperial and metric.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="board-foot-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-board-foot-calculator-target="unitSystem" data-action="change->board-foot-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (in, ft)</option>
+              <option value="metric">Metric (cm, m)</option>
+            </select>
+          </div>
+          <div>
+            <label for="bf-thickness" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-board-foot-calculator-target="thicknessLabel">Thickness (inches)</span></label>
+            <input id="bf-thickness" type="number" inputmode="decimal" data-board-foot-calculator-target="thickness" data-action="input->board-foot-calculator#calculate" class="w-full" value="1" step="0.25" min="0">
+            <p class="text-xs text-gray-500 mt-1">4/4 = 1", 5/4 = 1.25", 6/4 = 1.5", 8/4 = 2", 12/4 = 3"</p>
+          </div>
+          <div>
+            <label for="bf-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-board-foot-calculator-target="widthLabel">Width (inches)</span></label>
+            <input id="bf-width" type="number" inputmode="decimal" data-board-foot-calculator-target="width" data-action="input->board-foot-calculator#calculate" class="w-full" value="6" step="0.25" min="0">
+          </div>
+          <div>
+            <label for="bf-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-board-foot-calculator-target="lengthLabel">Length (ft)</span></label>
+            <input id="bf-length" type="number" inputmode="decimal" data-board-foot-calculator-target="length" data-action="input->board-foot-calculator#calculate" class="w-full" value="8" step="0.5" min="0">
+          </div>
+          <div>
+            <label for="bf-quantity" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Quantity</label>
+            <input id="bf-quantity" type="number" inputmode="decimal" data-board-foot-calculator-target="quantity" data-action="input->board-foot-calculator#calculate" class="w-full" value="10" step="1" min="1">
+          </div>
+          <div>
+            <label for="bf-price" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-board-foot-calculator-target="priceLabel">Price per board foot ($, optional)</span></label>
+            <input id="bf-price" type="number" inputmode="decimal" data-board-foot-calculator-target="price" data-action="input->board-foot-calculator#calculate" class="w-full" placeholder="8.00" step="0.01" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">BF per piece</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-board-foot-calculator-target="resultBfEach">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Total board feet</span>
+              <span class="text-2xl font-extrabold text-amber-700 dark:text-amber-400" data-board-foot-calculator-target="resultTotalBf">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><span data-board-foot-calculator-target="volumeHeading">Total volume (cu ft)</span></span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-board-foot-calculator-target="resultVolume">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total linear</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-board-foot-calculator-target="resultLinear">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><span data-board-foot-calculator-target="costHeading">Total cost</span></span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-board-foot-calculator-target="resultCost">—</span>
+            </div>
+          </div>
+          <button data-action="click->board-foot-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-yellow-700 hover:from-amber-700 hover:to-yellow-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "board-foot-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>What Is a Board Foot?</h2>
+      <p>
+        A board foot (BF) is the standard volume unit for pricing hardwood lumber in North America. One board foot equals a piece of wood 1 inch thick, 12 inches wide, and 12 inches long — that is 144 cubic inches. The formula is straightforward: <strong>BF = (thickness in inches × width in inches × length in feet) ÷ 12</strong>. For a 1×6 board 8 feet long, that is (1 × 6 × 8) ÷ 12 = 4 board feet.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Quarter-Inch Thickness Notation</h2>
+      <p>
+        Hardwood thickness is written in quarters of an inch because that is how the mill measures rough lumber before it is planed. "4/4" (four quarter) is 1 inch, 5/4 is 1.25 inches, 6/4 is 1.5 inches, 8/4 is 2 inches, and so on up to 16/4 (4 inches). When you see a price list showing "Walnut 4/4 $12/BF", it means 1-inch-thick rough walnut at $12 per board foot. After planing to finished thickness, 4/4 typically dresses to 13/16 inch — you paid for the sawn thickness, not the final.
+      </p>
+
+      <h3>Converting Board Feet to Cubic Meters</h3>
+      <p>
+        Most countries outside North America price lumber in cubic meters. The conversion is <strong>1 BF ≈ 0.00236 m³</strong> or equivalently 424 BF per m³. This calculator shows both values automatically so you can compare North American and European hardwood quotes on an apples-to-apples basis.
+      </p>
+
+      <h3>Why Board Foot Instead of Square Foot?</h3>
+      <p>
+        Square foot measures only the surface area and ignores thickness. A 4/4 board and an 8/4 board of the same face dimensions contain the same surface area but very different volumes of wood. Board feet account for all three dimensions, which is why hardwood mills use them for pricing. For sheet goods like plywood, though, square feet are more practical since sheets all come in 4/4 or 3/4 thickness.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is a 2x4 one board foot per foot?</h3>
+      <p>A 2×4 is 0.667 BF per linear foot ((2 × 4 × 1) / 12), or 5.33 BF for an 8-foot 2×4.</p>
+
+      <h3>How many board feet in a pallet of hardwood?</h3>
+      <p>A standard hardwood lift typically holds 500-1,000 BF depending on thickness and species density.</p>
+
+      <h3>Why is hardwood more expensive than softwood?</h3>
+      <p>Hardwoods grow slowly, the logs yield less usable lumber after drying and grading, and the wood is harder to work — all of which raise the price per BF.</p>
+
+      <h3>How do I calculate BF for a live-edge slab?</h3>
+      <p>Measure the average width (narrow + wide ends ÷ 2), multiply by thickness and length, divide by 12. Add 10-15% to cover the irregular edge.</p>
+
+      <h3>Should I buy rough or S4S lumber?</h3>
+      <p>Rough lumber is priced lower per BF but requires a planer and jointer to flatten. S4S (surfaced four sides) is ready to cut but costs 30-50% more per BF.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Lumber Calculator", description: "Calculate board feet and cost for framing lumber purchases.", path: construction_lumber_path, icon_path: "M4 6h16M4 12h16M4 18h7" },
+      { name: "Wood Species Weight Calculator", description: "Calculate weight of any wood board by species and dimensions.", path: construction_wood_weight_path, icon_path: "M9 7h6m0 10v-3m-3 3h.01" },
+      { name: "Wood Shrinkage Calculator", description: "Calculate wood shrinkage as it dries from green to target moisture content.", path: construction_wood_shrinkage_path, icon_path: "M7 20l4-16m2 16l4-16M6 9h14M4 15h14" },
+      { name: "Rip Cut Calculator", description: "Calculate how many strips you can rip from a board accounting for kerf waste.", path: construction_rip_cut_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "Plywood Sheets Calculator", description: "Calculate 4x8 plywood sheets needed for sheathing or decking.", path: construction_plywood_sheets_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Miter Angle Calculator", description: "Calculate miter angles for any polygon frame or molding project.", path: construction_miter_angle_path, icon_path: "M4 5a1 1 0 011-1h14" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("board-foot-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,184 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Stud Count Calculator - Wall Framing Studs & Plates",
+  description: "Free stud count calculator. Enter wall length, height, corners, and openings to get exact studs, plates, and stud stock for framing at 16 or 24 inch on center.",
+  canonical: construction_stud_count_url,
+  og: {
+    title: "Stud Count Calculator | Calc Hammer",
+    description: "Calculate studs, plates, and linear footage for framing any wall.",
+    url: construction_stud_count_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Stud Count Calculator", url: construction_stud_count_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many studs do I need for a wall?", answer: "For a basic field without corners or openings, use ceiling(wall length in inches ÷ spacing) + 1 studs. A 20 ft wall at 16\" OC needs 240 ÷ 16 = 15, plus one at the far end = 16 studs. Add 2 studs per L-corner, 3 per T-intersection, and 4 per door or window opening (2 jack + 2 king)." },
+  { question: "What is 16 on center vs 24 on center?", answer: "Stud spacing measured center-to-center. 16\" OC is the most common residential standard — it keeps drywall joints landing on studs and is required by IRC for 2x4 framing in bearing walls. 24\" OC uses fewer studs and less wood, which qualifies for Advanced Framing Techniques that increase insulation in the wall cavity, but it requires 2x6 studs in most climates." },
+  { question: "How much plate stock do I need?", answer: "A framed wall has three plates: one bottom plate and a doubled top plate. Plate stock equals 3 × the wall length. A 20 ft wall needs 60 linear feet of plate stock (two 10-ft pieces or one 20-ft piece for the bottom, and two 10-ft or one 20-ft piece for each top plate)." },
+  { question: "How many studs go around a door or window?", answer: "Standard openings use 4 extra studs: 2 king studs that run full wall height on each side, and 2 jack studs (trimmers) that hold up the header. Wider openings may need double jacks on each side. The header itself is a separate piece cut to the opening width plus 3 inches." },
+  { question: "Should I buy extra studs?", answer: "Yes — order 5 to 10 percent more than calculated. Expect some crooked studs, cracks, and knots that you will cut off or cull. Precut studs (92-5/8\") save cutting time for 8 ft walls. For 9 ft walls, order 10 ft studs and cut. Lumber is cheaper than a return trip to the yard mid-framing." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Stud Count Calculator",
+  description: "Calculate exact studs, plates, and linear footage for framing a wall at any spacing.",
+  url: construction_stud_count_url,
+  category: "HomeApplication",
+  calculator_slug: "stud-count-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Stud Count Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Stud Count Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate exactly how many studs, plates, and linear feet of lumber you need to frame a wall. Handles corners and openings. Works in imperial and metric.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="stud-count-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-stud-count-calculator-target="unitSystem" data-action="change->stud-count-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (ft)</option>
+              <option value="metric">Metric (m)</option>
+            </select>
+          </div>
+          <div>
+            <label for="stud-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-stud-count-calculator-target="lengthLabel">Wall length (ft)</span></label>
+            <input id="stud-length" type="number" inputmode="decimal" data-stud-count-calculator-target="length" data-action="input->stud-count-calculator#calculate" class="w-full" value="20" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="stud-height" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-stud-count-calculator-target="heightLabel">Wall height (ft)</span></label>
+            <input id="stud-height" type="number" inputmode="decimal" data-stud-count-calculator-target="height" data-action="input->stud-count-calculator#calculate" class="w-full" value="8" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="stud-spacing" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-stud-count-calculator-target="spacingLabel">Stud spacing (inches OC)</span></label>
+            <select id="stud-spacing" data-stud-count-calculator-target="spacing" data-action="change->stud-count-calculator#calculate" class="w-full">
+              <option value="12">12" OC (406 mm)</option>
+              <option value="16" selected>16" OC (406 mm)</option>
+              <option value="19.2">19.2" OC (488 mm)</option>
+              <option value="24">24" OC (610 mm)</option>
+            </select>
+          </div>
+          <div>
+            <label for="stud-corners" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Corners (L-intersections)</label>
+            <input id="stud-corners" type="number" inputmode="decimal" data-stud-count-calculator-target="corners" data-action="input->stud-count-calculator#calculate" class="w-full" value="2" step="1" min="0">
+          </div>
+          <div>
+            <label for="stud-openings" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Openings (doors + windows)</label>
+            <input id="stud-openings" type="number" inputmode="decimal" data-stud-count-calculator-target="openings" data-action="input->stud-count-calculator#calculate" class="w-full" value="1" step="1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Field studs</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-stud-count-calculator-target="resultFieldStuds">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Corner studs</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-stud-count-calculator-target="resultCornerStuds">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Opening studs</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-stud-count-calculator-target="resultOpeningStuds">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-green-200/50 dark:border-green-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Total studs</span>
+              <span class="text-3xl font-extrabold text-green-700 dark:text-green-400" data-stud-count-calculator-target="resultTotal">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-green-200/50 dark:border-green-800/50">
+              <span class="text-gray-600 dark:text-gray-400"><span data-stud-count-calculator-target="plateHeading">Plate stock (ft)</span></span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-stud-count-calculator-target="resultPlate">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><span data-stud-count-calculator-target="stockHeading">Stud stock (ft)</span></span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-stud-count-calculator-target="resultStock">—</span>
+            </div>
+          </div>
+          <button data-action="click->stud-count-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "stud-count-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Framing Stud Count Rules</h2>
+      <p>
+        Wall framing follows a predictable pattern. The calculator uses the IRC-compliant formula: <strong>field studs = ceiling(length ÷ spacing) + 1</strong>, plus extras for corners and openings. The "+1" accounts for the stud at the far end of the wall — every wall has one at zero and one at every spacing interval. Corners add 2 studs each (for L-intersections), and openings add 4 studs each (2 jack and 2 king studs) for typical door and window framing.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>16" vs 24" On Center</h2>
+      <p>
+        16 inch on center is the classic residential standard. It keeps standard 4×8 drywall and sheathing joints landing on studs, provides strong wall support for most loads, and is required by the IRC for 2×4 bearing walls in most cases. 24 inch on center — part of Advanced Framing Techniques — uses 2×6 studs and reduces lumber by 25 to 30 percent while adding 2 extra inches of insulation depth. Both are code-compliant when designed correctly, but 24" OC requires careful alignment of studs, joists, and trusses to avoid overspan.
+      </p>
+
+      <h3>Plates and Headers</h3>
+      <p>
+        Every framed wall needs three plates: one bottom plate (the sole plate) and a doubled top plate. That is 3× the wall length in linear feet of plate stock, not counting the 6 to 12 inches you cut off as waste. Headers over doors and windows are separate pieces: a typical 3 ft door opening uses a 5 ft 2×10 header for the opening plus 3 inches of bearing on each side. The calculator does not size headers — consult IRC Table R602.7(1) for load tables.
+      </p>
+
+      <h3>Corners</h3>
+      <p>
+        Traditional L-corners use 3 studs: one on one wall, and two on the other forming the backing for drywall on the intersecting wall. The calculator counts this as 2 extra studs per corner (the third is the field stud at the end of the wall, already counted). For advanced framing, California corners use 2 studs with drywall clips for backing, saving one stud per corner.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Are precut studs the same length as 8 ft?</h3>
+      <p>No. Precut studs are 92-5/8" (7 ft 8-5/8") so that with a bottom plate, doubled top plate, and drywall thickness, the finished ceiling is 8 ft exactly.</p>
+
+      <h3>How much waste should I add?</h3>
+      <p>Order 5-10% extra for culls, bad pieces, and cutoffs. For long walls, longer plate stock minimizes joints and waste.</p>
+
+      <h3>Can I use 2x3 studs?</h3>
+      <p>Only for non-bearing interior partitions. Bearing walls and exterior walls require 2x4 or 2x6 minimum.</p>
+
+      <h3>Do I need blocking between studs?</h3>
+      <p>Required at 10 ft for walls taller than 10 ft. Also required as fire blocking in balloon-framed walls.</p>
+
+      <h3>How do I frame a T-intersection?</h3>
+      <p>Add 3 studs at the intersection: 2 on the passing wall + 1 full-length backing stud for the intersecting wall's drywall.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Lumber Calculator", description: "Calculate board feet and cost for your stud order.", path: construction_lumber_path, icon_path: "M4 6h16M4 12h16M4 18h7" },
+      { name: "Drywall Calculator", description: "Calculate drywall sheets for the framed walls.", path: construction_drywall_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Insulation Calculator", description: "Calculate insulation for the wall cavities.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10" },
+      { name: "Beam Load Span Calculator", description: "Size headers over openings in load-bearing walls.", path: construction_beam_load_span_path, icon_path: "M4 5a1 1 0 011-1h14" },
+      { name: "Plywood Sheets Calculator", description: "Calculate wall sheathing sheets.", path: construction_plywood_sheets_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Rafter Length Calculator", description: "Calculate rafters for the roof over your walls.", path: construction_rafter_length_path, icon_path: "M3 12l9-9 9 9M5 10v10h14V10" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("stud-count-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

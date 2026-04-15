@@ -47,5 +47,15 @@ module Construction
     def kitchen_remodel; end
     def bathroom_remodel; end
     def attic_ventilation; end
+
+    # Site work, framing, roofing
+    def asphalt; end
+    def excavation; end
+    def paver; end
+    def board_foot; end
+    def rafter_length; end
+    def roof_pitch; end
+    def stud_count; end
+    def plywood_sheets; end
   end
 end

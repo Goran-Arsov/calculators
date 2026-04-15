@@ -1,0 +1,181 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Roof Pitch Calculator - Convert Pitch to Angle & Grade",
+  description: "Free roof pitch calculator. Convert between pitch (x/12), angle in degrees, and grade percentage. Works from rise/run, angle, or grade — all in imperial or metric.",
+  canonical: construction_roof_pitch_url,
+  og: {
+    title: "Roof Pitch Calculator - Pitch, Angle, Grade | Calc Hammer",
+    description: "Convert between roof pitch, angle in degrees, and grade percentage.",
+    url: construction_roof_pitch_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Roof Pitch Calculator", url: construction_roof_pitch_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I convert roof pitch to degrees?", answer: "Take the pitch as a fraction (rise / 12) and apply arctangent: angle = atan(rise/12). Common conversions: 3/12 = 14.04°, 4/12 = 18.43°, 6/12 = 26.57°, 8/12 = 33.69°, 10/12 = 39.81°, 12/12 = 45°. The calculator does this conversion automatically from any of three input methods." },
+  { question: "What is the difference between pitch and slope?", answer: "In roofing, pitch is typically written as rise-per-12 (for example, 6/12). Slope is the same number but expressed as a fraction, ratio, or angle. Grade is the slope expressed as a percentage — a 6/12 pitch is a 50% grade. All three describe the same physical steepness; pitch is the convention for residential roof framing." },
+  { question: "What is the minimum roof pitch for shingles?", answer: "Asphalt shingles require a minimum pitch of 2/12 per manufacturer warranties, and most manufacturers recommend 4/12 for best performance. Between 2/12 and 4/12, you must install a double layer of underlayment or a self-adhering ice-and-water shield membrane over the entire deck. Below 2/12, use a membrane roof system (TPO, EPDM) rather than shingles." },
+  { question: "What is a standard residential roof pitch?", answer: "Most suburban homes use a 4/12, 6/12, or 8/12 pitch. 4/12 is common for ranch homes, 6/12 is the most popular for traditional styles, and 8/12 to 12/12 is typical for colonials, Cape Cods, and Tudor-style roofs. The right pitch depends on climate (steeper sheds snow better), style, attic use, and local codes." },
+  { question: "How do I measure pitch on an existing roof?", answer: "Place a 12-inch level horizontally against the roof surface (indoors on the rafter or outdoors on the sheathing). Hold it level, and measure the vertical distance from the far end of the level to the roof surface — that is the rise. If the rise is 6 inches, the pitch is 6/12. You can also use a smartphone level app or a dedicated pitch finder." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Roof Pitch Calculator",
+  description: "Convert between roof pitch (x/12), angle in degrees, and grade percentage.",
+  url: construction_roof_pitch_url,
+  category: "HomeApplication",
+  calculator_slug: "roof-pitch-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Roof Pitch Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Roof Pitch Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert between roof pitch (x/12), angle in degrees, and grade percentage. Supports rise and run input, direct angle input, or grade percent input. Imperial and metric measurements accepted.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="roof-pitch-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-roof-pitch-calculator-target="unitSystem" data-action="change->roof-pitch-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (in)</option>
+              <option value="metric">Metric (cm)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Input method</label>
+            <select data-roof-pitch-calculator-target="mode" data-action="change->roof-pitch-calculator#updateMode" class="w-full">
+              <option value="rise_run" selected>Rise and run</option>
+              <option value="angle">Angle (degrees)</option>
+              <option value="grade">Grade (%)</option>
+            </select>
+          </div>
+          <div data-roof-pitch-calculator-target="riseRunGroup">
+            <div class="mb-4">
+              <label for="roof-rise" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-roof-pitch-calculator-target="riseLabel">Rise (inches)</span></label>
+              <input id="roof-rise" type="number" inputmode="decimal" data-roof-pitch-calculator-target="rise" data-action="input->roof-pitch-calculator#calculate" class="w-full" value="6" step="0.25" min="0">
+            </div>
+            <div>
+              <label for="roof-run" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-roof-pitch-calculator-target="runLabel">Run (inches)</span></label>
+              <input id="roof-run" type="number" inputmode="decimal" data-roof-pitch-calculator-target="run" data-action="input->roof-pitch-calculator#calculate" class="w-full" value="12" step="0.25" min="0">
+            </div>
+          </div>
+          <div data-roof-pitch-calculator-target="angleGroup" class="hidden">
+            <label for="roof-angle" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Angle (degrees)</label>
+            <input id="roof-angle" type="number" inputmode="decimal" data-roof-pitch-calculator-target="angle" data-action="input->roof-pitch-calculator#calculate" class="w-full" value="26.57" step="0.01" min="0" max="90">
+          </div>
+          <div data-roof-pitch-calculator-target="gradeGroup" class="hidden">
+            <label for="roof-grade" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Grade (%)</label>
+            <input id="roof-grade" type="number" inputmode="decimal" data-roof-pitch-calculator-target="grade" data-action="input->roof-pitch-calculator#calculate" class="w-full" value="50" step="0.1" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pt-3 border-b border-indigo-200/50 dark:border-indigo-800/50 pb-3">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Pitch</span>
+              <span class="text-3xl font-extrabold text-indigo-700 dark:text-indigo-400" data-roof-pitch-calculator-target="resultPitch">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Angle</span>
+              <span class="text-xl font-bold text-indigo-700 dark:text-indigo-400" data-roof-pitch-calculator-target="resultAngle">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Grade</span>
+              <span class="text-xl font-bold text-indigo-700 dark:text-indigo-400" data-roof-pitch-calculator-target="resultGrade">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Category</span>
+              <span class="text-base font-bold text-indigo-700 dark:text-indigo-400" data-roof-pitch-calculator-target="resultCategory">—</span>
+            </div>
+          </div>
+          <button data-action="click->roof-pitch-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "roof-pitch-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Pitch, Angle, and Grade — Three Ways to Say the Same Thing</h2>
+      <p>
+        Roof slope can be expressed three different ways: as a pitch ratio (rise-per-12), as an angle in degrees, or as a grade percentage. They all describe the same physical steepness. The calculator lets you enter any one of the three and shows the other two instantly. Pitch is the convention for framing carpenters because it lines up with the way a framing square works — 12 on the blade, pitch on the tongue.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Common Pitch Conversions</h2>
+      <p>
+        <strong>2/12 = 9.5° = 16.7% grade</strong> — minimum slope for asphalt shingles with extra underlayment.<br>
+        <strong>4/12 = 18.4° = 33.3% grade</strong> — gentle ranch and modern roofs.<br>
+        <strong>6/12 = 26.6° = 50% grade</strong> — most popular residential pitch in North America.<br>
+        <strong>8/12 = 33.7° = 66.7% grade</strong> — colonial and steep-style homes.<br>
+        <strong>12/12 = 45° = 100% grade</strong> — very steep, used for attics you plan to finish.<br>
+      </p>
+
+      <h3>Roof Slope Categories</h3>
+      <p>
+        <strong>Flat roofs</strong> (&lt; 2/12) require a waterproof membrane (EPDM, TPO, PVC, or built-up tar) because water ponds on them. <strong>Low slope</strong> (2/12-4/12) can use shingles but needs a double underlayment. <strong>Conventional slope</strong> (4/12-9/12) is ideal for shingles, metal, or tile. <strong>Steep slopes</strong> (9/12+) need toe boards for safe installation and may require special shingle application patterns. Very steep (12/12+) pitches shed snow well but are harder to walk on and inspect.
+      </p>
+
+      <h3>How to Measure an Existing Roof</h3>
+      <p>
+        From the attic: set a 12-inch level against the bottom edge of a rafter, hold it level, and measure the vertical distance from the end of the level to the rafter edge. That vertical distance is the rise per 12-inch run. From outside: the same method works on the exposed sheathing. For very accurate measurements, a digital angle finder placed on the rafter or sheathing gives the angle in degrees; enter that into the angle mode.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is pitch the same as slope?</h3>
+      <p>In roofing, yes — they describe the same thing. In civil engineering, slope is usually expressed as a percentage (grade) or a ratio.</p>
+
+      <h3>What is the steepest roof I can walk on?</h3>
+      <p>Most people can safely walk on up to a 6/12 pitch. Beyond that, toe boards, scaffolding, and fall protection are recommended.</p>
+
+      <h3>Can I have a zero-pitch roof?</h3>
+      <p>"Flat" roofs always have a small slope (at least 1/4" per foot, or 2% grade) for drainage, even if they look flat.</p>
+
+      <h3>How much does pitch affect roofing area?</h3>
+      <p>Steeper pitches have more surface area than their footprint. Multiply footprint area by a slope factor: 4/12 = 1.054, 6/12 = 1.118, 8/12 = 1.202, 12/12 = 1.414.</p>
+
+      <h3>Why do carpenters say "pitch over 12"?</h3>
+      <p>Because a framing square has a 12-inch tongue. Setting 12 on the blade and the pitch number on the tongue gives you the exact cut line for rafters.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Rafter Length Calculator", description: "Calculate rafter length, rise, and total with overhang.", path: construction_rafter_length_path, icon_path: "M3 12l9-9 9 9M5 10v10h14V10" },
+      { name: "Roofing Calculator", description: "Calculate shingles and felt for your roof area.", path: construction_roofing_path, icon_path: "M3 12l2-2m0 0l7-7 7 7M5 10v10" },
+      { name: "Attic Ventilation Calculator", description: "Calculate required net free area for soffit and ridge vents.", path: construction_attic_ventilation_path, icon_path: "M3 12l9-9 9 9M5 10v10h14V10" },
+      { name: "Drainage Slope Calculator", description: "Calculate slope percentage for drainage pipes.", path: construction_drainage_slope_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "Miter Angle Calculator", description: "Calculate miter angles for any polygon.", path: construction_miter_angle_path, icon_path: "M4 5a1 1 0 011-1h14" },
+      { name: "Plywood Sheets Calculator", description: "Calculate sheathing for the roof deck.", path: construction_plywood_sheets_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("roof-pitch-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

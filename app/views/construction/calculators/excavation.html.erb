@@ -1,0 +1,171 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Excavation Calculator - Cubic Yards of Dirt to Remove",
+  description: "Free excavation calculator: estimate cubic yards of soil to remove for foundations, pools, trenches, and basements. Includes soil swell factor and truckload count.",
+  canonical: construction_excavation_url,
+  og: {
+    title: "Excavation Calculator - Cubic Yards of Dirt | Calc Hammer",
+    description: "Estimate bank and loose cubic yards of dirt to remove, plus truckloads for hauling.",
+    url: construction_excavation_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Excavation Calculator", url: construction_excavation_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much dirt do I need to remove?", answer: "Multiply length × width × depth for a rectangular pit to get cubic feet, then divide by 27 to get cubic yards. For a circular hole, use π × radius² × depth. The calculator does this automatically and also applies a soil swell factor to estimate the loose volume you will actually haul away." },
+  { question: "What is the swell factor for soil?", answer: "When soil is excavated, it bulks up because the grains lose their compacted arrangement. Typical swell factors are: dry sand 12%, loam 25%, clay 30-40%, hard rock 50-65%. A 25% swell is a safe default for mixed residential soil. Multiply bank cubic yards by (1 + swell%) to get loose cubic yards — the volume your dump truck actually hauls." },
+  { question: "How many cubic yards fit in a dump truck?", answer: "A standard 10-wheeler dump truck hauls about 10 cubic yards of loose dirt. Smaller tri-axle trucks carry 14 to 16 cubic yards, and large semi-trailer dumps haul 20 to 25 cubic yards. The calculator defaults to 10 cubic yards per load so you can size your hauling contract conservatively." },
+  { question: "How deep should a basement foundation be?", answer: "Basement excavation typically goes 8 to 9 feet below grade, plus a foot of over-dig for forms and waterproofing. Crawl space foundations are 3 to 4 feet deep. In freezing climates, footings must reach below the local frost line — 42 to 48 inches in the northern US, 12 inches or less in the Deep South." },
+  { question: "Do I need a permit to excavate?", answer: "Most residential excavation for foundations, pools, and septic systems requires a building permit. Call 811 (Dig Safe) at least three business days before digging to have underground utilities marked for free — it is the law in every US state and failure to call can cost thousands in repair fees and delay your project." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Excavation Calculator",
+  description: "Calculate cubic yards of dirt to excavate, loose volume after swell, and truckloads for hauling.",
+  url: construction_excavation_url,
+  category: "HomeApplication",
+  calculator_slug: "excavation-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Excavation Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Excavation Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate cubic yards of soil to remove for foundations, pools, trenches, and basements. Includes soil swell factor and hauling truckloads. Works in imperial and metric.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="excavation-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-excavation-calculator-target="unitSystem" data-action="change->excavation-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (ft, cu yd)</option>
+              <option value="metric">Metric (m, m³)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Shape</label>
+            <select data-excavation-calculator-target="shape" data-action="change->excavation-calculator#toggleWidth" class="w-full">
+              <option value="rectangular" selected>Rectangular pit</option>
+              <option value="circular">Circular pit</option>
+            </select>
+          </div>
+          <div>
+            <label for="excavation-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-excavation-calculator-target="lengthLabel">Length (ft)</span></label>
+            <input id="excavation-length" type="number" inputmode="decimal" data-excavation-calculator-target="length" data-action="input->excavation-calculator#calculate" class="w-full" value="20" step="0.1" min="0">
+          </div>
+          <div data-excavation-calculator-target="widthRow">
+            <label for="excavation-width" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-excavation-calculator-target="widthLabel">Width (ft)</span></label>
+            <input id="excavation-width" type="number" inputmode="decimal" data-excavation-calculator-target="width" data-action="input->excavation-calculator#calculate" class="w-full" value="15" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="excavation-depth" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-excavation-calculator-target="depthLabel">Depth (ft)</span></label>
+            <input id="excavation-depth" type="number" inputmode="decimal" data-excavation-calculator-target="depth" data-action="input->excavation-calculator#calculate" class="w-full" value="8" step="0.1" min="0">
+          </div>
+          <div>
+            <label for="excavation-swell" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Swell factor (%)</label>
+            <input id="excavation-swell" type="number" inputmode="decimal" data-excavation-calculator-target="swell" data-action="input->excavation-calculator#calculate" class="w-full" value="25" step="1" min="0">
+            <p class="text-xs text-gray-500 mt-1">Sand 12%, loam 25%, clay 35%, rock 50-65%.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><span data-excavation-calculator-target="bankHeading">Bank volume (cu yd)</span></span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-excavation-calculator-target="resultBank">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm"><span data-excavation-calculator-target="looseHeading">Loose volume (cu yd)</span></span>
+              <span class="text-2xl font-extrabold text-amber-700 dark:text-amber-400" data-excavation-calculator-target="resultLoose">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400"><span data-excavation-calculator-target="truckHeading">Truckloads (10 cu yd)</span></span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-excavation-calculator-target="resultTrucks">—</span>
+            </div>
+          </div>
+          <button data-action="click->excavation-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-orange-700 hover:from-amber-700 hover:to-orange-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "excavation-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Bank Volume vs Loose Volume</h2>
+      <p>
+        Excavated soil takes up more space than it did in the ground. <strong>Bank volume</strong> is the volume of soil in its compacted, in-place state — exactly what you compute from length × width × depth. <strong>Loose volume</strong> is what you actually haul in a dump truck, and it is larger because the soil grains rearrange and trap air when disturbed. The ratio of loose to bank volume is called the <em>swell factor</em>, and it varies by soil type.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Typical Swell Factors by Soil Type</h2>
+      <p>
+        Dry sand bulks up about 12 percent. Loam and topsoil swell 25 percent. Dense clay swells 30 to 40 percent because it fractures into chunks. Weathered rock can swell 40 to 50 percent, and blasted hard rock 50 to 65 percent. If you do not know your soil, use 25 percent as a safe residential default. For hauling contracts, always quote loose cubic yards, not bank yards.
+      </p>
+
+      <h3>Foundation and Basement Excavation</h3>
+      <p>
+        A full basement is typically 8 to 9 feet deep below grade, with an extra 12 inches of over-dig around the perimeter for waterproofing and form work. A shallow crawl space is 3 to 4 feet deep. Footings alone need to reach below the local frost line — 42 to 48 inches in northern states, 12 inches or less in the Deep South. Always check with your local building department before you start digging.
+      </p>
+
+      <h3>Call 811 Before You Dig</h3>
+      <p>
+        In every US state, contacting 811 at least three business days before starting excavation is required by law. A free utility locator service will mark underground gas, electric, water, sewer, phone, and fiber lines on your property. Cutting a live line can injure workers and cost thousands to repair. Keep the markings visible throughout the project.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How much does a cubic yard of dirt weigh?</h3>
+      <p>Dry loam weighs about 2,200 lb/cu yd. Wet clay can exceed 3,000 lb/cu yd. A 10-cu yd dump truck of soil often weighs more than its volume rating allows.</p>
+
+      <h3>How do I figure dirt for a round pool?</h3>
+      <p>Select the circular shape option and enter the diameter as length. The calculator uses π × r² × depth automatically.</p>
+
+      <h3>What is bank cubic yards vs loose cubic yards?</h3>
+      <p>Bank is the compacted in-place volume. Loose is what a truck hauls after the soil bulks up by the swell factor.</p>
+
+      <h3>Can I keep excavated soil on site?</h3>
+      <p>Often yes — topsoil can be stockpiled and reused for landscaping. Subsoil may be used to backfill, grade, or raise low spots. Check local codes for fill-dirt permits.</p>
+
+      <h3>How deep is a typical footing trench?</h3>
+      <p>Below the frost line (42-48 in northern states) and at least 12 inches into undisturbed soil. Width is typically 2× the foundation wall thickness.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Concrete Calculator", description: "Calculate concrete for the footing or slab going into your excavation.", path: construction_concrete_path, icon_path: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" },
+      { name: "Gravel & Mulch Calculator", description: "Calculate gravel base tons and cubic yards.", path: construction_gravel_mulch_path, icon_path: "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" },
+      { name: "Pool Volume Calculator", description: "Calculate volume for any pool shape once the hole is dug.", path: construction_pool_volume_path, icon_path: "M4 14s2 2 4 2 4-2 6-2 4 2 6 2 4-2 4-2v6H4zM4 8s2 2 4 2 4-2 6-2 4 2 6 2 4-2 4-2" },
+      { name: "Retaining Wall Calculator", description: "Calculate blocks and backfill for walls.", path: construction_retaining_wall_path, icon_path: "M4 6h16M4 12h16M4 18h7" },
+      { name: "Septic Tank Size Calculator", description: "Calculate tank size before you excavate the tank pit.", path: construction_septic_tank_size_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7" },
+      { name: "Asphalt Calculator", description: "Calculate asphalt tonnage for the driveway on top.", path: construction_asphalt_path, icon_path: "M4 4h16v16H4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("excavation-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

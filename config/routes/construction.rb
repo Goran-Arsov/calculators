@@ -48,4 +48,14 @@ namespace :construction do
   get "drainage-slope-calculator", to: "calculators#drainage_slope", as: :drainage_slope
   get "brick-block-calculator", to: "calculators#brick_block", as: :brick_block
   get "septic-tank-size-calculator", to: "calculators#septic_tank_size", as: :septic_tank_size
+
+  # Site work, framing, and roofing
+  get "asphalt-calculator", to: "calculators#asphalt", as: :asphalt
+  get "excavation-calculator", to: "calculators#excavation", as: :excavation
+  get "paver-calculator", to: "calculators#paver", as: :paver
+  get "board-foot-calculator", to: "calculators#board_foot", as: :board_foot
+  get "rafter-length-calculator", to: "calculators#rafter_length", as: :rafter_length
+  get "roof-pitch-calculator", to: "calculators#roof_pitch", as: :roof_pitch
+  get "stud-count-calculator", to: "calculators#stud_count", as: :stud_count
+  get "plywood-sheets-calculator", to: "calculators#plywood_sheets", as: :plywood_sheets
 end
