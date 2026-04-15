@@ -138,7 +138,7 @@ module CalculatorHelper
   def embed_code_for(category_slug, calculator_slug, width: "100%", height: "500")
     url = embed_url_for(category_slug, calculator_slug)
     return nil unless url
-    %(<iframe src="#{url}" width="#{width}" height="#{height}" frameborder="0" style="border:none;border-radius:12px;" loading="lazy" title="CalcWise Calculator"></iframe>)
+    %(<iframe src="#{url}" width="#{width}" height="#{height}" frameborder="0" style="border:none;border-radius:12px;" loading="lazy" title="Calc Hammer Calculator"></iframe>)
   end
 
   def embed_script_for(category_slug, calculator_slug)

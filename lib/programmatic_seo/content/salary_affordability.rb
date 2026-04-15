@@ -21,7 +21,7 @@ module ProgrammaticSeo
           {
             slug: "how-much-house-on-40k-salary",
             route_name: "programmatic_house_on_40k_salary",
-            title: "How Much House Can I Afford on a $40,000 Salary? | CalcWise",
+            title: "How Much House Can I Afford on a $40,000 Salary? | Calc Hammer",
             h1: "How Much House Can I Afford on a $40,000 Salary?",
             meta_description: "Find out exactly how much house you can afford earning $40,000 a year. See monthly payment breakdowns, max home prices, and budget tips for a $40k income.",
             intro: "Earning $40,000 a year means a gross monthly income of approximately $3,333. Under the " \
@@ -129,7 +129,7 @@ module ProgrammaticSeo
           {
             slug: "how-much-house-on-50k-salary",
             route_name: "programmatic_house_on_50k_salary",
-            title: "How Much House Can I Afford on a $50,000 Salary? | CalcWise",
+            title: "How Much House Can I Afford on a $50,000 Salary? | Calc Hammer",
             h1: "How Much House Can I Afford on a $50,000 Salary?",
             meta_description: "Calculate how much house you can afford on a $50,000 salary. Get exact monthly payment figures, home price limits, and smart buying strategies for $50k earners.",
             intro: "A $50,000 annual salary translates to a gross monthly income of roughly $4,167. Applying the " \
@@ -230,7 +230,7 @@ module ProgrammaticSeo
           {
             slug: "how-much-house-on-60k-salary",
             route_name: "programmatic_house_on_60k_salary",
-            title: "How Much House Can I Afford on a $60,000 Salary? | CalcWise",
+            title: "How Much House Can I Afford on a $60,000 Salary? | Calc Hammer",
             h1: "How Much House Can I Afford on a $60,000 Salary?",
             meta_description: "See exactly how much house you can afford on $60,000 a year. Detailed breakdown of monthly payments, home price range, and budgeting advice for $60k earners.",
             intro: "With a $60,000 annual salary, your gross monthly income is $5,000. The 28/36 rule places " \
@@ -334,7 +334,7 @@ module ProgrammaticSeo
           {
             slug: "how-much-house-on-75k-salary",
             route_name: "programmatic_house_on_75k_salary",
-            title: "How Much House Can I Afford on a $75,000 Salary? | CalcWise",
+            title: "How Much House Can I Afford on a $75,000 Salary? | Calc Hammer",
             h1: "How Much House Can I Afford on a $75,000 Salary?",
             meta_description: "Find out how much house you can afford on $75,000 a year. Get exact payment breakdowns, max home prices, and financial strategies for $75k income earners.",
             intro: "A $75,000 salary places you above the national median household income and gives you " \
@@ -437,7 +437,7 @@ module ProgrammaticSeo
           {
             slug: "how-much-house-on-100k-salary",
             route_name: "programmatic_house_on_100k_salary",
-            title: "How Much House Can I Afford on a $100,000 Salary? | CalcWise",
+            title: "How Much House Can I Afford on a $100,000 Salary? | Calc Hammer",
             h1: "How Much House Can I Afford on a $100,000 Salary?",
             meta_description: "Calculate how much house you can afford on $100,000 a year. See detailed payment breakdowns, maximum home prices, and strategies for six-figure home buyers.",
             intro: "Crossing the six-figure threshold at $100,000 per year brings your gross monthly income to " \
@@ -542,7 +542,7 @@ module ProgrammaticSeo
           {
             slug: "how-much-house-on-125k-salary",
             route_name: "programmatic_house_on_125k_salary",
-            title: "How Much House Can I Afford on a $125,000 Salary? | CalcWise",
+            title: "How Much House Can I Afford on a $125,000 Salary? | Calc Hammer",
             h1: "How Much House Can I Afford on a $125,000 Salary?",
             meta_description: "See how much house you can afford on $125,000 a year. Detailed mortgage calculations, payment breakdowns, and advanced strategies for high-income buyers.",
             intro: "At $125,000 per year, your gross monthly income of $10,417 supports a maximum housing " \
@@ -646,7 +646,7 @@ module ProgrammaticSeo
           {
             slug: "how-much-house-on-150k-salary",
             route_name: "programmatic_house_on_150k_salary",
-            title: "How Much House Can I Afford on a $150,000 Salary? | CalcWise",
+            title: "How Much House Can I Afford on a $150,000 Salary? | Calc Hammer",
             h1: "How Much House Can I Afford on a $150,000 Salary?",
             meta_description: "Calculate how much house you can afford on $150,000 a year. Exact payment analysis, home price ranges, and wealth-building strategies for $150k earners.",
             intro: "A $150,000 annual salary produces a gross monthly income of $12,500 and a maximum housing " \
@@ -750,7 +750,7 @@ module ProgrammaticSeo
           {
             slug: "how-much-house-on-200k-salary",
             route_name: "programmatic_house_on_200k_salary",
-            title: "How Much House Can I Afford on a $200,000 Salary? | CalcWise",
+            title: "How Much House Can I Afford on a $200,000 Salary? | Calc Hammer",
             h1: "How Much House Can I Afford on a $200,000 Salary?",
             meta_description: "Calculate how much house you can afford on a $200,000 salary. Mortgage payments, home prices, and wealth-building strategies for high earners.",
             intro: "Earning $200,000 per year places you in the top ten percent of individual earners nationwide " \

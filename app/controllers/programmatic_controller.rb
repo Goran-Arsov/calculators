@@ -10,11 +10,11 @@ class ProgrammaticController < ApplicationController
       description: @page[:meta_description],
       canonical: request.original_url,
       og: {
-        title: "#{@page[:title]} | CalcWise",
+        title: "#{@page[:title]} | Calc Hammer",
         description: @page[:meta_description],
         url: request.original_url,
         type: "website",
-        site_name: "CalcWise"
+        site_name: "Calc Hammer"
       }
     }
 

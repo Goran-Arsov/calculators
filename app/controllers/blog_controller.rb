@@ -8,14 +8,14 @@ class BlogController < ApplicationController
 
     set_meta_tags(
       title: "Blog — Financial Tips, Math Guides & Health Insights",
-      description: "Read expert articles about personal finance, math concepts, and health metrics. Practical guides and tips from CalcWise.",
+      description: "Read expert articles about personal finance, math concepts, and health metrics. Practical guides and tips from Calc Hammer.",
       canonical: blog_url,
       og: {
-        title: "CalcWise Blog",
+        title: "Calc Hammer Blog",
         description: "Expert articles about personal finance, math concepts, and health metrics.",
         url: blog_url,
         type: "website",
-        site_name: "CalcWise"
+        site_name: "Calc Hammer"
       }
     )
   end
@@ -26,11 +26,11 @@ class BlogController < ApplicationController
       description: @post.meta_description.presence || @post.excerpt,
       canonical: blog_post_url(@post.slug),
       og: {
-        title: "#{@post.title} | CalcWise",
+        title: "#{@post.title} | Calc Hammer",
         description: @post.meta_description.presence || @post.excerpt,
         url: blog_post_url(@post.slug),
         type: "article",
-        site_name: "CalcWise"
+        site_name: "Calc Hammer"
       }
     )
   end

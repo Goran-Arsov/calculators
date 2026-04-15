@@ -1,4 +1,4 @@
-# Build Prompt: CalcWise — Multi-Category Calculator Hub
+# Build Prompt: Calc Hammer — Multi-Category Calculator Hub
 
 You are a senior full-stack Ruby on Rails engineer and SEO-focused
 product builder. Build a production-ready Rails web application that
@@ -16,7 +16,7 @@ this project. Follow them exactly.
 Create a new Rails 8+ application:
 
 ```bash
-rails new calcwise --database=postgresql --css=tailwind --skip-jbuilder --skip-action-mailbox --skip-action-text --skip-active-storage --skip-action-cable
+rails new calchammer --database=postgresql --css=tailwind --skip-jbuilder --skip-action-mailbox --skip-action-text --skip-active-storage --skip-action-cable
 ```
 
 - Use PostgreSQL in all environments
@@ -276,7 +276,7 @@ Create `app/helpers/seo_helper.rb` with methods for:
 ### 4b. Per-Page SEO
 
 Every calculator view must call the SEO helper to set:
-- `<title>`: "Mortgage Calculator - Free Online Tool | CalcWise"
+- `<title>`: "Mortgage Calculator - Free Online Tool | Calc Hammer"
 - `<meta description>`: Unique, keyword-rich, ~155 characters
 - Canonical URL
 - Open Graph tags

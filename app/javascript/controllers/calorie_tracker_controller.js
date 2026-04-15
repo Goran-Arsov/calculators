@@ -43,7 +43,7 @@ export default class extends Controller {
 
   loadAll() {
     try {
-      return JSON.parse(localStorage.getItem("calcwise_calorie_log") || "{}")
+      return JSON.parse(localStorage.getItem("calchammer_calorie_log") || "{}")
     } catch { return {} }
   }
 
@@ -67,7 +67,7 @@ export default class extends Controller {
     while (dates.length > this.constructor.MAX_DAYS) {
       delete all[dates.shift()]
     }
-    localStorage.setItem("calcwise_calorie_log", JSON.stringify(all))
+    localStorage.setItem("calchammer_calorie_log", JSON.stringify(all))
   }
 
   updateBasal() {

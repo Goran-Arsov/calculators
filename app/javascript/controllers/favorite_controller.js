@@ -17,7 +17,7 @@ export default class extends Controller {
       favorites.unshift({ slug: this.slugValue, name: this.nameValue, path: this.pathValue })
     }
 
-    localStorage.setItem("calcwise_favorites", JSON.stringify(favorites.slice(0, 20)))
+    localStorage.setItem("calchammer_favorites", JSON.stringify(favorites.slice(0, 20)))
     this.updateAppearance()
   }
 
@@ -34,7 +34,7 @@ export default class extends Controller {
 
   #loadFavorites() {
     try {
-      return JSON.parse(localStorage.getItem("calcwise_favorites") || "[]")
+      return JSON.parse(localStorage.getItem("calchammer_favorites") || "[]")
     } catch {
       return []
     }

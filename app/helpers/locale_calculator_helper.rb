@@ -22,11 +22,11 @@ module LocaleCalculatorHelper
       description: t("#{key}.description"),
       canonical: locale_canonical_url,
       og: {
-        title: "#{t("#{key}.title")} | CalcWise",
+        title: "#{t("#{key}.title")} | Calc Hammer",
         description: t("#{key}.description"),
         url: locale_canonical_url,
         type: "website",
-        site_name: "CalcWise"
+        site_name: "Calc Hammer"
       }
     )
   end

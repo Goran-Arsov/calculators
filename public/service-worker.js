@@ -1,6 +1,6 @@
-// CalcWise Service Worker — offline calculator support
+// Calc Hammer Service Worker — offline calculator support
 const CACHE_VERSION = "2"
-const CACHE_NAME = `calcwise-v${CACHE_VERSION}`
+const CACHE_NAME = `calchammer-v${CACHE_VERSION}`
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",

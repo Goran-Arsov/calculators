@@ -5,7 +5,7 @@ class ErrorHandlingTest < ActionDispatch::IntegrationTest
     get blog_post_url("nonexistent-slug-that-does-not-exist")
     assert_response :not_found
     assert_includes response.body, "404"
-    assert_includes response.body, "CalcWise"
+    assert_includes response.body, "Calc Hammer"
   end
 
   test "RecordNotFound renders 404 JSON via rescue_from" do

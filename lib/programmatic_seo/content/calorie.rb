@@ -11,7 +11,7 @@ module ProgrammaticSeo
           {
             slug: "calories-to-lose-weight-calculator",
             route_name: "programmatic_calories_to_lose_weight",
-            title: "Calories to Lose Weight Calculator | CalcWise",
+            title: "Calories to Lose Weight Calculator | Calc Hammer",
             h1: "Calories to Lose Weight Calculator",
             meta_description: "Calculate exactly how many calories you need to eat per day to lose weight safely. Get a personalized deficit plan based on your body and goals.",
             intro: "Losing weight comes down to consuming fewer calories than your body burns, but finding the right " \
@@ -99,7 +99,7 @@ module ProgrammaticSeo
           {
             slug: "calories-to-gain-muscle-calculator",
             route_name: "programmatic_calories_to_gain_muscle",
-            title: "Calories to Gain Muscle Calculator | CalcWise",
+            title: "Calories to Gain Muscle Calculator | Calc Hammer",
             h1: "Calories to Gain Muscle Calculator",
             meta_description: "Calculate how many calories you need to build muscle effectively. Get a lean bulking calorie target with optimal protein, carb, and fat breakdowns.",
             intro: "Building muscle requires eating more calories than you burn, but the size of that surplus determines " \
@@ -187,7 +187,7 @@ module ProgrammaticSeo
           {
             slug: "calorie-calculator-for-women",
             route_name: "programmatic_calorie_calculator_women",
-            title: "Calorie Calculator for Women | CalcWise",
+            title: "Calorie Calculator for Women | Calc Hammer",
             h1: "Calorie Calculator for Women",
             meta_description: "Calculate your daily calorie needs with female-specific factors. Accounts for hormonal cycles, body composition, and women's health considerations.",
             intro: "Women have different caloric needs than men due to generally lower muscle mass, different hormonal " \
@@ -275,7 +275,7 @@ module ProgrammaticSeo
           {
             slug: "calorie-calculator-for-men",
             route_name: "programmatic_calorie_calculator_men",
-            title: "Calorie Calculator for Men | CalcWise",
+            title: "Calorie Calculator for Men | Calc Hammer",
             h1: "Calorie Calculator for Men",
             meta_description: "Calculate your daily calorie needs with male-specific factors. Accounts for muscle mass, testosterone, and men's metabolic characteristics.",
             intro: "Men generally have higher caloric needs than women due to greater muscle mass, larger body frames, " \
@@ -362,7 +362,7 @@ module ProgrammaticSeo
           {
             slug: "maintenance-calories-calculator",
             route_name: "programmatic_maintenance_calories",
-            title: "Maintenance Calories Calculator | CalcWise",
+            title: "Maintenance Calories Calculator | Calc Hammer",
             h1: "Maintenance Calories Calculator",
             meta_description: "Find your exact maintenance calorie level — the number of calories you need to eat each day to maintain your current weight without gaining or losing.",
             intro: "Your maintenance calorie level is the single most important number in nutrition because every " \

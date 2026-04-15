@@ -35,7 +35,7 @@ export default class extends Controller {
 
   #loadVisits() {
     try {
-      return JSON.parse(localStorage.getItem("calcwise_recent_visits") || "[]")
+      return JSON.parse(localStorage.getItem("calchammer_recent_visits") || "[]")
     } catch {
       return []
     }

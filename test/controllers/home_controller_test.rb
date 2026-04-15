@@ -7,7 +7,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", /Free Online/
   end
 
-  test "homepage contains CalcWise branding" do
+  test "homepage contains Calc Hammer branding" do
     get root_url
     assert_select "h1", /calculator/i
   end
@@ -22,7 +22,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     schemas = css_select("script[type='application/ld+json']").map { |s| JSON.parse(s.text) }
     org_schema = schemas.find { |s| s["@type"] == "Organization" }
     assert_not_nil org_schema, "Expected Organization schema on homepage"
-    assert_equal "CalcWise", org_schema["name"]
+    assert_equal "Calc Hammer", org_schema["name"]
   end
 
   test "homepage includes website schema" do
@@ -30,6 +30,6 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     schemas = css_select("script[type='application/ld+json']").map { |s| JSON.parse(s.text) }
     website_schema = schemas.find { |s| s["@type"] == "WebSite" }
     assert_not_nil website_schema, "Expected WebSite schema on homepage"
-    assert_equal "CalcWise", website_schema["name"]
+    assert_equal "Calc Hammer", website_schema["name"]
   end
 end

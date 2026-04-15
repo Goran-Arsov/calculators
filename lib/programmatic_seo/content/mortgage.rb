@@ -11,7 +11,7 @@ module ProgrammaticSeo
           {
             slug: "mortgage-monthly-payment-calculator",
             route_name: "programmatic_mortgage_monthly_payment",
-            title: "Mortgage Monthly Payment Calculator | CalcWise",
+            title: "Mortgage Monthly Payment Calculator | Calc Hammer",
             h1: "Mortgage Monthly Payment Calculator",
             meta_description: "Calculate your exact monthly mortgage payment including principal, interest, taxes, and insurance. Free instant results for any loan amount and term.",
             intro: "Knowing your monthly mortgage payment before you commit to a home loan is one of the most " \
@@ -100,7 +100,7 @@ module ProgrammaticSeo
           {
             slug: "mortgage-affordability-calculator",
             route_name: "programmatic_mortgage_affordability",
-            title: "Mortgage Affordability Calculator | CalcWise",
+            title: "Mortgage Affordability Calculator | Calc Hammer",
             h1: "Mortgage Affordability Calculator",
             meta_description: "Find out how much house you can afford based on your income, debts, and down payment. Get a realistic home price range in seconds.",
             intro: "Before you start browsing listings or attending open houses, understanding exactly how much home " \
@@ -189,7 +189,7 @@ module ProgrammaticSeo
           {
             slug: "mortgage-refinance-savings-calculator",
             route_name: "programmatic_mortgage_refinance_savings",
-            title: "Mortgage Refinance Savings Calculator | CalcWise",
+            title: "Mortgage Refinance Savings Calculator | Calc Hammer",
             h1: "Mortgage Refinance Savings Calculator",
             meta_description: "Calculate how much you could save by refinancing your mortgage. Compare your current loan to new rates and see monthly and lifetime savings.",
             intro: "Refinancing your mortgage can unlock substantial savings if market rates have dropped since you " \
@@ -279,7 +279,7 @@ module ProgrammaticSeo
           {
             slug: "mortgage-interest-only-calculator",
             route_name: "programmatic_mortgage_interest_only",
-            title: "Interest-Only Mortgage Payment Calculator | CalcWise",
+            title: "Interest-Only Mortgage Payment Calculator | Calc Hammer",
             h1: "Interest-Only Mortgage Payment Calculator",
             meta_description: "Calculate interest-only mortgage payments and compare them to fully amortizing loans. Understand the true cost of interest-only periods.",
             intro: "An interest-only mortgage allows borrowers to pay just the interest portion of their loan for " \
@@ -369,7 +369,7 @@ module ProgrammaticSeo
           {
             slug: "mortgage-down-payment-calculator",
             route_name: "programmatic_mortgage_down_payment",
-            title: "Mortgage Down Payment Calculator | CalcWise",
+            title: "Mortgage Down Payment Calculator | Calc Hammer",
             h1: "Mortgage Down Payment Calculator",
             meta_description: "Calculate the optimal down payment for your home purchase. See how different amounts affect your monthly payment, PMI, and total loan cost.",
             intro: "Choosing the right down payment amount is a balancing act between reducing your monthly payment " \
@@ -459,7 +459,7 @@ module ProgrammaticSeo
           {
             slug: "mortgage-amortization-breakdown-calculator",
             route_name: "programmatic_mortgage_amortization_breakdown",
-            title: "Mortgage Amortization Schedule Calculator | CalcWise",
+            title: "Mortgage Amortization Schedule Calculator | Calc Hammer",
             h1: "Mortgage Amortization Breakdown Calculator",
             meta_description: "View a detailed mortgage amortization schedule showing principal, interest, and remaining balance for every payment. Free year-by-year breakdown.",
             intro: "An amortization schedule reveals exactly where every dollar of your mortgage payment goes over " \

@@ -1,21 +1,21 @@
 class SuitesController < ApplicationController
   def home_buying
     set_meta_tags(
-      title: "Home Buying Calculator Suite - CalcWise",
+      title: "Home Buying Calculator Suite - Calc Hammer",
       description: "Complete home buying calculator suite: mortgage, down payment, affordability, and closing costs in one guided workflow."
     )
   end
 
   def fitness
     set_meta_tags(
-      title: "Fitness Calculator Suite - CalcWise",
+      title: "Fitness Calculator Suite - Calc Hammer",
       description: "Complete fitness calculator suite: BMI, TDEE, macro calculator, and calorie planning in one guided workflow."
     )
   end
 
   def business_startup
     set_meta_tags(
-      title: "Business Startup Calculator Suite - CalcWise",
+      title: "Business Startup Calculator Suite - Calc Hammer",
       description: "Complete business startup calculator suite: break-even analysis, loan, ROI, and salary planning."
     )
   end

@@ -11,7 +11,7 @@ module ProgrammaticSeo
           {
             slug: "restaurant-tip-percentage-calculator",
             route_name: "programmatic_restaurant_tip_percentage",
-            title: "Restaurant Tip Percentage Calculator | CalcWise",
+            title: "Restaurant Tip Percentage Calculator | Calc Hammer",
             h1: "Restaurant Tip Percentage Calculator",
             meta_description: "Calculate the right tip percentage at restaurants. Get suggested amounts for counter service, casual dining, and fine dining based on your bill total.",
             intro: "Figuring out how much to tip at a restaurant should never feel stressful. This calculator removes the guesswork " \
@@ -97,7 +97,7 @@ module ProgrammaticSeo
           {
             slug: "delivery-tip-percentage-calculator",
             route_name: "programmatic_delivery_tip_percentage",
-            title: "Delivery Tip Calculator for Food Drivers | CalcWise",
+            title: "Delivery Tip Calculator for Food Drivers | Calc Hammer",
             h1: "Delivery Tip Percentage Calculator",
             meta_description: "Calculate fair tips for food delivery drivers. Accounts for order size, distance, weather conditions, and service quality to suggest the right amount.",
             intro: "Tipping delivery drivers fairly is important because they use their own vehicles, pay for gas, and " \
@@ -183,7 +183,7 @@ module ProgrammaticSeo
           {
             slug: "hotel-tip-calculator",
             route_name: "programmatic_hotel_tip",
-            title: "Hotel Tip Calculator for Staff & Services | CalcWise",
+            title: "Hotel Tip Calculator for Staff & Services | Calc Hammer",
             h1: "Hotel Tip Calculator",
             meta_description: "Calculate appropriate tips for hotel housekeeping, bellhops, concierge, valet, and room service. Get per-night and per-service tipping guidelines.",
             intro: "Hotels involve interactions with many different staff members, each providing a distinct service that " \
@@ -269,7 +269,7 @@ module ProgrammaticSeo
           {
             slug: "taxi-tip-calculator",
             route_name: "programmatic_taxi_tip",
-            title: "Taxi & Rideshare Tip Calculator | CalcWise",
+            title: "Taxi & Rideshare Tip Calculator | Calc Hammer",
             h1: "Taxi & Rideshare Tip Calculator",
             meta_description: "Calculate tips for taxi and rideshare drivers. Get fare-based suggestions for Uber, Lyft, and traditional cab rides with distance and service adjustments.",
             intro: "Whether you hail a yellow cab on the street or request an Uber or Lyft through your phone, knowing " \
@@ -355,7 +355,7 @@ module ProgrammaticSeo
           {
             slug: "buffet-tip-calculator",
             route_name: "programmatic_buffet_tip",
-            title: "Buffet Tip Calculator | How Much to Tip | CalcWise",
+            title: "Buffet Tip Calculator | How Much to Tip | Calc Hammer",
             h1: "Buffet Tip Calculator",
             meta_description: "Calculate how much to tip at a buffet restaurant. Get recommendations based on the level of service, drink refills, and table maintenance provided.",
             intro: "Buffet restaurants present a unique tipping dilemma. You serve yourself from the food stations, but " \

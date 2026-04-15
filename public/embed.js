@@ -1,8 +1,8 @@
 /**
- * CalcWise Embed Loader
+ * Calc Hammer Embed Loader
  *
  * Usage:
- *   <script src="https://calcwise.com/embed.js"
+ *   <script src="https://calchammer.com/embed.js"
  *           data-calculator="mortgage"
  *           data-category="finance"
  *           data-theme="auto"
@@ -29,14 +29,14 @@
       a.href = current.src
       return a.origin
     }
-    return "https://calcwise.com"
+    return "https://calchammer.com"
   })()
 
   function init(script) {
     var calculator = script.getAttribute("data-calculator")
     var category = script.getAttribute("data-category")
     if (!calculator || !category) {
-      console.warn("[CalcWise] data-calculator and data-category are required.")
+      console.warn("[Calc Hammer] data-calculator and data-category are required.")
       return
     }
 
@@ -55,7 +55,7 @@
 
     // Create container
     var container = document.createElement("div")
-    container.className = "calcwise-embed"
+    container.className = "calchammer-embed"
     container.style.cssText =
       "width:" + width + ";" +
       (maxWidth ? "max-width:" + maxWidth + ";" : "") +
@@ -81,7 +81,7 @@
     link.href = ORIGIN + "/" + encodeURIComponent(category) + "/" + encodeURIComponent(calculator)
     link.target = "_blank"
     link.rel = "noopener"
-    link.textContent = "Powered by CalcWise"
+    link.textContent = "Powered by Calc Hammer"
     link.style.cssText =
       "display:block;text-align:center;padding:6px 0;font-size:11px;" +
       "color:#9ca3af;text-decoration:none;font-family:system-ui,sans-serif;"
@@ -96,7 +96,7 @@
     window.addEventListener("message", function (event) {
       if (event.origin !== ORIGIN) return
       var data = event.data
-      if (data && data.type === "calcwise:resize" && data.height) {
+      if (data && data.type === "calchammer:resize" && data.height) {
         // Match by src to support multiple embeds on one page
         if (iframe.contentWindow === event.source) {
           iframe.style.height = data.height + "px"

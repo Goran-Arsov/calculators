@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Persists metric/imperial preference in localStorage and auto-selects on connect.
 // Usage: <select data-controller="unit-preference" data-action="change->unit-preference#save">
 export default class extends Controller {
-  static values = { key: { type: String, default: "calcwise_unit_system" } }
+  static values = { key: { type: String, default: "calchammer_unit_system" } }
 
   connect() {
     const saved = localStorage.getItem(this.keyValue)

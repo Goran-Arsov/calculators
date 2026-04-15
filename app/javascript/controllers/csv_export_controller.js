@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static values = { filename: { type: String, default: "calcwise-results.csv" } }
+  static values = { filename: { type: String, default: "calchammer-results.csv" } }
 
   export() {
     const table = this.element.closest("[data-csv-export-source]") ||

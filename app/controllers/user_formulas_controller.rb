@@ -5,7 +5,7 @@ class UserFormulasController < ApplicationController
     @formula = UserFormula.new
     set_meta_tags(
       title: "Submit a Custom Calculator",
-      description: "Submit your own calculator formula to CalcWise. Create custom calculators for finance, math, health, and more."
+      description: "Submit your own calculator formula to Calc Hammer. Create custom calculators for finance, math, health, and more."
     )
   end
 

@@ -16,11 +16,11 @@ class BrowseController < ApplicationController
       description: "Browse all free online calculators and tools: finance, math, physics, health, construction, everyday, and IT tools. Find exactly what you need.",
       canonical: browse_url,
       og: {
-        title: "All Calculators & Tools | CalcWise",
-        description: "Browse every calculator and tool on CalcWise. Finance, math, physics, health, construction, everyday, and IT tools.",
+        title: "All Calculators & Tools | Calc Hammer",
+        description: "Browse every calculator and tool on Calc Hammer. Finance, math, physics, health, construction, everyday, and IT tools.",
         url: browse_url,
         type: "website",
-        site_name: "CalcWise"
+        site_name: "Calc Hammer"
       }
     )
   end

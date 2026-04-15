@@ -14,11 +14,11 @@ class ItToolsController < ApplicationController
       description: "Free IT tools for developers: hash generators, JSON formatters, JWT decoders, subnet calculators, code minifiers, PDF converters, and more. No sign-up required.",
       canonical: it_tools_url,
       og: {
-        title: "IT Tools - Free Online Developer Utilities | CalcWise",
+        title: "IT Tools - Free Online Developer Utilities | Calc Hammer",
         description: "Free online IT tools for developers. Hash generators, JWT decoders, subnet calculators, code formatters, file converters, and more.",
         url: it_tools_url,
         type: "website",
-        site_name: "CalcWise"
+        site_name: "Calc Hammer"
       }
     )
   end

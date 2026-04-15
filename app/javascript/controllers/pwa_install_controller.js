@@ -6,11 +6,11 @@ export default class extends Controller {
   static targets = ["banner"]
 
   connect() {
-    if (localStorage.getItem("calcwise_pwa_dismissed")) return
+    if (localStorage.getItem("calchammer_pwa_dismissed")) return
 
     // Only show install prompt after 3+ page visits
-    const visits = parseInt(localStorage.getItem("calcwise_visit_count") || "0", 10) + 1
-    localStorage.setItem("calcwise_visit_count", visits.toString())
+    const visits = parseInt(localStorage.getItem("calchammer_visit_count") || "0", 10) + 1
+    localStorage.setItem("calchammer_visit_count", visits.toString())
     if (visits < 3) return
 
     this.handleBeforeInstall = (e) => {
@@ -38,6 +38,6 @@ export default class extends Controller {
 
   dismiss() {
     this.element.classList.add("hidden")
-    localStorage.setItem("calcwise_pwa_dismissed", "true")
+    localStorage.setItem("calchammer_pwa_dismissed", "true")
   }
 }

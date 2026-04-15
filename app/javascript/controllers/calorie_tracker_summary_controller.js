@@ -9,7 +9,7 @@ export default class extends Controller {
 
   loadAll() {
     try {
-      return JSON.parse(localStorage.getItem("calcwise_calorie_log") || "{}")
+      return JSON.parse(localStorage.getItem("calchammer_calorie_log") || "{}")
     } catch { return {} }
   }
 
@@ -108,13 +108,13 @@ export default class extends Controller {
     if (!confirm(`Delete all entries for ${date}?`)) return
     const all = this.loadAll()
     delete all[date]
-    localStorage.setItem("calcwise_calorie_log", JSON.stringify(all))
+    localStorage.setItem("calchammer_calorie_log", JSON.stringify(all))
     this.render()
   }
 
   clearAll() {
     if (!confirm("Delete ALL calorie tracking data? This cannot be undone.")) return
-    localStorage.removeItem("calcwise_calorie_log")
+    localStorage.removeItem("calchammer_calorie_log")
     this.render()
   }
 }

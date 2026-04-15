@@ -18,12 +18,12 @@ export default class CalculationHistoryController extends Controller {
     })
     // Keep only last 20 entries
     const trimmed = history.slice(0, 20)
-    localStorage.setItem("calcwise_history", JSON.stringify(trimmed))
+    localStorage.setItem("calchammer_history", JSON.stringify(trimmed))
   }
 
   static load() {
     try {
-      return JSON.parse(localStorage.getItem("calcwise_history") || "[]")
+      return JSON.parse(localStorage.getItem("calchammer_history") || "[]")
     } catch {
       return []
     }
@@ -55,7 +55,7 @@ export default class CalculationHistoryController extends Controller {
   }
 
   clearHistory() {
-    localStorage.removeItem("calcwise_history")
+    localStorage.removeItem("calchammer_history")
     this.render()
   }
 

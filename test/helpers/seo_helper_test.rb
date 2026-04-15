@@ -7,7 +7,7 @@ class SeoHelperTest < ActionView::TestCase
     result = calculator_schema_with_ratings(
       name: "Test Calculator",
       description: "A test calculator",
-      url: "https://calcwise.com/test",
+      url: "https://calchammer.com/test",
       category: "Test",
       calculator_slug: "nonexistent-slug"
     )
@@ -23,7 +23,7 @@ class SeoHelperTest < ActionView::TestCase
     result = calculator_schema_with_ratings(
       name: "Test Calculator",
       description: "A test calculator",
-      url: "https://calcwise.com/test",
+      url: "https://calchammer.com/test",
       category: "Test",
       calculator_slug: "test-calc"
     )
@@ -35,7 +35,7 @@ class SeoHelperTest < ActionView::TestCase
     result = calculator_schema_with_ratings(
       name: "Test Calculator",
       description: "A test calculator",
-      url: "https://calcwise.com/test",
+      url: "https://calchammer.com/test",
       category: "Test",
       calculator_slug: "no-ratings-slug"
     )
@@ -46,7 +46,7 @@ class SeoHelperTest < ActionView::TestCase
     result = organization_schema
     assert_match %r{application/ld\+json}, result
     assert_match %r{"@type":"Organization"}, result
-    assert_match %r{"name":"CalcWise"}, result
+    assert_match %r{"name":"Calc Hammer"}, result
     assert_match %r{/icon\.png}, result
     assert_match %r{"sameAs":\[\]}, result
   end
@@ -59,7 +59,7 @@ class SeoHelperTest < ActionView::TestCase
     set_meta_tags_for_calculator(
       title: "Test",
       description: "A test",
-      url: "https://calcwise.com/test",
+      url: "https://calchammer.com/test",
       category: "finance"
     )
     assert_equal "Test", captured_tags[:title]
@@ -75,7 +75,7 @@ class SeoHelperTest < ActionView::TestCase
     set_meta_tags_for_calculator(
       title: "Test",
       description: "A test",
-      url: "https://calcwise.com/test",
+      url: "https://calchammer.com/test",
       category: "finance",
       updated_at: timestamp
     )
@@ -84,8 +84,8 @@ class SeoHelperTest < ActionView::TestCase
 
   test "breadcrumb_schema returns valid JSON-LD with BreadcrumbList type" do
     items = [
-      { name: "Home", url: "https://calcwise.com/" },
-      { name: "Finance", url: "https://calcwise.com/finance" },
+      { name: "Home", url: "https://calchammer.com/" },
+      { name: "Finance", url: "https://calchammer.com/finance" },
       { name: "Mortgage Calculator" }
     ]
     result = breadcrumb_schema(items)
@@ -96,7 +96,7 @@ class SeoHelperTest < ActionView::TestCase
     assert_equal 3, parsed["itemListElement"].length
     assert_equal 1, parsed["itemListElement"][0]["position"]
     assert_equal "Home", parsed["itemListElement"][0]["name"]
-    assert_equal "https://calcwise.com/", parsed["itemListElement"][0]["item"]
+    assert_equal "https://calchammer.com/", parsed["itemListElement"][0]["item"]
     # Every itemListElement must have an "item" field — Google Search Console flags missing
     # "item" as a critical Breadcrumbs structured data issue. When a caller doesn't provide a
     # URL for the last (current) breadcrumb, the helper falls back to the current request URL.
@@ -126,7 +126,7 @@ class SeoHelperTest < ActionView::TestCase
     result = calculator_schema(
       name: "Mortgage Calculator",
       description: "Calculate mortgage payments",
-      url: "https://calcwise.com/finance/mortgage-calculator",
+      url: "https://calchammer.com/finance/mortgage-calculator",
       category: "Finance"
     )
     assert_match %r{application/ld\+json}, result
@@ -135,7 +135,7 @@ class SeoHelperTest < ActionView::TestCase
     assert_equal "SoftwareApplication", parsed["@type"]
     assert_equal "Mortgage Calculator", parsed["name"]
     assert_equal "Calculate mortgage payments", parsed["description"]
-    assert_equal "https://calcwise.com/finance/mortgage-calculator", parsed["url"]
+    assert_equal "https://calchammer.com/finance/mortgage-calculator", parsed["url"]
     assert_equal "Finance", parsed["applicationCategory"]
     assert_equal "Web", parsed["operatingSystem"]
     assert_equal "Offer", parsed["offers"]["@type"]
@@ -147,7 +147,7 @@ class SeoHelperTest < ActionView::TestCase
     result = calculator_schema(
       name: "BMI Calculator",
       description: "Calculate BMI",
-      url: "https://calcwise.com/health/bmi-calculator",
+      url: "https://calchammer.com/health/bmi-calculator",
       category: "Health",
       rating_value: 4.5,
       rating_count: 120
@@ -164,7 +164,7 @@ class SeoHelperTest < ActionView::TestCase
     result = calculator_schema(
       name: "Test Calc",
       description: "Test",
-      url: "https://calcwise.com/test",
+      url: "https://calchammer.com/test",
       category: "Test"
     )
     parsed = JSON.parse(result.match(/>(.+)</m)[1])
@@ -176,7 +176,7 @@ class SeoHelperTest < ActionView::TestCase
     parsed = JSON.parse(result.match(/>(.+)</m)[1])
     assert_equal "https://schema.org", parsed["@context"]
     assert_equal "Organization", parsed["@type"]
-    assert_equal "CalcWise", parsed["name"]
+    assert_equal "Calc Hammer", parsed["name"]
     assert_match %r{/icon\.png}, parsed["logo"]
     assert_kind_of Array, parsed["sameAs"]
   end
@@ -186,7 +186,7 @@ class SeoHelperTest < ActionView::TestCase
     result = article_schema(
       title: "How to Calculate Mortgage Payments",
       description: "A guide to mortgage calculations",
-      url: "https://calcwise.com/blog/mortgage-guide",
+      url: "https://calchammer.com/blog/mortgage-guide",
       published_at: published
     )
     assert_match %r{application/ld\+json}, result
@@ -197,9 +197,9 @@ class SeoHelperTest < ActionView::TestCase
     assert_equal "A guide to mortgage calculations", parsed["description"]
     assert_equal "2026-03-15T10:00:00Z", parsed["datePublished"]
     assert_equal "Person", parsed["author"]["@type"]
-    assert_equal "CalcWise Team", parsed["author"]["name"]
+    assert_equal "Calc Hammer Team", parsed["author"]["name"]
     assert_equal "Organization", parsed["publisher"]["@type"]
-    assert_equal "CalcWise", parsed["publisher"]["name"]
+    assert_equal "Calc Hammer", parsed["publisher"]["name"]
     assert_nil parsed["dateModified"]
     assert_nil parsed["image"]
   end
@@ -210,7 +210,7 @@ class SeoHelperTest < ActionView::TestCase
     result = article_schema(
       title: "Test Article",
       description: "Test description",
-      url: "https://calcwise.com/blog/test",
+      url: "https://calchammer.com/blog/test",
       published_at: published,
       updated_at: updated
     )
@@ -223,7 +223,7 @@ class SeoHelperTest < ActionView::TestCase
     result = article_schema(
       title: "Test Article",
       description: "Test description",
-      url: "https://calcwise.com/blog/test",
+      url: "https://calchammer.com/blog/test",
       published_at: published,
       updated_at: nil
     )
@@ -236,11 +236,11 @@ class SeoHelperTest < ActionView::TestCase
     result = article_schema(
       title: "Test Article",
       description: "Test description",
-      url: "https://calcwise.com/blog/test",
+      url: "https://calchammer.com/blog/test",
       published_at: published,
-      image: "https://calcwise.com/images/blog/test.png"
+      image: "https://calchammer.com/images/blog/test.png"
     )
     parsed = JSON.parse(result.match(/>(.+)</m)[1])
-    assert_equal "https://calcwise.com/images/blog/test.png", parsed["image"]
+    assert_equal "https://calchammer.com/images/blog/test.png", parsed["image"]
   end
 end

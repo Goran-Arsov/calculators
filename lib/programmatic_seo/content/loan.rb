@@ -11,7 +11,7 @@ module ProgrammaticSeo
           {
             slug: "loan-extra-payment-calculator",
             route_name: "programmatic_loan_extra_payment",
-            title: "Loan Payment Calculator with Extra Payments | CalcWise",
+            title: "Loan Payment Calculator with Extra Payments | Calc Hammer",
             h1: "Loan Extra Payment Calculator",
             meta_description: "Calculate how extra loan payments reduce your payoff time and total interest. See exactly how much you save by paying more each month.",
             intro: "Making extra payments on your loan is one of the most straightforward ways to save money on " \
@@ -98,7 +98,7 @@ module ProgrammaticSeo
           {
             slug: "how-much-can-i-borrow-calculator",
             route_name: "programmatic_how_much_can_i_borrow",
-            title: "How Much Can I Borrow Calculator | CalcWise",
+            title: "How Much Can I Borrow Calculator | Calc Hammer",
             h1: "How Much Can I Borrow Calculator",
             meta_description: "Find out the maximum loan amount you can qualify for based on your income, expenses, and desired payment. Get a realistic borrowing limit instantly.",
             intro: "Before you start shopping for a car, home, or any major purchase that requires financing, knowing " \
@@ -187,7 +187,7 @@ module ProgrammaticSeo
           {
             slug: "loan-interest-calculator",
             route_name: "programmatic_loan_interest",
-            title: "Loan Interest Calculator | CalcWise",
+            title: "Loan Interest Calculator | Calc Hammer",
             h1: "Loan Interest Calculator",
             meta_description: "Calculate the total interest you will pay on any loan. See how rate, term, and payment schedule affect your total borrowing cost.",
             intro: "The interest on a loan is the true cost of borrowing money, and it often adds up to a startling " \
@@ -274,7 +274,7 @@ module ProgrammaticSeo
           {
             slug: "loan-payoff-date-calculator",
             route_name: "programmatic_loan_payoff_date",
-            title: "Loan Payoff Date Calculator | CalcWise",
+            title: "Loan Payoff Date Calculator | Calc Hammer",
             h1: "Loan Payoff Date Calculator",
             meta_description: "Find out exactly when your loan will be paid off. Enter your balance, rate, and payment to see your debt-free date and total remaining cost.",
             intro: "Knowing your exact loan payoff date transforms an abstract debt into a concrete countdown with a " \
@@ -361,7 +361,7 @@ module ProgrammaticSeo
           {
             slug: "loan-comparison-calculator",
             route_name: "programmatic_loan_comparison",
-            title: "Loan Comparison Calculator | CalcWise",
+            title: "Loan Comparison Calculator | Calc Hammer",
             h1: "Loan Comparison Calculator",
             meta_description: "Compare two or more loan offers side by side. See the difference in monthly payments, total interest, and total cost to find the best deal.",
             intro: "When you receive multiple loan offers, comparing them on monthly payment alone can be misleading " \

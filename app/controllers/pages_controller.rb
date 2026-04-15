@@ -2,7 +2,7 @@ class PagesController < ApplicationController
   def privacy_policy
     set_meta_tags(
       title: "Privacy Policy",
-      description: "CalcWise privacy policy. Learn how we handle your data, cookies, and advertising.",
+      description: "Calc Hammer privacy policy. Learn how we handle your data, cookies, and advertising.",
       canonical: privacy_policy_url
     )
   end
@@ -10,15 +10,15 @@ class PagesController < ApplicationController
   def terms_of_service
     set_meta_tags(
       title: "Terms of Service",
-      description: "CalcWise terms of service. Read our terms and conditions for using our free online calculators.",
+      description: "Calc Hammer terms of service. Read our terms and conditions for using our free online calculators.",
       canonical: terms_of_service_url
     )
   end
 
   def about
     set_meta_tags(
-      title: "About CalcWise",
-      description: "CalcWise provides 74+ free online calculators for finance, math, physics, health, construction, and everyday life. Learn about our mission.",
+      title: "About Calc Hammer",
+      description: "Calc Hammer provides 74+ free online calculators for finance, math, physics, health, construction, and everyday life. Learn about our mission.",
       canonical: about_url
     )
   end
@@ -26,7 +26,7 @@ class PagesController < ApplicationController
   def contact
     set_meta_tags(
       title: "Contact Us",
-      description: "Get in touch with CalcWise. Send us feedback, report issues, or suggest new calculators.",
+      description: "Get in touch with Calc Hammer. Send us feedback, report issues, or suggest new calculators.",
       canonical: contact_url
     )
   end
@@ -34,7 +34,7 @@ class PagesController < ApplicationController
   def disclaimer
     set_meta_tags(
       title: "Disclaimer",
-      description: "Important disclaimers about CalcWise calculators. Our tools are for informational purposes only and not a substitute for professional advice.",
+      description: "Important disclaimers about Calc Hammer calculators. Our tools are for informational purposes only and not a substitute for professional advice.",
       canonical: disclaimer_url
     )
   end

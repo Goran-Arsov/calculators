@@ -36,16 +36,16 @@ module SeoHelper
       description: description,
       canonical: url,
       og: {
-        title: "#{title} | CalcWise",
+        title: "#{title} | Calc Hammer",
         description: description,
         url: url,
         type: "website",
-        site_name: "CalcWise",
+        site_name: "Calc Hammer",
         image: og_image_url(category)
       },
       twitter: {
         card: "summary_large_image",
-        title: "#{title} | CalcWise",
+        title: "#{title} | Calc Hammer",
         description: description,
         image: og_image_url(category)
       }
@@ -60,16 +60,16 @@ module SeoHelper
       description: description,
       canonical: url,
       og: {
-        title: "#{title} | CalcWise",
+        title: "#{title} | Calc Hammer",
         description: description,
         url: url,
         type: "website",
-        site_name: "CalcWise",
+        site_name: "Calc Hammer",
         image: og_image_url(category)
       },
       twitter: {
         card: "summary_large_image",
-        title: "#{title} | CalcWise",
+        title: "#{title} | Calc Hammer",
         description: description,
         image: og_image_url(category)
       }
@@ -134,7 +134,7 @@ module SeoHelper
     schema = {
       "@context" => "https://schema.org",
       "@type" => "WebSite",
-      "name" => "CalcWise",
+      "name" => "Calc Hammer",
       "url" => url,
       "description" => "Free online calculators for finance, math, physics, health, construction, and everyday life.",
       "potentialAction" => {
@@ -153,7 +153,7 @@ module SeoHelper
     schema = {
       "@context" => "https://schema.org",
       "@type" => "Organization",
-      "name" => "CalcWise",
+      "name" => "Calc Hammer",
       "url" => default_domain,
       "logo" => "#{default_domain}/icon.png",
       "description" => "Free online calculators for finance, math, physics, health, construction, and everyday life.",
@@ -172,11 +172,11 @@ module SeoHelper
       "datePublished" => published_at.iso8601,
       "author" => {
         "@type" => "Person",
-        "name" => "CalcWise Team"
+        "name" => "Calc Hammer Team"
       },
       "publisher" => {
         "@type" => "Organization",
-        "name" => "CalcWise",
+        "name" => "Calc Hammer",
         "url" => default_domain
       },
       "mainEntityOfPage" => {

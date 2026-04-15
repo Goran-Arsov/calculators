@@ -1,4 +1,4 @@
-# CalcWise — Multi-Category Calculator Hub
+# Calc Hammer — Multi-Category Calculator Hub
 
 A Ruby on Rails web app serving free calculators across multiple
 categories (finance, math, health, construction, etc.), optimized

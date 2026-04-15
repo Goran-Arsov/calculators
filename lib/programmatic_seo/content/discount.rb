@@ -11,7 +11,7 @@ module ProgrammaticSeo
           {
             slug: "double-discount-calculator",
             route_name: "programmatic_double_discount",
-            title: "Double Discount Calculator | CalcWise",
+            title: "Double Discount Calculator | Calc Hammer",
             h1: "Double Discount Calculator",
             meta_description: "Calculate the final price after two successive discounts. See why a 20% + 10% discount is not the same as 30% off and find the true savings.",
             intro: "Double discounts occur when two percentage reductions are applied one after the other, such as " \
@@ -99,7 +99,7 @@ module ProgrammaticSeo
           {
             slug: "bogo-calculator",
             route_name: "programmatic_bogo",
-            title: "BOGO Calculator - Buy One Get One Free | CalcWise",
+            title: "BOGO Calculator - Buy One Get One Free | Calc Hammer",
             h1: "Buy One Get One (BOGO) Calculator",
             meta_description: "Calculate the real per-unit cost of buy-one-get-one deals. Compare BOGO free, BOGO 50% off, and other promotions to find the true savings.",
             intro: "Buy-one-get-one promotions are among the most popular retail deals, but the actual per-unit savings " \
@@ -182,7 +182,7 @@ module ProgrammaticSeo
           {
             slug: "percent-off-price-calculator",
             route_name: "programmatic_percent_off_price",
-            title: "Percent Off Calculator - Find the Sale Price | CalcWise",
+            title: "Percent Off Calculator - Find the Sale Price | Calc Hammer",
             h1: "Percent Off Price Calculator",
             meta_description: "Calculate the sale price after any percentage discount. Enter the original price and percent off to instantly see how much you save and the final cost.",
             intro: "Percentage-off sales are everywhere — from 15% off a new sweater to 40% off electronics during " \
@@ -265,7 +265,7 @@ module ProgrammaticSeo
           {
             slug: "original-price-before-discount-calculator",
             route_name: "programmatic_original_price_before_discount",
-            title: "Original Price Before Discount Calculator | CalcWise",
+            title: "Original Price Before Discount Calculator | Calc Hammer",
             h1: "Original Price Before Discount Calculator",
             meta_description: "Find the original price of an item from the sale price and discount percentage. Reverse-calculate what an item cost before the markdown was applied.",
             intro: "Sometimes you see a sale price and a discount percentage but the original price is not clearly " \

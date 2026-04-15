@@ -24,7 +24,7 @@ export default class extends Controller {
   }
 
   #recordVisit(slug) {
-    const key = "calcwise_recent_visits"
+    const key = "calchammer_recent_visits"
     let visits = []
 
     try {

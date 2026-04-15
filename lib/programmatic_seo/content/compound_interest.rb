@@ -11,7 +11,7 @@ module ProgrammaticSeo
           {
             slug: "daily-compound-interest-calculator",
             route_name: "programmatic_daily_compound_interest",
-            title: "Daily Compound Interest Calculator | CalcWise",
+            title: "Daily Compound Interest Calculator | Calc Hammer",
             h1: "Daily Compound Interest Calculator",
             meta_description: "Calculate compound interest with daily compounding. See how your savings or investments grow when interest is added every single day.",
             intro: "Daily compounding is the most frequent compounding interval offered by banks and financial " \
@@ -96,7 +96,7 @@ module ProgrammaticSeo
           {
             slug: "monthly-compound-interest-calculator",
             route_name: "programmatic_monthly_compound_interest",
-            title: "Monthly Compound Interest Calculator | CalcWise",
+            title: "Monthly Compound Interest Calculator | Calc Hammer",
             h1: "Monthly Compound Interest Calculator",
             meta_description: "Calculate how your money grows with monthly compounding. See the month-by-month breakdown of interest earned and total balance over time.",
             intro: "Monthly compounding is one of the most common compounding frequencies used by banks, credit unions, " \
@@ -180,7 +180,7 @@ module ProgrammaticSeo
           {
             slug: "compound-interest-with-contributions-calculator",
             route_name: "programmatic_compound_interest_contributions",
-            title: "Compound Interest Calculator with Monthly Contributions | CalcWise",
+            title: "Compound Interest Calculator with Monthly Contributions | Calc Hammer",
             h1: "Compound Interest with Monthly Contributions Calculator",
             meta_description: "Calculate compound interest with regular monthly deposits. See how consistent contributions supercharge your investment growth over time.",
             intro: "The real power of compound interest reveals itself when you combine it with regular monthly " \
@@ -266,7 +266,7 @@ module ProgrammaticSeo
           {
             slug: "money-doubling-time-calculator",
             route_name: "programmatic_money_doubling_time",
-            title: "How Long to Double Your Money Calculator | CalcWise",
+            title: "How Long to Double Your Money Calculator | Calc Hammer",
             h1: "Money Doubling Time Calculator",
             meta_description: "Calculate how long it takes to double your money at any interest rate. Uses the Rule of 72 and exact compound interest formula for precise results.",
             intro: "One of the most powerful concepts in personal finance is understanding how quickly your money can " \
@@ -352,7 +352,7 @@ module ProgrammaticSeo
           {
             slug: "compound-vs-simple-interest-calculator",
             route_name: "programmatic_compound_vs_simple_interest",
-            title: "Compound Interest vs Simple Interest Calculator | CalcWise",
+            title: "Compound Interest vs Simple Interest Calculator | Calc Hammer",
             h1: "Compound Interest vs Simple Interest Calculator",
             meta_description: "Compare compound and simple interest side by side. See how much more you earn or owe with compounding versus flat simple interest over any time period.",
             intro: "Simple interest and compound interest produce very different outcomes over time, yet many people " \
