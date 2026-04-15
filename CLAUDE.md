@@ -78,7 +78,9 @@ action driven by a route param.
 ### Stimulus Controllers
 
 One Stimulus controller per calculator. Results update in real-time
-on `input` events — **never on form submission, never on page reload**.
+on `input` events, or on explicit form/button submission when a
+calculator's workload makes live updates impractical (e.g. heavy
+generation, rate-limited APIs). **Never on page reload.**
 
 ### Ad Slots
 
