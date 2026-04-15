@@ -23,7 +23,7 @@ export default class extends Controller {
     this.invoiceDateTarget.value = dateStr
 
     const ymd = dateStr.replace(/-/g, "")
-    this.invoiceNumberTarget.value = `INV-${ymd}-001`
+    this.invoiceNumberTarget.value = `${this.l.invoiceNumberPrefix}-${ymd}-001`
 
     this.addLineItem()
     this.updatePreview()
@@ -54,6 +54,9 @@ export default class extends Controller {
       noItems:               v.noItems               || "No items added yet",
       businessNameFallback:  v.businessNameFallback  || "Your Business Name",
       clientNameFallback:    v.clientNameFallback    || "Client Name",
+      invoiceNumberPrefix:   v.invoiceNumberPrefix   || "INV",
+      rowUnitPlaceholder:    v.rowUnitPlaceholder    || "pcs, kg,...",
+      rowItemCodePlaceholder: v.rowItemCodePlaceholder || "SKU-001",
       item:                  v.item                  || "Item",
       code:                  v.code                  || "Code",
       measure:               v.measure               || "Measure",
@@ -84,7 +87,7 @@ export default class extends Controller {
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">${this.escapeHtml(l.code)}</label>
-            <input type="text" placeholder="SKU-001" class="w-full text-sm placeholder-gray-200" data-field="item_code" data-action="input->${ctrl}#recalculate">
+            <input type="text" placeholder="${this.escapeHtml(l.rowItemCodePlaceholder)}" class="w-full text-sm placeholder-gray-200" data-field="item_code" data-action="input->${ctrl}#recalculate">
           </div>
         </div>
         <div class="pt-5">
@@ -96,7 +99,7 @@ export default class extends Controller {
       <div class="grid grid-cols-3 gap-2 mb-2">
         <div>
           <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">${this.escapeHtml(l.measure)}</label>
-          <input type="text" placeholder="pcs, kg,..." class="w-full text-sm placeholder-gray-200" data-field="unit" data-action="input->${ctrl}#recalculate">
+          <input type="text" placeholder="${this.escapeHtml(l.rowUnitPlaceholder)}" class="w-full text-sm placeholder-gray-200" data-field="unit" data-action="input->${ctrl}#recalculate">
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">${this.escapeHtml(l.unitPrice)}</label>

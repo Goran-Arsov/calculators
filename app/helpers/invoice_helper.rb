@@ -35,6 +35,12 @@ module InvoiceHelper
       businessNameFallback: t("#{placeholders_key}.business_name", default: "Your Business Name"),
       clientNameFallback: t("#{placeholders_key}.client_name", default: "Client Name"),
 
+      # Auto-generated default invoice number gets this prefix (e.g. "INV" → "INV-20260415-001").
+      invoiceNumberPrefix: t("#{labels_key}.invoice_number_prefix", default: "INV"),
+      # Per-row placeholders inside the JS line-item template so they flow through i18n.
+      rowUnitPlaceholder: t("#{placeholders_key}.row_unit", default: "pcs, kg,..."),
+      rowItemCodePlaceholder: t("#{placeholders_key}.row_item_code", default: "SKU-001"),
+
       # Detailed invoice extras (ignored by the simple variant)
       item: t("#{key_prefix}.pdf.item", default: "Item"),
       code: t("#{key_prefix}.pdf.code", default: "Code"),

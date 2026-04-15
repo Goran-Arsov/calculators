@@ -24,7 +24,7 @@ export default class extends Controller {
     this.invoiceDateTarget.value = dateStr
 
     const ymd = dateStr.replace(/-/g, "")
-    this.invoiceNumberTarget.value = `INV-${ymd}-001`
+    this.invoiceNumberTarget.value = `${this.l.invoiceNumberPrefix}-${ymd}-001`
 
     this.addLineItem()
     this.updatePreview()
@@ -56,7 +56,8 @@ export default class extends Controller {
       invoiceNumber:         v.invoiceNumber         || "Invoice #",
       noItems:               v.noItems               || "No items added yet",
       businessNameFallback:  v.businessNameFallback  || "Your Business Name",
-      clientNameFallback:    v.clientNameFallback    || "Client Name"
+      clientNameFallback:    v.clientNameFallback    || "Client Name",
+      invoiceNumberPrefix:   v.invoiceNumberPrefix   || "INV"
     }
   }
 
