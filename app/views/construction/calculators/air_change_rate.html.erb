@@ -1,0 +1,195 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Air Change Rate Calculator - ACH from CFM & Room Volume",
+  description: "Free air change rate calculator. Convert between ACH (air changes per hour), CFM airflow, and room volume for ventilation and infiltration design.",
+  canonical: construction_air_change_rate_url,
+  og: {
+    title: "Air Change Rate Calculator | Calc Hammer",
+    description: "ACH, CFM, and room volume conversions for ventilation design.",
+    url: construction_air_change_rate_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Air Change Rate Calculator", url: construction_air_change_rate_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate air changes per hour?", answer: "Multiply the airflow in CFM (cubic feet per minute) by 60 to get cubic feet per hour, then divide by the room volume in cubic feet. ACH = CFM × 60 ÷ volume. For a 10 × 12 × 8 ft room (960 cu ft) supplied with 100 CFM, ACH = 100 × 60 ÷ 960 = 6.25 air changes per hour. In metric: ACH = (m³/h) ÷ (m³)." },
+  { question: "What is a good ACH for a bedroom?", answer: "ASHRAE recommends 3 ACH for sleeping areas, 4 ACH for living rooms, 6 ACH for bathrooms, 8 ACH for laundry rooms, and 10 ACH for kitchens. Commercial spaces need more: classrooms 6 ACH, offices 4-6 ACH, gyms 8 ACH, restaurants 10 ACH. These are outdoor-air ventilation rates, separate from total circulation (including recirculated air)." },
+  { question: "What is the difference between ACH and cfm/person?", answer: "ACH measures air turnover relative to room volume. CFM/person measures fresh air per occupant and scales with occupancy. ASHRAE 62.1 and 62.2 combine both: required outdoor air = Rp × people + Ra × floor area. Use ACH when the goal is to dilute contaminants in the space; use CFM/person when the concern is people-generated CO2 and odors." },
+  { question: "How does ACH relate to infiltration?", answer: "Infiltration is the uncontrolled air leakage through the building envelope. Older leaky houses may have 1.0 to 2.0 natural ACH from infiltration alone; modern tight houses are 0.25 to 0.5 ACH. A blower door test at 50 Pa (ACH50) gives a standardized leakage rate, which is divided by ~17 to estimate natural ACH. ACH50 = 7 roughly equals 0.5 natural ACH in most climates." },
+  { question: "Can ACH be too high?", answer: "Yes. Excessive ventilation wastes energy heating or cooling fresh outdoor air and can drop indoor humidity too low in winter. The target is 'enough' not 'maximum.' For most residential spaces, 0.35 ACH outdoor air (or the ASHRAE 62.2 formula result, whichever is higher) is the correct amount. Kitchens and bathrooms may spike briefly to 30-100 ACH during cooking and showers via exhaust fans." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Air Change Rate Calculator",
+  description: "Calculate air changes per hour (ACH), required CFM, or room volume for ventilation design.",
+  url: construction_air_change_rate_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "air-change-rate-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Air Change Rate Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Air Change Rate Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate air changes per hour (ACH) from airflow and room volume, or solve for required CFM or volume given a target ACH. Imperial and metric units.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="air-change-rate-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-air-change-rate-calculator-target="unitSystem" data-action="change->air-change-rate-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (CFM, cu ft)</option>
+              <option value="metric">Metric (m³/h, m³)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Solve for</label>
+            <select data-air-change-rate-calculator-target="mode" data-action="change->air-change-rate-calculator#updateMode" class="w-full">
+              <option value="find_ach" selected>ACH (from CFM and volume)</option>
+              <option value="find_cfm">CFM (from target ACH and volume)</option>
+              <option value="find_volume">Volume (from CFM and target ACH)</option>
+            </select>
+          </div>
+          <div data-air-change-rate-calculator-target="cfmGroup">
+            <label for="ach-cfm" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-air-change-rate-calculator-target="cfmLabel">Airflow (CFM)</span></label>
+            <input id="ach-cfm" type="number" inputmode="decimal" data-air-change-rate-calculator-target="cfm" data-action="input->air-change-rate-calculator#calculate" class="w-full" value="100" step="10" min="0">
+          </div>
+          <div data-air-change-rate-calculator-target="volumeGroup">
+            <label for="ach-vol" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-air-change-rate-calculator-target="volumeLabel">Room volume (cu ft)</span></label>
+            <input id="ach-vol" type="number" inputmode="decimal" data-air-change-rate-calculator-target="volume" data-action="input->air-change-rate-calculator#calculate" class="w-full" value="1000" step="50" min="0">
+          </div>
+          <div data-air-change-rate-calculator-target="achGroup" class="hidden">
+            <label for="ach-target" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target ACH</label>
+            <input id="ach-target" type="number" inputmode="decimal" data-air-change-rate-calculator-target="targetAch" data-action="input->air-change-rate-calculator#calculate" class="w-full" value="6" step="0.5" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">ACH</span>
+              <span class="text-2xl font-extrabold text-teal-700 dark:text-teal-400" data-air-change-rate-calculator-target="resultAch">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Required CFM</span>
+              <span class="text-xl font-bold text-teal-700 dark:text-teal-400" data-air-change-rate-calculator-target="resultCfm">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Required volume</span>
+              <span class="text-xl font-bold text-teal-700 dark:text-teal-400" data-air-change-rate-calculator-target="resultVolume">—</span>
+            </div>
+          </div>
+          <button data-action="click->air-change-rate-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-teal-600 to-cyan-700 hover:from-teal-700 hover:to-cyan-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "air-change-rate-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>The ACH Formula</h2>
+      <p>
+        Air changes per hour is the number of times the air in a room is completely replaced in one hour. The math is trivial but important: <strong>ACH = CFM × 60 ÷ volume</strong>. A 100 CFM fan exhausting a 1,000 cu ft bathroom gives 6 ACH — the whole room of air is replaced every 10 minutes. Higher ACH means more dilution of contaminants (CO2, humidity, odors, pathogens) but also more energy spent heating or cooling fresh air.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Typical Target ACH by Space</h2>
+      <p>
+        <strong>Bedrooms and living rooms:</strong> 3-4 ACH (ASHRAE 62.2 residential). <strong>Bathrooms:</strong> 6-8 ACH continuous or 50 CFM intermittent during use. <strong>Kitchens:</strong> 10+ ACH with the range hood on during cooking (vented to outside). <strong>Laundry rooms:</strong> 8 ACH. <strong>Offices:</strong> 4-6 ACH. <strong>Classrooms:</strong> 6 ACH (higher because of student CO2 production). <strong>Gyms:</strong> 8-10 ACH. <strong>Restaurants and bars:</strong> 10 ACH. <strong>Hospital isolation rooms:</strong> 12+ ACH with negative pressure.
+      </p>
+
+      <h3>Infiltration vs Ventilation</h3>
+      <p>
+        Infiltration is unplanned air leakage through the building envelope — wall penetrations, windows, outlets, rim joists. Old houses have 1-2 ACH of natural infiltration; modern code-compliant houses are 0.25-0.5 ACH; passive houses are under 0.1 ACH. Ventilation is intentional air supply from fans, vents, or windows. ASHRAE 62.2 sets the minimum total outdoor air (natural infiltration + mechanical ventilation) for healthy indoor air.
+      </p>
+
+      <h3>CFM vs ACH</h3>
+      <p>
+        CFM (airflow) is the physical rate of air movement. ACH (air change rate) is CFM relative to room volume. A 100 CFM fan gives 6 ACH in a small bathroom but only 1 ACH in a large open living room. Engineers use both: ACH for dilution of contaminants relative to space, and CFM per person for load-based fresh air sizing.
+      </p>
+
+      <h2>Recommended ACH by Room Type</h2>
+      <p>Industry-standard outdoor-air change rates from ASHRAE 62.1/62.2 and industry best practices:</p>
+      <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-gray-300 dark:border-gray-600">
+            <th class="py-2">Space</th>
+            <th class="py-2">Recommended ACH</th>
+            <th class="py-2">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Bedroom</td><td>3-4</td><td>ASHRAE 62.2 residential minimum</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Living room</td><td>3-4</td><td>Same as bedroom</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Bathroom</td><td>6-8</td><td>Continuous; or 50 CFM intermittent during use</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Kitchen</td><td>10-15</td><td>Range hood vented outside, 100 CFM min</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Laundry room</td><td>8-10</td><td>Moisture control</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Office</td><td>4-6</td><td>ASHRAE 62.1 per-person</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Classroom</td><td>6-10</td><td>High CO2 from students</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Gym / exercise</td><td>8-12</td><td>Sweat and body heat</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Restaurant dining</td><td>8-12</td><td>Food odors</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Restaurant kitchen</td><td>20-40</td><td>Heavy cooking + makeup air</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Hospital operating room</td><td>20+</td><td>FGI Guidelines</td></tr>
+          <tr><td class="py-1">Hospital isolation room</td><td>12+</td><td>Negative pressure, CDC</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How many air changes should my basement get?</h3>
+      <p>Basement conditioned space: 0.35 ACH minimum outdoor air. Unconditioned crawl space: 1 CFM per 50 sq ft of ground area per IRC.</p>
+
+      <h3>Does ACH50 equal natural ACH?</h3>
+      <p>No. ACH50 is a pressure-test result at 50 Pa. Divide ACH50 by the LBL N-factor (typically 15-20 depending on climate and stories) to estimate natural ACH.</p>
+
+      <h3>What ACH is recommended for COVID-19?</h3>
+      <p>CDC recommends 6 ACH minimum (4 outdoor + equivalent filtration from MERV 13+ recirculated air) in occupied indoor spaces to reduce transmission risk.</p>
+
+      <h3>Can I use a bathroom fan to hit the ACH target?</h3>
+      <p>Yes for the bathroom. For whole-house ACH, you need a continuous ERV/HRV or a low-speed exhaust fan running 24/7.</p>
+
+      <h3>How do I measure actual room volume?</h3>
+      <p>Length × width × average ceiling height. For a 12 × 15 ft room with 8 ft ceilings, volume = 1,440 cu ft.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "ERV HRV Ventilation Calculator", description: "ASHRAE 62.2 required vent CFM.", path: construction_erv_hrv_ventilation_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Duct Size Calculator", description: "Round or rectangular duct size.", path: construction_duct_size_path, icon_path: "M4 4h16v4H4z" },
+      { name: "HVAC BTU Calculator", description: "Room-by-room BTU sizing.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Attic Ventilation Calculator", description: "Net free area for soffit and ridge vents.", path: construction_attic_ventilation_path, icon_path: "M3 12l9-9 9 9" },
+      { name: "Psychrometric Calculator", description: "Dew point, wet bulb, humidity ratio.", path: construction_psychrometric_path, icon_path: "M3 6l3 1" },
+      { name: "Dehumidifier Sizing Calculator", description: "Pints per day by area.", path: construction_dehumidifier_sizing_path, icon_path: "M12 2c-5.33 4.55-8 8.48-8 11.8" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("air-change-rate-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

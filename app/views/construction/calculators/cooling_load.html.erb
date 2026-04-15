@@ -1,0 +1,233 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Cooling Load Calculator - Whole House AC Sizing (BTU/hr)",
+  description: "Free whole-house cooling load calculator. Includes solar gain, people, lights, and infiltration per Manual J. Size your central AC or mini-split in BTU/hr and tons.",
+  canonical: construction_cooling_load_url,
+  og: {
+    title: "Cooling Load Calculator | Calc Hammer",
+    description: "Whole-house cooling load for sizing AC and heat pumps.",
+    url: construction_cooling_load_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Cooling Load Calculator", url: construction_cooling_load_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate cooling load?", answer: "Cooling load is the sum of heat gained through conduction (walls, roof, windows), solar gain through glass, heat from people and lights, and heat carried by infiltrating outdoor air. The formulas are Q_conduction = U × A × ΔT, Q_solar = A × SHGC × peak solar irradiance, Q_people ≈ 300 BTU/hr each, and Q_lighting = watts × 3.412. Sum everything at design conditions to get total BTU/hr." },
+  { question: "How many tons of AC do I need?", answer: "Divide your total cooling load in BTU/hr by 12,000 to get tons. A 2,000 sq ft well-insulated house in a mild climate typically needs 2 to 2.5 tons. In hot humid climates with many west-facing windows, the same house might need 3 to 4 tons. Always calculate the actual load — rule-of-thumb sizing (like 500 sq ft per ton) oversizes most modern houses." },
+  { question: "Why does oversizing an AC cause problems?", answer: "Oversized air conditioners cool the air so fast that they shut off before they can dehumidify the room. The result is a cold clammy house in summer. Oversized units also short-cycle, wear out faster, and cost more upfront. Match capacity to the calculated load — no more than 15% oversized." },
+  { question: "What is SHGC and why does it matter?", answer: "Solar Heat Gain Coefficient measures how much solar radiation passes through a window. Single-pane clear glass has SHGC around 0.86. Double-pane low-E argon is about 0.40. Solar-control glass (spectrally selective) can go as low as 0.20. On a west-facing wall, switching from SHGC 0.60 to SHGC 0.30 can cut cooling load by several thousand BTU/hr." },
+  { question: "What is the difference between heat loss and cooling load?", answer: "Heat loss is what you need to make up in winter and sizes the furnace or heat pump's heating output. Cooling load is summer heat gain and sizes the AC or heat pump's cooling capacity. They use the same conduction formula but opposite ΔT, plus cooling adds solar, people, and internal gains. In cold climates heat loss governs; in hot climates cooling load governs." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Cooling Load Calculator",
+  description: "Calculate whole-house cooling load in BTU/hr and tons for AC and heat pump sizing.",
+  url: construction_cooling_load_url,
+  category: "HomeApplication",
+  calculator_slug: "cooling-load-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Cooling Load Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Cooling Load Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Size your central AC or heat pump by calculating the whole-house cooling load in BTU/hr and tons. Includes conduction, solar gain, people, lights, and infiltration. Imperial and metric units.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="cooling-load-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-cooling-load-calculator-target="unitSystem" data-action="change->cooling-load-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (sq ft, °F, BTU/hr)</option>
+              <option value="metric">Metric (m², °C, W)</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-cooling-load-calculator-target="wallAreaLabel">Wall area (sq ft)</span></label>
+              <input type="number" inputmode="decimal" data-cooling-load-calculator-target="wallArea" data-action="input->cooling-load-calculator#calculate" class="w-full" value="1200" step="1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-cooling-load-calculator-target="wallRLabel">Wall R-value</span></label>
+              <input type="number" inputmode="decimal" data-cooling-load-calculator-target="wallR" data-action="input->cooling-load-calculator#calculate" class="w-full" value="13" step="0.5" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-cooling-load-calculator-target="roofAreaLabel">Roof area (sq ft)</span></label>
+              <input type="number" inputmode="decimal" data-cooling-load-calculator-target="roofArea" data-action="input->cooling-load-calculator#calculate" class="w-full" value="1500" step="1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-cooling-load-calculator-target="roofRLabel">Roof R-value</span></label>
+              <input type="number" inputmode="decimal" data-cooling-load-calculator-target="roofR" data-action="input->cooling-load-calculator#calculate" class="w-full" value="38" step="0.5" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-cooling-load-calculator-target="windowAreaLabel">Window area (sq ft)</span></label>
+              <input type="number" inputmode="decimal" data-cooling-load-calculator-target="windowArea" data-action="input->cooling-load-calculator#calculate" class="w-full" value="150" step="1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-cooling-load-calculator-target="windowULabel">Window U</span></label>
+              <input type="number" inputmode="decimal" data-cooling-load-calculator-target="windowU" data-action="input->cooling-load-calculator#calculate" class="w-full" value="0.35" step="0.01" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Window SHGC (0-1)</label>
+              <input type="number" inputmode="decimal" data-cooling-load-calculator-target="windowShgc" data-action="input->cooling-load-calculator#calculate" class="w-full" value="0.40" step="0.05" min="0" max="1">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Main window orientation</label>
+              <select data-cooling-load-calculator-target="orientation" data-action="change->cooling-load-calculator#calculate" class="w-full">
+                <option value="n">North</option>
+                <option value="s">South</option>
+                <option value="e">East</option>
+                <option value="w" selected>West (worst case)</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">People (occupants)</label>
+              <input type="number" inputmode="numeric" data-cooling-load-calculator-target="people" data-action="input->cooling-load-calculator#calculate" class="w-full" value="4" step="1" min="0">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Lighting / appliances (W)</label>
+              <input type="number" inputmode="decimal" data-cooling-load-calculator-target="watts" data-action="input->cooling-load-calculator#calculate" class="w-full" value="500" step="50" min="0">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-cooling-load-calculator-target="indoorLabel">Indoor design (°F)</span></label>
+              <input type="number" inputmode="decimal" data-cooling-load-calculator-target="indoorT" data-action="input->cooling-load-calculator#calculate" class="w-full" value="75" step="1">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-cooling-load-calculator-target="outdoorLabel">Outdoor design (°F)</span></label>
+              <input type="number" inputmode="decimal" data-cooling-load-calculator-target="outdoorT" data-action="input->cooling-load-calculator#calculate" class="w-full" value="95" step="1">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Infiltration (CFM)</label>
+            <input type="number" inputmode="decimal" data-cooling-load-calculator-target="infil" data-action="input->cooling-load-calculator#calculate" class="w-full" value="100" step="10" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-sky-50 to-cyan-50 dark:from-sky-900/20 dark:to-cyan-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Walls</span><span class="text-base font-bold text-sky-700 dark:text-sky-400" data-cooling-load-calculator-target="resultWalls">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Roof</span><span class="text-base font-bold text-sky-700 dark:text-sky-400" data-cooling-load-calculator-target="resultRoof">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Windows (cond.)</span><span class="text-base font-bold text-sky-700 dark:text-sky-400" data-cooling-load-calculator-target="resultWindows">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Windows (solar)</span><span class="text-base font-bold text-sky-700 dark:text-sky-400" data-cooling-load-calculator-target="resultSolar">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">People</span><span class="text-base font-bold text-sky-700 dark:text-sky-400" data-cooling-load-calculator-target="resultPeople">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Lighting</span><span class="text-base font-bold text-sky-700 dark:text-sky-400" data-cooling-load-calculator-target="resultLights">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Infiltration</span><span class="text-base font-bold text-sky-700 dark:text-sky-400" data-cooling-load-calculator-target="resultInfil">—</span></div>
+            <div class="flex justify-between items-center pt-3 border-t border-sky-200/50 dark:border-sky-800/50"><span class="text-gray-700 dark:text-gray-300 text-sm">Total cooling load</span><span class="text-2xl font-extrabold text-sky-700 dark:text-sky-400" data-cooling-load-calculator-target="resultTotalBtu">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">AC size</span><span class="text-base font-bold text-sky-700 dark:text-sky-400" data-cooling-load-calculator-target="resultTons">—</span></div>
+          </div>
+          <button data-action="click->cooling-load-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-sky-600 to-cyan-700 hover:from-sky-700 hover:to-cyan-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "cooling-load-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Cooling Load Is Calculated</h2>
+      <p>
+        A proper cooling load calculation adds up every source of heat entering the house on a hot design day. Conduction through walls, roof, and windows follows Q = U × A × ΔT, using the outdoor design temperature minus your indoor setpoint (typically 75 °F). Solar gain through windows is A × SHGC × peak solar irradiance — west and east windows see the most heat during the day because the sun hits them at a low angle. People contribute about 300 BTU/hr each (sensible) plus another 300 latent. Lights and appliances add heat at 3.412 BTU/hr per watt. Air that leaks in from outside carries heat too: 1.08 × CFM × ΔT for the sensible portion.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Tons, BTU/hr, and kW</h2>
+      <p>
+        Air conditioner capacity is measured in tons in North America. One ton = 12,000 BTU/hr, the amount of heat needed to melt one ton of ice in 24 hours. So a 3-ton AC removes 36,000 BTU/hr of heat at rated conditions. Divide your total calculated load by 12,000 to get the required tonnage. In metric, use kilowatts: 3.516 kW per ton.
+      </p>
+
+      <h3>Don't Oversize</h3>
+      <p>
+        Sizing based on "500 sq ft per ton" is a shortcut that oversizes most modern houses and leaves older poorly-insulated ones undersized. An oversized AC runs short cycles, removes little moisture, leaves the air clammy, and wears itself out. Match the equipment to the calculated load with no more than 15% headroom. Heat pumps are often sized to the heating load and supplemented with backup heat or electric strips for peak cold, rather than oversized for cooling.
+      </p>
+
+      <h3>Window Orientation and SHGC</h3>
+      <p>
+        Single-pane clear glass passes about 86% of incoming solar heat. Double-pane argon Low-E around 30-40%. Solar-control glass (spectrally selective) can drop to 20%. For a 150 sq ft west-facing window, reducing SHGC from 0.60 to 0.30 cuts solar gain from 18,000 to 9,000 BTU/hr at design — nearly a ton of capacity.
+      </p>
+
+      <h2>Typical Cooling Load by Home Size and Climate</h2>
+      <p>
+        These are rough benchmark ranges for single-family homes at design conditions (95 °F outdoor, 75 °F indoor, west-facing windows). Use them to sanity-check your calculator result — a well-sized system should land near the middle of the range for your house quality:
+      </p>
+      <ul>
+        <li><strong>1,000 sq ft, tight & well-insulated (R-21 walls, R-49 roof, Low-E windows):</strong> 12,000-18,000 BTU/hr (1.0-1.5 tons)</li>
+        <li><strong>1,500 sq ft, average construction (R-13 walls, R-38 roof, double-pane):</strong> 24,000-30,000 BTU/hr (2.0-2.5 tons)</li>
+        <li><strong>2,000 sq ft, average:</strong> 30,000-42,000 BTU/hr (2.5-3.5 tons)</li>
+        <li><strong>2,500 sq ft, older leaky (R-11 walls, R-19 roof, single-pane):</strong> 42,000-54,000 BTU/hr (3.5-4.5 tons)</li>
+        <li><strong>3,000 sq ft, older leaky:</strong> 54,000-72,000 BTU/hr (4.5-6 tons)</li>
+      </ul>
+      <p>
+        The old "500 sq ft per ton" rule consistently oversizes modern tight houses by 30-50% and undersizes 1970s homes in hot climates. Actual loads vary 2-3× between a well-sealed new build and an identical footprint from 1975.
+      </p>
+
+      <h3>Tons by Climate Zone</h3>
+      <p>
+        For the same 2,000 sq ft average home at design conditions: <strong>cool-dry zones</strong> (Seattle, Portland) need 1.5-2 tons. <strong>Mixed-humid</strong> (Chicago, DC, Atlanta) need 2.5-3 tons. <strong>Hot-humid</strong> (Miami, Houston, New Orleans) need 3-4 tons. <strong>Hot-dry</strong> (Phoenix, Las Vegas) need 3-5 tons at lower latent load. The difference is primarily outdoor design temperature (85 °F in Seattle vs 108 °F in Phoenix) and humidity.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is this Manual J?</h3>
+      <p>No. ACCA Manual J is room-by-room and accounts for latent load, infiltration rate variation, and shading in detail. Use this for planning; hire a pro for code compliance.</p>
+
+      <h3>Should the AC match the furnace size?</h3>
+      <p>Not necessarily. Heating and cooling loads are usually different — heat loss often exceeds cooling load in cold climates, and vice versa in hot-humid climates.</p>
+
+      <h3>What is latent cooling load?</h3>
+      <p>The BTU required to remove moisture from the air. This calculator estimates sensible only; add 15-25% for latent in humid climates.</p>
+
+      <h3>How does infiltration affect the load?</h3>
+      <p>Air leaking through gaps carries its own heat. A leaky house at 1.0 ACH can add 20% to total cooling load; a tight house at 0.25 ACH adds almost nothing.</p>
+
+      <h3>Can I use this for a heat pump?</h3>
+      <p>Yes — heat pumps use cooling load for capacity selection. Also check heat loss to make sure the unit can heat the house.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Heat Loss Calculator", description: "Whole-house heat loss for furnace and heat pump sizing.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "HVAC BTU Calculator", description: "Quick room-by-room AC BTU sizing.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Heat Pump Capacity Calculator", description: "Derate heat pump output at outdoor temp.", path: construction_heat_pump_capacity_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Duct Size Calculator", description: "Round and rectangular duct sizing.", path: construction_duct_size_path, icon_path: "M4 4h16v4H4z" },
+      { name: "Insulation Calculator", description: "Calculate R-value and thickness.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" },
+      { name: "Window U-Value Calculator", description: "Calculate window U and R-value.", path: construction_window_u_value_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("cooling-load-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

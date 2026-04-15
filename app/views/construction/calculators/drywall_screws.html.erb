@@ -1,0 +1,183 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Drywall Screws Calculator - Screws per Sheet & Pounds",
+  description: "Free drywall screws calculator. Enter drywall area to get the exact number of screws and pounds of fasteners needed for walls, ceilings, and adhesive installs.",
+  canonical: construction_drywall_screws_url,
+  og: {
+    title: "Drywall Screws Calculator | Calc Hammer",
+    description: "Calculate drywall screws and pounds for walls and ceilings.",
+    url: construction_drywall_screws_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Drywall Screws Calculator", url: construction_drywall_screws_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many drywall screws per 4x8 sheet?", answer: "Walls screwed at 16\" OC edges and 24\" OC field need about 32 screws per 4×8 sheet. Walls with tighter 12\" OC field spacing need about 40. Ceilings always need more — 48 screws per sheet at 12\" OC edges and field. Adhesive installations need only about 16 screws per sheet (top and bottom of each stud) since the adhesive carries most of the load." },
+  { question: "What size drywall screws do I need?", answer: "1-1/4\" coarse thread for 1/2\" drywall over wood framing — the standard size. 1-5/8\" for 5/8\" drywall. 1\" for 3/8\" drywall. Use fine-thread screws for steel framing. Always drive screws until the head slightly dimples the paper face without breaking through — a screw gun with an adjustable clutch does this automatically." },
+  { question: "How many pounds of drywall screws do I need?", answer: "A typical 1-1/4\" coarse drywall screw weighs about 1.6 grams, so there are about 280 screws per pound. A 2,000 sq ft job (about 60 sheets) at 32 screws each = 1,920 screws = roughly 7 pounds. Always buy 1 extra pound for waste, strip-outs, and spares. 5-pound and 25-pound boxes are the standard retail sizes." },
+  { question: "Do ceiling installations need more screws?", answer: "Yes — ceilings hold drywall up against gravity, so the pattern is denser: 12\" OC on all edges and field, vs 16\"/24\" on walls. A 4×8 ceiling sheet needs about 48 screws (compared to 32 for the same size wall sheet). Always use 1-5/8\" screws on ceilings (or 2\" for heavy 5/8\" Type X firerated), and never skimp — a ceiling falling is a serious injury hazard." },
+  { question: "Can I use nails instead of screws?", answer: "Yes for walls but screws are the modern standard and hold better. Nail schedule is 7\" OC edges and 8\" OC field for walls, 7\" everywhere for ceilings, and requires 2× as many nails vs screws because nails pop out over time. Most pros go screws-only now except for fire-rated assemblies where nail fastening may be code-required." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Drywall Screws Calculator",
+  description: "Calculate the number of drywall screws needed for walls and ceilings by area, spacing, and installation type.",
+  url: construction_drywall_screws_url,
+  category: "HomeApplication",
+  calculator_slug: "drywall-screws-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Drywall Screws Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Drywall Screws Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate drywall screws and pounds needed for walls, ceilings, and adhesive installs. Uses industry-standard USG / NGC fastener spacing.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="drywall-screws-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-drywall-screws-calculator-target="unitSystem" data-action="change->drywall-screws-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (sq ft, lb)</option>
+              <option value="metric">Metric (m², kg)</option>
+            </select>
+          </div>
+          <div>
+            <label for="ds-area" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-drywall-screws-calculator-target="areaLabel">Drywall area (sq ft)</span></label>
+            <input id="ds-area" type="number" inputmode="decimal" data-drywall-screws-calculator-target="area" data-action="input->drywall-screws-calculator#calculate" class="w-full" value="320" step="10" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Application</label>
+            <select data-drywall-screws-calculator-target="application" data-action="change->drywall-screws-calculator#calculate" class="w-full">
+              <option value="wall_standard" selected>Wall — 16" edges / 24" field (32 / sheet)</option>
+              <option value="wall_strict">Wall — 12" edges / 16" field (40 / sheet)</option>
+              <option value="ceiling">Ceiling — 12" edges and field (48 / sheet)</option>
+              <option value="adhesive">Adhesive + screws — top and bottom only (16 / sheet)</option>
+            </select>
+          </div>
+          <div>
+            <label for="ds-waste" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Waste factor (%)</label>
+            <input id="ds-waste" type="number" inputmode="decimal" data-drywall-screws-calculator-target="waste" data-action="input->drywall-screws-calculator#calculate" class="w-full" value="15" step="5" min="0">
+            <p class="text-xs text-gray-500 mt-1">Typical 10-15% for strip-outs and spares.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900/20 dark:to-gray-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Sheets</span><span class="text-base font-bold text-slate-700 dark:text-slate-300" data-drywall-screws-calculator-target="resultSheets">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Total screws</span><span class="text-base font-bold text-slate-700 dark:text-slate-300" data-drywall-screws-calculator-target="resultScrews">—</span></div>
+            <div class="flex justify-between items-center pt-3 border-t border-slate-200/50 dark:border-slate-800/50"><span class="text-gray-700 dark:text-gray-300 text-sm">With waste</span><span class="text-2xl font-extrabold text-slate-800 dark:text-slate-200" data-drywall-screws-calculator-target="resultWithWaste">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Pounds to buy</span><span class="text-base font-bold text-slate-700 dark:text-slate-300" data-drywall-screws-calculator-target="resultPounds">—</span></div>
+          </div>
+          <button data-action="click->drywall-screws-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-slate-700 to-gray-800 hover:from-slate-800 hover:to-gray-900 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "drywall-screws-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Drywall Fastener Spacing Standards</h2>
+      <p>
+        USG and the Gypsum Association publish fastener spacing schedules for different applications. The calculator uses these standard counts per 4×8 sheet. Walls get the loosest pattern because they only resist pullout, not gravity. Ceilings get the tightest pattern because gravity is constantly trying to pull the sheet down.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Screws per Sheet Quick Reference</h2>
+      <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-gray-300 dark:border-gray-600">
+            <th class="py-2">Application</th>
+            <th class="py-2">Edge spacing</th>
+            <th class="py-2">Field spacing</th>
+            <th class="py-2">Screws / 4×8 sheet</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Standard wall</td><td>16" OC</td><td>24" OC</td><td>32</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Tight wall</td><td>12" OC</td><td>16" OC</td><td>40</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Ceiling</td><td>12" OC</td><td>12" OC</td><td>48</td></tr>
+          <tr><td class="py-1">Adhesive (PL) + screws</td><td>Top and bottom only</td><td>—</td><td>16</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h2>Screw Sizes for Drywall Thickness</h2>
+      <ul>
+        <li><strong>1/4" and 3/8" drywall:</strong> 1" coarse thread #6</li>
+        <li><strong>1/2" drywall (standard):</strong> 1-1/4" coarse thread #6</li>
+        <li><strong>5/8" Type X (ceilings and firerated walls):</strong> 1-5/8" coarse thread #6</li>
+        <li><strong>Double layer 1/2" (1" total):</strong> 2" coarse thread #6</li>
+        <li><strong>Steel framing:</strong> use fine thread screws (32 TPI) instead of coarse (23 TPI)</li>
+      </ul>
+
+      <h3>Packaging Conversion</h3>
+      <p>
+        1-1/4" coarse drywall screws run about <strong>280 per pound</strong>. A 5 lb box contains ~1,400 screws; a 25 lb box contains ~7,000. Larger 1-5/8" screws are heavier — about 220 per pound. Buy in 5 lb boxes for small jobs and 25 lb for anything over 40 sheets.
+      </p>
+
+      <h2>Typical Jobs — Screw Count Reference</h2>
+      <ul>
+        <li><strong>Single bedroom walls (320 sq ft, 10 sheets):</strong> 320 screws + 15% waste = 368 → 1-2 lb</li>
+        <li><strong>Typical 2-bedroom apartment (2,000 sq ft, 63 sheets):</strong> 2,016 screws + waste = 2,320 → 9 lb (1× 5 lb + 1× 5 lb, or 1× 25 lb for value)</li>
+        <li><strong>New 2,500 sq ft single-family home (walls + ceilings, ~250 sheets):</strong> ~10,000 screws + waste = 11,500 → 45 lb (2× 25 lb boxes)</li>
+      </ul>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How deep should drywall screws go?</h3>
+      <p>At least 5/8" into wood framing, 3/8" into steel. The head should dimple the paper without breaking through. An adjustable clutch setting on your screw gun controls depth.</p>
+
+      <h3>Why use adhesive with screws?</h3>
+      <p>Adhesive (like Liquid Nails PL-200) reduces squeaks, nail pops, and the number of fasteners visible for tape. Saves about 50% on screws but adds per-sheet material cost.</p>
+
+      <h3>Should I use drywall nails?</h3>
+      <p>Nails pop out over time as wood dries. Screws hold indefinitely. Modern code allows both, but screws are the standard. Only use nails where code specifically requires them.</p>
+
+      <h3>What is the difference between coarse and fine thread?</h3>
+      <p>Coarse thread (23 TPI) for wood framing — fewer, deeper threads grip wood fibers. Fine thread (32 TPI) for steel studs — smaller threads that can tap into sheet metal.</p>
+
+      <h3>Can I reuse old screws?</h3>
+      <p>Never. Drywall screws that have been removed are weakened at the thread start and can shear under load. Always use new screws.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Drywall Calculator", description: "Calculate drywall sheets, mud, and tape for any room.", path: construction_drywall_path, icon_path: "M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" },
+      { name: "Joist Calculator", description: "Calculate floor joists and max span.", path: construction_joist_path, icon_path: "M4 6h16M4 12h16M4 18h16" },
+      { name: "Stud Count Calculator", description: "Calculate studs for wall framing.", path: construction_stud_count_path, icon_path: "M4 6h16M4 12h16M4 18h16" },
+      { name: "Plywood Sheets Calculator", description: "Calculate plywood for subfloors and sheathing.", path: construction_plywood_sheets_path, icon_path: "M4 5a1 1 0 011-1h14" },
+      { name: "Caulk Calculator", description: "Calculate caulk tubes for any joint.", path: construction_caulk_path, icon_path: "M7 21a4 4 0 01-4-4V5" },
+      { name: "Paint Calculator", description: "Calculate gallons of paint for any room.", path: construction_paint_path, icon_path: "M7 21a4 4 0 01-4-4V5" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("drywall-screws-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

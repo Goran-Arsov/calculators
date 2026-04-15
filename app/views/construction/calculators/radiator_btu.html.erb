@@ -1,0 +1,193 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Radiator BTU Calculator - Output at Any Water Temperature",
+  description: "Free radiator BTU calculator. Calculate actual output of panel, cast iron, and fin-tube baseboard radiators at any supply water, return water, and room temperature.",
+  canonical: construction_radiator_btu_url,
+  og: {
+    title: "Radiator BTU Calculator | Calc Hammer",
+    description: "Actual radiator output at any water and room temperature.",
+    url: construction_radiator_btu_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Radiator BTU Calculator", url: construction_radiator_btu_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I calculate radiator output at lower water temperatures?", answer: "Radiator output = rated output × (actual dT / rated dT) ^ n, where dT is mean water temperature minus room temperature and n is the radiator exponent (1.30 for panel radiators and fin-tube baseboard, 1.45 for cast iron). Lowering mean water temperature from 160 °F to 120 °F (50 °F drop) cuts panel radiator output to about 50% of rated." },
+  { question: "What is rated dT for different radiator types?", answer: "US fin-tube baseboard: rated at 115 °F dT (180 °F water, 65 °F room). US cast iron IBR rating: 100 °F dT (170 °F water, 70 °F room). European EN 442 panel radiators: 50 K dT ≈ 90 °F (70 °C mean water, 20 °C room). Always check the manufacturer data sheet for the specific rating condition." },
+  { question: "Why does water temperature matter so much?", answer: "Radiator heat transfer scales with the temperature difference between the water and the room. Hotter water = bigger dT = more output. Dropping from 180 °F to 120 °F cuts output to roughly 40% of rated on a panel radiator. This is why low-temp hydronic systems (heat pumps, condensing boilers) need larger radiators than traditional 180 °F systems." },
+  { question: "Can I use a heat pump with regular radiators?", answer: "Yes, but you'll need to either oversize the radiators or accept lower output. A heat pump typically produces 110-120 °F supply water. On a radiator rated for 180 °F water, capacity drops to 30-40%. Solutions: upsize the radiators by 2-3×, run lower flow / higher dT through larger panel radiators, or supplement with radiant floor (which works well at 95-110 °F)." },
+  { question: "What exponent do radiators use?", answer: "The dT exponent describes how output scales. Panel radiators (steel, aluminum) tested per EN 442 use n = 1.30. Cast iron uses n = 1.45 because its radiation-dominated heat transfer scales more aggressively with temperature. US fin-tube baseboard uses n = 1.30. Get the exact value from the manufacturer if available; n ≈ 1.33 is a safe default for convection-dominated radiators." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Radiator BTU Calculator",
+  description: "Calculate actual radiator BTU output at any water temperature and room temperature for hydronic heating systems.",
+  url: construction_radiator_btu_url,
+  category: "HomeApplication",
+  calculator_slug: "radiator-btu-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Radiator BTU Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Radiator BTU Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate actual BTU output of panel, cast iron, and fin-tube baseboard radiators at any supply water, return water, and room temperature. Supports the power-law dT exponent per EN 442 and IBR standards.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="radiator-btu-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Temperature units</label>
+            <select data-radiator-btu-calculator-target="unitSystem" data-action="change->radiator-btu-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (°F, BTU/hr)</option>
+              <option value="metric">Metric (°C, W)</option>
+            </select>
+          </div>
+          <div>
+            <label for="rad-rated" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rated output (BTU/hr)</label>
+            <input id="rad-rated" type="number" inputmode="decimal" data-radiator-btu-calculator-target="rated" data-action="input->radiator-btu-calculator#calculate" class="w-full" value="5000" step="100" min="0">
+            <p class="text-xs text-gray-500 mt-1">From the radiator datasheet at rated conditions.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Radiator type</label>
+            <select data-radiator-btu-calculator-target="type" data-action="change->radiator-btu-calculator#calculate" class="w-full">
+              <option value="panel" selected>Panel radiator (EN 442, n=1.30)</option>
+              <option value="cast_iron">Cast iron (IBR, n=1.45)</option>
+              <option value="fin_tube">Fin-tube baseboard (n=1.30)</option>
+            </select>
+          </div>
+          <div>
+            <label for="rad-supply" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-radiator-btu-calculator-target="supplyLabel">Supply water (°F)</span></label>
+            <input id="rad-supply" type="number" inputmode="decimal" data-radiator-btu-calculator-target="supply" data-action="input->radiator-btu-calculator#calculate" class="w-full" value="180" step="1">
+          </div>
+          <div>
+            <label for="rad-return" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-radiator-btu-calculator-target="returnLabel">Return water (°F)</span></label>
+            <input id="rad-return" type="number" inputmode="decimal" data-radiator-btu-calculator-target="return" data-action="input->radiator-btu-calculator#calculate" class="w-full" value="160" step="1">
+          </div>
+          <div>
+            <label for="rad-room" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-radiator-btu-calculator-target="roomLabel">Room temperature (°F)</span></label>
+            <input id="rad-room" type="number" inputmode="decimal" data-radiator-btu-calculator-target="room" data-action="input->radiator-btu-calculator#calculate" class="w-full" value="70" step="1">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Type</span><span class="text-sm font-bold text-red-700 dark:text-red-400" data-radiator-btu-calculator-target="resultLabel">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Mean water</span><span class="text-base font-bold text-red-700 dark:text-red-400" data-radiator-btu-calculator-target="resultMeanWater">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Actual dT</span><span class="text-base font-bold text-red-700 dark:text-red-400" data-radiator-btu-calculator-target="resultDt">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Capacity ratio</span><span class="text-base font-bold text-red-700 dark:text-red-400" data-radiator-btu-calculator-target="resultRatio">—</span></div>
+            <div class="flex justify-between items-center pt-3 border-t border-red-200/50 dark:border-red-800/50"><span class="text-gray-700 dark:text-gray-300 text-sm">Actual output</span><span class="text-2xl font-extrabold text-red-700 dark:text-red-400" data-radiator-btu-calculator-target="resultActualBtu">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">In kW</span><span class="text-base font-bold text-red-700 dark:text-red-400" data-radiator-btu-calculator-target="resultActualW">—</span></div>
+          </div>
+          <button data-action="click->radiator-btu-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-red-600 to-orange-700 hover:from-red-700 hover:to-orange-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "radiator-btu-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>The dT Power-Law Formula</h2>
+      <p>
+        Radiators transfer heat primarily by free convection. The rate is roughly proportional to dT<sup>n</sup>, where dT is the difference between mean water temperature and room temperature, and n is a radiator-type-specific exponent. The formula for actual output at any condition is <strong>BTU_actual = BTU_rated × (dT_actual / dT_rated)<sup>n</sup></strong>. The rated dT depends on the test standard — US fin-tube baseboard uses 115 °F rated dT (180 °F water, 65 °F room), cast iron IBR uses 100 °F, and European panel radiators (EN 442) use 50 K ≈ 90 °F.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Typical Exponents</h2>
+      <p>
+        <strong>n = 1.30</strong> for panel radiators (EN 442) and copper fin-tube baseboard. The 1.30 comes from the empirical behavior of convection-dominated heaters. <strong>n = 1.45</strong> for cast iron radiators because radiation (which scales as T<sup>4</sup> and thus dT<sup>~1.5</sup> at linearization) is a significant fraction of total output. Some manufacturers publish exact exponents from their test data — use those when available. 1.33 is a safe general-purpose default.
+      </p>
+
+      <h3>Why Low-Temperature Hydronics Matter</h3>
+      <p>
+        Traditional oil and gas boilers delivered 180-200 °F water. Modern condensing boilers run 140-160 °F for best efficiency. Heat pumps deliver 95-120 °F. For the same radiator, this shift means dramatically less output: a panel radiator rated for 180 °F water at 70 °F room (dT 110) drops to about 38% of rated at 120 °F water (dT 50). So a retrofit from an oil boiler to an air-source heat pump usually requires either larger radiators, added radiant floor, or accepting longer run times.
+      </p>
+
+      <h3>Sizing for Retrofits</h3>
+      <p>
+        For a heat pump retrofit, pick radiators with 2-3× the calculated heating load at the target low water temperature. A room with 5,000 BTU/hr heat loss on 120 °F water needs a radiator with 13,000 BTU/hr rated output at 180 °F. That sounds extreme until you see that at 120 °F water its real output is 5,000 BTU/hr. Low-temp hydronic design always works backwards from the operating condition, not the rating.
+      </p>
+
+      <h2>Radiator Capacity Ratio at Common Water Temperatures</h2>
+      <p>Output as a fraction of nameplate rating at different mean water temperatures, 70 °F room, panel radiator (n = 1.30) rated at 180 °F water (dT = 110 °F):</p>
+      <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-gray-300 dark:border-gray-600">
+            <th class="py-2">Mean water temp</th>
+            <th class="py-2">dT (water − room)</th>
+            <th class="py-2">Capacity ratio</th>
+            <th class="py-2">Use case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">180 °F (82 °C)</td><td>110 °F</td><td>100%</td><td>Old oil/gas boiler (rating cond)</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">160 °F (71 °C)</td><td>90 °F</td><td>77%</td><td>Standard condensing boiler</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">140 °F (60 °C)</td><td>70 °F</td><td>56%</td><td>Low-temp condensing design</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">130 °F (54 °C)</td><td>60 °F</td><td>46%</td><td>Air-to-water heat pump warm</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">120 °F (49 °C)</td><td>50 °F</td><td>37%</td><td>Typical heat pump design</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">110 °F (43 °C)</td><td>40 °F</td><td>28%</td><td>Heat pump cold weather</td></tr>
+          <tr><td class="py-1">95 °F (35 °C)</td><td>25 °F</td><td>16%</td><td>Radiant floor only</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>
+        <strong>Heat pump retrofit math:</strong> a radiator rated 10,000 BTU/hr at 180 °F delivers only 3,700 BTU/hr at 120 °F water. To heat the same room with a heat pump you need ~2.7× the nameplate capacity. Options: bigger radiators, more radiators, or add radiant floor loops to distribute low-temp heat over more area.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is mean water temperature?</h3>
+      <p>The average of supply and return temperatures. For 180 °F supply and 160 °F return, mean = 170 °F.</p>
+
+      <h3>Can I use a thermostatic radiator valve (TRV)?</h3>
+      <p>Yes — TRVs throttle flow to maintain room temperature. Output varies with both dT and flow, but the dT formula is usually accurate enough for sizing.</p>
+
+      <h3>How do I size radiators for a heat pump?</h3>
+      <p>Use the calculator with your heat pump's design supply temperature (110-120 °F) to find the required rated capacity at standard conditions.</p>
+
+      <h3>Why do European radiators use 50K rated dT?</h3>
+      <p>EN 442 chose 50K because 70 °C water and 20 °C room (typical European conditions) give exactly 50 K dT — standardizing comparison.</p>
+
+      <h3>What is the difference between IBR and SBI ratings?</h3>
+      <p>IBR is Institute of Boiler and Radiator (now HYDI) — the US standard with 170 °F water and 70 °F room. SBI is the Canadian equivalent. Both use n ≈ 1.45 for cast iron.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Heat Loss Calculator", description: "Whole-house heat loss for radiator sizing.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Heat Pump Capacity Calculator", description: "Derate heat pump capacity for cold weather.", path: construction_heat_pump_capacity_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Pipe Friction Loss Calculator", description: "Calculate head loss in hydronic piping.", path: construction_pipe_friction_loss_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "Insulation Calculator", description: "Calculate R-value for walls and roof.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" },
+      { name: "Window U-Value Calculator", description: "Window U-value and R-value.", path: construction_window_u_value_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" },
+      { name: "Heating Cost Calculator", description: "Annual heating cost by fuel and HDD.", path: construction_heating_cost_path, icon_path: "M12 8c-1.657 0-3 .895-3 2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("radiator-btu-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

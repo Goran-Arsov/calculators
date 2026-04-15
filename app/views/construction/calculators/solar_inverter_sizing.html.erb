@@ -1,0 +1,186 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Solar Inverter Sizing Calculator - DC/AC Ratio & kW",
+  description: "Free solar inverter sizing calculator. Enter panel watts and count to get inverter kW, DC/AC ratio, max AC amps, and NEC 690.8 breaker size for grid-tied PV systems.",
+  canonical: construction_solar_inverter_sizing_url,
+  og: {
+    title: "Solar Inverter Sizing Calculator | Calc Hammer",
+    description: "Size a solar inverter from panel wattage with NEC breaker sizing.",
+    url: construction_solar_inverter_sizing_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Solar Inverter Sizing Calculator", url: construction_solar_inverter_sizing_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is DC/AC ratio?", answer: "DC/AC ratio is the PV array's nameplate DC wattage divided by the inverter's nameplate AC wattage. A 9.6 kW DC array with an 8 kW AC inverter has a DC/AC ratio of 1.20. Ratios between 1.15 and 1.30 are standard — the array rarely produces its full DC output at the same time as the inverter's peak, so slightly oversizing the array is more cost-effective than buying a bigger inverter. Very high ratios (1.40+) cause noticeable clipping at peak production." },
+  { question: "What size inverter for a 10 kW solar array?", answer: "At a standard 1.20 DC/AC ratio, a 10 kW DC array pairs with an 8.3 kW AC inverter. Most installers round down to the nearest commercial size — typically an 8 kW or 7.6 kW inverter. Rounding down slightly clips the array during peak sun, but that is more economical than buying a 10 kW inverter that is oversized 99% of the time." },
+  { question: "What is NEC 690.8 inverter breaker sizing?", answer: "NEC 690.8(B) requires the overcurrent protection for a solar inverter's AC output circuit to be sized at 125% of the inverter's maximum continuous current. If a 240 V 8 kW inverter outputs 33.3 A maximum, the breaker must be at least 33.3 × 1.25 = 41.7 A — rounded up to the next standard size, that is 50 A. The 125% factor is a continuous-duty derating rule that applies to all NEC continuous circuits." },
+  { question: "String vs microinverters — which is better?", answer: "String inverters (SolarEdge, Fronius, SMA) are cheaper per watt and work well for unshaded roofs with panels facing the same direction. Microinverters (Enphase IQ series) are 20-30% more expensive but maximize production on shaded or complex roofs because each panel operates independently. For a simple south-facing roof, strings win on cost. For anything with shading, dormers, or multiple azimuths, microinverters usually recover the cost over 25-year system life." },
+  { question: "Can I oversize my inverter for future expansion?", answer: "Yes — oversizing the inverter (DC/AC ratio below 1.0) leaves headroom for adding more panels later. The penalty is slightly lower efficiency at the initial smaller array size (inverters run most efficiently at 70-90% of rated capacity). Under-rating the inverter relative to the array (ratio above 1.30) is usually the smarter choice — you get peak production on average days, some clipping on exceptional ones, and never waste inverter capacity." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Solar Inverter Sizing Calculator",
+  description: "Calculate solar inverter kW, DC/AC ratio, and NEC 690.8 breaker sizing from PV panel watts.",
+  url: construction_solar_inverter_sizing_url,
+  category: "HomeApplication",
+  calculator_slug: "solar-inverter-sizing-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Solar Inverter Sizing Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Solar Inverter Sizing Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the right inverter kW for a solar PV array. Returns DC/AC ratio, maximum AC output current, and the required NEC 690.8 breaker size at 125% of continuous load.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="solar-inverter-sizing-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="si-watts" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Panel wattage (W per panel)</label>
+            <input id="si-watts" type="number" inputmode="decimal" data-solar-inverter-sizing-calculator-target="panelWatts" data-action="input->solar-inverter-sizing-calculator#calculate" class="w-full" value="400" step="5" min="0">
+            <p class="text-xs text-gray-500 mt-1">Typical modern residential panel: 400-440 W.</p>
+          </div>
+          <div>
+            <label for="si-count" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of panels</label>
+            <input id="si-count" type="number" inputmode="numeric" data-solar-inverter-sizing-calculator-target="panelCount" data-action="input->solar-inverter-sizing-calculator#calculate" class="w-full" value="24" step="1" min="1">
+          </div>
+          <div>
+            <label for="si-ratio" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Target DC/AC ratio</label>
+            <input id="si-ratio" type="number" inputmode="decimal" data-solar-inverter-sizing-calculator-target="ratio" data-action="input->solar-inverter-sizing-calculator#calculate" class="w-full" value="1.20" step="0.05" min="1" max="1.5">
+            <p class="text-xs text-gray-500 mt-1">1.15-1.30 is standard. Higher = more clipping at peak.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">AC voltage</label>
+            <select data-solar-inverter-sizing-calculator-target="voltage" data-action="change->solar-inverter-sizing-calculator#calculate" class="w-full">
+              <option value="240" selected>240 V single-phase (US residential)</option>
+              <option value="208">208 V three-phase (small commercial)</option>
+              <option value="480">480 V three-phase (large commercial)</option>
+              <option value="230">230 V (European residential)</option>
+              <option value="400">400 V (European three-phase)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Array DC nameplate</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-solar-inverter-sizing-calculator-target="resultArrayDc">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Inverter AC size</span>
+              <span class="text-2xl font-extrabold text-amber-700 dark:text-amber-400" data-solar-inverter-sizing-calculator-target="resultInverter">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Max AC amps</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-solar-inverter-sizing-calculator-target="resultAmps">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Breaker (NEC 690.8)</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-solar-inverter-sizing-calculator-target="resultBreaker">—</span>
+            </div>
+          </div>
+          <button data-action="click->solar-inverter-sizing-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-yellow-700 hover:from-amber-700 hover:to-yellow-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "solar-inverter-sizing-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Size a Solar Inverter</h2>
+      <p>
+        The simple relationship is <strong>inverter AC kW = array DC kW ÷ DC/AC ratio</strong>. A well-chosen DC/AC ratio keeps the inverter operating near its peak efficiency most of the time. PV panels rarely reach their STC (Standard Test Condition) nameplate output in real weather — they are rated at 25 °C cell temperature, which is much cooler than a 40 °C hot summer afternoon. Oversizing the DC array relative to the inverter squeezes more usable energy out of a given inverter size with minimal clipping.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Typical DC/AC Ratios by Region</h2>
+      <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-gray-300 dark:border-gray-600">
+            <th class="py-2">Region</th>
+            <th class="py-2">DC/AC ratio</th>
+            <th class="py-2">Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Low DNI (Pacific NW, UK, Germany)</td><td>1.10-1.20</td><td>Lower peak production → less clipping benefit</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Moderate DNI (Northeast US, Midwest)</td><td>1.20-1.30</td><td>Standard sweet spot</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">High DNI (Southwest, Southern CA)</td><td>1.15-1.25</td><td>Would clip more, so slightly less oversizing</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">East/West split arrays</td><td>1.30-1.45</td><td>Never both peak at once → more DC safe</td></tr>
+          <tr><td class="py-1">Battery-coupled systems</td><td>1.00-1.10</td><td>Want to harvest every DC watt into the battery</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>Common System Sizes</h3>
+      <ul>
+        <li><strong>Small residential:</strong> 12 × 400 W = 4.8 kW DC → 4 kW inverter (DC/AC 1.20)</li>
+        <li><strong>Typical residential:</strong> 24 × 400 W = 9.6 kW DC → 7.6-8 kW inverter (DC/AC 1.20-1.26)</li>
+        <li><strong>Large residential:</strong> 36 × 415 W = 14.94 kW DC → 11.4-12 kW inverter (DC/AC 1.25-1.31)</li>
+        <li><strong>Small commercial:</strong> 80 × 540 W = 43.2 kW DC → 36-38 kW inverter (DC/AC 1.14-1.20)</li>
+      </ul>
+
+      <h2>NEC 690.8 Breaker Sizing</h2>
+      <p>
+        The NEC requires the AC output circuit breaker to be sized at <strong>1.25 × the inverter's maximum continuous output current</strong>. For an 8 kW 240 V inverter that is 33.3 A × 1.25 = 41.7 A, which rounds up to a 50 A breaker on a 6 AWG THWN circuit. The 125% rule applies to all continuous-duty circuits per NEC 210.19 and is separate from the interconnection "120% rule" used for backfeed panel sizing.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is clipping?</h3>
+      <p>When the array produces more DC power than the inverter can convert, excess energy is dissipated as heat in the PV modules. On a 1.25 DC/AC ratio, clipping occurs only during peak sun and typically costs 1-3% of annual production.</p>
+
+      <h3>Should I use a microinverter system?</h3>
+      <p>Yes if your roof has shading, multiple orientations, or if you plan to expand in phases. Microinverters (Enphase) give panel-level MPPT and flexible string sizing.</p>
+
+      <h3>What size wire from inverter to panel?</h3>
+      <p>Size for 125% of max AC current (matching the breaker rule) per NEC. For a 40 A breaker, that's 8 AWG copper THWN minimum.</p>
+
+      <h3>Do I need a rapid shutdown?</h3>
+      <p>NEC 690.12 requires rapid shutdown within 1 ft of the array boundary within 30 seconds of activation. Microinverters handle this at the panel level; string systems need module-level rapid shutdown devices.</p>
+
+      <h3>How do I calculate actual kWh production?</h3>
+      <p>Use NREL's PVWatts — it accounts for your local solar resource, panel tilt, azimuth, and system losses. A typical residential system produces 1,200-1,600 kWh per installed kW per year in the US.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Solar Panel Layout Calculator", description: "Calculate panel count and roof area.", path: construction_solar_panel_layout_path, icon_path: "M12 3v1m0 16v1" },
+      { name: "Battery Backup Runtime Calculator", description: "Calculate battery runtime from kWh and load.", path: construction_battery_backup_runtime_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Electrical Load Calculator", description: "Calculate panel load per NEC.", path: construction_electrical_load_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Voltage Drop Calculator", description: "NEC voltage drop for PV wire runs.", path: construction_voltage_drop_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Wire Ampacity Calculator", description: "NEC ampacity for the AC output conductor.", path: construction_wire_ampacity_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Generator Sizing Calculator", description: "Size a backup generator from appliances.", path: construction_generator_sizing_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("solar-inverter-sizing-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

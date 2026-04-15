@@ -1,0 +1,227 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Generator Sizing Calculator - Watts & kW for Your Home",
+  description: "Free generator sizing calculator. Add up your appliance running wattage plus motor starting surge to find the right portable or standby generator size in watts and kilowatts.",
+  canonical: construction_generator_sizing_url,
+  og: {
+    title: "Generator Sizing Calculator | Calc Hammer",
+    description: "Calculate generator watts from household appliance loads.",
+    url: construction_generator_sizing_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Generator Sizing Calculator", url: construction_generator_sizing_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What size generator do I need for my house?", answer: "Add up the running watts of everything you want to power, then add the highest single motor starting surge. For essentials only (fridge, lights, sump pump, furnace blower) you typically need a 3,500-5,000 watt generator. For whole-house with central AC you need 10,000-15,000 watts. For whole-house with a heat pump and electric water heater you need 20,000-25,000 watts. Add 20% headroom for safety and future loads." },
+  { question: "What is the difference between running and starting watts?", answer: "Running (rated) watts is the steady power an appliance draws while operating normally. Starting (surge) watts is the brief in-rush current that induction motors draw for the first second or two to overcome inertia — typically 2-3× the running wattage. Resistive loads (lights, heaters, range elements) have no surge; motors (fridges, well pumps, AC compressors) have large surges. A generator must handle the biggest single motor starting without stalling." },
+  { question: "Do I add all the motor starting surges together?", answer: "No — only count the largest single motor surge. Motors don't all start simultaneously, so the generator only needs to handle the biggest inrush plus everything else running steady state. This calculator uses that approach automatically: total running watts + the biggest single (starting − running) delta." },
+  { question: "What size generator runs a well pump and fridge?", answer: "Running watts: 1,200 pump + 700 fridge + 200 lights + 500 small loads = 2,600 W. The well pump has the biggest starting surge (3,600 − 1,200 = 2,400 W delta). Peak = 2,600 + 2,400 = 5,000 W. Add 20% headroom = 6,000 W generator minimum. A 7,500-watt portable is the typical practical choice." },
+  { question: "Do I need a transfer switch?", answer: "To legally power permanently wired appliances (furnace, well pump, HVAC) you need a manual or automatic transfer switch to disconnect from the utility. Backfeeding through a dryer outlet is dangerous and illegal — it can electrocute lineworkers. A simple 6-10 circuit manual transfer switch costs about $300 plus installation and is required by code." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Generator Sizing Calculator",
+  description: "Calculate the required generator size in watts and kilowatts from household appliance loads including motor starting surge.",
+  url: construction_generator_sizing_url,
+  category: "HomeApplication",
+  calculator_slug: "generator-sizing-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Generator Sizing Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Generator Sizing Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Select the appliances you want to run during a power outage. The calculator sums running watts and adds the biggest motor starting surge to recommend a generator size with headroom.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="generator-sizing-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-2">
+          <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Appliances (enter quantity)</h2>
+          <% [
+            ["fridge", "Refrigerator", 700, 2200],
+            ["freezer", "Chest freezer", 500, 1500],
+            ["furnace_blower", "Furnace blower", 800, 2400],
+            ["well_pump_1hp", "Well pump (1 HP)", 1200, 3600],
+            ["sump_pump", "Sump pump (1/2 HP)", 800, 2400],
+            ["ac_1ton", "AC / heat pump (1 ton)", 1500, 4500],
+            ["ac_2ton", "AC / heat pump (2 ton)", 3000, 9000],
+            ["ac_3ton", "AC / heat pump (3 ton)", 4500, 13500],
+            ["electric_range", "Electric range (one burner)", 3000, 3000],
+            ["microwave", "Microwave", 1200, 1200],
+            ["dishwasher", "Dishwasher", 1500, 1500],
+            ["water_heater", "Electric water heater", 4500, 4500],
+            ["washer", "Washing machine", 500, 1500],
+            ["dryer_electric", "Electric dryer", 5500, 6750],
+            ["dryer_gas", "Gas dryer", 700, 1800],
+            ["lighting", "LED lighting (whole house)", 200, 200],
+            ["tv", "TV + entertainment", 150, 150],
+            ["computer", "Computer + monitor", 300, 300],
+            ["small_loads", "Small outlets + chargers", 500, 500]
+          ].each do |key, label, running, starting| %>
+            <div class="flex items-center justify-between gap-2 py-1">
+              <label class="text-sm text-gray-700 dark:text-gray-300 flex-1">
+                <%= label %>
+                <span class="text-xs text-gray-500 dark:text-gray-500 ml-1">(<%= running %> W run<%= starting != running ? " / #{starting} W surge" : "" %>)</span>
+              </label>
+              <input type="number" inputmode="numeric" min="0" step="1" value="<%= %w[fridge lighting small_loads].include?(key) ? 1 : 0 %>"
+                     data-generator-sizing-calculator-target="count"
+                     data-appliance="<%= key %>"
+                     data-action="input->generator-sizing-calculator#calculate"
+                     class="w-16 text-right text-sm placeholder-gray-200">
+            </div>
+          <% end %>
+          <div class="pt-3 border-t border-gray-200 dark:border-gray-700 mt-3">
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Safety headroom (%)</label>
+            <input type="number" inputmode="decimal" data-generator-sizing-calculator-target="headroom" data-action="input->generator-sizing-calculator#calculate" class="w-full" value="20" step="5" min="0">
+            <p class="text-xs text-gray-500 mt-1">20% is standard. Use 25-30% if you plan to add loads later.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Total running watts</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-generator-sizing-calculator-target="resultRunning">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Peak surge (running + biggest start)</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-generator-sizing-calculator-target="resultSurge">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Recommended (with headroom)</span>
+              <span class="text-2xl font-extrabold text-amber-700 dark:text-amber-400" data-generator-sizing-calculator-target="resultRecommended">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Minimum generator size</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-generator-sizing-calculator-target="resultKw">—</span>
+            </div>
+          </div>
+          <button data-action="click->generator-sizing-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-yellow-700 hover:from-amber-700 hover:to-yellow-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "generator-sizing-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How to Size a Generator</h2>
+      <p>
+        A generator must handle both the <strong>steady running load</strong> (everything consuming power at the same time) and the <strong>peak surge</strong> (starting inrush from the biggest motor). Resistive loads like LED bulbs and electric heaters draw a constant amount. Induction motors — refrigerator compressors, well pumps, AC compressors, furnace blowers — draw 2-3× their running watts for the first second or two as they overcome inertia. The generator must be sized so that when the biggest motor starts while everything else is running, voltage does not sag enough to drop out sensitive electronics.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Typical Generator Sizes by Coverage</h2>
+      <ul>
+        <li><strong>2,000-3,000 W (portable inverter):</strong> lights, phone chargers, small TV, fan. No fridge or well pump.</li>
+        <li><strong>3,500-5,000 W:</strong> fridge + lights + small loads + sump pump. Essentials only, no AC or electric cooking.</li>
+        <li><strong>5,500-7,500 W:</strong> fridge + lights + well pump + furnace blower + microwave. Typical "essential circuits" backup.</li>
+        <li><strong>7,500-10,000 W:</strong> above + 1-ton AC or one electric range burner. Comfortable but not luxurious.</li>
+        <li><strong>10,000-15,000 W:</strong> whole-house with central AC up to 2 tons, electric cooking, and full lighting.</li>
+        <li><strong>17,000-22,000 W (standby):</strong> whole-house with 3-ton AC, water heater, electric dryer. Typical standby generator size.</li>
+        <li><strong>22,000-27,000 W:</strong> whole-house with heat pump + electric water heater + EV charger. Larger standby units.</li>
+      </ul>
+
+      <h2>Starting Surge Rules</h2>
+      <p>
+        Only count the biggest motor starting surge once, not the sum of every motor's surge. Motors do not all start simultaneously — controls stagger them, and even if they start at similar moments, the surge duration is under 2 seconds so the generator recovers quickly. The calculator uses this rule: it sums all running watts plus the largest single (starting − running) delta. This matches how generator manufacturers and NEC 702.4 size residential standby systems.
+      </p>
+
+      <h3>Transfer Switch and Code</h3>
+      <p>
+        NEC Article 702 requires a transfer switch to disconnect the house from the utility before a generator feeds it. Manual transfer switches for 6-10 essential circuits cost $300-600. Automatic transfer switches for whole-house standby generators cost $1,500-3,000. <strong>Backfeeding</strong> through a dryer outlet with a double-male cord ("suicide cord") is illegal and deadly — it can electrocute utility lineworkers who believe the line is dead. Always use a proper transfer switch.
+      </p>
+
+      <h3>Fuel Runtime</h3>
+      <p>
+        A typical 7,500 W portable generator burns about 0.75 gallons of gasoline per hour at half load. A full 6.6-gallon tank runs about 8-9 hours. Standby generators on natural gas run indefinitely (as long as gas service is up). Propane standby units run 100-200 hours on a 500-gallon tank, depending on load. For long outages consider a dual-fuel portable or a propane standby.
+      </p>
+
+      <h2>Common Appliance Watts Reference</h2>
+      <p>Typical running and starting (surge) watts for household appliances. Starting watts apply to motor loads only; resistive loads have no surge.</p>
+      <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-gray-300 dark:border-gray-600">
+            <th class="py-2">Appliance</th>
+            <th class="py-2">Running W</th>
+            <th class="py-2">Starting W</th>
+            <th class="py-2">Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Refrigerator</td><td>700</td><td>2,200</td><td>Motor</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Chest freezer</td><td>500</td><td>1,500</td><td>Motor</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Furnace blower</td><td>800</td><td>2,400</td><td>Motor</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Well pump (1 HP)</td><td>1,200</td><td>3,600</td><td>Motor</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Sump pump (1/2 HP)</td><td>800</td><td>2,400</td><td>Motor</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">AC / heat pump 2-ton</td><td>3,000</td><td>9,000</td><td>Motor</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">AC / heat pump 3-ton</td><td>4,500</td><td>13,500</td><td>Motor</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Electric water heater</td><td>4,500</td><td>4,500</td><td>Resistive</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Electric dryer</td><td>5,500</td><td>6,750</td><td>Mixed</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Electric range (1 burner)</td><td>3,000</td><td>3,000</td><td>Resistive</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Microwave (1000 W oven)</td><td>1,200</td><td>1,200</td><td>Resistive</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">LED lighting (whole house)</td><td>200</td><td>200</td><td>Resistive</td></tr>
+          <tr><td class="py-1">TV + computer</td><td>450</td><td>450</td><td>Resistive</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>
+        <strong>Typical packages:</strong> "essentials only" (fridge + furnace blower + lights + small loads + sump pump) = ~2,500 running / ~4,900 surge → 5,000-6,000 W generator. "Essentials + well pump" = ~3,700 running / ~6,100 surge → 7,500 W. "Whole-house with 3-ton AC" = ~8,000 running / ~17,000 surge → 17-22 kW standby.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Can I run a fridge on a 2,000 W inverter generator?</h3>
+      <p>Barely — a modern fridge with 2,200 W starting and 700 W running fits a 2,000-2,500 W generator only if nothing else is drawing power during the start.</p>
+
+      <h3>What does "dual fuel" mean?</h3>
+      <p>A generator that can run on both gasoline and propane. Gas for portability, propane for storage (propane doesn't go bad).</p>
+
+      <h3>How long do standby generators last?</h3>
+      <p>Standby units (Generac, Kohler, Cummins) are rated for 3,000-5,000 hours of life. At 50-100 hours of annual use that's 30-100 years of life.</p>
+
+      <h3>Do I need a 240 V generator?</h3>
+      <p>Yes if you want to run a well pump, electric dryer, electric water heater, or central AC — they all require 240 V. 120 V-only generators can power only 120 V appliances.</p>
+
+      <h3>Inverter vs conventional generator — which is better?</h3>
+      <p>Inverter units produce cleaner power (low THD) and run quieter at partial loads, but cost more per watt. Use inverter for sensitive electronics; conventional for construction or high-wattage loads.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Electrical Load Calculator", description: "Calculate total panel load per NEC.", path: construction_electrical_load_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Voltage Drop Calculator", description: "NEC voltage drop for wire runs.", path: construction_voltage_drop_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Wire Ampacity Calculator", description: "NEC ampacity by AWG and temperature.", path: construction_wire_ampacity_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Heating Cost Calculator", description: "Annual heating cost by fuel.", path: construction_heating_cost_path, icon_path: "M12 8c-1.657 0-3 .895-3 2" },
+      { name: "Heat Pump Capacity Calculator", description: "Derate HP for outdoor temperature.", path: construction_heat_pump_capacity_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "HVAC BTU Calculator", description: "Room-by-room BTU sizing.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("generator-sizing-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

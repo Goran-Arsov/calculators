@@ -1,0 +1,177 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Battery Backup Runtime Calculator - How Long Will It Last?",
+  description: "Free battery backup runtime calculator. Calculate how long a Tesla Powerwall, EcoFlow, or any home battery (kWh) will power your load, with depth-of-discharge and inverter efficiency.",
+  canonical: construction_battery_backup_runtime_url,
+  og: {
+    title: "Battery Backup Runtime Calculator | Calc Hammer",
+    description: "Calculate battery backup runtime from kWh and load.",
+    url: construction_battery_backup_runtime_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Battery Backup Runtime Calculator", url: construction_battery_backup_runtime_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How long will a 13.5 kWh Powerwall last?", answer: "At a 1,000 W continuous load (fridge + lights + small electronics) a 13.5 kWh Powerwall lasts about 12.4 hours accounting for 92% inverter efficiency and 100% usable depth of discharge. At 2,000 W (adding some cooking or a well pump) it lasts about 6.2 hours. At 5,000 W (near the 5 kW continuous max) it lasts only 2.5 hours. Runtime always equals usable energy divided by continuous load." },
+  { question: "What is depth of discharge?", answer: "Depth of discharge (DoD) is the percentage of a battery's nameplate capacity that can be safely used. LiFePO4 (LFP) batteries like the EG4 and Fortress Power lines allow 100% DoD. Tesla Powerwall allows 100% in backup mode. Older Li-NMC batteries are limited to 80-90% to preserve cycle life. Lead-acid batteries should only be discharged to 50% — a 10 kWh lead-acid bank only gives 5 kWh of usable energy." },
+  { question: "Why does inverter efficiency matter?", answer: "The inverter converts DC battery power to AC household power, losing 5-15% as heat during conversion. A modern hybrid inverter (SolarEdge, Enphase IQ, Sol-Ark, Fortress) runs at 92-96% round-trip efficiency. Older string inverters with batteries added on run 85-90%. Older pure off-grid inverters may drop to 80%. Lower efficiency means less usable runtime — a 10 kWh battery at 90% efficiency delivers only 9 kWh of AC power to your loads." },
+  { question: "What's the average home load during a power outage?", answer: "With essentials only (fridge, lights, Wi-Fi, phone charger) most homes draw 300-800 W continuous, averaging around 500 W. Add a furnace blower or window AC and you are at 1,000-1,500 W. Running a well pump intermittently adds 1,200 W during its ~1 minute cycles. A typical outage load averages 750-1,500 W depending on what you choose to keep running, making a 10 kWh battery last 6-13 hours." },
+  { question: "How many Powerwalls do I need for whole-house backup?", answer: "One Powerwall 3 (13.5 kWh, 11.5 kW continuous, 15.4 kW peak) covers most 1,500-2,500 sq ft homes with essentials for 8-16 hours. Add a second for a full day of autonomy or to run central AC/heat pump continuously. Three Powerwalls give 40+ kWh and easily cover 1-2 days of typical consumption during a storm. Whole-house off-grid typically needs 30-60 kWh of storage sized to handle 2-3 cloudy days." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Battery Backup Runtime Calculator",
+  description: "Calculate how long a battery (kWh) will run household loads, accounting for depth of discharge and inverter efficiency.",
+  url: construction_battery_backup_runtime_url,
+  category: "HomeApplication",
+  calculator_slug: "battery-backup-runtime-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Battery Backup Runtime Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Battery Backup Runtime Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">How long will your home battery last? Enter the nameplate kWh, your continuous load, and depth of discharge + inverter efficiency to get runtime in hours and minutes.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="battery-backup-runtime-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label for="bb-battery" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Battery capacity (kWh)</label>
+            <input id="bb-battery" type="number" inputmode="decimal" data-battery-backup-runtime-calculator-target="battery" data-action="input->battery-backup-runtime-calculator#calculate" class="w-full" value="13.5" step="0.5" min="0">
+            <p class="text-xs text-gray-500 mt-1">Tesla Powerwall 3 = 13.5 kWh. EcoFlow Delta Pro = 3.6 kWh. EG4 PowerPro = 14.3 kWh.</p>
+          </div>
+          <div>
+            <label for="bb-load" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Continuous load (W)</label>
+            <input id="bb-load" type="number" inputmode="decimal" data-battery-backup-runtime-calculator-target="load" data-action="input->battery-backup-runtime-calculator#calculate" class="w-full" value="1000" step="50" min="0">
+            <p class="text-xs text-gray-500 mt-1">Essentials only: 300-800 W. With fridge and furnace blower: 1,000-1,500 W.</p>
+          </div>
+          <div>
+            <label for="bb-dod" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Depth of discharge (%)</label>
+            <input id="bb-dod" type="number" inputmode="decimal" data-battery-backup-runtime-calculator-target="dod" data-action="input->battery-backup-runtime-calculator#calculate" class="w-full" value="95" step="5" min="10" max="100">
+            <p class="text-xs text-gray-500 mt-1">LiFePO4: 100%. Tesla Powerwall: 100% backup. Lead-acid: 50%.</p>
+          </div>
+          <div>
+            <label for="bb-eff" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Inverter efficiency (%)</label>
+            <input id="bb-eff" type="number" inputmode="decimal" data-battery-backup-runtime-calculator-target="efficiency" data-action="input->battery-backup-runtime-calculator#calculate" class="w-full" value="94" step="1" min="70" max="100">
+            <p class="text-xs text-gray-500 mt-1">Modern hybrid: 92-96%. Older string + battery: 85-90%.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Usable energy</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-battery-backup-runtime-calculator-target="resultUsable">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Runtime (hours)</span>
+              <span class="text-base font-bold text-green-700 dark:text-green-400" data-battery-backup-runtime-calculator-target="resultRuntime">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-green-200/50 dark:border-green-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Time</span>
+              <span class="text-3xl font-extrabold text-green-700 dark:text-green-400" data-battery-backup-runtime-calculator-target="resultDisplay">—</span>
+            </div>
+          </div>
+          <button data-action="click->battery-backup-runtime-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "battery-backup-runtime-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Battery Runtime Formula</h2>
+      <p>
+        Runtime (hours) = <strong>battery kWh × 1000 × depth of discharge × inverter efficiency ÷ load watts</strong>. A 13.5 kWh Tesla Powerwall at 1,000 W load, 100% usable DoD, 92% inverter efficiency gives 13.5 × 1000 × 1.0 × 0.92 / 1000 = 12.42 hours. The key insight: nameplate kWh is not what you can use. Real-world runtime depends on usable fraction and inverter losses.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Typical Battery Capacities</h2>
+      <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-gray-300 dark:border-gray-600">
+            <th class="py-2">Battery</th>
+            <th class="py-2">Nameplate kWh</th>
+            <th class="py-2">Usable DoD</th>
+            <th class="py-2">Max continuous W</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Tesla Powerwall 3</td><td>13.5</td><td>100%</td><td>11,500 W</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Tesla Powerwall 2</td><td>13.5</td><td>100%</td><td>5,000 W</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Enphase IQ Battery 10</td><td>10.5</td><td>96%</td><td>3,840 W</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">LG Chem RESU 10H</td><td>9.8</td><td>95%</td><td>5,000 W</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">EG4 PowerPro WallMount</td><td>14.3</td><td>100%</td><td>~6,000 W</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">EcoFlow Delta Pro</td><td>3.6</td><td>100%</td><td>3,600 W</td></tr>
+          <tr><td class="py-1">Typical lead-acid bank (24 V 400 Ah)</td><td>9.6</td><td>50%</td><td>~3,000 W (inverter limit)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>Typical Outage Loads</h3>
+      <ul>
+        <li><strong>Essentials only</strong> (fridge cycling, LED lights, Wi-Fi, phone chargers): 300-500 W average. A 13.5 kWh battery lasts 25-40 hours.</li>
+        <li><strong>Comfort</strong> (adds furnace blower, TV, computer): 800-1,200 W. Battery lasts 10-16 hours.</li>
+        <li><strong>AC on low</strong> (window unit or 1-ton mini-split): 1,500-2,500 W. Battery lasts 5-9 hours.</li>
+        <li><strong>Everything running</strong> (central AC or heat pump + essentials): 3,000-5,000 W. Battery lasts 2.5-4.5 hours.</li>
+        <li><strong>Whole-house with dryer or EV charging</strong>: 6,000+ W. Battery lasts under 2 hours and hits the continuous inverter limit on many models.</li>
+      </ul>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How do I calculate my home's load?</h3>
+      <p>Add up the running watts of everything you want to run. Use the Generator Sizing Calculator for a quick appliance-by-appliance breakdown.</p>
+
+      <h3>Does runtime change with load?</h3>
+      <p>Yes — lower load = longer runtime, proportionally. Halving the load doubles the hours.</p>
+
+      <h3>Should I add multiple Powerwalls?</h3>
+      <p>Yes for whole-house backup longer than ~10 hours or for larger loads. Each Powerwall adds 13.5 kWh and 11.5 kW continuous.</p>
+
+      <h3>What is round-trip efficiency?</h3>
+      <p>Energy out divided by energy in over a full charge-discharge cycle. LFP batteries + modern inverters are 85-90% round-trip. This calculator shows one-way discharge efficiency only.</p>
+
+      <h3>How does temperature affect runtime?</h3>
+      <p>Cold temperatures reduce both capacity and max continuous output. LFP batteries lose 20-30% capacity below 0 °C. Install batteries in a conditioned space when possible.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Solar Inverter Sizing Calculator", description: "Size the inverter for your solar array.", path: construction_solar_inverter_sizing_path, icon_path: "M12 3v1" },
+      { name: "Solar Panel Layout Calculator", description: "Calculate panel count for a roof.", path: construction_solar_panel_layout_path, icon_path: "M12 3v1" },
+      { name: "Generator Sizing Calculator", description: "Calculate generator watts from appliances.", path: construction_generator_sizing_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Electrical Load Calculator", description: "Calculate panel load per NEC.", path: construction_electrical_load_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Voltage Drop Calculator", description: "NEC voltage drop for wire runs.", path: construction_voltage_drop_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Wire Ampacity Calculator", description: "NEC ampacity by AWG and temperature.", path: construction_wire_ampacity_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("battery-backup-runtime-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

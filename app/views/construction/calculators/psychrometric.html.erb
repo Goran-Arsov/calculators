@@ -1,0 +1,188 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Psychrometric Calculator - Dew Point, Wet Bulb & Humidity",
+  description: "Free psychrometric calculator. Enter dry bulb temperature and relative humidity to get dew point, wet bulb, humidity ratio, vapor pressure, and enthalpy in imperial and metric units.",
+  canonical: construction_psychrometric_url,
+  og: {
+    title: "Psychrometric Calculator | Calc Hammer",
+    description: "Dew point, wet bulb, humidity ratio, enthalpy from dry bulb + RH.",
+    url: construction_psychrometric_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Psychrometric Calculator", url: construction_psychrometric_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is dew point?", answer: "The temperature at which water vapor in the air starts to condense. If the dew point is 60 °F and the air cools to 60 °F, water droplets form on cold surfaces — car windows, basement walls, cold water pipes. Dew point is a better humidity indicator than relative humidity because it does not change with temperature. A dew point below 55 °F feels dry, 55-65 °F feels comfortable, and above 70 °F feels oppressive." },
+  { question: "What is wet bulb temperature?", answer: "The lowest temperature air can be cooled to by evaporating water into it. Wet bulb is always below or equal to dry bulb. It matters for evaporative cooling, heat stress assessment, and cooling tower design. A wet bulb above 80 °F starts to cause heat illness in healthy adults; above 88 °F, even with fans and shade, the human body cannot shed heat fast enough and death becomes likely within hours." },
+  { question: "What is humidity ratio?", answer: "The mass of water vapor per unit mass of dry air, usually expressed as kg of water per kg of dry air (or grains of water per pound in imperial units; 7,000 grains = 1 pound). Humidity ratio stays constant as long as no water is added or removed — unlike relative humidity, which changes with temperature. HVAC engineers use humidity ratio to track moisture through air handling processes." },
+  { question: "What is enthalpy and why does it matter for HVAC?", answer: "Enthalpy is the total energy of air (sensible heat + latent heat from water vapor) per unit mass. It is used to calculate cooling loads and size cooling coils. When an HVAC system cools air from 90 °F/50% RH (36 BTU/lb) to 55 °F/95% RH (23 BTU/lb), it must remove the enthalpy difference (13 BTU/lb) from every pound of air flowing through. Multiply by the mass flow rate (cfm × 4.5) to get the cooling capacity." },
+  { question: "How accurate is the Stull wet-bulb approximation?", answer: "The Stull (2011) formula is accurate to within about ±1 °F for typical indoor and outdoor conditions (0-50 °C dry bulb, 5-99% RH). It is not accurate at very low humidity or temperatures near freezing. For critical applications (commissioning, research), use iterative psychrometric software that solves the exact enthalpy-balance equation." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Psychrometric Calculator",
+  description: "Calculate dew point, wet bulb, humidity ratio, vapor pressure, and enthalpy from dry bulb temperature and relative humidity.",
+  url: construction_psychrometric_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "psychrometric-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Psychrometric Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Psychrometric Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate dew point, wet bulb temperature, humidity ratio, vapor pressure, and enthalpy from dry bulb temperature and relative humidity. Uses the Magnus saturation equation and Stull wet-bulb approximation. Imperial and metric output.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="psychrometric-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Input units</label>
+            <select data-psychrometric-calculator-target="unitSystem" data-action="change->psychrometric-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (°F)</option>
+              <option value="metric">Metric (°C)</option>
+            </select>
+          </div>
+          <div>
+            <label for="psy-drybulb" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-psychrometric-calculator-target="dryBulbLabel">Dry bulb temperature (°F)</span></label>
+            <input id="psy-drybulb" type="number" inputmode="decimal" data-psychrometric-calculator-target="dryBulb" data-action="input->psychrometric-calculator#calculate" class="w-full" value="75" step="0.5">
+          </div>
+          <div>
+            <label for="psy-rh" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Relative humidity (%)</label>
+            <input id="psy-rh" type="number" inputmode="decimal" data-psychrometric-calculator-target="rh" data-action="input->psychrometric-calculator#calculate" class="w-full" value="50" step="1" min="0" max="100">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="text-gray-700 dark:text-gray-300 text-sm">Dew point</span><span class="text-xl font-extrabold text-blue-700 dark:text-blue-400" data-psychrometric-calculator-target="resultDewPoint">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-700 dark:text-gray-300 text-sm">Wet bulb</span><span class="text-xl font-extrabold text-blue-700 dark:text-blue-400" data-psychrometric-calculator-target="resultWetBulb">—</span></div>
+            <div class="flex justify-between items-center pt-3 border-t border-blue-200/50 dark:border-blue-800/50"><span class="text-gray-600 dark:text-gray-400 text-sm">Humidity ratio</span><span class="text-base font-bold text-blue-700 dark:text-blue-400" data-psychrometric-calculator-target="resultHumidityRatio">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Vapor pressure</span><span class="text-base font-bold text-blue-700 dark:text-blue-400" data-psychrometric-calculator-target="resultVaporPressure">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Enthalpy</span><span class="text-base font-bold text-blue-700 dark:text-blue-400" data-psychrometric-calculator-target="resultEnthalpy">—</span></div>
+          </div>
+          <button data-action="click->psychrometric-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-700 hover:from-blue-700 hover:to-cyan-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "psychrometric-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Reading a Psychrometric State Point</h2>
+      <p>
+        A psychrometric state point is the description of moist air at one moment: temperature, humidity, vapor content, and energy. Given any two independent properties (dry bulb + relative humidity is the most convenient combination), you can derive all the others using the Magnus equation for saturation vapor pressure and ideal-gas mixture equations. This calculator uses dry bulb + RH input and returns dew point, wet bulb, humidity ratio, vapor pressure, and enthalpy.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Why Each Property Matters</h2>
+      <p>
+        <strong>Dew point</strong> tells you whether condensation will form on cold surfaces — the single best comfort indicator. <strong>Wet bulb</strong> is the lowest temperature evaporative cooling can reach and is the critical metric for heat stress assessment. <strong>Humidity ratio</strong> stays constant during sensible heating or cooling, so HVAC engineers use it to track moisture through air handling processes. <strong>Enthalpy</strong> is total energy per pound of dry air and drives cooling coil capacity calculations. <strong>Vapor pressure</strong> is the thermodynamic driver for condensation and evaporation rates at every interface.
+      </p>
+
+      <h3>Comfort Thresholds</h3>
+      <p>
+        ASHRAE comfort zone covers roughly 68-78 °F dry bulb with dew points between 35-65 °F. Dew points below 55 °F feel dry. 55-60 °F is comfortable. 60-65 °F feels slightly humid. 65-70 °F is uncomfortable. Above 70 °F is oppressive. These numbers are independent of temperature — a 75 °F room at 55 °F dew point feels the same as an 85 °F room at 55 °F dew point, just warmer.
+      </p>
+
+      <h3>The Magnus Formula</h3>
+      <p>
+        Saturation vapor pressure is calculated using the Magnus-Tetens approximation: <strong>Pws = 6.112 × exp(17.62 × T / (243.12 + T))</strong> in hPa for T in °C. Actual vapor pressure is Pws × RH/100. Dew point is the temperature at which the actual vapor pressure would be the saturation vapor pressure, solved by inverting Magnus: Td = 243.12 × ln(Pw/6.112) / (17.62 − ln(Pw/6.112)).
+      </p>
+
+      <h2>Reference Points for Common Indoor & Outdoor Conditions</h2>
+      <p>
+        Computed from the Magnus formula. Use these to ballpark your result or read off whether conditions will be comfortable, produce condensation, or support mold growth.
+      </p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-gray-300 dark:border-gray-600">
+              <th class="py-2">Dry bulb</th>
+              <th class="py-2">RH</th>
+              <th class="py-2">Dew point</th>
+              <th class="py-2">Wet bulb</th>
+              <th class="py-2">Enthalpy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">70 °F (21 °C)</td><td>30%</td><td>37 °F (3 °C)</td><td>54 °F (12 °C)</td><td>22 BTU/lb</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">72 °F (22 °C)</td><td>50%</td><td>52 °F (11 °C)</td><td>60 °F (16 °C)</td><td>26 BTU/lb</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">75 °F (24 °C)</td><td>50%</td><td>55 °F (13 °C)</td><td>63 °F (17 °C)</td><td>28 BTU/lb</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">80 °F (27 °C)</td><td>60%</td><td>65 °F (18 °C)</td><td>71 °F (22 °C)</td><td>34 BTU/lb</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">90 °F (32 °C)</td><td>70%</td><td>79 °F (26 °C)</td><td>82 °F (28 °C)</td><td>47 BTU/lb</td></tr>
+            <tr><td class="py-1">95 °F (35 °C)</td><td>80%</td><td>88 °F (31 °C)</td><td>89 °F (32 °C)</td><td>58 BTU/lb</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Comfort & Health Thresholds</h3>
+      <ul>
+        <li><strong>Dew point ≤ 55 °F:</strong> feels dry and comfortable. ASHRAE comfort zone lower bound.</li>
+        <li><strong>Dew point 55-60 °F:</strong> comfortable for most people.</li>
+        <li><strong>Dew point 60-65 °F:</strong> slightly sticky, noticeable humidity.</li>
+        <li><strong>Dew point 65-70 °F:</strong> oppressive indoors, uncomfortable outdoors.</li>
+        <li><strong>Dew point ≥ 70 °F:</strong> extremely humid; mold and dust mites thrive; showers don't dry.</li>
+        <li><strong>Wet bulb ≥ 80 °F:</strong> heat stress risk during physical work.</li>
+        <li><strong>Wet bulb ≥ 88 °F:</strong> body can no longer shed heat by sweating — potentially fatal without shade and rest.</li>
+      </ul>
+      <p>
+        <strong>Indoor mold prevention:</strong> keep relative humidity between 30% and 50%. Below 30% is irritating (dry sinuses, static electricity); above 60% supports mold, dust mites, and musty smells. Dew point above 65 °F on cold interior surfaces (basement walls, bathroom ceilings, closet corners) will condense and grow mold within weeks.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Is wet bulb the same as heat index?</h3>
+      <p>No. Heat index is a "feels like" derived metric. Wet bulb is a physical thermodynamic temperature measured by a thermometer with a wet cloth over the bulb in still air.</p>
+
+      <h3>What is the dew point of 100% humidity?</h3>
+      <p>At 100% RH, dew point equals dry bulb. Condensation is already occurring.</p>
+
+      <h3>Why does the air feel damp at 70 °F 60% RH?</h3>
+      <p>Because dew point is about 55 °F — near the upper end of comfortable. Above 60 °F dew point most people start to notice stickiness.</p>
+
+      <h3>How do I find wet bulb without a calculator?</h3>
+      <p>Use a sling psychrometer — two thermometers, one with a wet wick, whirled through the air. The wet one reads lower.</p>
+
+      <h3>What is the enthalpy of conditioned indoor air?</h3>
+      <p>Typical 75 °F / 50% RH indoor air has enthalpy around 28 BTU/lb (65 kJ/kg). Hot humid outdoor 90 °F / 70% RH reaches 42 BTU/lb (98 kJ/kg).</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Dehumidifier Sizing Calculator", description: "Dehumidifier pints/day by area and humidity.", path: construction_dehumidifier_sizing_path, icon_path: "M12 2c-5.33 4.55-8 8.48-8 11.8" },
+      { name: "Cooling Load Calculator", description: "Whole-house cooling load for AC sizing.", path: construction_cooling_load_path, icon_path: "M12 3v1" },
+      { name: "Heat Loss Calculator", description: "Whole-house heat loss for heater sizing.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Air Change Rate Calculator", description: "ACH from CFM and room volume.", path: construction_air_change_rate_path, icon_path: "M13 10V3" },
+      { name: "ERV HRV Ventilation Calculator", description: "ASHRAE 62.2 required vent CFM.", path: construction_erv_hrv_ventilation_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "HVAC BTU Calculator", description: "Room-by-room BTU cooling sizing.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("psychrometric-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

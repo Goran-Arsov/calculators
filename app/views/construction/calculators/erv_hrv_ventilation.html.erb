@@ -1,0 +1,198 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "ERV HRV Ventilation Calculator - ASHRAE 62.2 CFM",
+  description: "Free ERV/HRV ventilation calculator. Calculate required whole-house mechanical ventilation CFM per ASHRAE 62.2-2022 from floor area, bedrooms, and optional blower door (ACH50) credit.",
+  canonical: construction_erv_hrv_ventilation_url,
+  og: {
+    title: "ERV HRV Ventilation Calculator | Calc Hammer",
+    description: "ASHRAE 62.2 ventilation CFM for any home.",
+    url: construction_erv_hrv_ventilation_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "ERV HRV Ventilation Calculator", url: construction_erv_hrv_ventilation_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much ventilation does my house need?", answer: "ASHRAE 62.2-2022 requires Q_total = 0.03 × floor area (sq ft) + 7.5 × (bedrooms + 1) CFM of outdoor air. A 2,000 sq ft, 3-bedroom house needs 0.03 × 2000 + 7.5 × 4 = 60 + 30 = 90 CFM total. This can come from a mix of mechanical ventilation and infiltration." },
+  { question: "What is the difference between an HRV and an ERV?", answer: "Both are whole-house mechanical ventilation units that exchange stale indoor air for fresh outdoor air while recovering energy. An HRV (Heat Recovery Ventilator) transfers only sensible heat. An ERV (Energy Recovery Ventilator) transfers both heat and moisture. Use an ERV in humid climates where you want to keep some humidity out in summer and retain some humidity in winter. HRVs are common in dry cold climates like northern Canada." },
+  { question: "What is an infiltration credit?", answer: "ASHRAE 62.2 allows you to subtract unintentional infiltration from the required mechanical ventilation rate — but only up to a limit and only if you have a measured blower door test. A leaky house already brings in some outdoor air through envelope leaks, so less fans are needed. Typical credit: 5 ACH50 in a 1500 sq ft house reduces required mechanical CFM by about 15 CFM." },
+  { question: "Does the kitchen range hood count toward ventilation?", answer: "Only if it vents to outside and operates continuously. Most range hoods are intermittent (used only while cooking) and don't count toward the whole-house rate. ASHRAE 62.2 requires separate 100 CFM kitchen exhaust and 50 CFM bathroom exhaust in addition to the whole-house rate." },
+  { question: "What if I live in a new tight house?", answer: "Modern code-compliant houses (especially passive house / zero-energy) are so tight that they need mechanical ventilation to meet ASHRAE 62.2 — natural infiltration alone cannot provide enough fresh air. An ERV running continuously at 60-120 CFM is typical. The calculator shows how much mechanical CFM you need if you enter an ACH50 from a blower door test." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "ERV HRV Ventilation Calculator",
+  description: "Calculate required whole-house mechanical ventilation CFM per ASHRAE 62.2-2022.",
+  url: construction_erv_hrv_ventilation_url,
+  category: "HomeApplication",
+  calculator_slug: "erv-hrv-ventilation-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "ERV HRV Ventilation Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">ERV / HRV Ventilation Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate the required whole-house mechanical ventilation rate per ASHRAE 62.2-2022 for any home. Supports infiltration credit from blower door test (ACH50). Imperial and metric output.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="erv-hrv-ventilation-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-erv-hrv-ventilation-calculator-target="unitSystem" data-action="change->erv-hrv-ventilation-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (sq ft, cu ft, CFM)</option>
+              <option value="metric">Metric (m², m³, m³/h)</option>
+            </select>
+          </div>
+          <div>
+            <label for="erv-floor" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-erv-hrv-ventilation-calculator-target="floorLabel">Conditioned floor area (sq ft)</span></label>
+            <input id="erv-floor" type="number" inputmode="decimal" data-erv-hrv-ventilation-calculator-target="floor" data-action="input->erv-hrv-ventilation-calculator#calculate" class="w-full" value="2000" step="100" min="0">
+          </div>
+          <div>
+            <label for="erv-beds" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of bedrooms</label>
+            <input id="erv-beds" type="number" inputmode="numeric" data-erv-hrv-ventilation-calculator-target="bedrooms" data-action="input->erv-hrv-ventilation-calculator#calculate" class="w-full" value="3" step="1" min="0">
+          </div>
+          <div>
+            <label for="erv-ach" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Blower door ACH50 (optional)</label>
+            <input id="erv-ach" type="number" inputmode="decimal" data-erv-hrv-ventilation-calculator-target="ach50" data-action="input->erv-hrv-ventilation-calculator#calculate" class="w-full" value="0" step="0.1" min="0">
+            <p class="text-xs text-gray-500 mt-1">Leave 0 to assume no infiltration credit.</p>
+          </div>
+          <div>
+            <label for="erv-vol" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-erv-hrv-ventilation-calculator-target="volumeLabel">House volume (cu ft, optional)</span></label>
+            <input id="erv-vol" type="number" inputmode="decimal" data-erv-hrv-ventilation-calculator-target="volume" data-action="input->erv-hrv-ventilation-calculator#calculate" class="w-full" value="0" step="100" min="0">
+            <p class="text-xs text-gray-500 mt-1">Only needed for infiltration credit. Typical = area × 8 ft ceiling.</p>
+          </div>
+          <div>
+            <label for="erv-nf" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">LBL normalization factor</label>
+            <input id="erv-nf" type="number" inputmode="decimal" data-erv-hrv-ventilation-calculator-target="nf" data-action="input->erv-hrv-ventilation-calculator#calculate" class="w-full" value="17" step="1" min="1">
+            <p class="text-xs text-gray-500 mt-1">Converts ACH50 to natural ACH. 15 mild, 17 average, 20 cold.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Total required (62.2)</span>
+              <span class="text-base font-bold text-emerald-700 dark:text-emerald-400" data-erv-hrv-ventilation-calculator-target="resultTotal">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Infiltration credit</span>
+              <span class="text-base font-bold text-emerald-700 dark:text-emerald-400" data-erv-hrv-ventilation-calculator-target="resultInfil">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Mechanical CFM needed</span>
+              <span class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400" data-erv-hrv-ventilation-calculator-target="resultMechanical">—</span>
+            </div>
+          </div>
+          <button data-action="click->erv-hrv-ventilation-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-700 hover:to-green-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "erv-hrv-ventilation-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>ASHRAE 62.2-2022 Formula</h2>
+      <p>
+        ASHRAE Standard 62.2 is the residential ventilation standard adopted by the IECC and most building codes. The required whole-house outdoor air rate is <strong>Q = 0.03 × A + 7.5 × (N+1)</strong>, where A is the conditioned floor area in square feet and N is the number of bedrooms. The first term covers contaminants that scale with building size (off-gassing, cooking, cleaning); the second term covers contaminants that scale with occupancy (CO2, moisture, odors) assuming one more person than bedrooms.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>HRV vs ERV</h2>
+      <p>
+        A <strong>Heat Recovery Ventilator (HRV)</strong> transfers sensible heat between the incoming fresh air and outgoing stale air streams without mixing them. It pre-warms incoming winter air and pre-cools summer air but does not affect humidity. HRVs work well in dry climates and in homes where winter humidity is very low. An <strong>Energy Recovery Ventilator (ERV)</strong> also transfers latent heat (moisture) across the core. In humid summers it keeps some humidity outside; in dry winters it retains indoor humidity. ERVs are preferred in climates with any significant humidity load — which includes most of the continental US outside the arid southwest.
+      </p>
+
+      <h3>Infiltration Credit</h3>
+      <p>
+        If you have a blower door test result (ACH50), you can deduct some credit for natural infiltration. Convert ACH50 to natural ACH using the LBL normalization factor: <strong>natural ACH ≈ ACH50 ÷ NF</strong>, where NF is typically 15 (mild climate, single-story) to 20 (cold climate, multi-story). A 2,000 sq ft 3-bedroom house with 5 ACH50 and 16,000 cu ft volume gets natural ACH ≈ 5/17 ≈ 0.29, giving Q_inf ≈ 78 CFM. That is nearly enough to meet the 90 CFM total requirement without any mechanical ventilation — but only if the leakage is evenly distributed and the building is breathable year-round.
+      </p>
+
+      <h3>Kitchen and Bath Exhaust</h3>
+      <p>
+        ASHRAE 62.2 also requires local exhaust at moisture sources: <strong>100 CFM intermittent or 25 CFM continuous in kitchens</strong>, and <strong>50 CFM intermittent or 20 CFM continuous in bathrooms</strong>. These are separate from the whole-house rate and should be calculated per space. A well-sealed house should run continuous low-speed bath exhaust to remove moisture from showers without needing to remember to turn fans on.
+      </p>
+
+      <h2>ASHRAE 62.2-2022 Required CFM Table</h2>
+      <p>Whole-house mechanical ventilation rate by floor area and number of bedrooms, before any infiltration credit:</p>
+      <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-gray-300 dark:border-gray-600">
+            <th class="py-2">Floor area</th>
+            <th class="py-2">1 bed</th>
+            <th class="py-2">2 bed</th>
+            <th class="py-2">3 bed</th>
+            <th class="py-2">4 bed</th>
+            <th class="py-2">5 bed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">1,000 sq ft</td><td>45 CFM</td><td>52.5</td><td>60</td><td>67.5</td><td>75</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">1,500 sq ft</td><td>60</td><td>67.5</td><td>75</td><td>82.5</td><td>90</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">2,000 sq ft</td><td>75</td><td>82.5</td><td>90</td><td>97.5</td><td>105</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">2,500 sq ft</td><td>90</td><td>97.5</td><td>105</td><td>112.5</td><td>120</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">3,000 sq ft</td><td>105</td><td>112.5</td><td>120</td><td>127.5</td><td>135</td></tr>
+          <tr><td class="py-1">4,000 sq ft</td><td>135</td><td>142.5</td><td>150</td><td>157.5</td><td>165</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>
+        <strong>Popular ERV/HRV models that fit these ranges:</strong> Panasonic Intelli-Balance 100 (30-120 CFM), Fantech VHR 704 (50-200 CFM), Zehnder ComfoAir Q350 (70-205 CFM), Broan AI Series (50-160 CFM). Size at 100-120% of calculated need so the unit runs at a middle-speed setpoint rather than maxed out.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Do I need mechanical ventilation in an old leaky house?</h3>
+      <p>Probably not — infiltration alone meets the 62.2 rate in most 1960s-1990s homes. Modern tight houses (post-2015 IECC) always do.</p>
+
+      <h3>What is the normalization factor NF?</h3>
+      <p>A LBL model factor that converts pressure-test ACH50 to real-world natural ACH. 17 is average; use 15 in warm climates, 20 in cold multi-story.</p>
+
+      <h3>Can I use a bathroom fan for whole-house ventilation?</h3>
+      <p>Yes — if it is rated for continuous operation (≤1.5 sones, ECM motor) and runs 24/7 at the required CFM.</p>
+
+      <h3>How do I hit 90 CFM with an ERV?</h3>
+      <p>Most residential ERVs provide 40-200 CFM at different speeds. Set the ERV to the boost speed that matches your required mechanical CFM.</p>
+
+      <h3>Does ASHRAE 62.2 apply to apartments?</h3>
+      <p>Yes — it applies to any dwelling unit, including condos, apartments, and attached townhouses.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Air Change Rate Calculator", description: "ACH from CFM and room volume.", path: construction_air_change_rate_path, icon_path: "M13 10V3" },
+      { name: "Attic Ventilation Calculator", description: "Net free area for soffit and ridge vents.", path: construction_attic_ventilation_path, icon_path: "M3 12l9-9 9 9" },
+      { name: "Heat Loss Calculator", description: "Whole-house heat loss.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Cooling Load Calculator", description: "Whole-house cooling load.", path: construction_cooling_load_path, icon_path: "M12 3v1" },
+      { name: "Duct Size Calculator", description: "Round or rectangular duct size.", path: construction_duct_size_path, icon_path: "M4 4h16v4H4z" },
+      { name: "Dehumidifier Sizing Calculator", description: "Pints per day by area and humidity.", path: construction_dehumidifier_sizing_path, icon_path: "M12 2c-5.33 4.55-8 8.48-8 11.8" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("erv-hrv-ventilation-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

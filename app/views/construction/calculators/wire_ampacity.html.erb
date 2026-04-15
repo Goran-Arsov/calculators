@@ -1,0 +1,256 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Wire Ampacity Calculator - NEC Table 310.16 by AWG",
+  description: "Free NEC Table 310.16 wire ampacity calculator. Look up amperage for copper and aluminum wire by AWG, insulation rating, ambient temperature, and bundled conductor count.",
+  canonical: construction_wire_ampacity_url,
+  og: {
+    title: "Wire Ampacity Calculator | Calc Hammer",
+    description: "NEC ampacity lookup with temperature and bundle derating.",
+    url: construction_wire_ampacity_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Wire Ampacity Calculator", url: construction_wire_ampacity_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is wire ampacity?", answer: "Ampacity is the maximum current a conductor can carry continuously without exceeding its insulation temperature rating. NEC Table 310.16 lists base ampacities for conductors in raceway, cable, or direct-buried at 30 °C ambient. The base value must be adjusted for actual ambient temperature and for the number of current-carrying conductors in the bundle." },
+  { question: "What is the ampacity of 12 AWG copper?", answer: "At 75 °C insulation rating (THWN, XHHW) the base ampacity is 25 amps per NEC Table 310.16. At 60 °C (TW) it is 20 amps. At 90 °C (THHN) it is 30 amps. However, NEC 240.4(D)(5) limits the overcurrent protection on 12 AWG to 20 amps maximum — you can not put a 12 AWG wire on a 25 or 30 amp breaker even if the table allows more. The same 14 AWG limit is 15 amps, and 10 AWG is 30 amps." },
+  { question: "What is the 60/75/90 C column for?", answer: "The three columns correspond to the insulation temperature rating of the conductor. 60 °C is older TW/UF type. 75 °C includes THWN, XHHW, RHW. 90 °C includes THHN, THHW, THWN-2, and XHHW-2. You must use the lower of: the conductor rating, the termination rating (most residential breakers/receptacles are 75 °C), and any derating factors. Modern THHN/THWN-2 is dual-rated so you can use the 75 °C or 90 °C column depending on terminations." },
+  { question: "When do I need to derate for ambient temperature?", answer: "When the ambient air temperature differs from the 30 °C (86 °F) base used in Table 310.16. Hot attics can reach 50-60 °C; the derating factor at 50 °C for 90 °C insulation is 0.82 — meaning a 30 A conductor only carries 24.6 A. Underground conduits below the frost line see 15-20 °C and get an uplift factor of 1.08-1.11. Always derate to the hottest condition the run encounters along its length." },
+  { question: "What is bundle derating and when does it apply?", answer: "NEC 310.15(C)(1) requires derating when more than three current-carrying conductors share a raceway or cable. The factors are 80% for 4-6 wires, 70% for 7-9 wires, 50% for 10-20 wires. For example, six 12 AWG THWN wires in one conduit derate from 25 A to 25 × 0.80 = 20 A — the same wire can carry less because the bundle traps heat. Grounding conductors and neutrals on balanced 3-phase circuits do not count in the conductor count." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Wire Ampacity Calculator",
+  description: "Look up NEC Table 310.16 ampacity for copper and aluminum wire with ambient and bundle derating.",
+  url: construction_wire_ampacity_url,
+  category: "HomeApplication",
+  calculator_slug: "wire-ampacity-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Wire Ampacity Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Wire Ampacity Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Look up NEC Table 310.16 ampacity for copper and aluminum wire by AWG and insulation temperature rating. Applies ambient temperature correction and bundle derating per NEC 310.15.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="wire-ampacity-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Temperature units</label>
+            <select data-wire-ampacity-calculator-target="unitSystem" data-action="change->wire-ampacity-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (°F)</option>
+              <option value="metric">Metric (°C)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Wire size</label>
+            <select data-wire-ampacity-calculator-target="awg" data-action="change->wire-ampacity-calculator#calculate" class="w-full">
+              <option value="14">14 AWG</option>
+              <option value="12" selected>12 AWG</option>
+              <option value="10">10 AWG</option>
+              <option value="8">8 AWG</option>
+              <option value="6">6 AWG</option>
+              <option value="4">4 AWG</option>
+              <option value="3">3 AWG</option>
+              <option value="2">2 AWG</option>
+              <option value="1">1 AWG</option>
+              <option value="1/0">1/0</option>
+              <option value="2/0">2/0</option>
+              <option value="3/0">3/0</option>
+              <option value="4/0">4/0</option>
+              <option value="250">250 kcmil</option>
+              <option value="350">350 kcmil</option>
+              <option value="500">500 kcmil</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Material</label>
+            <select data-wire-ampacity-calculator-target="material" data-action="change->wire-ampacity-calculator#calculate" class="w-full">
+              <option value="cu" selected>Copper</option>
+              <option value="al">Aluminum</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Insulation temperature rating</label>
+            <select data-wire-ampacity-calculator-target="tempRating" data-action="change->wire-ampacity-calculator#calculate" class="w-full">
+              <option value="60">60 °C (TW, UF)</option>
+              <option value="75" selected>75 °C (THWN, XHHW, RHW)</option>
+              <option value="90">90 °C (THHN, THWN-2, XHHW-2)</option>
+            </select>
+          </div>
+          <div>
+            <label for="wa-ambient" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-wire-ampacity-calculator-target="ambientLabel">Ambient temperature (°F)</span></label>
+            <input id="wa-ambient" type="number" inputmode="decimal" data-wire-ampacity-calculator-target="ambient" data-action="input->wire-ampacity-calculator#calculate" class="w-full" value="86" step="1">
+            <p class="text-xs text-gray-500 mt-1">Base table is at 86 °F (30 °C). Hot attics: 120 °F (49 °C).</p>
+          </div>
+          <div>
+            <label for="wa-count" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Current-carrying conductors in bundle</label>
+            <input id="wa-count" type="number" inputmode="numeric" data-wire-ampacity-calculator-target="count" data-action="input->wire-ampacity-calculator#calculate" class="w-full" value="3" step="1" min="1">
+            <p class="text-xs text-gray-500 mt-1">Do not count ground or balanced 3-phase neutral.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Base ampacity (Table 310.16)</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-wire-ampacity-calculator-target="resultBase">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Ambient correction</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-wire-ampacity-calculator-target="resultAmbientFactor">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Bundle adjustment</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-wire-ampacity-calculator-target="resultBundleFactor">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Adjusted ampacity</span>
+              <span class="text-3xl font-extrabold text-amber-700 dark:text-amber-400" data-wire-ampacity-calculator-target="resultAdjusted">—</span>
+            </div>
+          </div>
+          <button data-action="click->wire-ampacity-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-yellow-700 hover:from-amber-700 hover:to-yellow-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "wire-ampacity-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>NEC Table 310.16 Base Ampacities</h2>
+      <p>
+        NEC Table 310.16 lists allowable ampacities for insulated conductors rated up to 2000 V with not more than three current-carrying conductors in raceway or cable, at a 30 °C (86 °F) ambient. The table has three columns by insulation temperature rating. You use the column matching your conductor insulation type, then apply any adjustment or correction factors required by 310.15.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Common Copper Ampacities (NEC Table 310.16)</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-gray-300 dark:border-gray-600">
+              <th class="py-2">AWG</th>
+              <th class="py-2">60 °C (TW)</th>
+              <th class="py-2">75 °C (THWN)</th>
+              <th class="py-2">90 °C (THHN)</th>
+              <th class="py-2">Typical breaker</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">14 AWG</td><td>15 A</td><td>20 A</td><td>25 A</td><td>15 A (NEC 240.4(D))</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">12 AWG</td><td>20 A</td><td>25 A</td><td>30 A</td><td>20 A (NEC 240.4(D))</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">10 AWG</td><td>30 A</td><td>35 A</td><td>40 A</td><td>30 A (NEC 240.4(D))</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">8 AWG</td><td>40 A</td><td>50 A</td><td>55 A</td><td>40-50 A</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">6 AWG</td><td>55 A</td><td>65 A</td><td>75 A</td><td>60-65 A</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">4 AWG</td><td>70 A</td><td>85 A</td><td>95 A</td><td>80-85 A</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">2 AWG</td><td>95 A</td><td>115 A</td><td>130 A</td><td>100 A subfeed</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">1/0</td><td>125 A</td><td>150 A</td><td>170 A</td><td>150 A subfeed</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">2/0</td><td>145 A</td><td>175 A</td><td>195 A</td><td>175 A subfeed</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">3/0</td><td>165 A</td><td>200 A</td><td>225 A</td><td>200 A service</td></tr>
+            <tr><td class="py-1">4/0</td><td>195 A</td><td>230 A</td><td>260 A</td><td>200-225 A service</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <strong>Critical: 14/12/10 small-conductor rule.</strong> NEC 240.4(D) limits overcurrent protection to 15 A for 14 AWG, 20 A for 12 AWG, and 30 A for 10 AWG <em>regardless</em> of what Table 310.16 says. You cannot put a 12 AWG wire on a 25 or 30 A breaker even if you upgrade the insulation. This rule prevents well-meaning upgrades from creating fire hazards in old work.
+      </p>
+
+      <h3>Derating in Hot Attics</h3>
+      <p>
+        Hot attics can reach 50-60 °C (120-140 °F) during summer in southern US climates. NEC 310.15(B)(3)(c) requires an additional rooftop adder above that. A 30 A conductor at 50 °C ambient and 90 °C insulation derates to 30 × 0.82 = 24.6 A. At 55 °C it drops to 22.8 A. For long runs through hot attics, upsize one wire gauge to stay above the required ampacity after derating.
+      </p>
+
+      <h3>Termination Temperature Rule</h3>
+      <p>
+        NEC 110.14(C) says you must use the column matching the <em>termination</em> temperature, not the conductor insulation. Most residential breakers and receptacles are rated 60 °C for 14/12/10 AWG and 75 °C for 8+ AWG. Even if you run 90 °C THHN, the ampacity is limited to the terminal rating. The 90 °C column is only useful when you're stacking derates — the 90 °C base is higher, so more derate headroom before hitting the 75 °C limit.
+      </p>
+
+      <h2>Derating Factors Quick Reference</h2>
+      <p>NEC Table 310.15(B)(1) ambient temperature correction factors applied to Table 310.16 base ampacities:</p>
+      <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-gray-300 dark:border-gray-600">
+            <th class="py-2">Ambient °C (°F)</th>
+            <th class="py-2">60 °C insulation</th>
+            <th class="py-2">75 °C insulation</th>
+            <th class="py-2">90 °C insulation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">21-25 °C (70-77 °F)</td><td>1.08</td><td>1.05</td><td>1.04</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">26-30 °C (79-86 °F) — base</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">31-35 °C (88-95 °F)</td><td>0.91</td><td>0.94</td><td>0.96</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">36-40 °C (97-104 °F)</td><td>0.82</td><td>0.88</td><td>0.91</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">41-45 °C (106-113 °F)</td><td>0.71</td><td>0.82</td><td>0.87</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">46-50 °C (115-122 °F)</td><td>0.58</td><td>0.75</td><td>0.82</td></tr>
+          <tr><td class="py-1">51-55 °C (124-131 °F)</td><td>0.41</td><td>0.67</td><td>0.76</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>NEC 310.15(C)(1) bundle (more than 3 current-carrying conductors) adjustments:</p>
+      <ul>
+        <li><strong>4-6 wires:</strong> ×0.80</li>
+        <li><strong>7-9 wires:</strong> ×0.70</li>
+        <li><strong>10-20 wires:</strong> ×0.50</li>
+        <li><strong>21-30 wires:</strong> ×0.45</li>
+        <li><strong>31-40 wires:</strong> ×0.40</li>
+        <li><strong>41+ wires:</strong> ×0.35</li>
+      </ul>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the difference between NM-B and THHN?</h3>
+      <p>NM-B is the Romex-type in-wall cable with an outer jacket. THHN/THWN-2 is individual conductors for conduit. NM-B internally is 90 °C rated but NEC limits it to 60 °C ampacity per 334.80.</p>
+
+      <h3>Can I use the 90 C column for Romex?</h3>
+      <p>No. NM-B is rated 60 °C for ampacity calculations per NEC 334.80. Use the 60 °C column.</p>
+
+      <h3>Do 3 current-carrying wires in NM-B need derating?</h3>
+      <p>No — up to 3 wires is the table base. Derating starts at 4 current-carrying conductors.</p>
+
+      <h3>What is the 83% rule?</h3>
+      <p>NEC 310.12 lets residential service-entrance conductors carry 83% of the service rating (e.g., 2 AWG Cu at 115 A × 0.83 → not allowed; actually 4 AWG Cu at 85 A × 1.17 ≈ 100 A for a 100 A service). Table 310.12 gives the specific sizes.</p>
+
+      <h3>How does bundled wires cause derating?</h3>
+      <p>Heat from each current-carrying wire cannot escape when wires are packed together. The derating factor (NEC 310.15(C)(1)) accounts for this heat trapping. Conduit fill and bundle derate are separate requirements — you must check both.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Voltage Drop Calculator", description: "NEC voltage drop percentage for wire runs.", path: construction_voltage_drop_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Conduit Fill Calculator", description: "NEC Ch. 9 max wire count per conduit size.", path: construction_conduit_fill_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "Electrical Load Calculator", description: "Calculate total panel load per NEC.", path: construction_electrical_load_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "Generator Sizing Calculator", description: "Calculate generator watts from appliances.", path: construction_generator_sizing_path, icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
+      { name: "HVAC BTU Calculator", description: "Size AC tonnage per room.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Solar Panel Layout Calculator", description: "Calculate solar panel count for a roof.", path: construction_solar_panel_layout_path, icon_path: "M12 3v1" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("wire-ampacity-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

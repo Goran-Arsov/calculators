@@ -1,0 +1,195 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Heat Pump Capacity Calculator - BTU Derating by Temperature",
+  description: "Free heat pump capacity calculator. Derate rated BTU output for outdoor temperature — standard or cold-climate inverter heat pumps. Shows actual heating tons at any outdoor temp.",
+  canonical: construction_heat_pump_capacity_url,
+  og: {
+    title: "Heat Pump Capacity Calculator | Calc Hammer",
+    description: "Derate heat pump output at actual outdoor temperature.",
+    url: construction_heat_pump_capacity_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Heat Pump Capacity Calculator", url: construction_heat_pump_capacity_url }
+]) %>
+
+<%= faq_schema([
+  { question: "Why does heat pump capacity drop at cold temperatures?", answer: "Heat pumps move heat from outside air to inside air. The colder the outdoor air, the less heat is available to move, and the harder the compressor has to work. A standard air-source heat pump rated at 36,000 BTU/hr at 47 °F outdoor temperature produces only about 25,000 BTU/hr at 17 °F and about 20,000 BTU/hr at 5 °F. Cold-climate heat pumps with variable-speed inverter compressors retain much more capacity at low temperatures." },
+  { question: "What is a cold-climate heat pump?", answer: "A cold-climate heat pump (CCHP or CC-ASHP) is a variable-speed inverter heat pump designed to maintain at least 70% of rated heating capacity at 5 °F outdoor temperature and still produce heat at temperatures as low as -15 °F. The Northeast Energy Efficiency Partnerships (NEEP) maintains a list of qualifying models. CCHPs cost more upfront but allow cold-climate homes to eliminate backup fossil fuel heating." },
+  { question: "What is the heat pump balance point?", answer: "The outdoor temperature at which the heat pump's output exactly matches the home's heat loss. Below this temperature, backup heat (electric resistance, gas furnace) must make up the difference. Typical balance points are 25 to 35 °F for standard heat pumps and 0 to 15 °F for cold-climate inverter heat pumps. Sizing the heat pump at or near the balance point minimizes electric backup heat use." },
+  { question: "Should I oversize a heat pump for cold weather?", answer: "Not usually. Oversizing the heat pump means it short-cycles in mild weather and removes little humidity in cooling mode. Instead, right-size for the cooling load (or somewhere between cooling load and 100% of heating load) and use supplemental heat at design temperatures. Cold-climate variable-speed heat pumps are more forgiving because they can modulate down to 25% of their rated capacity." },
+  { question: "How does COP change with outdoor temperature?", answer: "COP drops roughly linearly with outdoor temperature. A typical heat pump has COP 3.5 at 47 °F, COP 2.5 at 17 °F, and COP 1.8 at 5 °F. Below the balance point, supplemental heat takes over and effective COP drops to 1.0 (electric resistance). Cold-climate models maintain COP 2.0+ down to 5 °F, which is why they remain economical in cold climates where standard heat pumps start to cost more than gas." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Heat Pump Capacity Calculator",
+  description: "Derate heat pump BTU output at actual outdoor temperature for standard and cold-climate heat pumps.",
+  url: construction_heat_pump_capacity_url,
+  category: "HomeApplication",
+  calculator_slug: "heat-pump-capacity-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Heat Pump Capacity Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Heat Pump Capacity Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Find out how much heat your heat pump actually delivers at any outdoor temperature. Supports standard air-source heat pumps and cold-climate variable-speed inverter models. Imperial and metric units.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="heat-pump-capacity-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Temperature units</label>
+            <select data-heat-pump-capacity-calculator-target="unitSystem" data-action="change->heat-pump-capacity-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (°F)</option>
+              <option value="metric">Metric (°C)</option>
+            </select>
+          </div>
+          <div>
+            <label for="hp-rated" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Rated heating capacity at 47 °F (BTU/hr)</label>
+            <input id="hp-rated" type="number" inputmode="decimal" data-heat-pump-capacity-calculator-target="rated" data-action="input->heat-pump-capacity-calculator#calculate" class="w-full" value="36000" step="1000" min="0">
+            <p class="text-xs text-gray-500 mt-1">From manufacturer AHRI/nameplate data at rated conditions.</p>
+          </div>
+          <div>
+            <label for="hp-outdoor" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heat-pump-capacity-calculator-target="outdoorLabel">Outdoor temperature (°F)</span></label>
+            <input id="hp-outdoor" type="number" inputmode="decimal" data-heat-pump-capacity-calculator-target="outdoor" data-action="input->heat-pump-capacity-calculator#calculate" class="w-full" value="17" step="1">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Heat pump type</label>
+            <select data-heat-pump-capacity-calculator-target="hpType" data-action="change->heat-pump-capacity-calculator#calculate" class="w-full">
+              <option value="standard" selected>Standard air-source HP</option>
+              <option value="cold_climate">Cold-climate inverter HP (NEEP)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Capacity at this temp</span>
+              <span class="text-base font-bold text-blue-700 dark:text-blue-400" data-heat-pump-capacity-calculator-target="resultFraction">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-blue-200/50 dark:border-blue-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Actual heating output</span>
+              <span class="text-2xl font-extrabold text-blue-700 dark:text-blue-400" data-heat-pump-capacity-calculator-target="resultActual">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">In tons / kW</span>
+              <span class="text-base font-bold text-blue-700 dark:text-blue-400" data-heat-pump-capacity-calculator-target="resultTons">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Derating</span>
+              <span class="text-base font-bold text-blue-700 dark:text-blue-400" data-heat-pump-capacity-calculator-target="resultDerating">—</span>
+            </div>
+          </div>
+          <button data-action="click->heat-pump-capacity-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "heat-pump-capacity-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>Why Heat Pump Capacity Drops in Cold Weather</h2>
+      <p>
+        A heat pump is just a reversible air conditioner — it moves heat from outside to inside in winter. The colder the outdoor air, the less heat is available to move, and the harder the compressor has to work per BTU delivered. The AHRI rating is measured at 47 °F outdoor / 70 °F indoor. As outdoor temperature drops, output decreases along a roughly linear curve that depends on the compressor technology.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Standard vs Cold-Climate Heat Pumps</h2>
+      <p>
+        A <strong>standard single-stage or 2-stage heat pump</strong> retains about 70% of its rated capacity at 17 °F, 55% at 5 °F, and 40% at -5 °F. These numbers are for typical residential splits; individual models vary. A <strong>cold-climate variable-speed inverter heat pump</strong> (NEEP-qualified, ccASHP) retains 90% at 17 °F, 80% at 5 °F, and 70% at -5 °F. The extra cost of a cold-climate unit pays back quickly in climates where winter design temps are below 15 °F because you don't need as much expensive resistance backup heat.
+      </p>
+
+      <h3>Balance Point</h3>
+      <p>
+        The balance point is the outdoor temperature at which the heat pump's output exactly matches the house's heat loss. Above the balance point, the heat pump handles 100% of heating. Below, supplemental heat (electric resistance strips, gas furnace, wood, etc.) makes up the difference. For a 36,000 BTU/hr heat pump in a home with 30,000 BTU/hr heat loss at 0 °F, the standard curve puts the balance point around 20 °F — meaning 80% of the heating season the HP handles everything. A cold-climate version pushes the balance point to about 0 °F, eliminating most backup heat use.
+      </p>
+
+      <h3>Sizing Rules of Thumb</h3>
+      <p>
+        Size the heat pump to the cooling load first, then check that it can handle the heating load at the balance point. In cold climates where heating load dominates, some installers intentionally oversize for cooling up to 125% to extend the balance point lower. Cold-climate inverter units modulate down to 25% capacity, so oversizing them doesn't cause the short-cycle problem that plagues single-stage oversized systems.
+      </p>
+
+      <h2>Typical Capacity Derating at Common Outdoor Temperatures</h2>
+      <p>
+        Fraction of AHRI-rated 47 °F capacity retained at each outdoor temperature. Interpolated from the capacity curves used by this calculator. These are representative curves — individual models vary by ±5-10%.
+      </p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-gray-300 dark:border-gray-600">
+              <th class="py-2">Outdoor temp</th>
+              <th class="py-2">Standard HP</th>
+              <th class="py-2">Cold-climate HP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">47 °F (8 °C)</td><td>100%</td><td>100%</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">35 °F (2 °C)</td><td>88%</td><td>98%</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">17 °F (−8 °C)</td><td>70%</td><td>90%</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">5 °F (−15 °C)</td><td>55%</td><td>80%</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">−5 °F (−21 °C)</td><td>40%</td><td>70%</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">−13 °F (−25 °C)</td><td>30%</td><td>58%</td></tr>
+            <tr><td class="py-1">−25 °F (−32 °C)</td><td>15%</td><td>40%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <strong>Example:</strong> a 3-ton (36,000 BTU/hr) standard HP at 17 °F delivers about 25,200 BTU/hr (70% of rated). Same 3-ton rating on a cold-climate inverter HP at 17 °F delivers about 32,400 BTU/hr (90%). At −5 °F the cold-climate unit still makes 25,200 BTU/hr while the standard unit drops to 14,400 BTU/hr and would need backup heat strips.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What does 100% of rated capacity mean?</h3>
+      <p>The heating capacity measured at AHRI standard conditions: 47 °F outdoor / 70 °F indoor / 50% indoor RH.</p>
+
+      <h3>Can I get real numbers for my specific model?</h3>
+      <p>Yes — ask the manufacturer for the capacity tables or check the NEEP ccASHP product list for qualifying inverter models.</p>
+
+      <h3>What about defrost cycles?</h3>
+      <p>At temperatures between 25 and 45 °F with high humidity, the outdoor coil frosts over and the HP periodically reverses to melt it. During defrost, no heating is delivered (or electric backup runs). Average capacity is ~5% lower than these curves show in frosting conditions.</p>
+
+      <h3>Do mini-splits follow the same curves?</h3>
+      <p>Ductless mini-splits are typically variable-speed inverter units; most track closer to the cold-climate curve than the standard curve.</p>
+
+      <h3>How does humidity affect capacity?</h3>
+      <p>Higher outdoor humidity at cold temperatures increases frost formation and defrost frequency, reducing effective output. The manufacturer derating curves already account for standard humidity conditions.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Cooling Load Calculator", description: "Whole-house cooling load for AC/HP sizing.", path: construction_cooling_load_path, icon_path: "M12 3v1m0 16v1" },
+      { name: "Heat Loss Calculator", description: "Whole-house heat loss at design temperature.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "SEER EER HSPF Converter", description: "Convert between efficiency ratings.", path: construction_seer_eer_hspf_path, icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4" },
+      { name: "HVAC BTU Calculator", description: "Quick room-by-room BTU sizing.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Duct Size Calculator", description: "Calculate round or rectangular duct size.", path: construction_duct_size_path, icon_path: "M4 4h16v4H4z" },
+      { name: "Heating Cost Calculator", description: "Annual heating cost by fuel and HDD.", path: construction_heating_cost_path, icon_path: "M12 8c-1.657 0-3 .895-3 2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("heat-pump-capacity-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

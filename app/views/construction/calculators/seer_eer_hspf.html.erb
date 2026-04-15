@@ -1,0 +1,184 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "SEER EER HSPF Converter - Heat Pump & AC Efficiency",
+  description: "Free SEER, SEER2, EER, EER2, HSPF, HSPF2, and COP converter. Enter any one efficiency rating and see all the others for heat pumps and air conditioners.",
+  canonical: construction_seer_eer_hspf_url,
+  og: {
+    title: "SEER EER HSPF Converter | Calc Hammer",
+    description: "Convert between SEER, SEER2, EER, HSPF, HSPF2, and COP.",
+    url: construction_seer_eer_hspf_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "SEER EER HSPF Converter", url: construction_seer_eer_hspf_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is the difference between SEER and SEER2?", answer: "SEER is the older Seasonal Energy Efficiency Ratio test method. SEER2 is the new method effective January 2023, which better reflects real-world conditions using higher external static pressure on the blower. SEER2 ratings are approximately 4-5% lower than the equivalent SEER ratings for the same unit. A 15 SEER unit becomes roughly 14.3 SEER2; a 16 SEER becomes about 15.2 SEER2." },
+  { question: "What is EER and how is it different from SEER?", answer: "EER (Energy Efficiency Ratio) is a steady-state measurement at 95 °F outdoor and 80 °F indoor — a single operating point. SEER averages efficiency across a simulated cooling season with varying outdoor temperatures. EER is lower than SEER because the rating conditions are harsher. A 16 SEER unit typically has an EER around 12-13. EER matters most in very hot climates where the AC runs hard continuously." },
+  { question: "What is COP?", answer: "Coefficient of Performance is the dimensionless ratio of heat output to electric energy input. A heat pump with COP 4.0 produces 4 BTU of heat for every 1 BTU of electric energy consumed. Divide BTU-based ratings by 3.412 to get COP (SEER / 3.412 ≈ seasonal cooling COP). Electric resistance heat has COP = 1.0 by definition." },
+  { question: "How do I compare a heat pump to a gas furnace?", answer: "Convert the heat pump's HSPF to seasonal COP (HSPF / 3.412) and compare to the gas furnace AFUE. A heat pump with HSPF 10 has COP 2.93, meaning it delivers 2.93× the energy it consumes. A 96% AFUE gas furnace delivers 0.96× the energy in the gas it burns. Then multiply by electric/gas cost per BTU to compare operating costs." },
+  { question: "What is the minimum SEER2 in my area?", answer: "As of January 2023, the US Department of Energy requires minimum 13.4 SEER2 for split systems in northern regions and 14.3 SEER2 in southern and southwestern regions. Heat pumps must meet 14.3 SEER2 nationwide. These are replacement minimums for new installations — existing equipment is grandfathered." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "SEER EER HSPF Converter",
+  description: "Convert between SEER, SEER2, EER, EER2, HSPF, HSPF2, and COP for heat pumps and air conditioners.",
+  url: construction_seer_eer_hspf_url,
+  category: "UtilitiesApplication",
+  calculator_slug: "seer-eer-hspf-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "SEER EER HSPF Converter" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">SEER EER HSPF Converter</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Convert between SEER, SEER2, EER, EER2, HSPF, HSPF2, and COP. Enter any one efficiency rating and instantly see all the others. Works for heat pumps and air conditioners.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="seer-eer-hspf-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Input type</label>
+            <select data-seer-eer-hspf-calculator-target="type" data-action="change->seer-eer-hspf-calculator#calculate" class="w-full">
+              <option value="seer" selected>SEER (legacy)</option>
+              <option value="seer2">SEER2 (2023+)</option>
+              <option value="eer">EER (steady state)</option>
+              <option value="eer2">EER2</option>
+              <option value="hspf">HSPF (legacy)</option>
+              <option value="hspf2">HSPF2 (2023+)</option>
+              <option value="cop">COP (dimensionless)</option>
+            </select>
+          </div>
+          <div>
+            <label for="eff-value" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Value</label>
+            <input id="eff-value" type="number" inputmode="decimal" data-seer-eer-hspf-calculator-target="value" data-action="input->seer-eer-hspf-calculator#calculate" class="w-full" value="16" step="0.1" min="0">
+            <p class="text-xs text-gray-500 mt-1">Typical residential: SEER 13-20, EER 10-14, HSPF 8-11, COP 3.0-5.0.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">All Equivalents</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">SEER</span><span class="text-xl font-bold text-emerald-700 dark:text-emerald-400" data-seer-eer-hspf-calculator-target="resultSeer">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">SEER2 (2023+)</span><span class="text-xl font-bold text-emerald-700 dark:text-emerald-400" data-seer-eer-hspf-calculator-target="resultSeer2">—</span></div>
+            <div class="flex justify-between items-center pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50"><span class="text-gray-600 dark:text-gray-400 text-sm">EER</span><span class="text-xl font-bold text-emerald-700 dark:text-emerald-400" data-seer-eer-hspf-calculator-target="resultEer">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">EER2 (2023+)</span><span class="text-xl font-bold text-emerald-700 dark:text-emerald-400" data-seer-eer-hspf-calculator-target="resultEer2">—</span></div>
+            <div class="flex justify-between items-center pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50"><span class="text-gray-600 dark:text-gray-400 text-sm">HSPF</span><span class="text-xl font-bold text-emerald-700 dark:text-emerald-400" data-seer-eer-hspf-calculator-target="resultHspf">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">HSPF2 (2023+)</span><span class="text-xl font-bold text-emerald-700 dark:text-emerald-400" data-seer-eer-hspf-calculator-target="resultHspf2">—</span></div>
+            <div class="flex justify-between items-center pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50"><span class="text-gray-700 dark:text-gray-300 text-sm">COP (dimensionless)</span><span class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400" data-seer-eer-hspf-calculator-target="resultCop">—</span></div>
+          </div>
+          <button data-action="click->seer-eer-hspf-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "seer-eer-hspf-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>HVAC Efficiency Metrics Explained</h2>
+      <p>
+        SEER, EER, HSPF, and COP all measure how efficiently a heat pump or air conditioner converts electric energy into cooling or heating. The big differences are: what conditions the test is run under, whether it covers a single moment or a whole season, and whether the result is dimensionless or in BTU per watt-hour.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>The Three Categories</h2>
+      <p>
+        <strong>Steady-state metrics (EER, EER2, COP)</strong> measure efficiency at one fixed operating point. EER and EER2 use 95 °F outdoor / 80 °F indoor and are given in BTU/Wh. COP is dimensionless — just heat out divided by electricity in. <strong>Seasonal metrics (SEER, SEER2, HSPF, HSPF2)</strong> simulate an entire cooling or heating season with varying outdoor temperatures and report an average. They are given in BTU/Wh too. Seasonal values are higher than steady-state because the average operating conditions are milder than the design point.
+      </p>
+
+      <h3>SEER vs SEER2</h3>
+      <p>
+        In January 2023 the US DOE switched to SEER2, EER2, and HSPF2 test procedures. The new tests use higher blower external static pressure (0.5 iwc instead of 0.1-0.2 iwc) to better reflect real-world duct systems. This drops ratings about 4-5% for SEER, 4-5% for EER, and 14-15% for HSPF. A 16 SEER unit becomes approximately 15.2 SEER2. A 10 HSPF becomes 8.5 HSPF2. The equipment is the same; the test method is stricter.
+      </p>
+
+      <h3>Converting Between Them</h3>
+      <p>
+        Rough relationships at typical rating conditions: <strong>SEER ≈ EER × 1.12</strong> (the SEER-to-EER ratio averaged across modern equipment), <strong>SEER ÷ 3.412 ≈ seasonal cooling COP</strong>, <strong>HSPF ÷ 3.412 ≈ seasonal heating COP</strong>. These are approximations — exact conversion depends on the specific unit's capacity curve. For quick comparison shopping and budget analysis, they're more than accurate enough.
+      </p>
+
+      <h2>DOE Minimum Efficiency Standards (2023 SEER2/HSPF2)</h2>
+      <p>Current US DOE minimum efficiency for new residential split-system installations as of Jan 1, 2023:</p>
+      <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-gray-300 dark:border-gray-600">
+            <th class="py-2">Region</th>
+            <th class="py-2">AC min SEER2</th>
+            <th class="py-2">AC min EER2</th>
+            <th class="py-2">Heat pump min SEER2</th>
+            <th class="py-2">Heat pump min HSPF2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">North</td><td>13.4</td><td>11.0</td><td>14.3</td><td>7.5</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">South</td><td>14.3</td><td>11.7</td><td>14.3</td><td>7.5</td></tr>
+          <tr><td class="py-1">Southwest</td><td>14.3</td><td>11.7</td><td>14.3</td><td>7.5</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>
+        <strong>ENERGY STAR thresholds (2024):</strong> central AC ≥ 15.2 SEER2 + 12.0 EER2 (South), heat pumps ≥ 15.2 SEER2 + 8.1 HSPF2. Mini-splits ≥ 16.0 SEER2 + 9.0 HSPF2. NEEP cold-climate heat pump qualification requires COP ≥ 1.75 at 5 °F and capacity ≥ 70% of rated at 5 °F.
+      </p>
+
+      <h3>Typical Residential Ratings by Tier</h3>
+      <ul>
+        <li><strong>Code-minimum:</strong> SEER2 14.3 / HSPF2 7.5 (standard single-stage)</li>
+        <li><strong>Mid-range:</strong> SEER2 16-18 / HSPF2 8.5-9.0 (2-stage)</li>
+        <li><strong>High efficiency:</strong> SEER2 18-21 / HSPF2 9.5-10.5 (variable-speed)</li>
+        <li><strong>Premium cold-climate:</strong> SEER2 22-27 / HSPF2 10-13 (NEEP-listed inverter)</li>
+      </ul>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Which rating should I use to compare units?</h3>
+      <p>Compare same-era ratings: SEER2 to SEER2, SEER to SEER. Don't compare a pre-2023 SEER 16 unit to a post-2023 SEER2 15 unit directly.</p>
+
+      <h3>What's a good SEER2 today?</h3>
+      <p>14.3 SEER2 is the southern minimum. 16 SEER2 is mid-range, 18-20 SEER2 is high efficiency, 22+ SEER2 is premium inverter.</p>
+
+      <h3>Does higher SEER always save money?</h3>
+      <p>Not always — the upgrade cost has to be recouped from energy savings. Use this calculator along with operating cost estimates to compare payback.</p>
+
+      <h3>What is a good COP for a heat pump?</h3>
+      <p>At 47 °F rating: standard = 3.5-4.0, premium inverter = 4.5-5.0. At 17 °F: standard drops to 2.5, cold-climate inverter stays around 3.0.</p>
+
+      <h3>Why do commercial systems use kW/ton?</h3>
+      <p>kW/ton = 12 ÷ EER. A 12 EER = 1.0 kW/ton. Commercial engineers prefer kW/ton because it scales with tonnage and relates directly to electrical demand.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Heat Pump Capacity Calculator", description: "Derate heat pump output at outdoor temp.", path: construction_heat_pump_capacity_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Cooling Load Calculator", description: "Whole-house cooling load for AC sizing.", path: construction_cooling_load_path, icon_path: "M12 3v1m0 16v1" },
+      { name: "Heat Loss Calculator", description: "Whole-house heat loss for heater sizing.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "HVAC BTU Calculator", description: "Quick room-by-room BTU sizing.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Heating Cost Calculator", description: "Annual heating cost by fuel and HDD.", path: construction_heating_cost_path, icon_path: "M12 8c-1.657 0-3 .895-3 2" },
+      { name: "Duct Size Calculator", description: "Calculate round or rectangular duct size.", path: construction_duct_size_path, icon_path: "M4 4h16v4H4z" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("seer-eer-hspf-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

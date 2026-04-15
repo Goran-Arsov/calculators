@@ -1,0 +1,235 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Radiant Floor Heat Calculator - PEX Tube Length & BTU",
+  description: "Free radiant floor heat calculator. Calculate PEX tube length, loop count, and heat output (BTU/hr) for hydronic radiant floor heating by floor area, tube spacing, and surface.",
+  canonical: construction_radiant_floor_heat_url,
+  og: {
+    title: "Radiant Floor Heat Calculator | Calc Hammer",
+    description: "PEX tube length and BTU output for hydronic radiant floor heating.",
+    url: construction_radiant_floor_heat_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Radiant Floor Heat Calculator", url: construction_radiant_floor_heat_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How much PEX tube do I need per square foot of radiant floor?", answer: "Tube length per sq ft = 12 / spacing (in inches). At 12\" on center, you need 1.0 ft per sq ft. At 9\" OC, 1.33 ft per sq ft. At 6\" OC, 2.0 ft per sq ft. Add 10% for bends, headers, and the return run to the manifold. A 200 sq ft room at 9\" OC needs about 293 ft of PEX total." },
+  { question: "How much heat can a radiant floor deliver?", answer: "At 110-120 °F supply water, 1/2\" PEX at 9\" OC delivers about 25-35 BTU/hr per sq ft depending on the floor surface. Bare concrete or thin-set tile: 30-35 BTU/hr/ft². Engineered wood over slab: 20-25 BTU/hr/ft². Carpet with pad: 12-15 BTU/hr/ft² (not recommended — the pad insulates the floor from the heat). For a 200 sq ft tile bathroom at 125 BTU/hr/ft² heat loss, radiant delivers about 5,400 BTU/hr — a perfect match." },
+  { question: "What is the maximum loop length for 1/2 inch PEX?", answer: "About 300 ft maximum per loop for 1/2\" PEX to keep head loss under ~3-4 ft of water. 3/8\" PEX is limited to about 200 ft. 5/8\" PEX can handle up to 400 ft. Longer loops require larger circulators and cause temperature drop from start to end of the loop, leaving cold spots at the return end. If your calculated tube exceeds the max loop length, split into multiple loops of equal length from a manifold." },
+  { question: "What tube spacing should I use?", answer: "6\" on center for high-heat-loss rooms (sunrooms, bathrooms with lots of windows), perimeter zones near exterior walls, and as the primary heat source in cold climates. 9\" OC for typical rooms with moderate heat loss. 12\" OC for supplemental warming in well-insulated rooms or secondary heat sources. Tighter spacing delivers more heat per sq ft and evens out surface temperature." },
+  { question: "Can I install radiant heat under carpet?", answer: "It's possible but not ideal. Carpet pad has R-value 1-2, which blocks 30-60% of the heat output. Radiant floor under carpet delivers 12-15 BTU/hr/ft² vs 30+ for bare tile. If you must use carpet, choose a low-pile loop with a thin foam pad (R-0.5 or less) and run hotter water. Hardwood, tile, and stone are much better pairings with radiant floor." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Radiant Floor Heat Calculator",
+  description: "Calculate PEX tube length, loop count, and BTU output for hydronic radiant floor heating systems.",
+  url: construction_radiant_floor_heat_url,
+  category: "HomeApplication",
+  calculator_slug: "radiant-floor-heat-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Radiant Floor Heat Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Radiant Floor Heat Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate PEX tube length, loop count, and BTU output for hydronic radiant floor heating. Supports 3/8", 1/2", and 5/8" PEX at 6", 9", and 12" on-center spacing. Imperial and metric units.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="radiant-floor-heat-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-radiant-floor-heat-calculator-target="unitSystem" data-action="change->radiant-floor-heat-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (sq ft, BTU/hr)</option>
+              <option value="metric">Metric (m², W)</option>
+            </select>
+          </div>
+          <div>
+            <label for="rfh-area" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-radiant-floor-heat-calculator-target="areaLabel">Floor area (sq ft)</span></label>
+            <input id="rfh-area" type="number" inputmode="decimal" data-radiant-floor-heat-calculator-target="area" data-action="input->radiant-floor-heat-calculator#calculate" class="w-full" value="200" step="10" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Tube spacing (on center)</label>
+            <select data-radiant-floor-heat-calculator-target="spacing" data-action="change->radiant-floor-heat-calculator#calculate" class="w-full">
+              <option value="6">6" OC — high output zones</option>
+              <option value="9" selected>9" OC — typical rooms</option>
+              <option value="12">12" OC — supplemental</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Floor surface</label>
+            <select data-radiant-floor-heat-calculator-target="surface" data-action="change->radiant-floor-heat-calculator#calculate" class="w-full">
+              <option value="concrete">Bare concrete (32 BTU/hr/ft²)</option>
+              <option value="tile" selected>Tile or stone (27 BTU/hr/ft²)</option>
+              <option value="wood">Engineered wood (22 BTU/hr/ft²)</option>
+              <option value="carpet">Carpet w/ pad (14 BTU/hr/ft²)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">PEX tube size</label>
+            <select data-radiant-floor-heat-calculator-target="tubeSize" data-action="change->radiant-floor-heat-calculator#calculate" class="w-full">
+              <option value="3/8">3/8" (max 200 ft/loop)</option>
+              <option value="1/2" selected>1/2" (max 300 ft/loop)</option>
+              <option value="5/8">5/8" (max 400 ft/loop)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Total PEX tube</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-radiant-floor-heat-calculator-target="resultTotalTube">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Number of loops</span>
+              <span class="text-xl font-bold text-orange-700 dark:text-orange-400" data-radiant-floor-heat-calculator-target="resultLoops">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Length per loop</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-radiant-floor-heat-calculator-target="resultLoopLength">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-orange-200/50 dark:border-orange-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Heat output</span>
+              <span class="text-2xl font-extrabold text-orange-700 dark:text-orange-400" data-radiant-floor-heat-calculator-target="resultBtu">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">In kilowatts</span>
+              <span class="text-base font-bold text-orange-700 dark:text-orange-400" data-radiant-floor-heat-calculator-target="resultKw">—</span>
+            </div>
+          </div>
+          <button data-action="click->radiant-floor-heat-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-orange-600 to-red-700 hover:from-orange-700 hover:to-red-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "radiant-floor-heat-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Radiant Floor Sizing Works</h2>
+      <p>
+        Hydronic radiant floor heating circulates warm water through PEX tubing embedded in the floor. The tubing is laid in a serpentine or spiral pattern at a specified "on-center" spacing (6", 9", or 12"). Output depends on three things: water temperature, tube spacing, and the floor covering's resistance to heat flow. The calculator uses industry-standard output values for 1/2" PEX at 110-120 °F supply water — the typical range for modern low-temperature hydronic systems.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Typical Output by Floor Covering</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-gray-300 dark:border-gray-600">
+              <th class="py-2">Floor covering</th>
+              <th class="py-2">BTU/hr per ft²</th>
+              <th class="py-2">W per m²</th>
+              <th class="py-2">Suitable?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Bare concrete (polished)</td><td>30-35</td><td>94-110</td><td>Ideal</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Tile or stone (thinset)</td><td>25-30</td><td>79-94</td><td>Ideal</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Engineered wood</td><td>20-25</td><td>63-79</td><td>Good</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Vinyl / LVT</td><td>20-25</td><td>63-79</td><td>Good</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Solid hardwood (3/4")</td><td>15-20</td><td>47-63</td><td>Marginal</td></tr>
+            <tr><td class="py-1">Carpet with pad</td><td>10-15</td><td>31-47</td><td>Poor</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <strong>Max floor surface temperature</strong> in occupied spaces is 85 °F per ASHRAE for foot comfort. At 35 BTU/hr/ft² output, surface temp is about 85 °F with 65 °F room air — the upper limit. Higher outputs require tighter spacing and higher water temp but may overshoot the comfort limit.
+      </p>
+
+      <h2>Tube Spacing Quick Reference</h2>
+      <p>
+        PEX length per sq ft = 12 / spacing (inches), plus 10% for bends and headers. Practical numbers for common installations:
+      </p>
+      <ul>
+        <li><strong>6" OC:</strong> 2.2 ft PEX per sq ft. Use in bathrooms, mudrooms, high-heat-loss perimeters, and where highest output is needed.</li>
+        <li><strong>9" OC:</strong> 1.47 ft PEX per sq ft. Standard for typical rooms with normal heat loss.</li>
+        <li><strong>12" OC:</strong> 1.1 ft PEX per sq ft. Supplemental or warm-floor-only applications in well-insulated spaces.</li>
+      </ul>
+
+      <h3>Loop Layout Rules</h3>
+      <p>
+        Keep 1/2" PEX loops under 300 ft each to maintain reasonable head loss (under ~4 ft of water column per loop at 0.5-1 gpm). If your calculated total tube exceeds the max loop length, the calculator splits it into equal loops automatically. Every loop runs from and returns to a manifold, which balances flow and isolates each zone with its own thermostat and actuator.
+      </p>
+
+      <h2>PEX Quantities for Common Room Sizes</h2>
+      <p>Total PEX tube (with 10% waste) and number of 1/2" loops for typical residential areas at 9" OC spacing:</p>
+      <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-gray-300 dark:border-gray-600">
+            <th class="py-2">Room / area</th>
+            <th class="py-2">PEX at 12" OC</th>
+            <th class="py-2">PEX at 9" OC</th>
+            <th class="py-2">PEX at 6" OC</th>
+            <th class="py-2">Heat output (tile)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">50 sq ft (small bath)</td><td>55 ft</td><td>73 ft</td><td>110 ft</td><td>1,350 BTU/hr</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">100 sq ft (mudroom)</td><td>110 ft</td><td>147 ft</td><td>220 ft</td><td>2,700 BTU/hr</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">200 sq ft (kitchen)</td><td>220 ft</td><td>293 ft</td><td>440 ft × 2 loops</td><td>5,400 BTU/hr</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">400 sq ft (living rm)</td><td>440 ft × 2</td><td>587 ft × 2</td><td>880 ft × 3</td><td>10,800 BTU/hr</td></tr>
+          <tr><td class="py-1">1,500 sq ft whole floor</td><td>1,650 ft × 6</td><td>2,201 ft × 8</td><td>3,300 ft × 11</td><td>40,500 BTU/hr</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>
+        <strong>Heat output is per sq ft × surface factor:</strong> 32 BTU/hr/ft² bare concrete, 27 for tile, 22 for wood, 14 for carpet. For a 200 sq ft tile bathroom with a 5,000 BTU/hr heat loss, radiant floor at 9" OC (5,400 BTU/hr) covers the load as the sole heat source. For a poorly insulated 400 sq ft room losing 15,000 BTU/hr, radiant alone (10,800 BTU/hr) is not enough — pair with baseboard or a panel radiator.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How deep should PEX be embedded in concrete?</h3>
+      <p>2-3 inches below the finished floor surface. Stapled to a foam board or wire mesh before pouring. Keeps the tube away from edges where it would be damaged.</p>
+
+      <h3>What water temperature do I need?</h3>
+      <p>110-120 °F supply for modern systems. Old high-temp designs used 180 °F but this risks cracking the concrete from thermal expansion.</p>
+
+      <h3>Do I need a manifold?</h3>
+      <p>Yes — all loops start and return to a manifold for balancing, air removal, and zoning. Stainless or brass manifolds last decades; plastic is OK for 10-15 years.</p>
+
+      <h3>Can radiant floor handle 100% of heating load?</h3>
+      <p>In well-insulated homes at design heat loss under 30 BTU/hr per sq ft, yes. In leaky older homes you may need supplemental baseboards or panel radiators for peak cold snaps.</p>
+
+      <h3>How much does radiant floor cost?</h3>
+      <p>$5-$15 per sq ft installed for retrofit (staple-up or Warmboard), $3-$8 per sq ft for new construction in a concrete slab. Add manifolds, pump, mixing valve, and controls ($800-$1,500 for a single zone).</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Heat Loss Calculator", description: "Whole-house heat loss to size radiant floor BTU.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Radiator BTU Calculator", description: "Radiator output at any water temperature.", path: construction_radiator_btu_path, icon_path: "M4 6h16M4 12h16M4 18h16" },
+      { name: "Pipe Friction Loss Calculator", description: "Head loss in PEX and copper tubing.", path: construction_pipe_friction_loss_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "Heat Pump Capacity Calculator", description: "Derate HP capacity for low-temp radiant.", path: construction_heat_pump_capacity_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Insulation Calculator", description: "Calculate underlayment R-value for slab.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" },
+      { name: "Heating Cost Calculator", description: "Annual heating cost by fuel and HDD.", path: construction_heating_cost_path, icon_path: "M12 8c-1.657 0-3 .895-3 2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("radiant-floor-heat-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -1,0 +1,193 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Static Pressure Calculator - HVAC TESP & Filter Drop",
+  description: "Free HVAC static pressure calculator. Estimate total external static pressure (TESP) from duct friction, fittings, filter MERV rating, and coil drop. Imperial and metric.",
+  canonical: construction_static_pressure_url,
+  og: {
+    title: "Static Pressure Calculator | Calc Hammer",
+    description: "Calculate total HVAC system static pressure.",
+    url: construction_static_pressure_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Static Pressure Calculator", url: construction_static_pressure_url }
+]) %>
+
+<%= faq_schema([
+  { question: "What is total external static pressure?", answer: "Total external static pressure (TESP) is the resistance the HVAC blower has to overcome to move air through the duct system, filter, and coil. It is measured in inches of water column (iwc) in imperial units or pascals (Pa) in metric. A typical residential system is designed for 0.5 iwc TESP; anything over 0.8 iwc stresses the blower and reduces airflow." },
+  { question: "What causes high static pressure?", answer: "The three main culprits: undersized duct trunks, restrictive high-MERV filters, and dirty evaporator coils. Return-side restrictions are especially common — many systems only have a single return grille when they need 2-3. Flex duct is often pinched, kinked, or run with tight 90° bends, doubling the effective length. Always inspect the return path first." },
+  { question: "What is a good target TESP?", answer: "Most residential blowers are rated for 0.5 iwc (125 Pa) maximum external static at rated airflow. Some premium inverter units accept 0.8-1.0 iwc but at reduced airflow. The ideal design target is 0.5 iwc or less with a clean filter. Anything over 0.5 cuts airflow by 5-10% per 0.1 iwc of additional resistance." },
+  { question: "How much pressure drop does a MERV 13 filter add?", answer: "A clean 1-inch MERV 13 pleated filter drops about 0.22 iwc at rated airflow; a 4-inch media cabinet MERV 13 drops only 0.08-0.12 iwc. MERV 8 is 0.08 iwc clean. MERV 16 HEPA is 0.35+ iwc. These are clean-filter values — dirty filters double the drop. Upgrading from MERV 8 to MERV 13 often requires deepening the filter cabinet to avoid airflow loss." },
+  { question: "How do I measure actual TESP on my system?", answer: "Use a manometer (Dwyer Mark II or digital) with two probes. Drill test ports at the return-air inlet (upstream of filter) and the supply-side right after the air handler. Connect the high port to supply, low port to return. Run the system at rated speed and read the differential. Values over 0.8 iwc usually mean replace the filter, add return grilles, or upsize ducts." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Static Pressure Calculator",
+  description: "Calculate total external static pressure for residential HVAC systems from duct friction, filter, and coil drop.",
+  url: construction_static_pressure_url,
+  category: "HomeApplication",
+  calculator_slug: "static-pressure-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Static Pressure Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Static Pressure Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Calculate total external static pressure (TESP) for a residential HVAC system — duct friction plus fittings, filter pressure drop, and coil drop. Imperial and metric units.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="static-pressure-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-static-pressure-calculator-target="unitSystem" data-action="change->static-pressure-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (CFM, ft, in, iwc)</option>
+              <option value="metric">Metric (m³/h, m, cm, Pa)</option>
+            </select>
+          </div>
+          <div>
+            <label for="sp-cfm" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-static-pressure-calculator-target="cfmLabel">Airflow (CFM)</span></label>
+            <input id="sp-cfm" type="number" inputmode="decimal" data-static-pressure-calculator-target="cfm" data-action="input->static-pressure-calculator#calculate" class="w-full" value="400" step="25" min="0">
+          </div>
+          <div>
+            <label for="sp-length" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-static-pressure-calculator-target="lengthLabel">Total duct length (ft)</span></label>
+            <input id="sp-length" type="number" inputmode="decimal" data-static-pressure-calculator-target="length" data-action="input->static-pressure-calculator#calculate" class="w-full" value="50" step="5" min="0">
+            <p class="text-xs text-gray-500 mt-1">Supply + longest branch + return combined.</p>
+          </div>
+          <div>
+            <label for="sp-diameter" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-static-pressure-calculator-target="diameterLabel">Duct diameter (inches)</span></label>
+            <input id="sp-diameter" type="number" inputmode="decimal" data-static-pressure-calculator-target="diameter" data-action="input->static-pressure-calculator#calculate" class="w-full" value="8" step="0.5" min="0">
+            <p class="text-xs text-gray-500 mt-1">Round or equivalent round for rectangular.</p>
+          </div>
+          <div>
+            <label for="sp-fittings" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Number of fittings (elbows, tees)</label>
+            <input id="sp-fittings" type="number" inputmode="numeric" data-static-pressure-calculator-target="fittings" data-action="input->static-pressure-calculator#calculate" class="w-full" value="3" step="1" min="0">
+            <p class="text-xs text-gray-500 mt-1">Each fitting ≈ 10 ft equivalent length.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Filter MERV rating</label>
+            <select data-static-pressure-calculator-target="merv" data-action="change->static-pressure-calculator#calculate" class="w-full">
+              <option value="8" selected>MERV 8 (standard pleated)</option>
+              <option value="11">MERV 11 (premium pleated)</option>
+              <option value="13">MERV 13 (high filtration)</option>
+              <option value="16">MERV 16 / HEPA</option>
+            </select>
+          </div>
+          <div>
+            <label for="sp-coil" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-static-pressure-calculator-target="coilLabel">Coil drop (iwc)</span></label>
+            <input id="sp-coil" type="number" inputmode="decimal" data-static-pressure-calculator-target="coilDrop" data-action="input->static-pressure-calculator#calculate" class="w-full" value="0.25" step="0.05" min="0">
+            <p class="text-xs text-gray-500 mt-1">Typical wet coil: 0.20-0.30 iwc.</p>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Friction per 100 ft</span><span class="text-base font-bold text-purple-700 dark:text-purple-400" data-static-pressure-calculator-target="resultFrictionPer100">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Duct drop</span><span class="text-base font-bold text-purple-700 dark:text-purple-400" data-static-pressure-calculator-target="resultDuct">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Fittings drop</span><span class="text-base font-bold text-purple-700 dark:text-purple-400" data-static-pressure-calculator-target="resultFittings">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Filter drop</span><span class="text-base font-bold text-purple-700 dark:text-purple-400" data-static-pressure-calculator-target="resultFilter">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Coil drop</span><span class="text-base font-bold text-purple-700 dark:text-purple-400" data-static-pressure-calculator-target="resultCoil">—</span></div>
+            <div class="flex justify-between items-center pt-3 border-t border-purple-200/50 dark:border-purple-800/50"><span class="text-gray-700 dark:text-gray-300 text-sm">Total TESP</span><span class="text-2xl font-extrabold text-purple-700 dark:text-purple-400" data-static-pressure-calculator-target="resultTotal">—</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-600 dark:text-gray-400 text-sm">Status</span><span data-static-pressure-calculator-target="resultStatus">—</span></div>
+          </div>
+          <button data-action="click->static-pressure-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "static-pressure-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>What Is Static Pressure?</h2>
+      <p>
+        Static pressure is the resistance an HVAC blower has to overcome to move air through the ductwork, filter, and coil. It is measured in inches of water column (iwc) in imperial units or pascals (Pa) in metric. A residential furnace or air handler is rated at some maximum Total External Static Pressure (TESP) — typically 0.5 iwc. When the actual TESP exceeds the rating, airflow drops, the blower draws more current, and comfort goes out the window.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>What the Calculator Sums</h2>
+      <p>
+        <strong>Duct friction loss</strong> from the friction-rate formula (Darcy-Weisbach for standard air, galvanized round duct): hf/100 = 0.109136 × Q<sup>1.9</sup> / D<sup>5.02</sup>, where Q is CFM and D is the round or equivalent round diameter in inches. <strong>Fitting losses</strong> approximated as 10 ft of equivalent straight duct per fitting (good for residential elbows, tees, boots, and takeoffs). <strong>Filter pressure drop</strong> from the MERV rating — 0.08 iwc for MERV 8, 0.14 for MERV 11, 0.22 for MERV 13, 0.35 for HEPA. <strong>Coil drop</strong> defaulted to 0.25 iwc (typical wet evaporator coil at rated airflow).
+      </p>
+
+      <h3>Typical Residential TESP Values</h3>
+      <p>
+        A well-designed system with adequate duct sizes, a clean MERV 8 filter, and a 10-SEER coil runs about 0.3-0.5 iwc TESP. Upgrade to MERV 13 without enlarging the filter cabinet and you easily hit 0.7 iwc. A system with undersized return ducts (a single 10×20 return on a 3-ton system) can exceed 1.0 iwc, at which point the blower can only deliver 60-70% of rated airflow and the system short-cycles and freezes coils.
+      </p>
+
+      <h3>How to Measure Actual TESP</h3>
+      <p>
+        Drill two test ports (3/8 inch dia) in the plenum: one on the return side upstream of the filter, one on the supply side downstream of the coil. Insert the static pressure probes from a dual-tube manometer (Dwyer Mark II or a digital gauge). Run the system at high speed and read the differential. Measured values over 0.8 iwc are a red flag — check for dirty filters, restrictive flex duct, blocked returns, or a pinched supply plenum.
+      </p>
+
+      <h2>Typical TESP Values — Is My System OK?</h2>
+      <p>
+        Interpretation guide based on manufacturer blower tables and field measurements across thousands of residential systems:
+      </p>
+      <ul>
+        <li><strong>0.20-0.40 iwc (50-100 Pa) — Excellent.</strong> Well-designed ducts, low-restriction filter, clean coil. Blower runs quietly at rated airflow.</li>
+        <li><strong>0.40-0.50 iwc (100-125 Pa) — Good.</strong> Typical of a newer home with proper duct design. Most furnaces and air handlers are rated at 0.5 iwc external static.</li>
+        <li><strong>0.50-0.70 iwc (125-175 Pa) — Marginal.</strong> Airflow is 5-15% below rated; the blower draws more power. Check for dirty filter, undersized returns, or high-MERV filter in a 1" cabinet.</li>
+        <li><strong>0.70-0.90 iwc (175-225 Pa) — High.</strong> Airflow is 15-30% below rated. AC capacity is reduced. Common causes: single small return, flex duct kinks, closed dampers, blocked returns.</li>
+        <li><strong>&gt;0.90 iwc (&gt;225 Pa) — Critical.</strong> Airflow is so low that AC coils freeze, furnaces trip on high limit, and ECM motors may fail prematurely. Something is seriously wrong — possibly a collapsed flex duct, crushed trunk, or wildly undersized return.</li>
+      </ul>
+      <p>
+        <strong>Quick diagnostic:</strong> compare measured TESP to equipment nameplate rating. If your 0.5-rated furnace reads 0.8 iwc, you have ~0.3 iwc of excess restriction. Work backwards: a restrictive 1" MERV 13 filter adds 0.14 iwc over a MERV 8 — swap in a 4" media filter for 0.05 iwc drop and you get back 0.09 iwc immediately.
+      </p>
+      <p>
+        <strong>Filter MERV quick drops (clean, 1" pleated at rated airflow):</strong> MERV 8 ≈ 0.08 iwc, MERV 11 ≈ 0.14 iwc, MERV 13 ≈ 0.22 iwc, MERV 16 ≈ 0.35 iwc. A dirty filter can <em>double</em> these values.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>What is the maximum static pressure?</h3>
+      <p>Most residential blowers are rated for 0.5 iwc TESP. High-efficiency ECM units tolerate 0.8 iwc at reduced airflow; some inverter units go to 1.0 iwc.</p>
+
+      <h3>How does TESP affect AC capacity?</h3>
+      <p>At 0.8 iwc TESP on a 0.5-rated blower, airflow drops about 20%, and cooling capacity drops about 15%.</p>
+
+      <h3>Why does my MERV 13 filter upgrade cause problems?</h3>
+      <p>A 1-inch MERV 13 has 3× the drop of a 1-inch MERV 8. Go to a 4-inch media cabinet for the same MERV with much lower drop.</p>
+
+      <h3>Do flex duct runs need extra equivalent length?</h3>
+      <p>Yes — flex duct has 20-30% more friction than rigid metal for the same size. Add 25% to the calculated drop if the run is mostly flex.</p>
+
+      <h3>Is fitting equivalent length always 10 ft?</h3>
+      <p>No — that's a residential rule of thumb. A sharp 90° elbow is about 10 ft, a takeoff with damper might be 15 ft, a smooth long-radius elbow only 3-5 ft. Refer to ASHRAE Duct Fitting Database for exact values.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Duct Size Calculator", description: "Calculate round or rectangular duct size.", path: construction_duct_size_path, icon_path: "M4 4h16v4H4z" },
+      { name: "HVAC BTU Calculator", description: "Room-by-room BTU sizing.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Cooling Load Calculator", description: "Whole-house cooling load.", path: construction_cooling_load_path, icon_path: "M12 3v1" },
+      { name: "Heat Loss Calculator", description: "Whole-house heat loss.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Pipe Friction Loss Calculator", description: "Water pipe friction loss.", path: construction_pipe_friction_loss_path, icon_path: "M5.636 18.364a9 9 0 010-12.728" },
+      { name: "Heat Pump Capacity Calculator", description: "Derate HP capacity for cold weather.", path: construction_heat_pump_capacity_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("static-pressure-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

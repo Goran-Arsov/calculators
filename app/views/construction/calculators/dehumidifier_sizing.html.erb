@@ -1,0 +1,187 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Dehumidifier Sizing Calculator - Pints & Liters per Day",
+  description: "Free dehumidifier sizing calculator. Enter room or basement area and humidity condition to get the pints and liters per day capacity you need per AHAM / ENERGY STAR.",
+  canonical: construction_dehumidifier_sizing_url,
+  og: {
+    title: "Dehumidifier Sizing Calculator | Calc Hammer",
+    description: "Pints per day capacity by floor area and humidity class.",
+    url: construction_dehumidifier_sizing_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Dehumidifier Sizing Calculator", url: construction_dehumidifier_sizing_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How many pints per day do I need for a 1500 sq ft basement?", answer: "For moderately damp conditions (musty smell in humid weather) you need about 18 pints per day. For very damp (wet spots on walls) you need about 22 pints. For wet conditions (sweating walls, seepage) you need about 26 pints. For extremely wet (standing water) you need about 30 pints. Always round up to the next commercial size." },
+  { question: "What is the difference between the old and new dehumidifier ratings?", answer: "Before 2019, dehumidifier capacity was tested at 80 °F and 60% RH. Since 2019, the DOE test uses a harsher 65 °F and 60% RH (closer to typical basement conditions). This dropped nameplate ratings by roughly 25%. A pre-2019 '70-pint' dehumidifier is approximately equivalent to a post-2019 '50-pint' unit. The calculator uses modern AHAM/ENERGY STAR values." },
+  { question: "What humidity level should I target?", answer: "30-50% relative humidity is the EPA recommendation for comfortable and healthy indoor air. Below 30% causes dry skin, static electricity, and respiratory irritation. Above 50% supports mold, dust mites, and musty smells. Above 60% is where real damage occurs — wood rots, finishes peel, musty odors develop." },
+  { question: "Where should I place a dehumidifier?", answer: "In the center of the room with at least 6 inches of clearance on all sides for airflow. Do not place against walls or in corners. For basements, set it on the floor (where moisture is highest) in the middle of the space. Run a condensate hose to a floor drain so you don't have to empty the tank daily. Clean the filter monthly." },
+  { question: "Should I get one big dehumidifier or two smaller ones?", answer: "One larger unit is usually cheaper per pint of capacity and uses less total energy than two smaller ones. Exception: if the space has multiple rooms with walls or barriers, one unit per zone works better than trying to push moist air through doorways. A whole-house dehumidifier (70+ pints) ducted into HVAC returns is the most efficient for large homes." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Dehumidifier Sizing Calculator",
+  description: "Calculate dehumidifier pints per day capacity from room area and humidity condition per AHAM / ENERGY STAR.",
+  url: construction_dehumidifier_sizing_url,
+  category: "HomeApplication",
+  calculator_slug: "dehumidifier-sizing-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Dehumidifier Sizing Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Dehumidifier Sizing Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Size a dehumidifier by room or basement area and humidity condition. Returns pints per day (imperial) and liters per day (metric) per AHAM / ENERGY STAR guidelines.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="dehumidifier-sizing-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-dehumidifier-sizing-calculator-target="unitSystem" data-action="change->dehumidifier-sizing-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (sq ft, pints)</option>
+              <option value="metric">Metric (m², liters)</option>
+            </select>
+          </div>
+          <div>
+            <label for="dh-area" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-dehumidifier-sizing-calculator-target="areaLabel">Room or basement area (sq ft)</span></label>
+            <input id="dh-area" type="number" inputmode="decimal" data-dehumidifier-sizing-calculator-target="area" data-action="input->dehumidifier-sizing-calculator#calculate" class="w-full" value="1500" step="50" min="0">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Humidity condition</label>
+            <select data-dehumidifier-sizing-calculator-target="condition" data-action="change->dehumidifier-sizing-calculator#calculate" class="w-full">
+              <option value="moderate">Moderately damp (musty smell)</option>
+              <option value="very_damp" selected>Very damp (wet spots)</option>
+              <option value="wet">Wet (sweating walls)</option>
+              <option value="extreme">Extremely wet (standing water)</option>
+            </select>
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-cyan-50 to-teal-50 dark:from-cyan-900/20 dark:to-teal-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center pt-3 border-b border-cyan-200/50 dark:border-cyan-800/50 pb-3">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Required capacity</span>
+              <span class="text-2xl font-extrabold text-cyan-700 dark:text-cyan-400" data-dehumidifier-sizing-calculator-target="resultPints">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Liters / day</span>
+              <span class="text-base font-bold text-cyan-700 dark:text-cyan-400" data-dehumidifier-sizing-calculator-target="resultLiters">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Category</span>
+              <span class="text-base font-bold text-cyan-700 dark:text-cyan-400" data-dehumidifier-sizing-calculator-target="resultCategory">—</span>
+            </div>
+          </div>
+          <button data-action="click->dehumidifier-sizing-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-teal-700 hover:from-cyan-700 hover:to-teal-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "dehumidifier-sizing-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>How Dehumidifier Capacity Works</h2>
+      <p>
+        Dehumidifier capacity is rated in pints of water removed per 24 hours at a standard test condition (65 °F, 60% relative humidity for modern ENERGY STAR ratings). The actual water removal depends on room temperature, humidity, and airflow around the unit. AHAM and ENERGY STAR publish a sizing table keyed to room area and the severity of the humidity problem, which is what this calculator uses.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Identifying Your Humidity Class</h2>
+      <p>
+        <strong>Moderately damp</strong> — the space smells musty in damp weather but feels dry otherwise. Common in finished basements and first floors in humid summers. <strong>Very damp</strong> — the space always feels damp, has a musty smell year-round, and shows wet spots on walls or floors. Common in unfinished basements and crawl spaces. <strong>Wet</strong> — you can see water sweating on walls or pipes, and there may be spots of mold or mildew. Common after rain events or in high-water-table areas. <strong>Extremely wet</strong> — standing water, wet floors, visible mold growth, and water seepage. Needs bulk water control (drainage, waterproofing) plus a large dehumidifier.
+      </p>
+
+      <h3>Old vs New Ratings</h3>
+      <p>
+        In 2019 the DOE changed the dehumidifier test condition from 80 °F/60% RH to 65 °F/60% RH to better match real basements. Pre-2019 "70-pint" units are approximately equivalent to post-2019 "50-pint" units. This calculator uses current ENERGY STAR table values, so order the nameplate capacity shown.
+      </p>
+
+      <h3>Whole-House vs Portable</h3>
+      <p>
+        Portable units handle up to about 50 pints/day and are fine for single-room or small-basement use. For large homes or whole-house humidity control, a ducted whole-house dehumidifier (70-100+ pints/day) integrated with the HVAC return duct is more efficient, quieter, and doesn't require emptying tanks. Some models also provide fresh-air ventilation, doubling as an ERV.
+      </p>
+
+      <h2>ENERGY STAR / AHAM Dehumidifier Sizing Table</h2>
+      <p>Pints per day (new 2019+ test method at 65 °F / 60% RH) for common areas and conditions:</p>
+      <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-gray-300 dark:border-gray-600">
+            <th class="py-2">Area</th>
+            <th class="py-2">Moderately damp</th>
+            <th class="py-2">Very damp</th>
+            <th class="py-2">Wet</th>
+            <th class="py-2">Extremely wet</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">500 sq ft</td><td>10 pints</td><td>12</td><td>14</td><td>16</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">1,000 sq ft</td><td>14</td><td>17</td><td>20</td><td>23</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">1,500 sq ft</td><td>18</td><td>22</td><td>26</td><td>30</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">2,000 sq ft</td><td>22</td><td>27</td><td>32</td><td>37</td></tr>
+          <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">2,500 sq ft</td><td>26</td><td>32</td><td>38</td><td>44</td></tr>
+          <tr><td class="py-1">3,000 sq ft</td><td>30</td><td>36</td><td>42</td><td>50</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>
+        <strong>Important:</strong> pre-2019 dehumidifiers were rated at 80 °F / 60% RH and produced ~25% higher nameplate numbers. A "70 pint" pre-2019 unit is roughly equivalent to a "50 pint" post-2019 unit. Match the numbers in this table (post-2019) to what's on the store shelf label.
+      </p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Can I use an oversized dehumidifier?</h3>
+      <p>Yes — oversized units run shorter cycles and maintain humidity more consistently. Unlike air conditioners, oversized dehumidifiers don't cause problems.</p>
+
+      <h3>What is the ideal indoor humidity level?</h3>
+      <p>30-50% RH per EPA. Above 50% supports mold and dust mites; below 30% is uncomfortably dry.</p>
+
+      <h3>Does a dehumidifier cool the room?</h3>
+      <p>Slightly — it removes moisture, which feels cooler because perspiration evaporates better in drier air. But dehumidifiers actually add a small amount of heat to the room from the compressor.</p>
+
+      <h3>How much does it cost to run a dehumidifier?</h3>
+      <p>Typical portable dehumidifier: 500-800 watts. At $0.15/kWh running 12 hours/day, that's about $0.90-$1.45/day or $27-$44/month in the wet season.</p>
+
+      <h3>Do I need a dehumidifier if I have AC?</h3>
+      <p>AC removes some moisture, but only when cooling is needed. In spring and fall, or in cool basements, a dehumidifier is the only way to remove moisture without over-cooling the space.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Psychrometric Calculator", description: "Dew point, wet bulb, humidity ratio.", path: construction_psychrometric_path, icon_path: "M3 6l3 1" },
+      { name: "Air Change Rate Calculator", description: "ACH from CFM and room volume.", path: construction_air_change_rate_path, icon_path: "M13 10V3" },
+      { name: "Cooling Load Calculator", description: "Whole-house cooling load for AC sizing.", path: construction_cooling_load_path, icon_path: "M12 3v1" },
+      { name: "ERV HRV Ventilation Calculator", description: "ASHRAE 62.2 required vent CFM.", path: construction_erv_hrv_ventilation_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "HVAC BTU Calculator", description: "Room-by-room AC BTU sizing.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Pool Volume Calculator", description: "Pool volume in gallons and liters.", path: construction_pool_volume_path, icon_path: "M4 14s2 2 4 2" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("dehumidifier-sizing-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>

@@ -69,5 +69,26 @@ module Construction
     def caulk; end
     def crown_molding; end
     def chimney_flue; end
+
+    # HVAC batch
+    def cooling_load; end
+    def heat_pump_capacity; end
+    def seer_eer_hspf; end
+    def dehumidifier_sizing; end
+    def psychrometric; end
+    def air_change_rate; end
+    def erv_hrv_ventilation; end
+    def radiator_btu; end
+    def heating_cost; end
+    def static_pressure; end
+
+    def generator_sizing; end
+    def wire_ampacity; end
+    def radiant_floor_heat; end
+
+    def drywall_screws; end
+    def snow_melt_btu; end
+    def solar_inverter_sizing; end
+    def battery_backup_runtime; end
   end
 end

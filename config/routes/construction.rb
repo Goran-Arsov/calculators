@@ -70,4 +70,25 @@ namespace :construction do
   get "caulk-calculator", to: "calculators#caulk", as: :caulk
   get "crown-molding-calculator", to: "calculators#crown_molding", as: :crown_molding
   get "chimney-flue-calculator", to: "calculators#chimney_flue", as: :chimney_flue
+
+  # HVAC — cooling, heat pump, psychrometric, ventilation, hydronic, energy
+  get "cooling-load-calculator", to: "calculators#cooling_load", as: :cooling_load
+  get "heat-pump-capacity-calculator", to: "calculators#heat_pump_capacity", as: :heat_pump_capacity
+  get "seer-eer-hspf-calculator", to: "calculators#seer_eer_hspf", as: :seer_eer_hspf
+  get "dehumidifier-sizing-calculator", to: "calculators#dehumidifier_sizing", as: :dehumidifier_sizing
+  get "psychrometric-calculator", to: "calculators#psychrometric", as: :psychrometric
+  get "air-change-rate-calculator", to: "calculators#air_change_rate", as: :air_change_rate
+  get "erv-hrv-ventilation-calculator", to: "calculators#erv_hrv_ventilation", as: :erv_hrv_ventilation
+  get "radiator-btu-calculator", to: "calculators#radiator_btu", as: :radiator_btu
+  get "heating-cost-calculator", to: "calculators#heating_cost", as: :heating_cost
+  get "static-pressure-calculator", to: "calculators#static_pressure", as: :static_pressure
+
+  get "generator-sizing-calculator", to: "calculators#generator_sizing", as: :generator_sizing
+  get "wire-ampacity-calculator", to: "calculators#wire_ampacity", as: :wire_ampacity
+  get "radiant-floor-heat-calculator", to: "calculators#radiant_floor_heat", as: :radiant_floor_heat
+
+  get "drywall-screws-calculator", to: "calculators#drywall_screws", as: :drywall_screws
+  get "snow-melt-btu-calculator", to: "calculators#snow_melt_btu", as: :snow_melt_btu
+  get "solar-inverter-sizing-calculator", to: "calculators#solar_inverter_sizing", as: :solar_inverter_sizing
+  get "battery-backup-runtime-calculator", to: "calculators#battery_backup_runtime", as: :battery_backup_runtime
 end

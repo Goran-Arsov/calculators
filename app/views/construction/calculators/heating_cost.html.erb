@@ -1,0 +1,227 @@
+<%# SEO meta tags %>
+<% set_meta_tags(
+  title: "Heating Cost Calculator - Annual Fuel Cost by HDD",
+  description: "Free heating cost calculator. Estimate annual fuel cost for natural gas, propane, heating oil, electric, wood, and pellets using heat loss, heating degree days, and equipment efficiency.",
+  canonical: construction_heating_cost_url,
+  og: {
+    title: "Heating Cost Calculator | Calc Hammer",
+    description: "Estimate annual heating cost by fuel type and HDD.",
+    url: construction_heating_cost_url,
+    type: "website",
+    site_name: "Calc Hammer"
+  }
+) %>
+
+<%= breadcrumb_schema([
+  { name: "Home", url: root_url },
+  { name: "Construction", url: category_url("construction") },
+  { name: "Heating Cost Calculator", url: construction_heating_cost_url }
+]) %>
+
+<%= faq_schema([
+  { question: "How do I estimate annual heating cost?", answer: "Multiply your design heat loss (BTU/hr at design outdoor temperature) by 24 hours and by heating degree days (HDD), then divide by the design temperature difference (indoor minus outdoor at design conditions). The result is annual delivered energy in BTU. Divide by the fuel heat content × efficiency to get fuel consumption, then multiply by unit cost." },
+  { question: "What are heating degree days (HDD)?", answer: "HDD is the number of degrees a day's average temperature falls below 65 °F, summed over the heating season. A day averaging 40 °F has 25 HDD. An average US city like Chicago has 6,000 HDD per year; Miami has under 150; Minneapolis has 7,500; Anchorage has 10,500. Look up your local value from the NOAA Climate Data Online tool or your utility's website." },
+  { question: "What efficiency should I use?", answer: "For furnaces and boilers, use the AFUE rating: 80% for mid-efficiency, 95-98% for condensing. For heat pumps, use the seasonal COP × 100 as efficiency: COP 2.5 = 250%, COP 3.5 = 350%. Electric resistance is 100%. Wood stoves are 60-75% (EPA certified). Fireplace inserts 60-70%." },
+  { question: "Which fuel is cheapest for heating?", answer: "Depends heavily on local prices. Natural gas at $1.50/therm with 95% AFUE is typically $16/MMBTU delivered. Propane at $3/gal with 95% AFUE is $35/MMBTU. Heating oil at $4/gal with 87% AFUE is $33/MMBTU. Electric resistance at $0.15/kWh is $44/MMBTU. A heat pump with COP 3.0 at $0.15/kWh is only $15/MMBTU — cheapest in most areas." },
+  { question: "How accurate is the HDD method?", answer: "Very good for mid-size heating costs over a full season — within 10-15% for most houses. Inaccurate for very tight modern houses (internal gains become relatively more important), very large houses with zoned heating, or houses with non-standard setpoint patterns. For critical projects use full hourly simulation (e.g., BEopt, EnergyPlus)." }
+]) %>
+
+<%= calculator_schema_with_ratings(
+  name: "Heating Cost Calculator",
+  description: "Estimate annual heating cost by fuel type using heat loss, heating degree days, and equipment efficiency.",
+  url: construction_heating_cost_url,
+  category: "HomeApplication",
+  calculator_slug: "heating-cost-calculator"
+) %>
+
+<%= render "shared/breadcrumbs", items: [
+  { name: "Home", url: root_path },
+  { name: "Construction", url: category_path("construction") },
+  { name: "Heating Cost Calculator" }
+] %>
+
+<div class="lg:grid lg:grid-cols-3 lg:gap-8">
+  <div class="lg:col-span-2">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">Heating Cost Calculator</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Estimate your annual heating cost for natural gas, propane, heating oil, electric, wood, or pellets. Uses the heat-loss × degree-day method scaled by equipment efficiency. Compare fuels on a per-million-BTU basis.</p>
+
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "leaderboard" %></div>
+
+    <div data-controller="heating-cost-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Units</label>
+            <select data-heating-cost-calculator-target="unitSystem" data-action="change->heating-cost-calculator#switchUnits" class="w-full">
+              <option value="imperial">Imperial (BTU/hr, °F, HDD)</option>
+              <option value="metric">Metric (W, °C, K·days)</option>
+            </select>
+          </div>
+          <div>
+            <label for="hc-loss" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heating-cost-calculator-target="heatLossLabel">Design heat loss (BTU/hr)</span></label>
+            <input id="hc-loss" type="number" inputmode="decimal" data-heating-cost-calculator-target="heatLoss" data-action="input->heating-cost-calculator#calculate" class="w-full" value="40000" step="1000" min="0">
+          </div>
+          <div>
+            <label for="hc-hdd" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heating-cost-calculator-target="hddLabel">Heating degree days (°F-days base 65°F)</span></label>
+            <input id="hc-hdd" type="number" inputmode="decimal" data-heating-cost-calculator-target="hdd" data-action="input->heating-cost-calculator#calculate" class="w-full" value="6000" step="100" min="0">
+            <p class="text-xs text-gray-500 mt-1">Look up from NOAA or your utility. Typical: Chicago ~6,000, Boston ~5,600, Atlanta ~2,800.</p>
+          </div>
+          <div>
+            <label for="hc-dt" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5"><span data-heating-cost-calculator-target="designDtLabel">Design ΔT (°F)</span></label>
+            <input id="hc-dt" type="number" inputmode="decimal" data-heating-cost-calculator-target="designDt" data-action="input->heating-cost-calculator#calculate" class="w-full" value="60" step="1" min="0">
+            <p class="text-xs text-gray-500 mt-1">Indoor design minus outdoor design. Typical 50-70 °F in the US.</p>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fuel type</label>
+            <select data-heating-cost-calculator-target="fuel" data-action="change->heating-cost-calculator#calculate" class="w-full">
+              <option value="natural_gas" selected>Natural gas ($/therm)</option>
+              <option value="propane">Propane ($/gallon)</option>
+              <option value="oil">Heating oil #2 ($/gallon)</option>
+              <option value="electric">Electric ($/kWh)</option>
+              <option value="wood">Wood hardwood ($/cord)</option>
+              <option value="pellet">Wood pellets ($/ton)</option>
+            </select>
+          </div>
+          <div>
+            <label for="hc-eff" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Equipment efficiency (%)</label>
+            <input id="hc-eff" type="number" inputmode="decimal" data-heating-cost-calculator-target="efficiency" data-action="input->heating-cost-calculator#calculate" class="w-full" value="95" step="1" min="1" max="400">
+            <p class="text-xs text-gray-500 mt-1">AFUE for combustion, COP × 100 for heat pumps (HP COP 3.0 = 300%).</p>
+          </div>
+          <div>
+            <label for="hc-cost" class="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Fuel cost per unit ($)</label>
+            <input id="hc-cost" type="number" inputmode="decimal" data-heating-cost-calculator-target="fuelCost" data-action="input->heating-cost-calculator#calculate" class="w-full" value="1.50" step="0.01" min="0">
+          </div>
+        </div>
+        <div aria-live="polite" aria-atomic="true" class="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-2xl p-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-5">Results</h2>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Fuel used</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-heating-cost-calculator-target="resultFuelUnits">—</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-amber-200/50 dark:border-amber-800/50">
+              <span class="text-gray-700 dark:text-gray-300 text-sm">Annual cost</span>
+              <span class="text-3xl font-extrabold text-amber-700 dark:text-amber-400" data-heating-cost-calculator-target="resultAnnualCost">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Cost per MBTU</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-heating-cost-calculator-target="resultCostPerMBtu">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Energy delivered</span>
+              <span class="text-base font-bold text-amber-700 dark:text-amber-400" data-heating-cost-calculator-target="resultKwh">—</span>
+            </div>
+          </div>
+          <button data-action="click->heating-cost-calculator#copy" class="mt-6 w-full px-4 py-2.5 bg-gradient-to-r from-amber-600 to-yellow-700 hover:from-amber-700 hover:to-yellow-800 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 text-sm font-medium">Copy Results</button>
+        </div>
+      </div>
+    </div>
+
+    <%= render "shared/calculator_rating", slug: "heating-cost-calculator" %>
+    <div class="mb-8"><%= render "shared/ad_slot", slot: "in_results" %></div>
+
+    <article class="prose dark:prose-invert max-w-none">
+      <h2>The Heat-Loss × Degree-Day Method</h2>
+      <p>
+        The HDD method scales your design-condition heat loss (the worst-case BTU/hr at the coldest expected outdoor temperature) up to a full-season estimate. The key insight: heat loss is proportional to the temperature difference between inside and outside, and HDD captures the integrated temperature difference over the season. <strong>Annual energy = heat loss × 24 × HDD ÷ design ΔT</strong>. Divide by equipment efficiency to get fuel consumption.
+      </p>
+
+      <div class="my-6"><%= render "shared/ad_slot", slot: "in_content" %></div>
+
+      <h2>Fuel Energy Content</h2>
+      <p>
+        <strong>Natural gas:</strong> 100,000 BTU per therm (approximately 1 CCF or 100 cubic feet). <strong>Propane:</strong> 91,500 BTU per gallon. <strong>Heating oil #2:</strong> 138,500 BTU per gallon. <strong>Electric:</strong> 3,412 BTU per kWh. <strong>Hardwood cord (128 cu ft):</strong> about 24 million BTU. <strong>Wood pellets:</strong> about 16 million BTU per ton. Multiply by appliance efficiency to get delivered heat.
+      </p>
+
+      <h3>Typical Efficiency Values</h3>
+      <p>
+        Old non-condensing gas furnace: 70-80% AFUE. Modern standard gas furnace: 80-82% AFUE. Condensing gas furnace: 92-98% AFUE. Oil boiler: 83-87% AFUE. Propane furnace: same as gas. Electric resistance: 100%. Heat pump COP 2.5 = 250% "effective AFUE", COP 3.5 = 350%, COP 4.0 (inverter mini-split) = 400%. Wood stove: 60-75% EPA-certified. Pellet stove: 70-83%. Fireplace insert: 60-70%.
+      </p>
+
+      <h3>Comparing Fuels</h3>
+      <p>
+        The cost per million BTU delivered is the apples-to-apples comparison. At typical current US prices: natural gas $16-18/MMBTU, heating oil $30-35/MMBTU, propane $35-45/MMBTU, electric resistance $40-50/MMBTU, heat pump $15-25/MMBTU (depending on COP and electric rate), wood $10-25/MMBTU (varies widely), pellets $20-30/MMBTU. Natural gas wins where it's available; heat pumps win in mild to moderate climates with reasonable electric rates.
+      </p>
+
+      <h2>Typical HDD and Annual Heating Cost by City</h2>
+      <p>
+        HDD values are 30-year climate normals (base 65 °F) from NOAA. Annual cost shown is for a 2,000 sq ft house with 40,000 BTU/hr design heat loss at ΔT = 60 °F, using a 95% AFUE natural gas furnace at $1.50/therm and a COP-3.0 heat pump at $0.15/kWh.
+      </p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-gray-300 dark:border-gray-600">
+              <th class="py-2">City</th>
+              <th class="py-2">HDD (base 65)</th>
+              <th class="py-2">Gas furnace / yr</th>
+              <th class="py-2">Heat pump / yr</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Miami, FL</td><td>150</td><td>$38</td><td>$35</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Atlanta, GA</td><td>2,800</td><td>$707</td><td>$656</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Washington, DC</td><td>4,200</td><td>$1,061</td><td>$984</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">New York, NY</td><td>4,900</td><td>$1,238</td><td>$1,148</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Chicago, IL</td><td>6,000</td><td>$1,515</td><td>$1,405</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Boston, MA</td><td>5,600</td><td>$1,414</td><td>$1,312</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Denver, CO</td><td>6,100</td><td>$1,540</td><td>$1,429</td></tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700"><td class="py-1">Minneapolis, MN</td><td>7,500</td><td>$1,894</td><td>$1,757</td></tr>
+            <tr><td class="py-1">Anchorage, AK</td><td>10,500</td><td>$2,652</td><td>$2,460</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <strong>Note:</strong> these are rough estimates using average utility rates as of 2024. Your actual cost depends on local fuel prices (which can vary 2-3× regionally), your specific heat loss, thermostat setback habits, and equipment condition. Heat pump costs rise sharply in very cold climates because COP drops at low outdoor temps — a cold-climate inverter HP holds up much better than a standard unit below 20 °F.
+      </p>
+
+      <h3>Cost per Million BTU — Quick Reference (2024 US averages)</h3>
+      <ul>
+        <li><strong>Natural gas at $1.50/therm, 95% AFUE:</strong> $15.80 / MMBTU delivered</li>
+        <li><strong>Heat pump at COP 3.0, $0.15/kWh:</strong> $14.70 / MMBTU delivered</li>
+        <li><strong>Cord wood at $300/cord, 70% stove efficiency:</strong> $17.90 / MMBTU delivered</li>
+        <li><strong>Pellets at $320/ton, 82% stove efficiency:</strong> $24.40 / MMBTU delivered</li>
+        <li><strong>Heating oil at $4.00/gal, 87% AFUE:</strong> $33.20 / MMBTU delivered</li>
+        <li><strong>Propane at $3.00/gal, 95% AFUE:</strong> $34.50 / MMBTU delivered</li>
+        <li><strong>Electric resistance at $0.15/kWh, 100%:</strong> $43.90 / MMBTU delivered</li>
+      </ul>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Where do I find HDD for my location?</h3>
+      <p>NOAA Climate Data Online, degreedays.net (free), or your local utility's website.</p>
+
+      <h3>Should I use design heat loss or average heat loss?</h3>
+      <p>Design — the HDD method scales it down automatically. Using average would double-count the reduction.</p>
+
+      <h3>Why does my actual gas bill differ?</h3>
+      <p>Real use depends on thermostat setbacks, internal gains (cooking, people, appliances), solar gain, infiltration variation, and pilot light losses. ±15% is normal.</p>
+
+      <h3>How do I calculate HDD in metric (K·days)?</h3>
+      <p>Multiply °F-days by 5/9. 6,000 HDD (65 °F base) ≈ 3,333 K·days (18 °C base). The calculator switches automatically.</p>
+
+      <h3>What is heat pump efficiency for this calc?</h3>
+      <p>Use seasonal COP × 100. A cold-climate heat pump with seasonal COP 2.8 goes into this calculator as 280% efficiency.</p>
+
+      <%= render "shared/print_button" %>
+      <%= render "shared/calculation_email_capture" %>
+    </article>
+
+    <%= render "shared/related_calculators", related: [
+      { name: "Heat Loss Calculator", description: "Whole-house heat loss for heater sizing.", path: construction_heat_loss_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Heat Pump Capacity Calculator", description: "Derate HP capacity for cold weather.", path: construction_heat_pump_capacity_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "SEER EER HSPF Converter", description: "Convert between efficiency ratings.", path: construction_seer_eer_hspf_path, icon_path: "M8 7h12" },
+      { name: "Cooling Load Calculator", description: "Whole-house cooling load for AC sizing.", path: construction_cooling_load_path, icon_path: "M12 3v1" },
+      { name: "HVAC BTU Calculator", description: "Room-by-room BTU sizing.", path: construction_hvac_btu_path, icon_path: "M17.657 18.657A8 8 0 016.343 7.343" },
+      { name: "Insulation Calculator", description: "Calculate R-value and thickness.", path: construction_insulation_path, icon_path: "M3 12l2-2m0 0l7-7 7 7" }
+    ] %>
+
+    <%= render "shared/calculator_disclaimer", category: "construction" %>
+
+    <% blog_posts = related_blog_posts("heating-cost-calculator") %>
+    <%= render "shared/recommended_reading", posts: blog_posts if blog_posts.any? %>
+  </div>
+
+  <div class="hidden lg:block">
+    <div class="sticky top-24"><%= render "shared/ad_slot", slot: "sidebar" %></div>
+  </div>
+</div>
