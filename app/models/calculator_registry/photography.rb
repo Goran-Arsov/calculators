@@ -11,5 +11,4 @@ class CalculatorRegistry
     { name: "Time-Lapse Interval Calculator", slug: "timelapse-interval-calculator", path: :photography_timelapse_interval_path, description: "Calculate shooting interval, total shots, and final video duration for time-lapse photography with storage estimates.", icon_path: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
     { name: "Photo Storage Calculator", slug: "photo-storage-calculator", path: :photography_photo_storage_path, description: "Estimate storage needs from number of photos, file format (RAW, JPEG, TIFF, HEIF), and camera megapixels.", icon_path: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" }
   ].freeze
-
 end

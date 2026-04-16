@@ -14,5 +14,4 @@ class CalculatorRegistry
     { name: "EV Charging Cost Calculator", slug: "ev-charging-cost-calculator", path: :automotive_ev_charging_cost_path, description: "Calculate the cost to charge your EV at home or public chargers with energy, time, and cost per mile.", icon_path: "M13 10V3L4 14h7v7l9-11h-7z" },
     { name: "EV vs Gas Cost Calculator", slug: "ev-vs-gas-comparison-calculator", path: :automotive_ev_vs_gas_comparison_path, description: "Compare annual and total costs of owning an EV versus a gas car including fuel, maintenance, and CO2 emissions.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" }
   ].freeze
-
 end

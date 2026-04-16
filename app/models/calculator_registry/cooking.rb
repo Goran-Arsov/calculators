@@ -13,5 +13,4 @@ class CalculatorRegistry
     { name: "Meal Prep Cost Calculator", slug: "meal-prep-cost-calculator", path: :cooking_meal_prep_cost_path, description: "Calculate the true cost per serving for your meal prep with ingredient-by-ingredient cost breakdown.", icon_path: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
     { name: "Macros per Recipe Calculator", slug: "macros-per-recipe-calculator", path: :cooking_macros_per_recipe_path, description: "Calculate total and per-serving calories, protein, carbs, and fat for any recipe with macro percentage breakdown.", icon_path: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" }
   ].freeze
-
 end

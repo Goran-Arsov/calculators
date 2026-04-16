@@ -10,5 +10,4 @@ class CalculatorRegistry
     { name: "Credit Transfer Calculator", slug: "credit-transfer-calculator", path: :education_credit_transfer_path, description: "Calculate transferable credits, remaining credits, and estimated time and cost savings.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
     { name: "Tuition Savings 529 Calculator", slug: "tuition-savings-529-calculator", path: :education_tuition_savings_529_path, description: "Project 529 plan growth with tax-free earnings and state tax deductions over time.", icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
   ].freeze
-
 end

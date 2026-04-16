@@ -10,5 +10,4 @@ class CalculatorRegistry
     { name: "Puppy Weight Predictor", slug: "puppy-weight-predictor", path: :pets_puppy_weight_predictor_path, description: "Predict your puppy's adult weight from current weight and age using breed-specific growth curves for toy to giant breeds.", icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" },
     { name: "Horse Feed Calculator", slug: "horse-feed-calculator", path: :pets_horse_feed_path, description: "Calculate daily hay, grain, salt, mineral supplement, and water requirements for horses based on weight and activity level.", icon_path: "M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" }
   ].freeze
-
 end

@@ -25,5 +25,4 @@ class CalculatorRegistry
     { name: "Half Your Age Plus Seven Calculator", slug: "half-your-age-plus-seven-calculator", path: :relationships_half_plus_seven_path, description: "Find the socially acceptable dating age range for any age using the classic 'half your age plus seven' rule.", icon_path: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" },
     { name: "Online Dating ROI Calculator", slug: "online-dating-roi-calculator", path: :relationships_online_dating_roi_path, description: "Calculate your online dating return on investment in hours, messages, and dates to find a relationship.", icon_path: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" }
   ].freeze
-
 end

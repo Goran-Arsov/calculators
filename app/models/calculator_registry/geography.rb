@@ -17,5 +17,4 @@ class CalculatorRegistry
     { name: "Degrees to Kilometers Converter", slug: "degrees-to-kilometers-converter", path: :geography_degrees_to_kilometers_path, description: "Convert degrees of latitude and longitude to kilometers and miles at any given latitude. Essential reference for GPS precision and mapping work.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
     { name: "Flight Time Calculator", slug: "flight-time-calculator", path: :geography_flight_time_path, description: "Estimate flight duration from coordinates or distance with aircraft cruise speeds and taxi time. Useful for travelers and pilots.", icon_path: "M12 19l9 2-9-18-9 18 9-2zm0 0v-8" }
   ].freeze
-
 end

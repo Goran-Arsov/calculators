@@ -15,5 +15,4 @@ class CalculatorRegistry
     { name: "Cocktail ABV Calculator", slug: "cocktail-abv-calculator", path: :alcohol_cocktail_abv_path, description: "Calculate the final alcohol by volume of any cocktail from up to four ingredients, including dilution from ice and stirring.", icon_path: "M5 3l14 0l-7 9l0 6m-3 0l6 0M9 9h6" },
     { name: "Pour Cost Calculator", slug: "pour-cost-calculator", path: :alcohol_pour_cost_path, description: "Calculate bar pour cost percentage, profit margin, and gross profit per drink from bottle cost, pour size, and sale price.", icon_path: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" }
   ].freeze
-
 end

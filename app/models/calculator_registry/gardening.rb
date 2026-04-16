@@ -15,5 +15,4 @@ class CalculatorRegistry
     { name: "Greenhouse Heater BTU Calculator", slug: "greenhouse-heater-calculator", path: :gardening_greenhouse_heater_path, description: "Calculate the BTU/hour and wattage of greenhouse heater you need based on greenhouse size, glazing type, and temperature delta.", icon_path: "M3 12l9-9 9 9M5 10v10h14V10" },
     { name: "Compost C:N Ratio Calculator", slug: "compost-ratio-calculator", path: :gardening_compost_ratio_path, description: "Calculate the carbon-to-nitrogen ratio of a compost pile from brown and green material weights, with feedback on how to balance your pile.", icon_path: "M4 6h16M4 12h16M4 18h16" }
   ].freeze
-
 end

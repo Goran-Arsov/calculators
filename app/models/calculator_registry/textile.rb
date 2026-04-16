@@ -15,5 +15,4 @@ class CalculatorRegistry
     { name: "Fabric Shrinkage Calculator", slug: "fabric-shrinkage-calculator", path: :textile_fabric_shrinkage_path, description: "Calculate fabric shrinkage percentage from before and after washing measurements and determine the extra fabric to cut.", icon_path: "M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" },
     { name: "Cross-Stitch Fabric Calculator", slug: "cross-stitch-fabric-calculator", path: :textile_cross_stitch_fabric_path, description: "Calculate the finished size of a cross-stitch design on any Aida count (11, 14, 16, 18, 22) and the fabric size to buy.", icon_path: "M4 4h16v16H4zM8 8h8v8H8z" }
   ].freeze
-
 end

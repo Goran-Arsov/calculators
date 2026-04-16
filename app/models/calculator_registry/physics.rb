@@ -31,5 +31,4 @@ class CalculatorRegistry
     { name: "Inductor Calculator", slug: "inductor-calculator", path: :physics_inductor_path, description: "Calculate inductance, energy stored, time constant, and series/parallel inductor combinations.", icon_path: "M4 12h16M4 6h16M4 18h16" },
     { name: "Transformer Turns Ratio Calculator", slug: "transformer-turns-ratio-calculator", path: :physics_transformer_turns_ratio_path, description: "Calculate transformer turns ratio, output voltage, and output current from input values and winding turns.", icon_path: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" }
   ].freeze
-
 end
