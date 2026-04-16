@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["datePicker", "sections", "dailyTotal", "dailyCount", "basalInput", "fatBalanceCard", "balanceCalc", "balanceResult"]
+  static targets = ["datePicker", "sections", "dailyTotal", "dailyCount", "basalInput", "fatBalanceCard", "balanceSection", "balanceCalc", "balanceResult"]
   static values = { date: String }
 
   connect() {
@@ -115,10 +115,10 @@ export default class extends Controller {
   render() {
     const dayData = this.loadDay(this.dateValue)
     const sections = [
-      { key: "evening", label: "Evening", time: "6 PM – 12 AM", gradient: "from-violet-500 to-purple-600", bg: "bg-violet-50 dark:bg-violet-900/20", iconColor: "text-violet-500 dark:text-violet-400", icon: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" },
-      { key: "day", label: "Afternoon", time: "12 PM – 6 PM", gradient: "from-blue-500 to-cyan-500", bg: "bg-blue-50 dark:bg-blue-900/20", iconColor: "text-blue-500 dark:text-blue-400", icon: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" },
-      { key: "morning", label: "Morning", time: "6 AM – 12 PM", gradient: "from-amber-400 to-orange-500", bg: "bg-amber-50 dark:bg-amber-900/20", iconColor: "text-amber-500 dark:text-amber-400", icon: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" },
-      { key: "night", label: "Night", time: "12 AM – 6 AM", gradient: "from-indigo-500 to-blue-600", bg: "bg-indigo-50 dark:bg-indigo-900/20", iconColor: "text-indigo-500 dark:text-indigo-400", icon: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" }
+      { key: "night", label: "Night", time: "0-6 hrs", gradient: "from-indigo-500 to-blue-600", bg: "bg-indigo-50 dark:bg-indigo-900/20", iconColor: "text-indigo-500 dark:text-indigo-400", icon: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" },
+      { key: "morning", label: "Morning", time: "6-12 hrs", gradient: "from-amber-400 to-orange-500", bg: "bg-amber-50 dark:bg-amber-900/20", iconColor: "text-amber-500 dark:text-amber-400", icon: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" },
+      { key: "day", label: "Afternoon", time: "12-18 hrs", gradient: "from-blue-500 to-cyan-500", bg: "bg-blue-50 dark:bg-blue-900/20", iconColor: "text-blue-500 dark:text-blue-400", icon: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" },
+      { key: "evening", label: "Evening", time: "18-24 hrs", gradient: "from-violet-500 to-purple-600", bg: "bg-violet-50 dark:bg-violet-900/20", iconColor: "text-violet-500 dark:text-violet-400", icon: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" }
     ]
 
     let html = ""
@@ -165,7 +165,7 @@ export default class extends Controller {
     `).join("")
 
     return `
-      <div class="mb-8 rounded-xl border border-gray-200/80 dark:border-gray-700 overflow-hidden" data-section="${section.key}">
+      <div class="mb-4 rounded-xl border border-gray-200/80 dark:border-gray-700 overflow-hidden" data-section="${section.key}">
         <div class="flex items-center justify-between px-5 py-3.5 ${section.bg}">
           <div class="flex items-center gap-2.5">
             <div class="w-8 h-8 bg-gradient-to-br ${section.gradient} rounded-lg flex items-center justify-center shadow-sm">
@@ -222,7 +222,7 @@ export default class extends Controller {
     this.dailyTotalTarget.textContent = `${Math.round(dailyTotal)} kcal`
     this.dailyCountTarget.textContent = `${dailyCount} ${dailyCount === 1 ? 'entry' : 'entries'}`
 
-    // Fat balance calculation: (basal - consumed) / 77 = grams of fat lost/gained
+    // Fat balance calculation: (basal - consumed) / 7.7 = grams of fat lost/gained
     const basal = parseFloat(this.basalInputTarget.value) || 0
     if (basal > 0) {
       const difference = basal - dailyTotal
@@ -233,19 +233,16 @@ export default class extends Controller {
       if (difference > 0) {
         this.balanceResultTarget.innerHTML = `You will lose approximately <strong>${fatGrams} g</strong> of body fat today`
         this.balanceResultTarget.className = "text-lg font-bold text-green-600 dark:text-green-400"
-        this.fatBalanceCardTarget.className = "mb-8 p-5 rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20"
       } else if (difference < 0) {
         this.balanceResultTarget.innerHTML = `You will gain approximately <strong>${fatGrams} g</strong> of body fat today`
         this.balanceResultTarget.className = "text-lg font-bold text-red-500 dark:text-red-400"
-        this.fatBalanceCardTarget.className = "mb-8 p-5 rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20"
       } else {
         this.balanceResultTarget.innerHTML = "Exact maintenance — no fat gained or lost"
         this.balanceResultTarget.className = "text-lg font-bold text-gray-600 dark:text-gray-400"
-        this.fatBalanceCardTarget.className = "mb-8 p-5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
       }
-      this.fatBalanceCardTarget.classList.remove("hidden")
+      this.balanceSectionTarget.classList.remove("hidden")
     } else {
-      this.fatBalanceCardTarget.classList.add("hidden")
+      this.balanceSectionTarget.classList.add("hidden")
     }
   }
 
