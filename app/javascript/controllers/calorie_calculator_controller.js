@@ -5,6 +5,12 @@ export default class extends Controller {
   static targets = ["age", "sex", "weight", "height", "activityLevel", "unitSystem",
                      "bmr", "tdee", "mildLoss", "weightLoss", "mildGain", "weightGain",
                      "weightLabel", "heightLabel"]
+  static values = {
+    weightMetric: { type: String, default: "Weight (kg)" },
+    weightImperial: { type: String, default: "Weight (lbs)" },
+    heightMetric: { type: String, default: "Height (cm)" },
+    heightImperial: { type: String, default: "Height (inches)" }
+  }
 
   connect() {
     prefillFromUrl(this, { age: "age", sex: "sex", weight: "weight", height: "height", activity: "activityLevel", unit: "unitSystem" })
@@ -13,8 +19,8 @@ export default class extends Controller {
 
   updateLabels() {
     const unit = this.unitSystemTarget.value
-    this.weightLabelTarget.textContent = unit === "imperial" ? "Weight (lbs)" : "Weight (kg)"
-    this.heightLabelTarget.textContent = unit === "imperial" ? "Height (inches)" : "Height (cm)"
+    this.weightLabelTarget.textContent = unit === "imperial" ? this.weightImperialValue : this.weightMetricValue
+    this.heightLabelTarget.textContent = unit === "imperial" ? this.heightImperialValue : this.heightMetricValue
     this.calculate()
   }
 

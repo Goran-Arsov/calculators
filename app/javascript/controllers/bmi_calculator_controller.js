@@ -4,6 +4,16 @@ import { prefillFromUrl } from "utils/url_prefill"
 export default class extends Controller {
   static targets = ["weight", "height", "unitSystem", "bmi", "category", "healthyMin", "healthyMax",
                      "weightLabel", "heightLabel"]
+  static values = {
+    weightMetric: { type: String, default: "Weight (kg)" },
+    weightImperial: { type: String, default: "Weight (lbs)" },
+    heightMetric: { type: String, default: "Height (cm)" },
+    heightImperial: { type: String, default: "Height (inches)" },
+    categoryUnderweight: { type: String, default: "Underweight" },
+    categoryNormal: { type: String, default: "Normal weight" },
+    categoryOverweight: { type: String, default: "Overweight" },
+    categoryObese: { type: String, default: "Obese" }
+  }
 
   connect() {
     prefillFromUrl(this, { weight: "weight", height: "height", unit: "unitSystem" })
@@ -12,8 +22,8 @@ export default class extends Controller {
 
   updateLabels() {
     const unit = this.unitSystemTarget.value
-    this.weightLabelTarget.textContent = unit === "imperial" ? "Weight (lbs)" : "Weight (kg)"
-    this.heightLabelTarget.textContent = unit === "imperial" ? "Height (inches)" : "Height (cm)"
+    this.weightLabelTarget.textContent = unit === "imperial" ? this.weightImperialValue : this.weightMetricValue
+    this.heightLabelTarget.textContent = unit === "imperial" ? this.heightImperialValue : this.heightMetricValue
     this.calculate()
   }
 
@@ -36,10 +46,10 @@ export default class extends Controller {
     }
 
     let category
-    if (bmi < 18.5) category = "Underweight"
-    else if (bmi < 25) category = "Normal weight"
-    else if (bmi < 30) category = "Overweight"
-    else category = "Obese"
+    if (bmi < 18.5) category = this.categoryUnderweightValue
+    else if (bmi < 25) category = this.categoryNormalValue
+    else if (bmi < 30) category = this.categoryOverweightValue
+    else category = this.categoryObeseValue
 
     let heightM = unit === "imperial" ? height * 0.0254 : height / 100
     let factor = unit === "imperial" ? 2.205 : 1

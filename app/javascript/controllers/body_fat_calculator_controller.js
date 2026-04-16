@@ -5,6 +5,21 @@ export default class extends Controller {
   static targets = ["sex", "waist", "neck", "height", "hip", "unitSystem",
                      "hipField", "bodyFat", "category",
                      "waistLabel", "neckLabel", "heightLabel", "hipLabel"]
+  static values = {
+    waistMetric: { type: String, default: "Waist (cm)" },
+    waistImperial: { type: String, default: "Waist (inches)" },
+    neckMetric: { type: String, default: "Neck (cm)" },
+    neckImperial: { type: String, default: "Neck (inches)" },
+    heightMetric: { type: String, default: "Height (cm)" },
+    heightImperial: { type: String, default: "Height (inches)" },
+    hipMetric: { type: String, default: "Hip (cm)" },
+    hipImperial: { type: String, default: "Hip (inches)" },
+    categoryEssential: { type: String, default: "Essential fat" },
+    categoryAthletes: { type: String, default: "Athletes" },
+    categoryFitness: { type: String, default: "Fitness" },
+    categoryAverage: { type: String, default: "Average" },
+    categoryObese: { type: String, default: "Obese" }
+  }
 
   connect() {
     prefillFromUrl(this, { waist: "waist", neck: "neck", height: "height", hip: "hip", sex: "sex", unit: "unitSystem" })
@@ -20,11 +35,10 @@ export default class extends Controller {
 
   updateLabels() {
     const unit = this.unitSystemTarget.value
-    const suffix = unit === "imperial" ? "(inches)" : "(cm)"
-    this.waistLabelTarget.textContent = `Waist ${suffix}`
-    this.neckLabelTarget.textContent = `Neck ${suffix}`
-    this.heightLabelTarget.textContent = `Height ${suffix}`
-    this.hipLabelTarget.textContent = `Hip ${suffix}`
+    this.waistLabelTarget.textContent = unit === "imperial" ? this.waistImperialValue : this.waistMetricValue
+    this.neckLabelTarget.textContent = unit === "imperial" ? this.neckImperialValue : this.neckMetricValue
+    this.heightLabelTarget.textContent = unit === "imperial" ? this.heightImperialValue : this.heightMetricValue
+    this.hipLabelTarget.textContent = unit === "imperial" ? this.hipImperialValue : this.hipMetricValue
     this.calculate()
   }
 
@@ -60,17 +74,17 @@ export default class extends Controller {
 
     let category
     if (sex === "male") {
-      if (bodyFat < 6) category = "Essential fat"
-      else if (bodyFat < 14) category = "Athletes"
-      else if (bodyFat < 18) category = "Fitness"
-      else if (bodyFat < 25) category = "Average"
-      else category = "Obese"
+      if (bodyFat < 6) category = this.categoryEssentialValue
+      else if (bodyFat < 14) category = this.categoryAthletesValue
+      else if (bodyFat < 18) category = this.categoryFitnessValue
+      else if (bodyFat < 25) category = this.categoryAverageValue
+      else category = this.categoryObeseValue
     } else {
-      if (bodyFat < 14) category = "Essential fat"
-      else if (bodyFat < 21) category = "Athletes"
-      else if (bodyFat < 25) category = "Fitness"
-      else if (bodyFat < 32) category = "Average"
-      else category = "Obese"
+      if (bodyFat < 14) category = this.categoryEssentialValue
+      else if (bodyFat < 21) category = this.categoryAthletesValue
+      else if (bodyFat < 25) category = this.categoryFitnessValue
+      else if (bodyFat < 32) category = this.categoryAverageValue
+      else category = this.categoryObeseValue
     }
 
     this.bodyFatTarget.textContent = bodyFat.toFixed(1) + "%"
