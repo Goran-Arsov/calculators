@@ -1285,7 +1285,7 @@ BlogPost.find_or_create_by!(slug: "how-much-paint-do-i-need") do |post|
     </ul>
 
     <h2>Save Money on Your Next Paint Project</h2>
-    <p>For more construction-related calculations, explore our <a href="/construction">construction calculators</a> to plan your home improvement projects accurately and avoid costly overbuying.</p>
+    <p>Use our <a href="/construction/paint-calculator">paint calculator</a> to get an instant estimate for your room dimensions, or explore all our <a href="/construction">construction calculators</a> to plan your home improvement projects accurately and avoid costly overbuying.</p>
 
     <p>Accurate measurement before you head to the paint store saves money, reduces waste, and ensures your project goes smoothly from the first coat to the last.</p>
   HTML
@@ -1351,7 +1351,7 @@ BlogPost.find_or_create_by!(slug: "how-much-concrete-do-i-need") do |post|
     </ul>
 
     <h2>Calculate Your Concrete Needs</h2>
-    <p>For accurate project planning, use our <a href="/construction">construction calculators</a> to compute volumes, material quantities, and costs before you start your project.</p>
+    <p>For accurate project planning, use our <a href="/construction/concrete-calculator">concrete calculator</a> to compute volumes and bag counts instantly, or browse all our <a href="/construction">construction calculators</a> for material quantities and cost estimates.</p>
 
     <p>Measuring twice and ordering the right amount of concrete is the foundation — literally — of a successful project. Take the time to calculate accurately and you will avoid waste, save money, and get professional results.</p>
   HTML
@@ -1540,7 +1540,7 @@ BlogPost.find_or_create_by!(slug: "electricity-cost-calculator-guide") do |post|
     </ul>
 
     <h2>Calculate Your Electricity Costs</h2>
-    <p>Use our <a href="/physics">physics calculators</a> to compute the energy consumption and cost of any electrical device. Knowing which appliances consume the most power empowers you to reduce your electric bill without sacrificing comfort.</p>
+    <p>Use our <a href="/physics/electricity-cost-calculator">electricity cost calculator</a> to compute the energy consumption and cost of any electrical device, or explore all our <a href="/physics">physics calculators</a>. Knowing which appliances consume the most power empowers you to reduce your electric bill without sacrificing comfort.</p>
 
     <p>Small changes add up. By understanding the true cost of running your appliances, you can make informed decisions that save hundreds of dollars each year on your electricity bill.</p>
   HTML
