@@ -29,7 +29,7 @@ class CalculatorRegistry
     meta-tag-generator favicon-generator
     schema-markup-generator keyword-density-checker
     barcode-generator fake-data-generator image-resizer
-    byte-converter favicon-generator
+    byte-converter
     http-status-code-reference open-graph-preview curl-to-code-converter
     json-to-yaml-converter json-to-typescript-generator
     html-formatter-beautifier css-formatter-beautifier
