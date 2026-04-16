@@ -799,7 +799,19 @@ class CalculatorRegistry
     "alarm-timer" => %w[alarm-clock stopwatch pomodoro-timer],
     "alarm-clock" => %w[alarm-timer stopwatch time-zone-converter],
     # Misc utility
-    "email-signature-generator" => %w[meta-tag-generator favicon-generator schema-markup-generator]
+    "email-signature-generator" => %w[meta-tag-generator favicon-generator schema-markup-generator],
+    # Math / number tools
+    "prime-number-checker" => %w[random-number-generator gcd-lcm-calculator base-converter],
+    "random-number-generator" => %w[prime-number-checker secure-random-generator uuid-generator],
+    "roman-numeral-converter" => %w[base-converter date-difference-calculator base-arithmetic-calculator],
+    # Construction gap-fills
+    "gravel-mulch-calculator" => %w[concrete-calculator topsoil-calculator mulch-calculator],
+    "price-per-sqm-calculator" => %w[sqft-cost-calculator flooring-calculator carpet-calculator],
+    "sqft-cost-calculator" => %w[price-per-sqm-calculator flooring-calculator paint-calculator],
+    # Everyday budget / life planning
+    "wedding-budget-calculator" => %w[engagement-ring-budget-calculator honeymoon-savings-calculator wedding-cost-splitter],
+    "student-budget-calculator" => %w[college-cost-comparison-calculator scholarship-roi-calculator tuition-savings-529-calculator],
+    "study-time-calculator" => %w[research-paper-word-count-estimator class-schedule-builder gpa-calculator]
   }.freeze
 
   # Calculator funnels — ordered "What's Next?" suggestions per calculator
