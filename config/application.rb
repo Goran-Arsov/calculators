@@ -46,5 +46,10 @@ module CalcHammer
 
     # Autoload PORO calculators
     config.autoload_paths << Rails.root.join("app", "calculators")
+
+    # The calculator_registry/ subdirectory contains data files that reopen
+    # CalculatorRegistry to define per-category constants (e.g. ALCOHOL_CALCULATORS).
+    # They are loaded via require_relative in calculator_registry.rb, not by Zeitwerk.
+    Rails.autoloaders.main.ignore(root.join("app/models/calculator_registry"))
   end
 end
