@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class BooleanAlgebraCalculator
     OPERATIONS = %w[simplify evaluate truth_table].freeze

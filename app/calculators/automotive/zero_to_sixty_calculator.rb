@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Automotive
   class ZeroToSixtyCalculator
     attr_reader :errors

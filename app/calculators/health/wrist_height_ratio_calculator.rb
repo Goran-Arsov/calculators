@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Health
   class WristHeightRatioCalculator
     attr_reader :errors

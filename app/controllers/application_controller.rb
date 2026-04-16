@@ -32,7 +32,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  CATEGORY_OG_SLUGS = %w[finance math physics health construction textile everyday].freeze
+  CATEGORY_OG_SLUGS = %w[finance math physics health construction textile everyday alcohol automotive cooking education gardening geography pets photography relationships].freeze
 
   def set_default_meta_tags
     domain = ENV.fetch("DOMAIN", request.base_url)

@@ -66,4 +66,71 @@ class Everyday::RegexTesterCalculatorTest < ActiveSupport::TestCase
     assert result[:valid]
     assert_equal 2, result[:match_count]
   end
+
+  test "extended flag allows comments and whitespace" do
+    result = Everyday::RegexTesterCalculator.new(
+      pattern: "\\d+ # match digits",
+      test_string: "abc 42 def",
+      flags: "x"
+    ).call
+    assert result[:valid]
+    assert_equal 1, result[:match_count]
+    assert_equal "42", result[:matches][0][:match]
+  end
+
+  test "combined flags work together" do
+    result = Everyday::RegexTesterCalculator.new(
+      pattern: "^hello",
+      test_string: "world\nHELLO there",
+      flags: "im"
+    ).call
+    assert result[:valid]
+    assert_equal 1, result[:match_count]
+    assert_equal "HELLO", result[:matches][0][:match]
+  end
+
+  test "has_captures is false when no capture groups" do
+    result = Everyday::RegexTesterCalculator.new(pattern: "\\d+", test_string: "abc 123").call
+    assert result[:valid]
+    refute result[:has_captures]
+  end
+
+  test "whitespace-only pattern is rejected" do
+    result = Everyday::RegexTesterCalculator.new(pattern: "   ", test_string: "test").call
+    assert_not result[:valid]
+    assert_includes result[:errors], "Pattern cannot be empty"
+  end
+
+  test "whitespace-only test string is rejected" do
+    result = Everyday::RegexTesterCalculator.new(pattern: "\\d+", test_string: "   ").call
+    assert_not result[:valid]
+    assert_includes result[:errors], "Test string cannot be empty"
+  end
+
+  test "multiple capture groups are extracted" do
+    result = Everyday::RegexTesterCalculator.new(
+      pattern: "(\\d{4})-(\\d{2})-(\\d{2})",
+      test_string: "Date: 2026-04-16"
+    ).call
+    assert result[:valid]
+    assert_equal 1, result[:match_count]
+    assert_equal %w[2026 04 16], result[:matches][0][:captures]
+  end
+
+  test "handles global matches across full string" do
+    result = Everyday::RegexTesterCalculator.new(
+      pattern: "[aeiou]",
+      test_string: "hello world"
+    ).call
+    assert result[:valid]
+    assert_equal 3, result[:match_count]
+  end
+
+  test "string inputs are coerced" do
+    calc = Everyday::RegexTesterCalculator.new(pattern: 123, test_string: 12345, flags: nil)
+    result = calc.call
+    assert result[:valid]
+    assert_equal 1, result[:match_count]
+    assert_equal "123", result[:matches][0][:match]
+  end
 end

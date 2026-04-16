@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Health
   class DogAgeCalculator
     attr_reader :errors

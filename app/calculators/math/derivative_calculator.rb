@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class DerivativeCalculator
     SUPPORTED_FUNCTIONS = %w[sin cos tan exp ln log sqrt].freeze

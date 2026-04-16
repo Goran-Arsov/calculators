@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Physics
   class DecibelCalculator
     attr_reader :errors

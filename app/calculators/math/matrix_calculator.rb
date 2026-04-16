@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class MatrixCalculator
     attr_reader :errors

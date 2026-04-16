@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Physics
   class KineticEnergyCalculator
     attr_reader :errors

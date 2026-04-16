@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class ComplexNumberCalculator
     OPERATIONS = %w[add subtract multiply divide magnitude conjugate to_polar to_rectangular].freeze

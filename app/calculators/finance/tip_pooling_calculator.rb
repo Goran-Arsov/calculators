@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Finance
   class TipPoolingCalculator
     attr_reader :errors

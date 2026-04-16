@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Automotive
   class TowingCapacityCalculator
     attr_reader :errors

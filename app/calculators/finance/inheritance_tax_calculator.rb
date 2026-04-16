@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Finance
   class InheritanceTaxCalculator
     attr_reader :errors

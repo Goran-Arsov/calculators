@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Finance
   class SalaryCalculator
     attr_reader :errors

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class TaylorSeriesCalculator
     SUPPORTED_FUNCTIONS = %w[exp sin cos ln_1_plus_x one_over_1_minus_x sinh cosh atan].freeze

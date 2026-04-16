@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class PercentageCalculator
     attr_reader :errors

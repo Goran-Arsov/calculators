@@ -29,11 +29,15 @@ class SearchController < ApplicationController
   def matching_calculators(query)
     return [] if query.empty?
 
-    needle = query.downcase
+    needles = query.downcase.split(/\s+/)
     CalculatorRegistry::ALL_CATEGORIES.flat_map do |_slug, category|
-      category[:calculators]
-        .select { |calc| calc[:name].to_s.downcase.include?(needle) }
-        .map { |calc| calc.merge(category_title: category[:title], path: resolve_calculator_path(calc)) }
-    end
+      category[:calculators].filter_map do |calc|
+        searchable = "#{calc[:name]} #{calc[:description]}".downcase
+        matched = needles.count { |n| searchable.include?(n) }
+        next if matched.zero?
+
+        calc.merge(category_title: category[:title], path: resolve_calculator_path(calc), _score: matched)
+      end
+    end.sort_by { |c| -c[:_score] }.each { |c| c.delete(:_score) }
   end
 end

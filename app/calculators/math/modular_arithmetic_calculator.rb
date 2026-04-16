@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class ModularArithmeticCalculator
     OPERATIONS = %w[add subtract multiply exponentiate inverse].freeze

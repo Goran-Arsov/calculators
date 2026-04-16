@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Health
   class DogFoodCalculator
     attr_reader :errors

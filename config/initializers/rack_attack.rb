@@ -53,6 +53,11 @@ class Rack::Attack
     req.ip if req.path == "/newsletter" && req.post?
   end
 
+  # Throttle search requests to prevent enumeration and load
+  throttle("search/ip", limit: 30, period: 1.minute) do |req|
+    req.ip if req.path == "/search" && req.get?
+  end
+
   # Strict throttle on admin login to prevent brute force
   throttle("admin/login", limit: 5, period: 1.minute) do |req|
     req.ip if req.path == "/admin/login" && req.post?

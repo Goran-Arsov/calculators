@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Health
   class CaffeineHalfLifeCalculator
     attr_reader :errors

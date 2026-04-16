@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class VectorCalculator
     OPERATIONS = %w[add subtract dot_product cross_product magnitude normalize scalar_multiply].freeze

@@ -88,8 +88,12 @@ class CalculatorHelperTest < ActionView::TestCase
     # Mortgage calculator should rank home/loan related calculators higher
     result = related_calculators("mortgage-calculator", "finance", count: 6)
     slugs = result.map { |c| c[:slug] }
-    # Home affordability and amortization share keywords with mortgage
-    loan_related = %w[home-affordability-calculator amortization-calculator loan-calculator]
+    # FHA, VA, jumbo, home-affordability, amortization, and loan all share mortgage/loan keywords
+    loan_related = %w[
+      home-affordability-calculator amortization-calculator loan-calculator
+      fha-mortgage-calculator va-mortgage-calculator jumbo-mortgage-calculator
+      home-equity-loan-calculator refinance-calculator personal-loan-calculator
+    ]
     matches = slugs & loan_related
     assert matches.any?, "Expected at least one loan/mortgage-related calculator in results, got: #{slugs.join(', ')}"
   end

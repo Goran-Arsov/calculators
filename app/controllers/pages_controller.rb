@@ -18,7 +18,7 @@ class PagesController < ApplicationController
   def about
     set_meta_tags(
       title: "About Calc Hammer",
-      description: "Calc Hammer provides 74+ free online calculators for finance, math, physics, health, construction, and everyday life. Learn about our mission.",
+      description: "Calc Hammer provides 500+ free online calculators for finance, math, physics, health, construction, and everyday life. Learn about our mission.",
       canonical: about_url
     )
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Physics
   class BuoyancyCalculator
     attr_reader :errors

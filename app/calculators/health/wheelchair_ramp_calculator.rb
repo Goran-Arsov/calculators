@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Health
   class WheelchairRampCalculator
     attr_reader :errors

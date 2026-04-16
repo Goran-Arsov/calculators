@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Physics
   class ElementMassCalculator
     attr_reader :errors

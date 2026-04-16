@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Health
   class BacCalculator
     attr_reader :errors

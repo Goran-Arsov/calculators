@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Finance
   class CreditCardPayoffCalculator
     attr_reader :errors

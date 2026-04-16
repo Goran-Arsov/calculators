@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class LimitCalculator
     APPROACH_DIRECTIONS = %w[both left right].freeze

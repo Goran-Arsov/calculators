@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class FractionCalculator
     attr_reader :errors

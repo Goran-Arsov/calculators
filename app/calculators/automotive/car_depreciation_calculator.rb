@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Automotive
   class CarDepreciationCalculator
     attr_reader :errors

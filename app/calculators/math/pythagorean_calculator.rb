@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class PythagoreanCalculator
     attr_reader :errors

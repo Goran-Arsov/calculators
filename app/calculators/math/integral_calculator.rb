@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class IntegralCalculator
     DEFAULT_INTERVALS = 1000

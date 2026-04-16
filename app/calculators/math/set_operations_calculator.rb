@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class SetOperationsCalculator
     OPERATIONS = %w[union intersection difference symmetric_difference complement power_set cardinality all].freeze

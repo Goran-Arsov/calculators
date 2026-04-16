@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Automotive
   class MpgCalculator
     attr_reader :errors

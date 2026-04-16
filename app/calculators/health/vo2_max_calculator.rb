@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Health
   class Vo2MaxCalculator
     attr_reader :errors

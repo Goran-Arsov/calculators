@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Finance
   class DebtPayoffCalculator
     attr_reader :errors

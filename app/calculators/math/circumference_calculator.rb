@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class CircumferenceCalculator
     attr_reader :errors

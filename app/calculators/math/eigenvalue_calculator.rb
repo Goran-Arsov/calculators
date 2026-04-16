@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   class EigenvalueCalculator
     attr_reader :errors

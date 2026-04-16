@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Math
   # Evaluates arithmetic and scientific expressions safely via a hand-written
   # tokenizer + shunting-yard parser + RPN evaluator. Avoids `eval` entirely.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Physics
   module ElementData
     # Density in g/cm³ at standard conditions (20°C, 1 atm).

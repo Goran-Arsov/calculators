@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Physics
   class WavelengthFrequencyCalculator
     SPEED_OF_LIGHT = 299_792_458.0 # m/s
