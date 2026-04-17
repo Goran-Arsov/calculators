@@ -24,7 +24,9 @@
   { question: "What does the asterisk (*) mean in cron?", answer: "The asterisk is a wildcard that means 'every possible value' for that field. For example, * in the minute field means every minute, * in the hour field means every hour, and * in the day-of-week field means every day of the week. A cron expression of * * * * * means 'every minute of every hour of every day'." },
   { question: "How do step values work in cron (*/5)?", answer: "Step values use the forward slash (/) to specify intervals. The syntax */N means 'every Nth value starting from the minimum.' For example, */5 in the minute field means every 5 minutes (0, 5, 10, 15, ..., 55). You can also combine steps with ranges: 1-30/5 means every 5th value from 1 to 30 (1, 6, 11, 16, 21, 26)." },
   { question: "What is the difference between standard and extended cron?", answer: "Standard cron uses 5 fields (minute, hour, day-of-month, month, day-of-week). Extended cron formats, used by some systems like Quartz scheduler, add a seconds field at the beginning and sometimes a year field at the end, making 6 or 7 fields total. This tool supports the standard 5-field format used by Unix cron, crontab, and most scheduling libraries." },
-  { question: "How do I schedule a cron job for the last day of every month?", answer: "Standard cron does not have a direct 'last day of month' syntax. The common workaround is to use a script that checks if tomorrow is the 1st: you schedule the job to run on days 28-31 and add a condition in the script. Some extended cron implementations support 'L' for last day, but this is not part of the standard 5-field format." }
+  { question: "How do I schedule a cron job for the last day of every month?", answer: "Standard cron does not have a direct 'last day of month' syntax. The common workaround is to use a script that checks if tomorrow is the 1st: you schedule the job to run on days 28-31 and add a condition in the script. Some extended cron implementations support 'L' for last day, but this is not part of the standard 5-field format." },
+  { question: "How do I run a job quarterly in cron?", answer: "Use a step value in the month field. The expression 0 0 1 */3 * runs at midnight on the 1st day of every 3rd month starting from January, producing runs on January 1, April 1, July 1, and October 1. If you need a different quarterly anchor (such as February, May, August, November) use an explicit list like 0 0 1 2,5,8,11 * instead." },
+  { question: "How do I schedule a job only on weekends?", answer: "Use a comma list in the day-of-week field. The expression 0 0 * * 0,6 runs at midnight on Saturday (6) and Sunday (0). For weekdays only, use the range 1-5 instead. Remember that in standard cron, if both day-of-month and day-of-week are restricted, the job fires when either matches, not both — so keep day-of-month as * when targeting specific weekdays." }
 ]) %>
 
 <%= calculator_schema_with_ratings(
@@ -61,40 +63,61 @@
 
         <div>
           <span class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Presets</span>
-          <div class="flex flex-wrap gap-2">
-            <button data-action="click->cron-parser-calculator#setPreset" data-cron="* * * * *"
-              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
-              Every minute
-            </button>
-            <button data-action="click->cron-parser-calculator#setPreset" data-cron="*/5 * * * *"
-              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
-              Every 5 min
-            </button>
-            <button data-action="click->cron-parser-calculator#setPreset" data-cron="0 * * * *"
-              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
-              Hourly
-            </button>
-            <button data-action="click->cron-parser-calculator#setPreset" data-cron="0 0 * * *"
-              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
-              Daily (midnight)
-            </button>
-            <button data-action="click->cron-parser-calculator#setPreset" data-cron="0 9 * * 1"
-              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
-              Weekly (Mon 9am)
-            </button>
-            <button data-action="click->cron-parser-calculator#setPreset" data-cron="0 0 1 * *"
-              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
-              Monthly (1st)
-            </button>
-            <button data-action="click->cron-parser-calculator#setPreset" data-cron="30 2 * * *"
-              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
-              Daily 2:30 AM
-            </button>
-            <button data-action="click->cron-parser-calculator#setPreset" data-cron="0 9-17 * * 1-5"
-              class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono">
-              Business hours
-            </button>
-          </div>
+          <% {
+            "Intervals" => [
+              ["Every minute", "* * * * *"],
+              ["Every 5 min", "*/5 * * * *"],
+              ["Every 10 min", "*/10 * * * *"],
+              ["Every 15 min", "*/15 * * * *"],
+              ["Every 30 min", "*/30 * * * *"],
+              ["Hourly", "0 * * * *"],
+              ["Every 2 hours", "0 */2 * * *"],
+              ["Every 6 hours", "0 */6 * * *"],
+              ["Every 12 hours", "0 */12 * * *"]
+            ],
+            "Daily" => [
+              ["Daily (midnight)", "0 0 * * *"],
+              ["Daily (noon)", "0 12 * * *"],
+              ["Daily 2:30 AM", "30 2 * * *"],
+              ["Daily 9 AM", "0 9 * * *"]
+            ],
+            "Weekly" => [
+              ["Weekly (Mon 9am)", "0 9 * * 1"],
+              ["Weekly (Sun midnight)", "0 0 * * 0"],
+              ["Weekdays midnight", "0 0 * * 1-5"],
+              ["Weekends midnight", "0 0 * * 0,6"],
+              ["Business hours", "0 9-17 * * 1-5"],
+              ["MWF at noon", "0 12 * * 1,3,5"]
+            ],
+            "Monthly / Yearly" => [
+              ["Monthly (1st)", "0 0 1 * *"],
+              ["Monthly 2:15 PM", "15 14 1 * *"],
+              ["Quarterly", "0 0 1 */3 *"],
+              ["Yearly (Jan 1)", "0 0 1 1 *"]
+            ]
+          }.each do |group_name, presets| %>
+            <div class="mb-3 last:mb-0">
+              <span class="block text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5"><%= group_name %></span>
+              <div class="flex flex-wrap gap-2">
+                <% presets.each do |label, expr| %>
+                  <div class="inline-flex rounded-lg overflow-hidden shadow-sm">
+                    <button type="button" data-action="click->cron-parser-calculator#setPreset" data-cron="<%= expr %>"
+                      class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-mono"
+                      title="Apply <%= expr %>">
+                      <%= label %>
+                    </button>
+                    <button type="button" data-action="click->cron-parser-calculator#copyPreset" data-cron="<%= expr %>"
+                      class="px-2 py-1.5 bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors border-l border-gray-300 dark:border-gray-500"
+                      aria-label="Copy <%= expr %>" title="Copy <%= expr %>">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
         </div>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
@@ -199,6 +222,12 @@
 
       <h3>How do I schedule a job for the last day of every month?</h3>
       <p>Standard cron has no "last day" syntax. The workaround is to run on days 28-31 with a script that checks if tomorrow is the 1st. Some extended implementations support the L modifier for this purpose.</p>
+
+      <h3>How do I run a job quarterly in cron?</h3>
+      <p>Use a step value in the month field: <code>0 0 1 */3 *</code> runs at midnight on the 1st of every 3rd month, producing Jan 1, Apr 1, Jul 1, and Oct 1. If you need a different quarterly anchor (e.g., Feb/May/Aug/Nov), use an explicit list: <code>0 0 1 2,5,8,11 *</code>.</p>
+
+      <h3>How do I schedule a job only on weekends?</h3>
+      <p>Use a comma list in the day-of-week field: <code>0 0 * * 0,6</code> runs at midnight on Saturday (6) and Sunday (0). For weekdays only, use the range <code>1-5</code>. Keep day-of-month as <code>*</code> when targeting specific weekdays — in standard cron, restricting both day-of-month and day-of-week makes the job fire when either matches, not both.</p>
 
     <%= render "shared/print_button" %>
     <%# Email capture %>

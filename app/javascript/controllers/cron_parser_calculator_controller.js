@@ -235,6 +235,17 @@ export default class extends Controller {
     this.calculate()
   }
 
+  copyPreset(event) {
+    event.stopPropagation()
+    const btn = event.currentTarget
+    const expr = btn.dataset.cron
+    if (!expr) return
+    navigator.clipboard.writeText(expr)
+    const original = btn.innerHTML
+    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>'
+    setTimeout(() => { btn.innerHTML = original }, 1200)
+  }
+
   showError(message) {
     this.resultsContainerTarget.classList.remove("hidden")
     this.resultDescriptionTarget.textContent = message
