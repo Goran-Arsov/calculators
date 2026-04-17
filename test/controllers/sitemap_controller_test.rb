@@ -95,9 +95,32 @@ class SitemapControllerTest < ActionDispatch::IntegrationTest
     assert_match %r{<lastmod>\d{4}-\d{2}-\d{2}</lastmod>}, response.body
   end
 
-  test "main sitemap homepage lastmod is today" do
+  test "main sitemap homepage lastmod is anchored to beginning of month" do
     get "/sitemap-main.xml"
-    assert_includes response.body, "<lastmod>#{Date.current}</lastmod>"
+    assert_includes response.body, "<loc>#{root_url}</loc>"
+    assert_includes response.body, "<lastmod>#{Date.current.beginning_of_month}</lastmod>"
+  end
+
+  test "main sitemap includes cross-category discovery pages" do
+    get "/sitemap-main.xml"
+    assert_includes response.body, browse_url
+    assert_includes response.body, it_tools_url
+  end
+
+  test "main sitemap includes calculator suites" do
+    get "/sitemap-main.xml"
+    assert_includes response.body, suite_home_buying_url
+    assert_includes response.body, suite_fitness_url
+    assert_includes response.body, suite_business_startup_url
+  end
+
+  test "main sitemap includes comparison pages" do
+    get "/sitemap-main.xml"
+    assert_includes response.body, compare_mortgage_terms_url
+    assert_includes response.body, compare_bmi_vs_body_fat_url
+    assert_includes response.body, compare_stocks_vs_crypto_url
+    assert_includes response.body, compare_keto_vs_macros_url
+    assert_includes response.body, compare_simple_vs_compound_url
   end
 
   test "main sitemap blog post lastmod uses updated_at" do

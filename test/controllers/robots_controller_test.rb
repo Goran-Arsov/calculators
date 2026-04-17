@@ -31,4 +31,13 @@ class RobotsControllerTest < ActionDispatch::IntegrationTest
     get "/robots.txt"
     assert_includes response.body, "AdsBot-Google"
   end
+
+  test "robots.txt disallows admin, api, search, embed, and submission paths" do
+    get "/robots.txt"
+    assert_includes response.body, "Disallow: /admin/"
+    assert_includes response.body, "Disallow: /api/"
+    assert_includes response.body, "Disallow: /embed/"
+    assert_includes response.body, "Disallow: /search"
+    assert_includes response.body, "Disallow: /submit-calculator/"
+  end
 end

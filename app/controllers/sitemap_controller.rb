@@ -73,12 +73,28 @@ class SitemapController < ApplicationController
     @urls = []
 
     # Homepage
-    @urls << { loc: root_url, changefreq: "weekly", priority: "1.0", lastmod: Date.current.to_s }
+    @urls << { loc: root_url, changefreq: "weekly", priority: "1.0", lastmod: Date.current.beginning_of_month.to_s }
 
     # Category pages
     CalculatorRegistry::ALL_CATEGORIES.each_key do |cat|
-      @urls << { loc: category_url(cat), changefreq: "weekly", priority: "0.9", lastmod: Date.current.to_s }
+      @urls << { loc: category_url(cat), changefreq: "weekly", priority: "0.9", lastmod: Date.current.beginning_of_month.to_s }
     end
+
+    # Cross-category browse + discovery pages
+    @urls << { loc: browse_url, changefreq: "weekly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
+    @urls << { loc: it_tools_url, changefreq: "weekly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
+
+    # Calculator suites
+    @urls << { loc: suite_home_buying_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
+    @urls << { loc: suite_fitness_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
+    @urls << { loc: suite_business_startup_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
+
+    # Comparison pages
+    @urls << { loc: compare_mortgage_terms_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
+    @urls << { loc: compare_bmi_vs_body_fat_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
+    @urls << { loc: compare_stocks_vs_crypto_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
+    @urls << { loc: compare_keto_vs_macros_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
+    @urls << { loc: compare_simple_vs_compound_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
 
     # All calculators from every category
     CalculatorRegistry::ALL_CATEGORIES.each_value do |category|

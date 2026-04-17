@@ -4,7 +4,11 @@ class RobotsController < ApplicationController
     render plain: <<~ROBOTS
       User-agent: *
       Allow: /
+      Disallow: /admin/
+      Disallow: /api/
       Disallow: /embed/
+      Disallow: /search
+      Disallow: /submit-calculator/
       Disallow: /up
 
       User-agent: Mediapartners-Google
