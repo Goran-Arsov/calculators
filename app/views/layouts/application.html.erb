@@ -121,7 +121,13 @@
     <%# Register service worker for offline calculator support %>
     <script nonce="<%= content_security_policy_nonce %>">
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/service-worker.js").catch(function() {});
+        <% if Rails.env.production? %>
+          navigator.serviceWorker.register("/service-worker.js").catch(function() {});
+        <% else %>
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            regs.forEach(function(r) { r.unregister(); });
+          });
+        <% end %>
       }
     </script>
 
