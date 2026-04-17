@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["datePicker", "sections", "dailyTotal", "dailyCount", "basalInput", "fatBalanceCard", "balanceSection", "balanceCalc", "balanceResult"]
+  static targets = ["datePicker", "sections", "basalInput", "fatBalanceCard", "balanceSection", "balanceCalc", "balanceResult", "consumedTotal"]
   static values = { date: String }
 
   connect() {
@@ -203,13 +203,11 @@ export default class extends Controller {
   updateTotals() {
     const dayData = this.loadDay(this.dateValue)
     let dailyTotal = 0
-    let dailyCount = 0
 
     for (const [key, entries] of Object.entries(dayData)) {
       if (!Array.isArray(entries)) continue
       const subtotal = entries.reduce((sum, e) => sum + (parseFloat(e.calories) || 0), 0)
       dailyTotal += subtotal
-      dailyCount += entries.length
       const el = this.sectionsTarget.querySelector(`[data-subtotal="${key}"]`)
       if (el) {
         el.textContent = `${Math.round(subtotal)} kcal`
@@ -219,8 +217,9 @@ export default class extends Controller {
       }
     }
 
-    this.dailyTotalTarget.textContent = `${Math.round(dailyTotal)} kcal`
-    this.dailyCountTarget.textContent = `${dailyCount} ${dailyCount === 1 ? 'entry' : 'entries'}`
+    if (this.hasConsumedTotalTarget) {
+      this.consumedTotalTarget.textContent = `${Math.round(dailyTotal)} kcal`
+    }
 
     // Fat balance calculation: (basal - consumed) / 7.7 = grams of fat lost/gained
     const basal = parseFloat(this.basalInputTarget.value) || 0
@@ -232,14 +231,12 @@ export default class extends Controller {
 
       if (difference > 0) {
         this.balanceResultTarget.innerHTML = `You will lose approximately <strong>${fatGrams} g</strong> of body fat today`
-        this.balanceResultTarget.className = "text-lg font-bold text-green-600 dark:text-green-400"
       } else if (difference < 0) {
         this.balanceResultTarget.innerHTML = `You will gain approximately <strong>${fatGrams} g</strong> of body fat today`
-        this.balanceResultTarget.className = "text-lg font-bold text-red-500 dark:text-red-400"
       } else {
         this.balanceResultTarget.innerHTML = "Exact maintenance — no fat gained or lost"
-        this.balanceResultTarget.className = "text-lg font-bold text-gray-600 dark:text-gray-400"
       }
+      this.balanceResultTarget.className = "text-lg font-bold text-orange-600 dark:text-orange-400"
       this.balanceSectionTarget.classList.remove("hidden")
     } else {
       this.balanceSectionTarget.classList.add("hidden")
