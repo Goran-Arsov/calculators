@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { PdfDocument } from "utils/pdf_generator"
+import { downloadHtmlAsPdf } from "utils/html_to_pdf"
 
 export default class extends Controller {
   static targets = [
@@ -141,30 +141,34 @@ export default class extends Controller {
     this.previewTarget.classList.remove("hidden")
   }
 
-  download() {
+  async download() {
     if (this.paragraphs.length === 0) return
 
-    const pdf = new PdfDocument()
+    const btn = this.downloadBtnTarget
+    btn.disabled = true
+    btn.style.opacity = "0.7"
 
-    for (const p of this.paragraphs) {
-      if (p.style === "heading") {
-        pdf.addHeading(p.text, p.headingLevel || 1)
-      } else if (p.bold) {
-        pdf.addText(p.text, { font: "Helvetica-Bold", fontSize: 11 })
-        pdf.addSpacer(4)
-      } else {
-        pdf.addParagraph(p.text)
+    try {
+      let html = ""
+      for (const p of this.paragraphs) {
+        const escaped = this.escapeHtml(p.text)
+        if (p.style === "heading") {
+          const level = Math.min(Math.max(p.headingLevel || 1, 1), 6)
+          html += `<h${level}>${escaped}</h${level}>`
+        } else if (p.bold) {
+          html += `<p style="font-weight:bold;">${escaped}</p>`
+        } else {
+          html += `<p>${escaped}</p>`
+        }
       }
-    }
 
-    const buffer = pdf.generate()
-    const blob = new Blob([buffer], { type: "application/pdf" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "document.pdf"
-    a.click()
-    URL.revokeObjectURL(url)
+      await downloadHtmlAsPdf(html, { filename: "document.pdf" })
+    } catch (err) {
+      console.error("[docx-to-pdf] PDF generation failed", err)
+    } finally {
+      btn.disabled = false
+      btn.style.opacity = ""
+    }
   }
 
   // --- ZIP reading (same approach as excel_to_csv_calculator_controller) ---

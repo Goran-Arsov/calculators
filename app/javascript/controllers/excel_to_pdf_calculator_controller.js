@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { PdfDocument } from "utils/pdf_generator"
+import { downloadHtmlAsPdf } from "utils/html_to_pdf"
 
 export default class extends Controller {
   static targets = [
@@ -162,24 +162,46 @@ export default class extends Controller {
     this.renderPreview(maxCols)
   }
 
-  download() {
+  async download() {
     if (this.rows.length === 0) return
 
-    const hasHeader = this.headerCheckboxTarget.checked
-    const pdf = new PdfDocument()
+    const btn = this.downloadBtnTarget
+    btn.disabled = true
+    btn.style.opacity = "0.7"
 
-    pdf.addHeading(this.sheetName, 1)
-    pdf.addSpacer(10)
-    pdf.addTable(this.rows, { hasHeader })
+    try {
+      const hasHeader = this.headerCheckboxTarget.checked
+      const maxCols = Math.max(...this.rows.map(r => r.length))
 
-    const buffer = pdf.generate()
-    const blob = new Blob([buffer], { type: "application/pdf" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = this.sheetName.replace(/[^a-zA-Z0-9_-]/g, "_") + ".pdf"
-    a.click()
-    URL.revokeObjectURL(url)
+      let html = `<h1>${this.escapeHtml(this.sheetName)}</h1>`
+      html += '<table>'
+
+      const bodyStart = hasHeader ? 1 : 0
+      if (hasHeader && this.rows[0]) {
+        html += '<thead><tr>'
+        for (let c = 0; c < maxCols; c++) {
+          html += `<th>${this.escapeHtml(this.rows[0][c] || "")}</th>`
+        }
+        html += '</tr></thead>'
+      }
+      html += '<tbody>'
+      for (let r = bodyStart; r < this.rows.length; r++) {
+        html += '<tr>'
+        for (let c = 0; c < maxCols; c++) {
+          html += `<td>${this.escapeHtml(this.rows[r][c] || "")}</td>`
+        }
+        html += '</tr>'
+      }
+      html += '</tbody></table>'
+
+      const filename = this.sheetName.replace(/[^a-zA-Z0-9_-]/g, "_") + ".pdf"
+      await downloadHtmlAsPdf(html, { filename })
+    } catch (err) {
+      console.error("[excel-to-pdf] PDF generation failed", err)
+    } finally {
+      btn.disabled = false
+      btn.style.opacity = ""
+    }
   }
 
   // --- ZIP reading (same approach as excel_to_csv_calculator_controller) ---

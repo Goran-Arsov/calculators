@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { PdfDocument } from "utils/pdf_generator"
+import { downloadHtmlAsPdf } from "utils/html_to_pdf"
 
 export default class extends Controller {
   static targets = [
@@ -148,25 +148,45 @@ export default class extends Controller {
     this.downloadBtnTarget.disabled = true
   }
 
-  download() {
+  async download() {
     if (this.rows.length === 0) return
 
-    const hasHeader = this.headerCheckboxTarget.checked
-    const pdf = new PdfDocument()
+    const btn = this.downloadBtnTarget
+    btn.disabled = true
+    btn.style.opacity = "0.7"
 
-    pdf.addHeading("Data Export", 1)
-    pdf.addSpacer(10)
+    try {
+      const hasHeader = this.headerCheckboxTarget.checked
+      const maxCols = Math.max(...this.rows.map(r => r.length))
 
-    pdf.addTable(this.rows, { hasHeader, fontSize: 9 })
+      let html = '<h1>Data Export</h1>'
+      html += '<table>'
 
-    const buffer = pdf.generate()
-    const blob = new Blob([buffer], { type: "application/pdf" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "data-export.pdf"
-    a.click()
-    URL.revokeObjectURL(url)
+      const bodyStart = hasHeader ? 1 : 0
+      if (hasHeader && this.rows[0]) {
+        html += '<thead><tr>'
+        for (let c = 0; c < maxCols; c++) {
+          html += `<th>${this.escapeHtml(this.rows[0][c] || "")}</th>`
+        }
+        html += '</tr></thead>'
+      }
+      html += '<tbody>'
+      for (let r = bodyStart; r < this.rows.length; r++) {
+        html += '<tr>'
+        for (let c = 0; c < maxCols; c++) {
+          html += `<td>${this.escapeHtml(this.rows[r][c] || "")}</td>`
+        }
+        html += '</tr>'
+      }
+      html += '</tbody></table>'
+
+      await downloadHtmlAsPdf(html, { filename: "data-export.pdf" })
+    } catch (err) {
+      console.error("[csv-to-pdf] PDF generation failed", err)
+    } finally {
+      btn.disabled = false
+      btn.style.opacity = ""
+    }
   }
 
   colLetter(idx) {

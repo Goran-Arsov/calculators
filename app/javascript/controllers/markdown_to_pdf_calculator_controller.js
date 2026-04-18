@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { PdfDocument } from "utils/pdf_generator"
+import { downloadHtmlAsPdf } from "utils/html_to_pdf"
 
 export default class extends Controller {
   static targets = [
@@ -55,141 +55,26 @@ export default class extends Controller {
     this.resultLinesTarget.textContent = lines.length
   }
 
-  download() {
+  async download() {
     const md = this.markdownInputTarget.value
     if (!md.trim()) return
 
-    const pdf = new PdfDocument()
-    this.renderMarkdownToPdf(pdf, md)
-    const buffer = pdf.generate()
+    const btn = this.downloadBtnTarget
+    btn.disabled = true
+    btn.style.opacity = "0.7"
 
-    const blob = new Blob([buffer], { type: "application/pdf" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "document.pdf"
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
-
-  // --- Markdown to PDF rendering ---
-
-  renderMarkdownToPdf(pdf, md) {
-    const lines = md.split("\n")
-    let i = 0
-
-    while (i < lines.length) {
-      const line = lines[i]
-
-      // Fenced code block
-      if (line.startsWith("```")) {
-        const codeLines = []
-        i++
-        while (i < lines.length && !lines[i].startsWith("```")) {
-          codeLines.push(lines[i])
-          i++
-        }
-        i++ // skip closing ```
-        pdf.addCodeBlock(codeLines.join("\n"))
-        continue
-      }
-
-      // Heading
-      const headingMatch = line.match(/^(#{1,6})\s+(.+)/)
-      if (headingMatch) {
-        const level = headingMatch[1].length
-        const text = this.stripInlineMarkdown(headingMatch[2].trim())
-        pdf.addHeading(text, level)
-        i++
-        continue
-      }
-
-      // Horizontal rule
-      if (/^(\*{3,}|-{3,}|_{3,})\s*$/.test(line)) {
-        pdf.addHorizontalRule()
-        i++
-        continue
-      }
-
-      // Blockquote
-      if (line.startsWith("> ")) {
-        const quoteLines = []
-        while (i < lines.length && lines[i].startsWith("> ")) {
-          quoteLines.push(lines[i].replace(/^>\s?/, ""))
-          i++
-        }
-        const quoteText = this.stripInlineMarkdown(quoteLines.join(" "))
-        pdf.addParagraph(quoteText, { font: "Helvetica-Bold", fontSize: 10, color: [0.4, 0.4, 0.4] })
-        continue
-      }
-
-      // Unordered list
-      if (/^\s*[-*+]\s+/.test(line)) {
-        while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) {
-          const itemText = this.stripInlineMarkdown(lines[i].replace(/^\s*[-*+]\s+/, ""))
-          pdf.addListItem(itemText)
-          i++
-        }
-        continue
-      }
-
-      // Ordered list
-      if (/^\s*\d+\.\s+/.test(line)) {
-        let num = 1
-        while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
-          const itemText = this.stripInlineMarkdown(lines[i].replace(/^\s*\d+\.\s+/, ""))
-          pdf.addListItem(itemText, `${num}.`)
-          num++
-          i++
-        }
-        continue
-      }
-
-      // Empty line
-      if (line.trim() === "") {
-        i++
-        continue
-      }
-
-      // Paragraph — collect consecutive non-special lines
-      const paraLines = []
-      while (
-        i < lines.length &&
-        lines[i].trim() !== "" &&
-        !/^(#{1,6}\s|```|>\s|[-*+]\s|\d+\.\s|\*{3,}|-{3,}|_{3,})/.test(lines[i])
-      ) {
-        paraLines.push(lines[i])
-        i++
-      }
-      const paraText = this.stripInlineMarkdown(paraLines.join(" "))
-      pdf.addParagraph(paraText)
+    try {
+      const html = this.markdownToHtml(md)
+      await downloadHtmlAsPdf(html, { filename: "document.pdf" })
+    } catch (err) {
+      console.error("[markdown-to-pdf] PDF generation failed", err)
+    } finally {
+      btn.disabled = false
+      btn.style.opacity = ""
     }
   }
 
-  // Strip inline markdown formatting for PDF text
-  stripInlineMarkdown(text) {
-    // Images
-    text = text.replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
-    // Links — keep link text
-    text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-    // Bold+italic
-    text = text.replace(/\*{3}(.+?)\*{3}/g, "$1")
-    // Bold
-    text = text.replace(/\*{2}(.+?)\*{2}/g, "$1")
-    text = text.replace(/_{2}(.+?)_{2}/g, "$1")
-    // Italic
-    text = text.replace(/\*(.+?)\*/g, "$1")
-    text = text.replace(/_(.+?)_/g, "$1")
-    // Inline code
-    text = text.replace(/`([^`]+)`/g, "$1")
-    // Strikethrough
-    text = text.replace(/~~(.+?)~~/g, "$1")
-    return text
-  }
-
-  // --- Markdown to HTML for live preview ---
+  // --- Markdown to HTML (used for live preview and PDF rasterization) ---
 
   markdownToHtml(md) {
     const lines = md.split("\n")

@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { PdfDocument } from "utils/pdf_generator"
+import { downloadHtmlAsPdf, escapeHtml } from "utils/html_to_pdf"
 
 export default class extends Controller {
   static targets = [
@@ -46,41 +46,30 @@ export default class extends Controller {
     this.fontSizeValueTarget.textContent = this.fontSizeTarget.value + "pt"
   }
 
-  download() {
+  async download() {
     const text = this.textInputTarget.value
     if (!text.trim()) return
 
-    const fontSize = parseInt(this.fontSizeTarget.value, 10) || 11
-    const pageSize = this.pageSizeTarget.value
+    const btn = this.downloadBtnTarget
+    btn.disabled = true
+    btn.style.opacity = "0.7"
 
-    const options = { fontSize }
-    if (pageSize === "letter") {
-      options.pageWidth = 612
-      options.pageHeight = 792
+    try {
+      const fontSize = parseInt(this.fontSizeTarget.value, 10) || 11
+      const pageFormat = this.pageSizeTarget.value === "letter" ? "letter" : "a4"
+
+      const paragraphs = text.split(/\n\n+/).map((para, i, arr) => {
+        const isLast = i === arr.length - 1
+        const mb = isLast ? 0 : fontSize * 0.5
+        return `<p style="margin:0 0 ${mb}pt;white-space:pre-wrap;">${escapeHtml(para)}</p>`
+      }).join("")
+
+      await downloadHtmlAsPdf(paragraphs, { filename: "document.pdf", fontSize, pageFormat })
+    } catch (err) {
+      console.error("[txt-to-pdf] PDF generation failed", err)
+    } finally {
+      btn.disabled = false
+      btn.style.opacity = ""
     }
-
-    const pdf = new PdfDocument(options)
-
-    const paragraphs = text.split(/\n\n+/)
-    paragraphs.forEach((para, i) => {
-      if (i > 0) pdf.addSpacer(6)
-      const lines = para.split("\n")
-      lines.forEach(line => {
-        if (line.trim() === "") {
-          pdf.addSpacer(fontSize * 0.5)
-        } else {
-          pdf.addParagraph(line)
-        }
-      })
-    })
-
-    const buffer = pdf.generate()
-    const blob = new Blob([buffer], { type: "application/pdf" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "document.pdf"
-    a.click()
-    URL.revokeObjectURL(url)
   }
 }
