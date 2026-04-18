@@ -627,5 +627,4 @@ class CalculatorRegistry
     "student-budget-calculator" => %w[college-cost-comparison-calculator scholarship-roi-calculator tuition-savings-529-calculator],
     "study-time-calculator" => %w[research-paper-word-count-estimator class-schedule-builder gpa-calculator]
   }.freeze
-
 end
