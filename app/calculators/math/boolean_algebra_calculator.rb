@@ -72,71 +72,72 @@ module Math
 
     # --- Tokenizer ---
 
+    IDENT_CHAR = /[A-Z0-9_]/
+    KEYWORDS = %w[AND OR NOT XOR].freeze
+
     def tokenize(input)
+      @src = input.upcase
+      @pos_t = 0
       tokens = []
-      i = 0
-      src = input.upcase
-      while i < src.length
-        ch = src[i]
-        if ch == " " || ch == "\t"
-          i += 1
-        elsif ch == "("
-          tokens << { type: :lparen }
-          i += 1
-        elsif ch == ")"
-          tokens << { type: :rparen }
-          i += 1
-        elsif ch == "!"
-          tokens << { type: :not }
-          i += 1
-        elsif ch == "~"
-          tokens << { type: :not }
-          i += 1
-        elsif ch == "'"
-          tokens << { type: :not_postfix }
-          i += 1
-        elsif ch == "&" || (ch == "A" && src[i, 3] == "AND")
-          if ch == "&"
-            i += src[i, 2] == "&&" ? 2 : 1
-          else
-            i += 3
-          end
-          tokens << { type: :and }
-        elsif ch == "|" || (ch == "O" && src[i, 2] == "OR" && (i + 2 >= src.length || !src[i + 2].match?(/[A-Z0-9_]/)))
-          if ch == "|"
-            i += src[i, 2] == "||" ? 2 : 1
-          else
-            i += 2
-          end
-          tokens << { type: :or }
-        elsif ch == "^" || (ch == "X" && src[i, 3] == "XOR")
-          if ch == "^"
-            i += 1
-          else
-            i += 3
-          end
-          tokens << { type: :xor }
-        elsif ch == "N" && src[i, 3] == "NOT"
-          tokens << { type: :not }
-          i += 3
-        elsif ch == "0"
-          tokens << { type: :literal, value: false }
-          i += 1
-        elsif ch == "1"
-          tokens << { type: :literal, value: true }
-          i += 1
-        elsif ch.match?(/[A-Z_]/)
-          start = i
-          i += 1 while i < src.length && src[i].match?(/[A-Z0-9_]/)
-          name = src[start...i]
-          next if %w[AND OR NOT XOR].include?(name)
-          tokens << { type: :var, value: name }
-        else
-          raise ParseError, "unexpected character '#{ch}'"
-        end
+      while @pos_t < @src.length
+        token = next_token
+        tokens << token if token
       end
       tokens << { type: :eof }
       tokens
+    end
+
+    def next_token
+      ch = @src[@pos_t]
+      case ch
+      when " ", "\t"        then @pos_t += 1; nil
+      when "("              then advance_token({ type: :lparen }, 1)
+      when ")"              then advance_token({ type: :rparen }, 1)
+      when "!", "~"         then advance_token({ type: :not }, 1)
+      when "'"              then advance_token({ type: :not_postfix }, 1)
+      when "&"              then advance_token({ type: :and }, @src[@pos_t, 2] == "&&" ? 2 : 1)
+      when "|"              then advance_token({ type: :or }, @src[@pos_t, 2] == "||" ? 2 : 1)
+      when "^"              then advance_token({ type: :xor }, 1)
+      when "0"              then advance_token({ type: :literal, value: false }, 1)
+      when "1"              then advance_token({ type: :literal, value: true }, 1)
+      else
+        tokenize_word_or_raise(ch)
+      end
+    end
+
+    def advance_token(token, step)
+      @pos_t += step
+      token
+    end
+
+    def tokenize_word_or_raise(ch)
+      return advance_token({ type: :and }, 3) if substring_at?("AND")
+      return advance_token({ type: :not }, 3) if substring_at?("NOT")
+      return advance_token({ type: :xor }, 3) if substring_at?("XOR")
+      # "OR" is the one keyword that requires a non-identifier follower,
+      # so inputs like "ORANGE" are parsed as a single variable.
+      return advance_token({ type: :or }, 2)  if substring_at?("OR") && !ident_char_after?("OR")
+      return tokenize_identifier if ch.match?(/[A-Z_]/)
+
+      raise ParseError, "unexpected character '#{ch}'"
+    end
+
+    def substring_at?(word)
+      @src[@pos_t, word.length] == word
+    end
+
+    def ident_char_after?(word)
+      after = @src[@pos_t + word.length]
+      !after.nil? && after.match?(IDENT_CHAR)
+    end
+
+    def tokenize_identifier
+      start = @pos_t
+      @pos_t += 1 while @pos_t < @src.length && @src[@pos_t].match?(IDENT_CHAR)
+      name = @src[start...@pos_t]
+      return nil if KEYWORDS.include?(name)
+
+      { type: :var, value: name }
     end
 
     class ParseError < StandardError; end

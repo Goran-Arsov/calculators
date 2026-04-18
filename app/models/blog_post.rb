@@ -12,12 +12,20 @@ class BlogPost < ApplicationRecord
   scope :by_category, ->(cat) { where(category: cat) if cat.present? }
   scope :recent, -> { order(published_at: :desc) }
 
+  def self.latest_published_update
+    published.maximum(:updated_at)
+  end
+
   def to_param
     slug
   end
 
   def published?
     published_at.present? && published_at <= Time.current
+  end
+
+  def og_description
+    meta_description.presence || excerpt
   end
 
   private

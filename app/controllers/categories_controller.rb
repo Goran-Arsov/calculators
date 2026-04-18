@@ -53,7 +53,7 @@ class CategoriesController < ApplicationController
   def set_http_cache
     return unless request.get? || request.head?
 
-    blog_latest = BlogPost.published.maximum(:updated_at)&.to_i || 0
+    blog_latest = BlogPost.latest_published_update&.to_i || 0
 
     expires_in 2.hours, public: true,
       stale_while_revalidate: 1.hour,

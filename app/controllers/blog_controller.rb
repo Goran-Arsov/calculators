@@ -23,11 +23,11 @@ class BlogController < ApplicationController
   def show
     set_meta_tags(
       title: @post.meta_title.presence || @post.title,
-      description: @post.meta_description.presence || @post.excerpt,
+      description: @post.og_description,
       canonical: blog_post_url(@post.slug),
       og: {
         title: "#{@post.title} | Calc Hammer",
-        description: @post.meta_description.presence || @post.excerpt,
+        description: @post.og_description,
         url: blog_post_url(@post.slug),
         type: "article",
         site_name: "Calc Hammer"
@@ -54,7 +54,7 @@ class BlogController < ApplicationController
     if @post
       etag_parts << @post.updated_at.to_i
     else
-      etag_parts << BlogPost.published.maximum(:updated_at)&.to_i
+      etag_parts << BlogPost.latest_published_update&.to_i
       etag_parts << params[:category]
     end
 

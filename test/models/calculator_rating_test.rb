@@ -143,4 +143,73 @@ class CalculatorRatingTest < ActiveSupport::TestCase
     assert_equal 1, CalculatorRating.for_calculator("scope-calc").thumbs_up.count
     assert_equal 1, CalculatorRating.for_calculator("scope-calc").thumbs_down.count
   end
+
+  # --- Admin index scopes ---
+
+  test "aggregated_by_calculator groups and exposes aggregate columns" do
+    CalculatorRating.create!(calculator_slug: "agg-a", direction: "up", score: 5, ip_hash: "aga1")
+    CalculatorRating.create!(calculator_slug: "agg-a", direction: "up", score: 3, ip_hash: "aga2")
+    CalculatorRating.create!(calculator_slug: "agg-b", direction: "up", score: 2, ip_hash: "agb1")
+
+    rows = CalculatorRating.aggregated_by_calculator.to_a.index_by(&:calculator_slug)
+
+    assert_in_delta 4.0, rows["agg-a"].avg_score.to_f, 0.01
+    assert_equal 2, rows["agg-a"].total_count
+    assert_in_delta 2.0, rows["agg-b"].avg_score.to_f, 0.01
+  end
+
+  test "with_avg_score_at_least filters out calculators below threshold" do
+    CalculatorRating.create!(calculator_slug: "high-calc", direction: "up", score: 5, ip_hash: "h1")
+    CalculatorRating.create!(calculator_slug: "low-calc",  direction: "up", score: 2, ip_hash: "l1")
+
+    slugs = CalculatorRating.aggregated_by_calculator.with_avg_score_at_least(4).map(&:calculator_slug)
+    assert_includes slugs, "high-calc"
+    refute_includes slugs, "low-calc"
+  end
+
+  test "with_avg_score_at_least returns all rows when min is nil" do
+    CalculatorRating.create!(calculator_slug: "any-calc", direction: "up", score: 3, ip_hash: "a1")
+    slugs = CalculatorRating.aggregated_by_calculator.with_avg_score_at_least(nil).map(&:calculator_slug)
+    assert_includes slugs, "any-calc"
+  end
+
+  test "with_avg_score_at_most filters out calculators above threshold" do
+    CalculatorRating.create!(calculator_slug: "top-calc", direction: "up", score: 5, ip_hash: "t1")
+    CalculatorRating.create!(calculator_slug: "mid-calc", direction: "up", score: 3, ip_hash: "m1")
+
+    slugs = CalculatorRating.aggregated_by_calculator.with_avg_score_at_most(3).map(&:calculator_slug)
+    assert_includes slugs, "mid-calc"
+    refute_includes slugs, "top-calc"
+  end
+
+  test "ordered_by_aggregate sorts by avg_score with direction" do
+    CalculatorRating.create!(calculator_slug: "ord-a", direction: "up", score: 5, ip_hash: "oa1")
+    CalculatorRating.create!(calculator_slug: "ord-b", direction: "up", score: 2, ip_hash: "ob1")
+
+    slugs_desc = CalculatorRating.aggregated_by_calculator.ordered_by_aggregate("avg_score", "desc").map(&:calculator_slug)
+    assert_equal %w[ord-a ord-b], slugs_desc.select { |s| s.start_with?("ord-") }
+
+    slugs_asc = CalculatorRating.aggregated_by_calculator.ordered_by_aggregate("avg_score", "asc").map(&:calculator_slug)
+    assert_equal %w[ord-b ord-a], slugs_asc.select { |s| s.start_with?("ord-") }
+  end
+
+  test "ordered_by_aggregate with unknown column falls back to default sort" do
+    CalculatorRating.create!(calculator_slug: "fb-a", direction: "up", score: 5, ip_hash: "fb1")
+    CalculatorRating.create!(calculator_slug: "fb-b", direction: "up", score: 1, ip_hash: "fb2")
+
+    slugs = CalculatorRating.aggregated_by_calculator.ordered_by_aggregate("bogus", "asc").map(&:calculator_slug)
+    filtered = slugs.select { |s| s.start_with?("fb-") }
+    assert_equal %w[fb-b fb-a], filtered
+  end
+
+  test "admin_summary returns aggregate stats" do
+    CalculatorRating.create!(calculator_slug: "sum-a", direction: "up", score: 4, ip_hash: "sum1")
+    CalculatorRating.create!(calculator_slug: "sum-b", direction: "up", score: 2, ip_hash: "sum2")
+
+    summary = CalculatorRating.admin_summary
+
+    assert_operator summary[:total_ratings],     :>=, 2
+    assert_operator summary[:total_calculators], :>=, 2
+    refute_nil summary[:overall_avg]
+  end
 end

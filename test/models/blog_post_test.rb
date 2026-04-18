@@ -125,4 +125,39 @@ class BlogPostTest < ActiveSupport::TestCase
     post = BlogPost.new(published_at: nil)
     assert_not post.published?
   end
+
+  # --- og_description ---
+
+  test "og_description prefers meta_description when present" do
+    post = BlogPost.new(meta_description: "Meta desc", excerpt: "Short excerpt")
+    assert_equal "Meta desc", post.og_description
+  end
+
+  test "og_description falls back to excerpt when meta_description is blank" do
+    post = BlogPost.new(meta_description: "", excerpt: "Short excerpt")
+    assert_equal "Short excerpt", post.og_description
+  end
+
+  test "og_description falls back to excerpt when meta_description is nil" do
+    post = BlogPost.new(meta_description: nil, excerpt: "Short excerpt")
+    assert_equal "Short excerpt", post.og_description
+  end
+
+  # --- latest_published_update ---
+
+  test "latest_published_update returns max updated_at across published posts" do
+    newer = BlogPost.create!(title: "Newer", slug: "newer", body: "b", excerpt: "e", published_at: 1.day.ago)
+    newer_ts = 10.years.from_now
+    newer.update_columns(updated_at: newer_ts)
+
+    assert_in_delta newer_ts.to_i, BlogPost.latest_published_update.to_i, 2
+  end
+
+  test "latest_published_update ignores unpublished posts" do
+    baseline = BlogPost.latest_published_update
+    draft = BlogPost.create!(title: "Draft", slug: "draft-latest", body: "b", excerpt: "e", published_at: nil)
+    draft.update_columns(updated_at: 10.years.from_now)
+
+    assert_equal baseline&.to_i, BlogPost.latest_published_update&.to_i
+  end
 end

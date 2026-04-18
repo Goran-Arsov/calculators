@@ -85,3 +85,9 @@ gem "flay", "~> 2.14", group: :development
 gem "rails_best_practices", "~> 1.23", group: :development
 gem "erb_lint", "~> 0.9.0", group: :development
 gem "database_consistency", "~> 3.0", group: :development
+
+gem "fasterer", "~> 0.11.0", group: :development
+
+gem "strong_migrations", "~> 2.6", group: :development
+
+gem "reek", "~> 6.5", group: :development

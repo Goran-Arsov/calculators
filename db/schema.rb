@@ -10,20 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_13_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_18_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "blog_posts", force: :cascade do |t|
-    t.text "body"
+    t.text "body", null: false
     t.string "category"
     t.datetime "created_at", null: false
-    t.string "excerpt"
+    t.string "excerpt", null: false
     t.string "meta_description"
     t.string "meta_title"
     t.datetime "published_at"
-    t.string "slug"
-    t.string "title"
+    t.string "slug", null: false
+    t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["published_at"], name: "index_blog_posts_on_published_at"
     t.index ["slug"], name: "index_blog_posts_on_slug", unique: true
@@ -42,25 +42,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_210000) do
 
   create_table "contact_messages", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "email"
+    t.string "email", null: false
     t.string "ip_address"
-    t.text "message"
-    t.string "name"
-    t.boolean "read", default: false
-    t.string "subject"
+    t.text "message", null: false
+    t.string "name", null: false
+    t.boolean "read", default: false, null: false
+    t.string "subject", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_contact_messages_on_email"
     t.index ["read", "created_at"], name: "index_contact_messages_on_read_and_created_at"
   end
 
   create_table "newsletter_subscribers", force: :cascade do |t|
-    t.boolean "confirmed", default: false
+    t.boolean "confirmed", default: false, null: false
     t.datetime "created_at", null: false
-    t.string "email"
+    t.string "email", null: false
     t.string "ip_address"
     t.datetime "updated_at", null: false
+    t.index "lower((email)::text)", name: "index_newsletter_subscribers_on_lower_email", unique: true
     t.index ["confirmed"], name: "index_newsletter_subscribers_on_confirmed"
-    t.index ["email"], name: "index_newsletter_subscribers_on_email", unique: true
   end
 
   create_table "notes", force: :cascade do |t|
@@ -91,14 +91,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_210000) do
 
   create_table "user_formulas", force: :cascade do |t|
     t.string "author_email"
-    t.string "author_name"
-    t.string "category"
+    t.string "author_name", null: false
+    t.string "category", null: false
     t.datetime "created_at", null: false
-    t.text "description"
-    t.jsonb "formula_json"
-    t.string "slug"
+    t.text "description", null: false
+    t.jsonb "formula_json", null: false
+    t.string "slug", null: false
     t.string "status", default: "pending"
-    t.string "title"
+    t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["category"], name: "index_user_formulas_on_category"
     t.index ["slug"], name: "index_user_formulas_on_slug", unique: true

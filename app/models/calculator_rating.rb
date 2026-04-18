@@ -9,6 +9,32 @@ class CalculatorRating < ApplicationRecord
   scope :thumbs_down, -> { where(direction: "down") }
   scope :with_score, -> { where.not(score: nil) }
 
+  ADMIN_SORT_COLUMNS = {
+    "avg_score"      => "AVG(score)",
+    "total_count"    => "COUNT(*)",
+    "latest_rating"  => "MAX(created_at)",
+    "slug"           => "calculator_slug"
+  }.freeze
+  DEFAULT_ADMIN_SORT = "avg_score"
+
+  scope :aggregated_by_calculator, -> {
+    with_score
+      .group(:calculator_slug)
+      .select(
+        "calculator_slug",
+        "ROUND(AVG(score)::numeric, 1) AS avg_score",
+        "COUNT(*) AS total_count",
+        "MAX(created_at) AS latest_rating"
+      )
+  }
+  scope :with_avg_score_at_least, ->(min) { min ? having("AVG(score) >= ?", min) : all }
+  scope :with_avg_score_at_most,  ->(max) { max ? having("AVG(score) <= ?", max) : all }
+  scope :ordered_by_aggregate, ->(column, direction) {
+    expr = ADMIN_SORT_COLUMNS[column] || ADMIN_SORT_COLUMNS[DEFAULT_ADMIN_SORT]
+    dir  = direction.to_s.downcase == "desc" ? "DESC" : "ASC"
+    order(Arel.sql("#{expr} #{dir}"))
+  }
+
   def self.counts_for(slug)
     counts = for_calculator(slug).group(:direction).count
     { up: counts["up"] || 0, down: counts["down"] || 0 }
@@ -49,5 +75,14 @@ class CalculatorRating < ApplicationRecord
     return nil if stats[:count].zero?
 
     { rating_value: stats[:average], rating_count: stats[:count] }
+  end
+
+  def self.admin_summary
+    scored = with_score
+    {
+      total_ratings:     scored.count,
+      total_calculators: scored.distinct.count(:calculator_slug),
+      overall_avg:       scored.average(:score)&.round(1) || 0.0
+    }
   end
 end
