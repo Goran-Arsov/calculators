@@ -75,3 +75,13 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "rubocop", "~> 1.86", group: :development
+gem "rubocop-rails", "~> 2.34", group: :development
+gem "rubocop-performance", "~> 1.26", group: :development
+gem "simplecov", "~> 0.22.0", group: :development
+gem "flog", "~> 4.9", group: :development
+gem "flay", "~> 2.14", group: :development
+gem "rails_best_practices", "~> 1.23", group: :development
+gem "erb_lint", "~> 0.9.0", group: :development
+gem "database_consistency", "~> 3.0", group: :development
