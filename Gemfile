@@ -88,6 +88,6 @@ gem "database_consistency", "~> 3.0", group: :development
 
 gem "fasterer", "~> 0.11.0", group: :development
 
-gem "strong_migrations", "~> 2.6", group: :development
+gem "strong_migrations", "~> 2.6"
 
 gem "reek", "~> 6.5", group: :development
