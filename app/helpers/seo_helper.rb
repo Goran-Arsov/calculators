@@ -1,79 +1,6 @@
 module SeoHelper
-  # OG image paths per category — place images in public/images/og/
-  OG_IMAGES = {
-    "finance" => "/images/og/finance.png",
-    "math" => "/images/og/math.png",
-    "physics" => "/images/og/physics.png",
-    "health" => "/images/og/health.png",
-    "construction" => "/images/og/construction.png",
-    "textile" => "/images/og/textile.png",
-    "everyday" => "/images/og/everyday.png",
-    "alcohol" => "/images/og/alcohol.png",
-    "geography" => "/images/og/geography.png",
-    "gardening" => "/images/og/gardening.png",
-    "relationships" => "/images/og/relationships.png",
-    "photography" => "/images/og/photography.png",
-    "cooking" => "/images/og/cooking.png",
-    "pets" => "/images/og/pets.png",
-    "automotive" => "/images/og/automotive.png",
-    "education" => "/images/og/education.png"
-  }.freeze
-
-  OG_DEFAULT_IMAGE = "/images/og/default.png"
-
   def default_domain
     ENV.fetch("DOMAIN", "https://calchammer.com")
-  end
-
-  def og_image_url(category = nil)
-    path = OG_IMAGES[category.to_s] || OG_DEFAULT_IMAGE
-    "#{default_domain}#{path}"
-  end
-
-  def set_meta_tags_for_calculator(title:, description:, url:, category:, updated_at: nil)
-    tags = {
-      title: title,
-      description: description,
-      canonical: url,
-      og: {
-        title: "#{title} | Calc Hammer",
-        description: description,
-        url: url,
-        type: "website",
-        site_name: "Calc Hammer",
-        image: og_image_url(category)
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "#{title} | Calc Hammer",
-        description: description,
-        image: og_image_url(category)
-      }
-    }
-    tags[:article] = { modified_time: updated_at.iso8601 } if updated_at
-    set_meta_tags(tags)
-  end
-
-  def set_meta_tags_for_category(title:, description:, url:, category: nil)
-    set_meta_tags(
-      title: title,
-      description: description,
-      canonical: url,
-      og: {
-        title: "#{title} | Calc Hammer",
-        description: description,
-        url: url,
-        type: "website",
-        site_name: "Calc Hammer",
-        image: og_image_url(category)
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "#{title} | Calc Hammer",
-        description: description,
-        image: og_image_url(category)
-      }
-    )
   end
 
   def breadcrumb_schema(items)
@@ -213,19 +140,6 @@ module SeoHelper
         "worstRating" => "1"
       }
     end
-    tag.script(schema.to_json.html_safe, type: "application/ld+json")
-  end
-
-  def speakable_schema(url:, css_selectors: [])
-    schema = {
-      "@context" => "https://schema.org",
-      "@type" => "WebPage",
-      "speakable" => {
-        "@type" => "SpeakableSpecification",
-        "cssSelector" => css_selectors.presence || [ "h1", ".calculator-results", ".faq-answer:first-of-type" ]
-      },
-      "url" => url
-    }
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end
 

@@ -3,19 +3,11 @@ require "test_helper"
 class AdHelperTest < ActionView::TestCase
   include AdHelper
 
-  # --- ad_provider / gam? ---
+  # --- ad_provider ---
 
   test "ad_provider returns the configured provider string" do
     assert_kind_of String, ad_provider
     assert_equal AdHelper::AD_PROVIDER, ad_provider
-  end
-
-  test "ad_provider_gam? is true only when provider is gam" do
-    if AdHelper::AD_PROVIDER == "gam"
-      assert ad_provider_gam?
-    else
-      refute ad_provider_gam?
-    end
   end
 
   # --- adsense_pub_id / adsense_enabled? ---

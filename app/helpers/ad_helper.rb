@@ -29,10 +29,6 @@ module AdHelper
     AD_PROVIDER
   end
 
-  def ad_provider_gam?
-    AD_PROVIDER == "gam"
-  end
-
   def adsense_pub_id
     ADSENSE_PUB_ID
   end

@@ -24,18 +24,4 @@ module AbTestHelper
 
     variant
   end
-
-  # Returns true if user is in variant "b" (the test group)
-  def ab_test?(experiment_name)
-    ab_variant(experiment_name) == "b"
-  end
-
-  # Renders a GA4 script tag to track the user's variant assignment.
-  # Call once per page, e.g., in the layout or calculator view.
-  def ab_tracking_tag(experiment_name)
-    variant = ab_variant(experiment_name)
-    safe_name = ERB::Util.json_escape(experiment_name.to_s)
-    safe_variant = ERB::Util.json_escape(variant.to_s)
-    tag.script("if(typeof gtag===\"function\"){gtag(\"event\",\"experiment_impression\",{experiment:\"#{safe_name}\",variant:\"#{safe_variant}\"})}".html_safe)
-  end
 end

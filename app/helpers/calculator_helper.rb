@@ -118,17 +118,6 @@ module CalculatorHelper
       .map { |c| c.merge(path: resolve_calculator_path(c)) }
   end
 
-  # Renders a reusable SVG chart container for calculator visualizations.
-  # Supports donut, bar, gauge, and stacked-bar chart types.
-  #
-  # Usage in views:
-  #   <%= chart_container("donut", id: "mortgage-breakdown") %>
-  #   <%= chart_container("bar", id: "yearly-comparison", width: 400, height: 300) %>
-  #   <%= chart_container("gauge", id: "bmi-gauge") %>
-  def chart_container(type, id: "chart", width: 280, height: 280)
-    render "shared/chart", type: type, id: id, width: width, height: height
-  end
-
   def embed_url_for(category_slug, calculator_slug)
     calculator_embed_url(category: category_slug, slug: calculator_slug)
   rescue

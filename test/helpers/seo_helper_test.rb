@@ -51,37 +51,6 @@ class SeoHelperTest < ActionView::TestCase
     assert_match %r{"sameAs":\[\]}, result
   end
 
-  test "set_meta_tags_for_calculator without updated_at does not include article tag" do
-    captured_tags = nil
-    stub_method = ->(tags) { captured_tags = tags }
-    self.define_singleton_method(:set_meta_tags, stub_method)
-
-    set_meta_tags_for_calculator(
-      title: "Test",
-      description: "A test",
-      url: "https://calchammer.com/test",
-      category: "finance"
-    )
-    assert_equal "Test", captured_tags[:title]
-    assert_nil captured_tags[:article]
-  end
-
-  test "set_meta_tags_for_calculator with updated_at includes article modified_time" do
-    captured_tags = nil
-    stub_method = ->(tags) { captured_tags = tags }
-    self.define_singleton_method(:set_meta_tags, stub_method)
-
-    timestamp = Time.utc(2026, 4, 1, 12, 0, 0)
-    set_meta_tags_for_calculator(
-      title: "Test",
-      description: "A test",
-      url: "https://calchammer.com/test",
-      category: "finance",
-      updated_at: timestamp
-    )
-    assert_equal({ modified_time: "2026-04-01T12:00:00Z" }, captured_tags[:article])
-  end
-
   test "breadcrumb_schema returns valid JSON-LD with BreadcrumbList type" do
     items = [
       { name: "Home", url: "https://calchammer.com/" },
