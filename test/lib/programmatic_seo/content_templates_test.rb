@@ -68,9 +68,11 @@ class ProgrammaticSeo::ContentTemplatesTest < ActiveSupport::TestCase
     page = build_page_with_pattern(:per_month)
     # First 5 should be generic, additional ones should be pattern-specific
     assert page[:faq].length > 5, "Should have more than 5 FAQs with pattern-specific additions"
-    # The first FAQ should be the generic "How do I calculate..." one
-    assert page[:faq].first[:question].start_with?("How do I calculate"),
-      "First FAQ should be the generic 'How do I calculate' question"
+    # The first FAQ should be drawn from generic slot 1 (any of its variants),
+    # not a pattern-specific FAQ.
+    slot_1_question_stems = ProgrammaticSeo::ContentTemplates::GENERIC_FAQ_SLOTS.first.map { |v| v[:question].split("%").first }
+    assert slot_1_question_stems.any? { |stem| page[:faq].first[:question].start_with?(stem) },
+      "First FAQ should be one of slot 1's generic variants, got: #{page[:faq].first[:question]}"
   end
 
   test "per_ pattern adds exactly 2 extra FAQs" do

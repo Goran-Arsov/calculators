@@ -94,9 +94,16 @@ module ProgrammaticSeo
         score
       end
 
+      # Minimum content-quality score (0–100) required before an auto-generated
+      # programmatic page is added to the sitemap and rendered without noindex.
+      # Raised from 60 to 75 to keep templated pages out of Google's index;
+      # 75 effectively requires ≥600 words, ≥3 FAQs, an embedded form, a
+      # numeric example, and ≥1 related slug.
+      INDEXABLE_QUALITY_THRESHOLD = 75
+
       # Returns true if the page meets the minimum quality threshold for indexing.
       def indexable?(page)
-        quality_score(page) >= 60
+        quality_score(page) >= INDEXABLE_QUALITY_THRESHOLD
       end
 
       # Returns the lastmod date string for a programmatic page.
@@ -195,7 +202,7 @@ module ProgrammaticSeo
         # Step 4: Score each page's content quality and flag indexability
         index.each_value do |page|
           page[:quality_score] = quality_score(page)
-          page[:indexable] = page[:quality_score] >= 60
+          page[:indexable] = page[:quality_score] >= INDEXABLE_QUALITY_THRESHOLD
         end
 
         index.freeze

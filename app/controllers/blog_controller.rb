@@ -6,7 +6,7 @@ class BlogController < ApplicationController
   def index
     @posts = BlogPost.published.recent.by_category(params[:category])
 
-    set_meta_tags(
+    meta = {
       title: "Blog — Financial Tips, Math Guides & Health Insights",
       description: "Read expert articles about personal finance, math concepts, and health metrics. Practical guides and tips from Calc Hammer.",
       canonical: blog_url,
@@ -17,7 +17,16 @@ class BlogController < ApplicationController
         type: "website",
         site_name: "Calc Hammer"
       }
-    )
+    }
+
+    # Filtered listings duplicate the main blog index — keep them out of the index
+    # while preserving link-following.
+    if params[:category].present?
+      meta[:noindex] = true
+      meta[:nofollow] = false
+    end
+
+    set_meta_tags(meta)
   end
 
   def show
