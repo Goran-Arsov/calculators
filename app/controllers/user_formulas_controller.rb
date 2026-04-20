@@ -3,9 +3,13 @@ class UserFormulasController < ApplicationController
 
   def new
     @formula = UserFormula.new
+    # Submission form is utility, not search-result content. robots.txt
+    # already disallows /submit-calculator/, but noindex is the
+    # authoritative signal in case Google reaches the URL via a backlink.
     set_meta_tags(
       title: "Submit a Custom Calculator",
-      description: "Submit your own calculator formula to Calc Hammer. Create custom calculators for finance, math, health, and more."
+      description: "Submit your own calculator formula to Calc Hammer. Create custom calculators for finance, math, health, and more.",
+      noindex: true
     )
   end
 
@@ -27,7 +31,7 @@ class UserFormulasController < ApplicationController
   end
 
   def thank_you
-    set_meta_tags(title: "Submission Received")
+    set_meta_tags(title: "Submission Received", noindex: true)
   end
 
   private
