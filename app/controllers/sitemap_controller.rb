@@ -96,11 +96,16 @@ class SitemapController < ApplicationController
     @urls << { loc: compare_keto_vs_macros_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
     @urls << { loc: compare_simple_vs_compound_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
 
-    # All calculators from every category
+    # All calculators from every category.
+    # Exclude noindexed Tier 4 pages so the sitemap doesn't send mixed signals
+    # (sitemap inclusion + noindex is the canonical "mixed signal" that Search
+    # Console flags). See lib/seo/noindex_list.rb.
     CalculatorRegistry::ALL_CATEGORIES.each_value do |category|
       category[:calculators].each do |calc|
         url_helper = calc[:path].to_s.sub(/_path\z/, "_url")
-        @urls << { loc: send(url_helper), changefreq: "monthly", priority: "0.8", lastmod: Date.current.beginning_of_month.to_s }
+        loc = send(url_helper)
+        next if Seo::NoindexList.include?(URI.parse(loc).path)
+        @urls << { loc: loc, changefreq: "monthly", priority: "0.8", lastmod: Date.current.beginning_of_month.to_s }
       end
     end
 
