@@ -137,4 +137,50 @@ class Finance::CdCalculatorTest < ActiveSupport::TestCase
     refute result[:valid]
     assert calc.errors.size >= 3
   end
+
+  # --- Inflation adjustment (optional) ---
+
+  test "inflation: absent kwarg returns no real_* keys" do
+    calc = Finance::CdCalculator.new(principal: 10_000, apy: 5, term_months: 60)
+    result = calc.call
+
+    assert result[:valid]
+    refute result.key?(:real_maturity_value)
+    refute result.key?(:real_interest_earned)
+    refute result.key?(:annual_inflation_rate)
+  end
+
+  test "inflation: zero rate makes real values equal nominal" do
+    calc = Finance::CdCalculator.new(
+      principal: 10_000, apy: 5, term_months: 60, annual_inflation_rate: 0
+    )
+    result = calc.call
+
+    assert result[:valid]
+    assert_in_delta result[:maturity_value], result[:real_maturity_value], 0.01
+    assert_in_delta result[:interest_earned], result[:real_interest_earned], 0.01
+  end
+
+  test "inflation: 3% over 5-year term reduces real values by compounded factor" do
+    calc = Finance::CdCalculator.new(
+      principal: 10_000, apy: 5, term_months: 60, annual_inflation_rate: 3
+    )
+    result = calc.call
+
+    assert result[:valid]
+    factor = 1.03**5.0
+    assert_operator result[:real_maturity_value], :<, result[:maturity_value]
+    assert_in_delta result[:maturity_value] / factor, result[:real_maturity_value], 0.01
+    assert_in_delta result[:interest_earned] / factor, result[:real_interest_earned], 0.01
+  end
+
+  test "inflation: negative rate returns error" do
+    calc = Finance::CdCalculator.new(
+      principal: 10_000, apy: 5, term_months: 60, annual_inflation_rate: -1
+    )
+    result = calc.call
+
+    refute result[:valid]
+    assert_includes calc.errors, "Inflation rate cannot be negative"
+  end
 end

@@ -186,4 +186,55 @@ class Finance::InvestmentCalculatorTest < ActiveSupport::TestCase
     assert_in_delta 2_200.00, result[:total_contributions], 0.01
     assert_in_delta 0.0, result[:total_growth], 0.01
   end
+
+  # --- Inflation adjustment (optional) ---
+
+  test "inflation: absent kwarg returns no real_* keys" do
+    calc = Finance::InvestmentCalculator.new(
+      initial: 10_000, monthly_contribution: 500, annual_rate: 7, years: 20
+    )
+    result = calc.call
+
+    assert result[:valid]
+    refute result.key?(:real_future_value)
+    refute result.key?(:real_total_growth)
+    refute result.key?(:annual_inflation_rate)
+  end
+
+  test "inflation: zero rate makes real values equal nominal" do
+    calc = Finance::InvestmentCalculator.new(
+      initial: 10_000, monthly_contribution: 500, annual_rate: 7, years: 20,
+      annual_inflation_rate: 0
+    )
+    result = calc.call
+
+    assert result[:valid]
+    assert_in_delta result[:future_value], result[:real_future_value], 0.01
+    assert_in_delta result[:total_growth], result[:real_total_growth], 0.01
+  end
+
+  test "inflation: 3% over 20 years reduces real values by compounded factor" do
+    calc = Finance::InvestmentCalculator.new(
+      initial: 10_000, monthly_contribution: 500, annual_rate: 7, years: 20,
+      annual_inflation_rate: 3
+    )
+    result = calc.call
+
+    assert result[:valid]
+    factor = 1.03**20
+    assert_operator result[:real_future_value], :<, result[:future_value]
+    assert_in_delta result[:future_value] / factor, result[:real_future_value], 0.01
+    assert_in_delta result[:total_growth] / factor, result[:real_total_growth], 0.01
+  end
+
+  test "inflation: negative rate returns error" do
+    calc = Finance::InvestmentCalculator.new(
+      initial: 10_000, monthly_contribution: 500, annual_rate: 7, years: 20,
+      annual_inflation_rate: -2
+    )
+    result = calc.call
+
+    refute result[:valid]
+    assert_includes calc.errors, "Inflation rate cannot be negative"
+  end
 end

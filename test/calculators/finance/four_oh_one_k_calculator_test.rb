@@ -179,4 +179,60 @@ class Finance::FourOhOneKCalculatorTest < ActiveSupport::TestCase
     refute result[:valid]
     assert calc.errors.size >= 4
   end
+
+  # --- Inflation adjustment (optional) ---
+
+  test "inflation: absent kwarg returns no real_* keys" do
+    calc = Finance::FourOhOneKCalculator.new(
+      current_balance: 50_000, annual_contribution: 19_500,
+      employer_match_percent: 50, employer_match_limit: 100,
+      annual_return: 7, years_to_retirement: 25
+    )
+    result = calc.call
+
+    assert result[:valid]
+    refute result.key?(:real_future_value)
+    refute result.key?(:real_total_growth)
+    refute result.key?(:annual_inflation_rate)
+  end
+
+  test "inflation: zero rate makes real values equal nominal" do
+    calc = Finance::FourOhOneKCalculator.new(
+      current_balance: 50_000, annual_contribution: 19_500,
+      employer_match_percent: 50, employer_match_limit: 100,
+      annual_return: 7, years_to_retirement: 25, annual_inflation_rate: 0
+    )
+    result = calc.call
+
+    assert result[:valid]
+    assert_in_delta result[:future_value], result[:real_future_value], 0.01
+    assert_in_delta result[:total_growth], result[:real_total_growth], 0.01
+  end
+
+  test "inflation: 3% over 25 years reduces real values by compounded factor" do
+    calc = Finance::FourOhOneKCalculator.new(
+      current_balance: 50_000, annual_contribution: 19_500,
+      employer_match_percent: 50, employer_match_limit: 100,
+      annual_return: 7, years_to_retirement: 25, annual_inflation_rate: 3
+    )
+    result = calc.call
+
+    assert result[:valid]
+    factor = 1.03**25
+    assert_operator result[:real_future_value], :<, result[:future_value]
+    assert_in_delta result[:future_value] / factor, result[:real_future_value], 0.01
+    assert_in_delta result[:total_growth] / factor, result[:real_total_growth], 0.01
+  end
+
+  test "inflation: negative rate returns error" do
+    calc = Finance::FourOhOneKCalculator.new(
+      current_balance: 50_000, annual_contribution: 19_500,
+      employer_match_percent: 50, employer_match_limit: 100,
+      annual_return: 7, years_to_retirement: 25, annual_inflation_rate: -1
+    )
+    result = calc.call
+
+    refute result[:valid]
+    assert_includes calc.errors, "Inflation rate cannot be negative"
+  end
 end

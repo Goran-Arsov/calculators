@@ -238,4 +238,52 @@ class Finance::SavingsGoalCalculatorTest < ActiveSupport::TestCase
     assert result[:valid]
     assert_in_delta 0.0, result[:monthly_savings], 0.01
   end
+
+  # --- Inflation adjustment (optional) ---
+
+  test "inflation: absent kwarg returns no real_* keys" do
+    calc = Finance::SavingsGoalCalculator.new(
+      goal: 50_000, years: 10, annual_rate: 5
+    )
+    result = calc.call
+
+    assert result[:valid]
+    refute result.key?(:real_goal)
+    refute result.key?(:real_total_interest)
+    refute result.key?(:annual_inflation_rate)
+  end
+
+  test "inflation: zero rate makes real values equal nominal" do
+    calc = Finance::SavingsGoalCalculator.new(
+      goal: 50_000, years: 10, annual_rate: 5, annual_inflation_rate: 0
+    )
+    result = calc.call
+
+    assert result[:valid]
+    assert_in_delta result[:goal], result[:real_goal], 0.01
+    assert_in_delta result[:total_interest], result[:real_total_interest], 0.01
+  end
+
+  test "inflation: 3% over 10 years reduces real values by compounded factor" do
+    calc = Finance::SavingsGoalCalculator.new(
+      goal: 50_000, years: 10, annual_rate: 5, annual_inflation_rate: 3
+    )
+    result = calc.call
+
+    assert result[:valid]
+    factor = 1.03**10
+    assert_operator result[:real_goal], :<, result[:goal]
+    assert_in_delta result[:goal] / factor, result[:real_goal], 0.01
+    assert_in_delta result[:total_interest] / factor, result[:real_total_interest], 0.01
+  end
+
+  test "inflation: negative rate returns error" do
+    calc = Finance::SavingsGoalCalculator.new(
+      goal: 50_000, years: 10, annual_rate: 5, annual_inflation_rate: -1
+    )
+    result = calc.call
+
+    refute result[:valid]
+    assert_includes calc.errors, "Inflation rate cannot be negative"
+  end
 end

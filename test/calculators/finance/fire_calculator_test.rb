@@ -228,4 +228,56 @@ class Finance::FireCalculatorTest < ActiveSupport::TestCase
     # FIRE number with 4% SWR = 40000 / 0.04 = 1,000,000
     assert_in_delta 1_000_000.0, result[:fire_number], 0.01
   end
+
+  # --- Inflation adjustment (optional) ---
+
+  test "inflation: absent kwarg returns no real_* keys" do
+    calc = Finance::FireCalculator.new(
+      annual_expenses: 40_000, annual_savings: 30_000,
+      current_portfolio: 100_000, expected_return_rate: 7
+    )
+    result = calc.call
+
+    assert result[:valid]
+    refute result.key?(:real_fire_number)
+    refute result.key?(:real_projected_portfolio_at_fire)
+    refute result.key?(:annual_inflation_rate)
+  end
+
+  test "inflation: zero rate makes real values equal nominal" do
+    calc = Finance::FireCalculator.new(
+      annual_expenses: 40_000, annual_savings: 30_000,
+      current_portfolio: 100_000, expected_return_rate: 7, annual_inflation_rate: 0
+    )
+    result = calc.call
+
+    assert result[:valid]
+    assert_in_delta result[:fire_number], result[:real_fire_number], 0.01
+    assert_in_delta result[:projected_portfolio_at_fire], result[:real_projected_portfolio_at_fire], 0.01
+  end
+
+  test "inflation: 3% over years-to-fire reduces real values by compounded factor" do
+    calc = Finance::FireCalculator.new(
+      annual_expenses: 40_000, annual_savings: 30_000,
+      current_portfolio: 100_000, expected_return_rate: 7, annual_inflation_rate: 3
+    )
+    result = calc.call
+
+    assert result[:valid]
+    factor = (1.03)**result[:years_to_fire]
+    assert_operator result[:real_fire_number], :<, result[:fire_number]
+    assert_in_delta result[:fire_number] / factor, result[:real_fire_number], 0.01
+    assert_in_delta result[:projected_portfolio_at_fire] / factor, result[:real_projected_portfolio_at_fire], 0.01
+  end
+
+  test "inflation: negative rate returns error" do
+    calc = Finance::FireCalculator.new(
+      annual_expenses: 40_000, annual_savings: 30_000,
+      current_portfolio: 100_000, expected_return_rate: 7, annual_inflation_rate: -1
+    )
+    result = calc.call
+
+    refute result[:valid]
+    assert_includes calc.errors, "Inflation rate cannot be negative"
+  end
 end

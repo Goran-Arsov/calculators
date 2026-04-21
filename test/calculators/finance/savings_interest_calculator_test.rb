@@ -154,4 +154,55 @@ class Finance::SavingsInterestCalculatorTest < ActiveSupport::TestCase
     refute result[:valid]
     assert calc.errors.size >= 3
   end
+
+  # --- Inflation adjustment (optional) ---
+
+  test "inflation: absent kwarg returns no real_* keys" do
+    calc = Finance::SavingsInterestCalculator.new(
+      initial_balance: 5_000, monthly_deposit: 500, annual_rate: 5, years: 10
+    )
+    result = calc.call
+
+    assert result[:valid]
+    refute result.key?(:real_future_value)
+    refute result.key?(:real_total_interest)
+    refute result.key?(:annual_inflation_rate)
+  end
+
+  test "inflation: zero rate makes real values equal nominal" do
+    calc = Finance::SavingsInterestCalculator.new(
+      initial_balance: 5_000, monthly_deposit: 500, annual_rate: 5, years: 10,
+      annual_inflation_rate: 0
+    )
+    result = calc.call
+
+    assert result[:valid]
+    assert_in_delta result[:future_value], result[:real_future_value], 0.01
+    assert_in_delta result[:total_interest], result[:real_total_interest], 0.01
+  end
+
+  test "inflation: 3% over 10 years reduces real values by compounded factor" do
+    calc = Finance::SavingsInterestCalculator.new(
+      initial_balance: 5_000, monthly_deposit: 500, annual_rate: 5, years: 10,
+      annual_inflation_rate: 3
+    )
+    result = calc.call
+
+    assert result[:valid]
+    factor = 1.03**10
+    assert_operator result[:real_future_value], :<, result[:future_value]
+    assert_in_delta result[:future_value] / factor, result[:real_future_value], 0.01
+    assert_in_delta result[:total_interest] / factor, result[:real_total_interest], 0.01
+  end
+
+  test "inflation: negative rate returns error" do
+    calc = Finance::SavingsInterestCalculator.new(
+      initial_balance: 5_000, monthly_deposit: 500, annual_rate: 5, years: 10,
+      annual_inflation_rate: -1
+    )
+    result = calc.call
+
+    refute result[:valid]
+    assert_includes calc.errors, "Inflation rate cannot be negative"
+  end
 end

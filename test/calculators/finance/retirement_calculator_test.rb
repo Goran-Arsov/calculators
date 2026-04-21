@@ -226,4 +226,56 @@ class Finance::RetirementCalculatorTest < ActiveSupport::TestCase
     expected_monthly_income = 100_000 * 0.04 / 12.0
     assert_in_delta expected_monthly_income, result[:monthly_retirement_income], 0.01
   end
+
+  # --- Inflation adjustment (optional) ---
+
+  test "inflation: absent kwarg returns no real_* keys" do
+    calc = Finance::RetirementCalculator.new(
+      current_age: 30, retirement_age: 65, current_savings: 50_000,
+      monthly_contribution: 500, annual_rate: 7
+    )
+    result = calc.call
+
+    assert result[:valid]
+    refute result.key?(:real_projected_savings)
+    refute result.key?(:real_monthly_retirement_income)
+    refute result.key?(:annual_inflation_rate)
+  end
+
+  test "inflation: zero rate makes real values equal nominal" do
+    calc = Finance::RetirementCalculator.new(
+      current_age: 30, retirement_age: 65, current_savings: 50_000,
+      monthly_contribution: 500, annual_rate: 7, annual_inflation_rate: 0
+    )
+    result = calc.call
+
+    assert result[:valid]
+    assert_in_delta result[:projected_savings], result[:real_projected_savings], 0.01
+    assert_in_delta result[:monthly_retirement_income], result[:real_monthly_retirement_income], 0.01
+  end
+
+  test "inflation: 3% over years-to-retire reduces real values by compounded factor" do
+    calc = Finance::RetirementCalculator.new(
+      current_age: 30, retirement_age: 65, current_savings: 50_000,
+      monthly_contribution: 500, annual_rate: 7, annual_inflation_rate: 3
+    )
+    result = calc.call
+
+    assert result[:valid]
+    factor = 1.03**35
+    assert_operator result[:real_projected_savings], :<, result[:projected_savings]
+    assert_in_delta result[:projected_savings] / factor, result[:real_projected_savings], 0.01
+    assert_in_delta result[:monthly_retirement_income] / factor, result[:real_monthly_retirement_income], 0.01
+  end
+
+  test "inflation: negative rate returns error" do
+    calc = Finance::RetirementCalculator.new(
+      current_age: 30, retirement_age: 65, current_savings: 50_000,
+      monthly_contribution: 500, annual_rate: 7, annual_inflation_rate: -1
+    )
+    result = calc.call
+
+    refute result[:valid]
+    assert_includes calc.errors, "Inflation rate cannot be negative"
+  end
 end
