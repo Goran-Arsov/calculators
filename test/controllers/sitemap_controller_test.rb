@@ -47,7 +47,9 @@ class SitemapControllerTest < ActionDispatch::IntegrationTest
 
   test "main sitemap includes at least one calculator URL" do
     get "/sitemap-main.xml"
-    assert_includes response.body, finance_mortgage_url
+    # Pension is intentionally indexable (not in Seo::NoindexList), unlike
+    # mortgage/loan/etc. which are excluded from the sitemap by design.
+    assert_includes response.body, finance_pension_url
   end
 
   test "main sitemap includes all 6 category URLs" do
