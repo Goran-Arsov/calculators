@@ -92,6 +92,20 @@ export default class extends Controller {
     if (inputs.length > 0) inputs[inputs.length - 1].focus()
   }
 
+  quickAdd(event) {
+    const { section, name, amount, calories } = event.currentTarget.dataset
+    const dayData = this.loadDay(this.dateValue)
+    const maxId = Object.values(dayData).flat().reduce((max, e) => Math.max(max, e.id || 0), 0)
+    dayData[section].push({
+      id: maxId + 1,
+      description: name,
+      amount: amount || "",
+      calories: parseFloat(calories) || 0
+    })
+    this.saveDay(this.dateValue, dayData)
+    this.render()
+  }
+
   updateEntry(event) {
     const { section, entryId, field } = event.currentTarget.dataset
     const dayData = this.loadDay(this.dateValue)
@@ -110,9 +124,37 @@ export default class extends Controller {
     this.render()
   }
 
+  // --- Catalog of previously-entered foods ---
+
+  buildCatalog() {
+    const all = this.loadAll()
+    const sortedDates = Object.keys(all).sort().reverse()
+    const byName = {}
+    for (const date of sortedDates) {
+      const day = all[date] || {}
+      for (const sectionKey of ["night", "morning", "day", "evening"]) {
+        for (const entry of (day[sectionKey] || [])) {
+          const name = (entry.description || "").trim()
+          const cal = parseFloat(entry.calories) || 0
+          if (!name || cal <= 0) continue
+          const lower = name.toLowerCase()
+          if (byName[lower]) {
+            byName[lower].count += 1
+          } else {
+            byName[lower] = { name, amount: entry.amount || "", calories: cal, lastUsed: date, count: 1 }
+          }
+        }
+      }
+    }
+    this.catalogList = Object.values(byName)
+      .sort((a, b) => b.count - a.count || b.lastUsed.localeCompare(a.lastUsed))
+      .slice(0, 12)
+  }
+
   // --- Rendering ---
 
   render() {
+    this.buildCatalog()
     const dayData = this.loadDay(this.dateValue)
     const sections = [
       { key: "night", label: "Night", time: "0-6 hrs", gradient: "from-indigo-500 to-blue-600", bg: "bg-indigo-50 dark:bg-indigo-900/20", iconColor: "text-indigo-500 dark:text-indigo-400", icon: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" },
@@ -134,6 +176,21 @@ export default class extends Controller {
   }
 
   renderSection(section, entries, subtotal) {
+    const pillStrip = (this.catalogList && this.catalogList.length > 0) ? `
+      <div class="flex flex-wrap gap-1.5 mb-4 pb-3 border-b border-gray-100 dark:border-gray-800">
+        ${this.catalogList.map(f => `
+          <button data-section="${section.key}"
+                  data-name="${this.escapeAttr(f.name)}"
+                  data-amount="${this.escapeAttr(f.amount)}"
+                  data-calories="${f.calories}"
+                  data-action="click->calorie-tracker#quickAdd"
+                  class="text-xs px-2.5 py-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-colors cursor-pointer whitespace-nowrap">
+            + ${this.escapeAttr(f.name)} <span class="text-gray-400 dark:text-gray-500">${f.amount ? `· ${this.escapeAttr(f.amount)} ` : ""}· ${f.calories}</span>
+          </button>
+        `).join("")}
+      </div>
+    ` : ""
+
     const entryRows = entries.map(e => `
       <div class="grid grid-cols-12 gap-2 items-center mb-2" data-entry-id="${e.id}">
         <div class="col-span-5">
@@ -179,6 +236,7 @@ export default class extends Controller {
           <span class="text-sm font-bold ${subtotal > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}" data-subtotal="${section.key}">${subtotal} kcal</span>
         </div>
         <div class="px-5 py-4">
+          ${pillStrip}
           ${entries.length > 0 ? `
             <div class="mb-3">
               <div class="grid grid-cols-12 gap-2 mb-1.5">
