@@ -2,14 +2,17 @@
 
 module Finance
   class FireCalculator
+    include Finance::InflationAdjustment
+
     attr_reader :errors
 
-    def initialize(annual_expenses:, annual_savings:, current_portfolio:, expected_return_rate:, safe_withdrawal_rate: 4)
+    def initialize(annual_expenses:, annual_savings:, current_portfolio:, expected_return_rate:, safe_withdrawal_rate: 4, annual_inflation_rate: nil)
       @annual_expenses = annual_expenses.to_f
       @annual_savings = annual_savings.to_f
       @current_portfolio = current_portfolio.to_f
       @expected_return_rate = expected_return_rate.to_f / 100.0
       @safe_withdrawal_rate = safe_withdrawal_rate.to_f / 100.0
+      @annual_inflation_rate = annual_inflation_rate.nil? ? nil : annual_inflation_rate.to_f / 100.0
       @errors = []
     end
 
@@ -33,13 +36,14 @@ module Finance
                                   calculate_monthly_savings_needed(fire_number, years_to_fire)
       end
 
-      {
+      result = {
         valid: true,
         fire_number: fire_number.round(2),
         years_to_fire: years_to_fire,
         monthly_savings_needed: monthly_savings_needed.round(2),
         projected_portfolio_at_fire: projected_portfolio_at_fire.round(2)
       }
+      apply_inflation(result, years: years_to_fire, nominal_keys: [ :fire_number, :projected_portfolio_at_fire ])
     end
 
     private
@@ -50,6 +54,7 @@ module Finance
       @errors << "Current portfolio cannot be negative" if @current_portfolio < 0
       @errors << "Expected return rate cannot be negative" if @expected_return_rate < 0
       @errors << "Safe withdrawal rate must be positive" unless @safe_withdrawal_rate > 0
+      @errors << inflation_rate_error if inflation_rate_error
     end
 
     def calculate_years_to_fire(fire_number)

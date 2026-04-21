@@ -1,9 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
+import { toRealValue, applyInflationToggle } from "utils/inflation"
 
 export default class extends Controller {
   static targets = [
     "principal", "apy", "termMonths", "compounding",
-    "maturityValue", "interestEarned", "effectiveApy", "termDisplay"
+    "maturityValue", "interestEarned", "effectiveApy", "termDisplay",
+    "inflationEnabled", "inflationField", "inflationRate",
+    "realResults", "realMaturityValue", "realInterestEarned"
   ]
 
   static compoundingPeriods = { daily: 365, monthly: 12, quarterly: 4, annually: 1 }
@@ -38,6 +41,12 @@ export default class extends Controller {
     this.interestEarnedTarget.textContent = this.formatCurrency(interestEarned)
     this.effectiveApyTarget.textContent = (apy * 100).toFixed(2) + "%"
     this.termDisplayTarget.textContent = termDisplay
+
+    const { enabled, rate } = applyInflationToggle(this)
+    if (enabled) {
+      if (this.hasRealMaturityValueTarget) this.realMaturityValueTarget.textContent = this.formatCurrency(toRealValue(maturityValue, rate, t))
+      if (this.hasRealInterestEarnedTarget) this.realInterestEarnedTarget.textContent = this.formatCurrency(toRealValue(interestEarned, rate, t))
+    }
   }
 
   clearResults() {
@@ -45,6 +54,9 @@ export default class extends Controller {
     this.interestEarnedTarget.textContent = "$0.00"
     this.effectiveApyTarget.textContent = "0.00%"
     this.termDisplayTarget.textContent = "0"
+    if (this.hasRealMaturityValueTarget) this.realMaturityValueTarget.textContent = "$0.00"
+    if (this.hasRealInterestEarnedTarget) this.realInterestEarnedTarget.textContent = "$0.00"
+    applyInflationToggle(this)
   }
 
   formatCurrency(value) {

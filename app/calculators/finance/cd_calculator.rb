@@ -2,6 +2,8 @@
 
 module Finance
   class CdCalculator
+    include Finance::InflationAdjustment
+
     attr_reader :errors
 
     VALID_COMPOUNDING = %w[daily monthly quarterly annually].freeze
@@ -13,11 +15,12 @@ module Finance
       "annually"  => 1
     }.freeze
 
-    def initialize(principal:, apy:, term_months:, compounding: "daily")
+    def initialize(principal:, apy:, term_months:, compounding: "daily", annual_inflation_rate: nil)
       @principal = principal.to_f
       @apy = apy.to_f / 100.0
       @term_months = term_months.to_i
       @compounding = compounding.to_s.downcase.strip
+      @annual_inflation_rate = annual_inflation_rate.nil? ? nil : annual_inflation_rate.to_f / 100.0
       @errors = []
     end
 
@@ -49,7 +52,7 @@ module Finance
 
       apy_decimal = @apy * 100
 
-      {
+      result = {
         valid: true,
         principal: @principal.round(2),
         maturity_value: maturity_value.round(2),
@@ -59,6 +62,7 @@ module Finance
         compounding: @compounding,
         monthly_breakdown: monthly_breakdown
       }
+      apply_inflation(result, years: t, nominal_keys: [ :maturity_value, :interest_earned ])
     end
 
     private
@@ -68,6 +72,7 @@ module Finance
       @errors << "APY must be positive" unless @apy > 0
       @errors << "Term must be positive" unless @term_months > 0
       @errors << "Invalid compounding frequency" unless VALID_COMPOUNDING.include?(@compounding)
+      @errors << inflation_rate_error if inflation_rate_error
     end
   end
 end

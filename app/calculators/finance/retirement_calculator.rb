@@ -2,14 +2,17 @@
 
 module Finance
   class RetirementCalculator
+    include Finance::InflationAdjustment
+
     attr_reader :errors
 
-    def initialize(current_age:, retirement_age:, current_savings:, monthly_contribution:, annual_rate:)
+    def initialize(current_age:, retirement_age:, current_savings:, monthly_contribution:, annual_rate:, annual_inflation_rate: nil)
       @current_age = current_age.to_i
       @retirement_age = retirement_age.to_i
       @current_savings = current_savings.to_f
       @monthly_contribution = monthly_contribution.to_f
       @annual_rate = annual_rate.to_f / 100.0
+      @annual_inflation_rate = annual_inflation_rate.nil? ? nil : annual_inflation_rate.to_f / 100.0
       @errors = []
     end
 
@@ -31,13 +34,14 @@ module Finance
       # Estimate 25-year retirement, 4% withdrawal rate
       monthly_retirement_income = projected_savings * 0.04 / 12.0
 
-      {
+      result = {
         valid: true,
         projected_savings: projected_savings.round(2),
         monthly_retirement_income: monthly_retirement_income.round(2),
         years_to_retire: years_to_retire,
         total_contributions: (@current_savings + @monthly_contribution * num_months).round(2)
       }
+      apply_inflation(result, years: years_to_retire, nominal_keys: [ :projected_savings, :monthly_retirement_income ])
     end
 
     private
@@ -48,6 +52,7 @@ module Finance
       @errors << "Current savings cannot be negative" if @current_savings < 0
       @errors << "Monthly contribution cannot be negative" if @monthly_contribution < 0
       @errors << "Interest rate cannot be negative" if @annual_rate < 0
+      @errors << inflation_rate_error if inflation_rate_error
     end
   end
 end

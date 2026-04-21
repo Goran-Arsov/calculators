@@ -2,13 +2,16 @@
 
 module Finance
   class SavingsInterestCalculator
+    include Finance::InflationAdjustment
+
     attr_reader :errors
 
-    def initialize(initial_balance:, monthly_deposit:, annual_rate:, years:)
+    def initialize(initial_balance:, monthly_deposit:, annual_rate:, years:, annual_inflation_rate: nil)
       @initial_balance = initial_balance.to_f
       @monthly_deposit = monthly_deposit.to_f
       @annual_rate = annual_rate.to_f / 100.0
       @years = years.to_i
+      @annual_inflation_rate = annual_inflation_rate.nil? ? nil : annual_inflation_rate.to_f / 100.0
       @errors = []
     end
 
@@ -57,7 +60,7 @@ module Finance
         }
       end
 
-      {
+      result = {
         valid: true,
         future_value: future_value.round(2),
         total_deposits: total_deposits.round(2),
@@ -68,6 +71,7 @@ module Finance
         years: @years,
         yearly_breakdown: yearly_breakdown
       }
+      apply_inflation(result, years: @years, nominal_keys: [ :future_value, :total_interest ])
     end
 
     private
@@ -78,6 +82,7 @@ module Finance
       @errors << "Either initial balance or monthly deposit must be positive" if @initial_balance <= 0 && @monthly_deposit <= 0
       @errors << "Annual interest rate cannot be negative" if @annual_rate < 0
       @errors << "Number of years must be positive" unless @years > 0
+      @errors << inflation_rate_error if inflation_rate_error
     end
   end
 end

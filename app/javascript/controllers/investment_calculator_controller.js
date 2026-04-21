@@ -1,8 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 import { formatCurrency } from "utils/formatting"
+import { toRealValue, applyInflationToggle } from "utils/inflation"
 
 export default class extends Controller {
-  static targets = ["initial", "monthly", "rate", "years", "futureValue", "totalContributions", "totalGrowth"]
+  static targets = [
+    "initial", "monthly", "rate", "years",
+    "futureValue", "totalContributions", "totalGrowth",
+    "inflationEnabled", "inflationField", "inflationRate",
+    "realResults", "realFutureValue", "realTotalGrowth"
+  ]
 
   calculate() {
     const initial = parseFloat(this.initialTarget.value) || 0
@@ -32,12 +38,21 @@ export default class extends Controller {
     this.futureValueTarget.textContent = formatCurrency(futureValue)
     this.totalContributionsTarget.textContent = formatCurrency(totalContributions)
     this.totalGrowthTarget.textContent = formatCurrency(totalGrowth)
+
+    const { enabled, rate } = applyInflationToggle(this)
+    if (enabled) {
+      if (this.hasRealFutureValueTarget) this.realFutureValueTarget.textContent = formatCurrency(toRealValue(futureValue, rate, years))
+      if (this.hasRealTotalGrowthTarget) this.realTotalGrowthTarget.textContent = formatCurrency(toRealValue(totalGrowth, rate, years))
+    }
   }
 
   clearResults() {
     this.futureValueTarget.textContent = "$0.00"
     this.totalContributionsTarget.textContent = "$0.00"
     this.totalGrowthTarget.textContent = "$0.00"
+    if (this.hasRealFutureValueTarget) this.realFutureValueTarget.textContent = "$0.00"
+    if (this.hasRealTotalGrowthTarget) this.realTotalGrowthTarget.textContent = "$0.00"
+    applyInflationToggle(this)
   }
 
   copy(event) {

@@ -1,9 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 import { formatCurrency } from "utils/formatting"
 import { prefillFromUrl } from "utils/url_prefill"
+import { toRealValue, applyInflationToggle } from "utils/inflation"
 
 export default class extends Controller {
-  static targets = ["principal", "rate", "years", "frequency", "futureValue", "totalInterest", "principalDisplay"]
+  static targets = [
+    "principal", "rate", "years", "frequency",
+    "futureValue", "totalInterest", "principalDisplay",
+    "inflationEnabled", "inflationField", "inflationRate",
+    "realResults", "realFutureValue", "realTotalInterest"
+  ]
 
   connect() {
     prefillFromUrl(this, { principal: "principal", rate: "rate", years: "years", frequency: "frequency" })
@@ -27,12 +33,21 @@ export default class extends Controller {
     this.futureValueTarget.textContent = formatCurrency(futureValue)
     this.totalInterestTarget.textContent = formatCurrency(totalInterest)
     this.principalDisplayTarget.textContent = formatCurrency(principal)
+
+    const { enabled, rate } = applyInflationToggle(this)
+    if (enabled) {
+      if (this.hasRealFutureValueTarget) this.realFutureValueTarget.textContent = formatCurrency(toRealValue(futureValue, rate, years))
+      if (this.hasRealTotalInterestTarget) this.realTotalInterestTarget.textContent = formatCurrency(toRealValue(totalInterest, rate, years))
+    }
   }
 
   clearResults() {
     this.futureValueTarget.textContent = "$0.00"
     this.totalInterestTarget.textContent = "$0.00"
     this.principalDisplayTarget.textContent = "$0.00"
+    if (this.hasRealFutureValueTarget) this.realFutureValueTarget.textContent = "$0.00"
+    if (this.hasRealTotalInterestTarget) this.realTotalInterestTarget.textContent = "$0.00"
+    applyInflationToggle(this)
   }
 
   copy(event) {

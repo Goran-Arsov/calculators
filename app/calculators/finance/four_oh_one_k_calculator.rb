@@ -2,15 +2,18 @@
 
 module Finance
   class FourOhOneKCalculator
+    include Finance::InflationAdjustment
+
     attr_reader :errors
 
-    def initialize(current_balance:, annual_contribution:, employer_match_percent:, employer_match_limit:, annual_return:, years_to_retirement:)
+    def initialize(current_balance:, annual_contribution:, employer_match_percent:, employer_match_limit:, annual_return:, years_to_retirement:, annual_inflation_rate: nil)
       @current_balance = current_balance.to_f
       @annual_contribution = annual_contribution.to_f
       @employer_match_percent = employer_match_percent.to_f / 100.0
       @employer_match_limit = employer_match_limit.to_f / 100.0
       @annual_return = annual_return.to_f / 100.0
       @years = years_to_retirement.to_i
+      @annual_inflation_rate = annual_inflation_rate.nil? ? nil : annual_inflation_rate.to_f / 100.0
       @errors = []
     end
 
@@ -49,7 +52,7 @@ module Finance
         }
       end
 
-      {
+      result = {
         valid: true,
         future_value: balance.round(2),
         total_contributions: total_contributions.round(2),
@@ -60,6 +63,7 @@ module Finance
         years: @years,
         year_by_year: year_by_year
       }
+      apply_inflation(result, years: @years, nominal_keys: [ :future_value, :total_growth ])
     end
 
     private
@@ -71,6 +75,7 @@ module Finance
       @errors << "Employer match limit cannot be negative" if @employer_match_limit < 0
       @errors << "Annual return rate cannot be negative" if @annual_return < 0
       @errors << "Years to retirement must be positive" unless @years > 0
+      @errors << inflation_rate_error if inflation_rate_error
     end
   end
 end

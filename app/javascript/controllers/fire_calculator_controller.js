@@ -1,12 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 import { formatCurrency, formatNumber } from "utils/formatting"
 import { prefillFromUrl } from "utils/url_prefill"
+import { toRealValue, applyInflationToggle } from "utils/inflation"
 
 export default class extends Controller {
   static targets = [
     "annualExpenses", "annualSavings", "currentPortfolio",
     "expectedReturnRate", "safeWithdrawalRate",
-    "fireNumber", "yearsToFire", "monthlySavingsNeeded", "projectedPortfolio"
+    "fireNumber", "yearsToFire", "monthlySavingsNeeded", "projectedPortfolio",
+    "inflationEnabled", "inflationField", "inflationRate",
+    "realResults", "realFireNumber", "realProjectedPortfolio"
   ]
 
   connect() {
@@ -73,6 +76,12 @@ export default class extends Controller {
     this.yearsToFireTarget.textContent = yearsToFire
     this.monthlySavingsNeededTarget.textContent = formatCurrency(Math.max(0, monthlySavingsNeeded))
     this.projectedPortfolioTarget.textContent = formatCurrency(projectedPortfolio)
+
+    const { enabled, rate } = applyInflationToggle(this)
+    if (enabled) {
+      if (this.hasRealFireNumberTarget) this.realFireNumberTarget.textContent = formatCurrency(toRealValue(fireNumber, rate, yearsToFire))
+      if (this.hasRealProjectedPortfolioTarget) this.realProjectedPortfolioTarget.textContent = formatCurrency(toRealValue(projectedPortfolio, rate, yearsToFire))
+    }
   }
 
   clearResults() {
@@ -80,6 +89,9 @@ export default class extends Controller {
     this.yearsToFireTarget.textContent = "0"
     this.monthlySavingsNeededTarget.textContent = "$0.00"
     this.projectedPortfolioTarget.textContent = "$0.00"
+    if (this.hasRealFireNumberTarget) this.realFireNumberTarget.textContent = "$0.00"
+    if (this.hasRealProjectedPortfolioTarget) this.realProjectedPortfolioTarget.textContent = "$0.00"
+    applyInflationToggle(this)
   }
 
   copy(event) {

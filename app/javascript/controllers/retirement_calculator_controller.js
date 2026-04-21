@@ -1,8 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 import { prefillFromUrl } from "utils/url_prefill"
+import { toRealValue, applyInflationToggle } from "utils/inflation"
 
 export default class extends Controller {
-  static targets = ["currentAge", "retirementAge", "currentSavings", "monthlyContribution", "rate", "projectedSavings", "monthlyIncome", "yearsToRetire"]
+  static targets = [
+    "currentAge", "retirementAge", "currentSavings", "monthlyContribution", "rate",
+    "projectedSavings", "monthlyIncome", "yearsToRetire",
+    "inflationEnabled", "inflationField", "inflationRate",
+    "realResults", "realProjectedSavings", "realMonthlyIncome"
+  ]
 
   connect() {
     prefillFromUrl(this, { age: "currentAge", retireAge: "retirementAge", savings: "currentSavings", monthly: "monthlyContribution", rate: "rate" })
@@ -38,12 +44,21 @@ export default class extends Controller {
     this.projectedSavingsTarget.textContent = this.formatCurrency(projectedSavings)
     this.monthlyIncomeTarget.textContent = this.formatCurrency(monthlyIncome)
     this.yearsToRetireTarget.textContent = yearsToRetire
+
+    const { enabled, rate } = applyInflationToggle(this)
+    if (enabled) {
+      if (this.hasRealProjectedSavingsTarget) this.realProjectedSavingsTarget.textContent = this.formatCurrency(toRealValue(projectedSavings, rate, yearsToRetire))
+      if (this.hasRealMonthlyIncomeTarget) this.realMonthlyIncomeTarget.textContent = this.formatCurrency(toRealValue(monthlyIncome, rate, yearsToRetire))
+    }
   }
 
   clearResults() {
     this.projectedSavingsTarget.textContent = "$0.00"
     this.monthlyIncomeTarget.textContent = "$0.00"
     this.yearsToRetireTarget.textContent = "0"
+    if (this.hasRealProjectedSavingsTarget) this.realProjectedSavingsTarget.textContent = "$0.00"
+    if (this.hasRealMonthlyIncomeTarget) this.realMonthlyIncomeTarget.textContent = "$0.00"
+    applyInflationToggle(this)
   }
 
   formatCurrency(value) {
