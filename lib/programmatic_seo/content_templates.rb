@@ -128,18 +128,19 @@ module ProgrammaticSeo
 
     class << self
       def build_page(base_key, base_config, pattern_key, pattern_config)
-        calc_name = base_config[:noun]
-        calc_verb = base_config[:verb]
-        category = base_config[:category]
-        label = pattern_config[:label]
-        context = pattern_config[:context]
+        ctx = ContentContext.new(
+          noun: base_config[:noun],
+          label: pattern_config[:label],
+          context: pattern_config[:context],
+          category: base_config[:category]
+        )
         suffix = pattern_config[:suffix]
         slug = "#{base_key}-#{suffix}-calculator"
-        full_name = "#{calc_name.split.map(&:capitalize).join(' ')} #{label}"
+        full_name = "#{ctx.capitalized_noun} #{ctx.label}"
 
         variant_seed = Digest::MD5.hexdigest("#{base_key}-#{pattern_key}").to_i(16)
-        intro = build_intro(calc_name, label, context, category, variant_seed)
-        how_it_works = build_how_it_works(calc_name, label, context, category)
+        intro = build_intro(ctx, variant_seed)
+        how_it_works = build_how_it_works(ctx)
         how_it_works_text = how_it_works[:paragraphs].join(" ")
 
         {
@@ -147,15 +148,15 @@ module ProgrammaticSeo
           route_name: "programmatic_#{slug.tr('-', '_')}",
           title: truncate_title("#{full_name} Calculator - Free Tool"),
           h1: "#{full_name} Calculator",
-          meta_description: truncate_meta("Calculate #{calc_name} #{context}. Free instant results with no sign-up required. Enter your numbers and get accurate estimates immediately."),
+          meta_description: truncate_meta("Calculate #{ctx.noun} #{ctx.context}. Free instant results with no sign-up required. Enter your numbers and get accurate estimates immediately."),
           intro: intro,
           how_it_works: how_it_works,
-          example: build_example(calc_name, label, context, category),
-          tips: build_tips(calc_name, label, context, category),
-          faq: build_faq(calc_name, label, context, category, base_key, pattern_key),
+          example: build_example(ctx),
+          tips: build_tips(ctx),
+          faq: build_faq(ctx, base_key, pattern_key),
           related_slugs: [],  # filled in by Registry after all pages are built
           base_calculator_slug: "#{base_key}-calculator",
-          base_calculator_path: find_base_path(base_key, category),
+          base_calculator_path: find_base_path(base_key, ctx.category),
           content_hash: Digest::MD5.hexdigest("#{slug}#{intro}#{how_it_works_text}")[0..7]
         }
       end
@@ -178,21 +179,23 @@ module ProgrammaticSeo
       # Returns one intro from a category-specific bank, deterministically
       # selected by variant_seed. Multiple variants per category prevent
       # near-duplicate intros across hundreds of auto-generated pages.
-      def build_intro(noun, label, context, category, variant_seed)
-        bank = INTRO_VARIANTS[category] || INTRO_VARIANTS["everyday"]
+      def build_intro(ctx, variant_seed)
+        bank = INTRO_VARIANTS[ctx.category] || INTRO_VARIANTS["everyday"]
         template = bank[variant_seed % bank.size]
-        format(template, noun: noun, context: context, label: label)
+        format(template, noun: ctx.noun, context: ctx.context, label: ctx.label)
       end
 
-      def build_how_it_works(noun, label, context, category)
+      def build_how_it_works(ctx)
         {
-          heading: "How the #{noun.split.map(&:capitalize).join(' ')} #{label} Calculator Works",
-          paragraphs: how_it_works_paragraphs(noun, label, context, category)
+          heading: "How the #{ctx.capitalized_noun} #{ctx.label} Calculator Works",
+          paragraphs: how_it_works_paragraphs(ctx)
         }
       end
 
-      def how_it_works_paragraphs(noun, label, context, category)
-        p1 = case category
+      def how_it_works_paragraphs(ctx)
+        noun    = ctx.noun
+        context = ctx.context
+        p1 = case ctx.category
         when "finance"
           "This calculator uses standard financial formulas to determine your #{noun} #{context}. Enter the key variables — typically amounts, rates, and time periods — and the tool applies the appropriate equation to produce your result. All calculations follow the same mathematical models used by banks, financial advisors, and accounting software, ensuring your estimates are professionally accurate."
         when "health"
@@ -207,7 +210,7 @@ module ProgrammaticSeo
           "Enter your values into the fields below and the calculator instantly computes your #{noun} #{context}. Results update in real time as you type, allowing you to experiment with different numbers and scenarios without clicking any buttons. The underlying formulas are standard, widely-used equations that produce accurate results for typical use cases."
         end
 
-        p2 = case category
+        p2 = case ctx.category
         when "finance"
           "The results include not just the primary figure but also related metrics that help you understand the full financial picture. Small changes in inputs — even a fraction of a percentage point in an interest rate or a few months in a time period — can significantly affect the outcome. Use the real-time updating to experiment with different scenarios and see how each variable impacts your #{noun}."
         when "health"
@@ -230,17 +233,19 @@ module ProgrammaticSeo
         [ p1, p2, p3 ]
       end
 
-      def build_example(noun, label, context, category)
-        specific = pattern_example_scenario(noun, label, context, category)
+      def build_example(ctx)
+        specific = pattern_example_scenario(ctx)
         {
-          heading: "Example: #{noun.split.map(&:capitalize).join(' ')} #{label}",
+          heading: "Example: #{ctx.capitalized_noun} #{ctx.label}",
           scenario: specific[:scenario],
           steps: specific[:steps]
         }
       end
 
-      def pattern_example_scenario(noun, label, context, category)
-        case category
+      def pattern_example_scenario(ctx)
+        noun    = ctx.noun
+        context = ctx.context
+        case ctx.category
         when "finance"
           {
             scenario: "Let's walk through a real example of calculating #{noun} #{context}. Suppose you have a $250,000 amount at 6% annual interest over 30 years.",
@@ -304,7 +309,9 @@ module ProgrammaticSeo
         end
       end
 
-      def build_tips(noun, label, context, category)
+      def build_tips(ctx)
+        noun    = ctx.noun
+        context = ctx.context
         category_tips = {
           "finance" => [
             "Run calculations with both optimistic and conservative estimates to understand your range of possible outcomes before making financial commitments.",
@@ -343,25 +350,29 @@ module ProgrammaticSeo
             "When comparing results to experimental measurements, expect some deviation due to idealized assumptions in the formulas."
           ]
         }
-        category_tips[category] || category_tips["everyday"]
+        category_tips[ctx.category] || category_tips["everyday"]
       end
 
-      def build_faq(noun, label, context, category, base_key, pattern_key)
+      def build_faq(ctx, base_key, pattern_key)
         seed = Digest::MD5.hexdigest("#{base_key}-#{pattern_key}").to_i(16)
+        format_opts = ctx.to_faq_format_options
 
         faqs = GENERIC_FAQ_SLOTS.map do |slot|
           variant = slot[seed % slot.size]
           {
-            question: format(variant[:question], noun: noun, context: context, label: label.downcase, category: category),
-            answer: format(variant[:answer], noun: noun, context: context, label: label.downcase, category: category)
+            question: format(variant[:question], format_opts),
+            answer: format(variant[:answer], format_opts)
           }
         end
 
-        faqs.concat(pattern_specific_faqs(noun, label, context, pattern_key))
+        faqs.concat(pattern_specific_faqs(ctx, pattern_key))
         faqs
       end
 
-      def pattern_specific_faqs(noun, label, context, pattern_key)
+      def pattern_specific_faqs(ctx, pattern_key)
+        noun    = ctx.noun
+        label   = ctx.label
+        context = ctx.context
         key = pattern_key.to_s
 
         if key.start_with?("per_")

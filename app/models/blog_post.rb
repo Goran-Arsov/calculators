@@ -28,6 +28,14 @@ class BlogPost < ApplicationRecord
     meta_description.presence || excerpt
   end
 
+  def display_meta_title
+    meta_title.presence || title
+  end
+
+  def og_title
+    "#{title} | Calc Hammer"
+  end
+
   private
 
   def sanitize_external_links

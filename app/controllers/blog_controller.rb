@@ -30,14 +30,16 @@ class BlogController < ApplicationController
   end
 
   def show
+    url = blog_post_url(@post.slug)
+    description = @post.og_description
     set_meta_tags(
-      title: @post.meta_title.presence || @post.title,
-      description: @post.og_description,
-      canonical: blog_post_url(@post.slug),
+      title: @post.display_meta_title,
+      description: description,
+      canonical: url,
       og: {
-        title: "#{@post.title} | Calc Hammer",
-        description: @post.og_description,
-        url: blog_post_url(@post.slug),
+        title: @post.og_title,
+        description: description,
+        url: url,
         type: "article",
         site_name: "Calc Hammer"
       }

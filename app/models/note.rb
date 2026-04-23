@@ -36,6 +36,18 @@ class Note < ApplicationRecord
     File.read(disk_path) if exists_on_disk?
   end
 
+  def body_content
+    read_body.to_s
+  end
+
+  def display_title(default = "Untitled note")
+    title.presence || default
+  end
+
+  def download_filename
+    "#{title.presence || 'note'}.txt"
+  end
+
   private
 
   def delete_file_from_disk

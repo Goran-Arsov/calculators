@@ -48,17 +48,17 @@ module Admin
         send_file @note.disk_path,
           type: "text/plain; charset=utf-8",
           disposition: "attachment",
-          filename: "#{@note.title.presence || 'note'}.txt"
+          filename: @note.download_filename
       else
-        @body = @note.read_body.to_s
-        set_meta_tags title: @note.title.presence || "Untitled note"
+        @body = @note.body_content
+        set_meta_tags title: @note.display_title
       end
     end
 
     def edit
       @note = Note.find(params[:id])
-      @body = @note.read_body.to_s
-      set_meta_tags title: "Edit: #{@note.title.presence || 'Untitled note'}"
+      @body = @note.body_content
+      set_meta_tags title: "Edit: #{@note.display_title}"
     end
 
     def update

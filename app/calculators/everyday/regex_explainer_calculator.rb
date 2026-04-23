@@ -24,6 +24,15 @@ module Everyday
       "\\Z" => "End of string (before optional trailing newline)"
     }.freeze
 
+    SIMPLE_ANCHOR_CHARS = %w[^ $ .].freeze
+
+    QUANTIFIER_EXPLANATIONS = {
+      "*"  => "Zero or more times (greedy)",
+      "*?" => "Zero or more times (lazy/non-greedy)",
+      "+"  => "One or more times (greedy)",
+      "+?" => "One or more times (lazy/non-greedy)"
+    }.freeze
+
     def initialize(pattern:)
       @pattern = pattern.to_s
       @errors = []
@@ -54,102 +63,70 @@ module Everyday
     def tokenize(pattern)
       tokens = []
       i = 0
-
       while i < pattern.length
-        char = pattern[i]
-
-        case char
-        when "\\"
-          if i + 1 < pattern.length
-            escaped = pattern[i..i + 1]
-            explanation = TOKEN_EXPLANATIONS[escaped]
-            if explanation
-              tokens << { token: escaped, explanation: explanation }
-            else
-              tokens << { token: escaped, explanation: "Escaped literal character '#{pattern[i + 1]}'" }
-            end
-            i += 2
-          else
-            tokens << { token: "\\", explanation: "Backslash (incomplete escape)" }
-            i += 1
-          end
-
-        when "["
-          end_idx = find_char_class_end(pattern, i)
-          char_class = pattern[i..end_idx]
-          negated = char_class[1] == "^"
-          inner = negated ? char_class[2..-2] : char_class[1..-2]
-          prefix = negated ? "Any character NOT in" : "Any character in"
-          tokens << { token: char_class, explanation: "#{prefix}: #{describe_char_class(inner)}" }
-          i = end_idx + 1
-
-        when "("
-          group_info = parse_group_start(pattern, i)
-          tokens << { token: group_info[:token], explanation: group_info[:explanation] }
-          i += group_info[:token].length
-
-        when ")"
-          tokens << { token: ")", explanation: "End of group" }
-          i += 1
-
-        when "{"
-          end_idx = pattern.index("}", i)
-          if end_idx
-            quantifier = pattern[i..end_idx]
-            tokens << { token: quantifier, explanation: explain_quantifier(quantifier) }
-            i = end_idx + 1
-          else
-            tokens << { token: "{", explanation: "Literal '{'" }
-            i += 1
-          end
-
-        when "*"
-          greedy = (i + 1 < pattern.length && pattern[i + 1] == "?") ? false : true
-          if greedy
-            tokens << { token: "*", explanation: "Zero or more times (greedy)" }
-            i += 1
-          else
-            tokens << { token: "*?", explanation: "Zero or more times (lazy/non-greedy)" }
-            i += 2
-          end
-
-        when "+"
-          greedy = (i + 1 < pattern.length && pattern[i + 1] == "?") ? false : true
-          if greedy
-            tokens << { token: "+", explanation: "One or more times (greedy)" }
-            i += 1
-          else
-            tokens << { token: "+?", explanation: "One or more times (lazy/non-greedy)" }
-            i += 2
-          end
-
-        when "?"
-          tokens << { token: "?", explanation: "Optional (zero or one time)" }
-          i += 1
-
-        when "|"
-          tokens << { token: "|", explanation: "OR — match either the expression before or after" }
-          i += 1
-
-        when "^"
-          tokens << { token: "^", explanation: TOKEN_EXPLANATIONS["^"] }
-          i += 1
-
-        when "$"
-          tokens << { token: "$", explanation: TOKEN_EXPLANATIONS["$"] }
-          i += 1
-
-        when "."
-          tokens << { token: ".", explanation: TOKEN_EXPLANATIONS["."] }
-          i += 1
-
-        else
-          tokens << { token: char, explanation: "Literal character '#{char}'" }
-          i += 1
-        end
+        token, i = next_token(pattern, i)
+        tokens << token
       end
-
       tokens
+    end
+
+    def next_token(pattern, i)
+      char = pattern[i]
+
+      case char
+      when "\\" then parse_escape(pattern, i)
+      when "["  then parse_char_class(pattern, i)
+      when "("  then parse_group(pattern, i)
+      when ")"  then [ { token: ")", explanation: "End of group" }, i + 1 ]
+      when "{"  then parse_brace_quantifier(pattern, i)
+      when "*"  then parse_greedy_quantifier(pattern, i, base: "*")
+      when "+"  then parse_greedy_quantifier(pattern, i, base: "+")
+      when "?"  then [ { token: "?", explanation: "Optional (zero or one time)" }, i + 1 ]
+      when "|"  then [ { token: "|", explanation: "OR — match either the expression before or after" }, i + 1 ]
+      else
+        parse_simple_char(char, i)
+      end
+    end
+
+    def parse_escape(pattern, i)
+      return [ { token: "\\", explanation: "Backslash (incomplete escape)" }, i + 1 ] if i + 1 >= pattern.length
+
+      escaped = pattern[i..i + 1]
+      explanation = TOKEN_EXPLANATIONS[escaped] || "Escaped literal character '#{pattern[i + 1]}'"
+      [ { token: escaped, explanation: explanation }, i + 2 ]
+    end
+
+    def parse_char_class(pattern, i)
+      end_idx = find_char_class_end(pattern, i)
+      char_class = pattern[i..end_idx]
+      negated = char_class[1] == "^"
+      inner = negated ? char_class[2..-2] : char_class[1..-2]
+      prefix = negated ? "Any character NOT in" : "Any character in"
+      [ { token: char_class, explanation: "#{prefix}: #{describe_char_class(inner)}" }, end_idx + 1 ]
+    end
+
+    def parse_group(pattern, i)
+      info = group_kind(pattern, i)
+      [ { token: info[:token], explanation: info[:explanation] }, i + info[:token].length ]
+    end
+
+    def parse_brace_quantifier(pattern, i)
+      end_idx = pattern.index("}", i)
+      return [ { token: "{", explanation: "Literal '{'" }, i + 1 ] unless end_idx
+
+      quantifier = pattern[i..end_idx]
+      [ { token: quantifier, explanation: explain_quantifier(quantifier) }, end_idx + 1 ]
+    end
+
+    def parse_greedy_quantifier(pattern, i, base:)
+      lazy = pattern[i + 1] == "?"
+      token = lazy ? "#{base}?" : base
+      [ { token: token, explanation: QUANTIFIER_EXPLANATIONS[token] }, i + token.length ]
+    end
+
+    def parse_simple_char(char, i)
+      explanation = SIMPLE_ANCHOR_CHARS.include?(char) ? TOKEN_EXPLANATIONS[char] : "Literal character '#{char}'"
+      [ { token: char, explanation: explanation }, i + 1 ]
     end
 
     def find_char_class_end(pattern, start)
@@ -165,59 +142,46 @@ module Everyday
     end
 
     def describe_char_class(inner)
-      descriptions = []
-      inner.scan(/.-.|\\.|./).each do |part|
-        if part.length == 3 && part[1] == "-"
-          descriptions << "'#{part[0]}' to '#{part[2]}'"
-        elsif part.start_with?("\\")
-          desc = TOKEN_EXPLANATIONS[part]
-          descriptions << (desc || "'#{part[1]}'")
-        else
-          descriptions << "'#{part}'"
-        end
-      end
+      descriptions = inner.scan(/.-.|\\.|./).map { |part| describe_char_class_part(part) }
       descriptions.join(", ")
     end
 
-    def parse_group_start(pattern, i)
-      if pattern[i + 1] == "?"
-        case pattern[i + 2]
-        when ":"
-          { token: "(?:", explanation: "Non-capturing group — groups without creating a backreference" }
-        when "="
-          { token: "(?=", explanation: "Positive lookahead — matches if followed by the pattern" }
-        when "!"
-          { token: "(?!", explanation: "Negative lookahead — matches if NOT followed by the pattern" }
-        when "<"
-          if pattern[i + 3] == "="
-            { token: "(?<=", explanation: "Positive lookbehind — matches if preceded by the pattern" }
-          elsif pattern[i + 3] == "!"
-            { token: "(?<!", explanation: "Negative lookbehind — matches if NOT preceded by the pattern" }
-          else
-            name_end = pattern.index(">", i + 3)
-            name = name_end ? pattern[i + 3...name_end] : "?"
-            { token: "(?<#{name}>", explanation: "Named capturing group '#{name}'" }
-          end
-        else
-          { token: "(", explanation: "Capturing group" }
-        end
+    def describe_char_class_part(part)
+      return "'#{part[0]}' to '#{part[2]}'" if part.length == 3 && part[1] == "-"
+      return (TOKEN_EXPLANATIONS[part] || "'#{part[1]}'") if part.start_with?("\\")
+
+      "'#{part}'"
+    end
+
+    def group_kind(pattern, i)
+      return { token: "(", explanation: "Capturing group" } if pattern[i + 1] != "?"
+
+      case pattern[i + 2]
+      when ":" then { token: "(?:", explanation: "Non-capturing group — groups without creating a backreference" }
+      when "=" then { token: "(?=", explanation: "Positive lookahead — matches if followed by the pattern" }
+      when "!" then { token: "(?!", explanation: "Negative lookahead — matches if NOT followed by the pattern" }
+      when "<" then lookbehind_or_named(pattern, i)
+      else          { token: "(", explanation: "Capturing group" }
+      end
+    end
+
+    def lookbehind_or_named(pattern, i)
+      case pattern[i + 3]
+      when "=" then { token: "(?<=", explanation: "Positive lookbehind — matches if preceded by the pattern" }
+      when "!" then { token: "(?<!", explanation: "Negative lookbehind — matches if NOT preceded by the pattern" }
       else
-        { token: "(", explanation: "Capturing group" }
+        name_end = pattern.index(">", i + 3)
+        name = name_end ? pattern[i + 3...name_end] : "?"
+        { token: "(?<#{name}>", explanation: "Named capturing group '#{name}'" }
       end
     end
 
     def explain_quantifier(q)
       inner = q[1..-2]
-      if inner.include?(",")
-        parts = inner.split(",", 2).map(&:strip)
-        if parts[1].empty?
-          "#{parts[0]} or more times"
-        else
-          "Between #{parts[0]} and #{parts[1]} times"
-        end
-      else
-        "Exactly #{inner.strip} times"
-      end
+      return "Exactly #{inner.strip} times" unless inner.include?(",")
+
+      min, max = inner.split(",", 2).map(&:strip)
+      max.empty? ? "#{min} or more times" : "Between #{min} and #{max} times"
     end
   end
 end

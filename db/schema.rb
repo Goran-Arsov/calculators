@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_18_184949) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_23_105108) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -34,7 +34,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_18_184949) do
     t.datetime "created_at", null: false
     t.string "direction", null: false
     t.string "ip_hash", null: false
-    t.integer "score"
+    t.integer "score", null: false
     t.datetime "updated_at", null: false
     t.index ["calculator_slug", "ip_hash"], name: "index_calculator_ratings_on_calculator_slug_and_ip_hash", unique: true
   end

@@ -1,0 +1,58 @@
+# frozen_string_literal: true
+
+class CalculatorRegistry
+  module CrossLinks
+    HEALTH = {
+      "bmi-calculator" => %w[calorie-calculator tdee-calculator ideal-weight-calculator],
+      "bmi-calculator-kids" => %w[bmi-calculator body-fat-calculator ideal-weight-calculator],
+      "bmi-calculator-men" => %w[bmi-calculator body-fat-calculator tdee-calculator],
+      "bmi-calculator-women" => %w[bmi-calculator body-fat-calculator ideal-weight-calculator],
+      "calorie-calculator" => %w[tdee-calculator macro-calculator calorie-deficit-calculator],
+      "tdee-calculator" => %w[calorie-calculator macro-calculator weight-loss-calorie-calculator],
+      "macro-calculator" => %w[calorie-calculator tdee-calculator keto-calculator],
+      "calorie-deficit-calculator" => %w[weight-loss-calorie-calculator tdee-calculator macro-calculator],
+      "weight-loss-calorie-calculator" => %w[calorie-deficit-calculator tdee-calculator macro-calculator],
+      "bulking-calorie-calculator" => %w[calorie-calculator macro-calculator tdee-calculator],
+      "keto-calculator" => %w[macro-calculator calorie-calculator tdee-calculator],
+      "intermittent-fasting-calculator" => %w[calorie-calculator macro-calculator tdee-calculator],
+      "protein-intake-calculator" => %w[protein-per-meal-calculator macro-calculator calorie-calculator],
+      "protein-per-meal-calculator" => %w[protein-intake-calculator macro-calculator calorie-calculator],
+      "calories-per-100g-calculator" => %w[calories-per-serving-calculator calorie-calculator macro-calculator],
+      "calories-per-serving-calculator" => %w[calories-per-100g-calculator calorie-calculator macros-per-recipe-calculator],
+      "body-fat-calculator" => %w[lean-body-mass-calculator ffmi-calculator ideal-weight-calculator],
+      "lean-body-mass-calculator" => %w[body-fat-calculator ffmi-calculator ideal-weight-calculator],
+      "ffmi-calculator" => %w[body-fat-calculator lean-body-mass-calculator bmi-calculator],
+      "ideal-weight-calculator" => %w[bmi-calculator body-fat-calculator lean-body-mass-calculator],
+      "wrist-height-ratio-calculator" => %w[bmi-calculator body-fat-calculator ideal-weight-calculator],
+      "pace-calculator" => %w[running-pace-zone-calculator heart-rate-zone-calculator steps-per-mile-calculator],
+      "running-pace-zone-calculator" => %w[pace-calculator heart-rate-zone-calculator vo2-max-calculator],
+      "cycling-ftp-zone-calculator" => %w[heart-rate-zone-calculator running-pace-zone-calculator pace-calculator],
+      "swim-pace-calculator" => %w[pace-calculator running-pace-zone-calculator heart-rate-zone-calculator],
+      "heart-rate-zone-calculator" => %w[running-pace-zone-calculator vo2-max-calculator pace-calculator],
+      "vo2-max-calculator" => %w[heart-rate-zone-calculator running-pace-zone-calculator pace-calculator],
+      "steps-per-mile-calculator" => %w[pace-calculator running-pace-zone-calculator calorie-calculator],
+      "one-rep-max-calculator" => %w[tdee-calculator macro-calculator ffmi-calculator],
+      "water-intake-calculator" => %w[calorie-calculator cup-converter weight-converter],
+      "sleep-calculator" => %w[caffeine-half-life-calculator biological-age-calculator heart-rate-zone-calculator],
+      "caffeine-half-life-calculator" => %w[sleep-calculator alcohol-burnoff-calculator bac-calculator],
+      "bac-calculator" => %w[alcohol-burnoff-calculator caffeine-half-life-calculator cocktail-abv-calculator],
+      "alcohol-burnoff-calculator" => %w[bac-calculator caffeine-half-life-calculator cocktail-abv-calculator],
+      "biological-age-calculator" => %w[bmi-calculator heart-rate-zone-calculator sleep-calculator],
+      "blood-pressure-calculator" => %w[heart-rate-zone-calculator biological-age-calculator bmi-calculator],
+      "blood-type-compatibility-calculator" => %w[biological-age-calculator bmi-calculator body-fat-calculator],
+      "medication-dosage-calculator" => %w[pet-medication-dosage-calculator weight-converter caffeine-half-life-calculator],
+      "hearing-loss-exposure-calculator" => %w[decibel-calculator blood-pressure-calculator biological-age-calculator],
+      "wheelchair-ramp-calculator" => %w[staircase-calculator drainage-slope-calculator miter-angle-calculator],
+      # Pregnancy / fertility
+      "pregnancy-due-date-calculator" => %w[pregnancy-week-calculator conception-calculator pregnancy-weight-calculator],
+      "pregnancy-week-calculator" => %w[pregnancy-due-date-calculator pregnancy-weight-calculator conception-calculator],
+      "pregnancy-weight-calculator" => %w[pregnancy-due-date-calculator pregnancy-calorie-calculator bmi-calculator],
+      "pregnancy-calorie-calculator" => %w[pregnancy-weight-calculator calorie-calculator macro-calculator],
+      "conception-calculator" => %w[ovulation-calculator pregnancy-due-date-calculator pregnancy-week-calculator],
+      "ovulation-calculator" => %w[conception-calculator pregnancy-due-date-calculator pregnancy-week-calculator],
+      "ivf-due-date-calculator" => %w[pregnancy-due-date-calculator conception-calculator ovulation-calculator],
+      "dog-food-calculator" => %w[dog-age-calculator weight-converter calorie-calculator],
+      "dog-age-calculator" => %w[dog-food-calculator cat-age-calculator age-calculator]
+    }.freeze
+  end
+end

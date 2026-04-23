@@ -70,63 +70,7 @@ class SitemapController < ApplicationController
       stale_while_revalidate: 2.hours,
       stale_if_error: 1.day
 
-    @urls = []
-
-    # Homepage
-    @urls << { loc: root_url, changefreq: "weekly", priority: "1.0", lastmod: Date.current.beginning_of_month.to_s }
-
-    # Category pages
-    CalculatorRegistry::ALL_CATEGORIES.each_key do |cat|
-      @urls << { loc: category_url(cat), changefreq: "weekly", priority: "0.9", lastmod: Date.current.beginning_of_month.to_s }
-    end
-
-    # Cross-category browse + discovery pages
-    @urls << { loc: browse_url, changefreq: "weekly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
-    @urls << { loc: it_tools_url, changefreq: "weekly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
-
-    # Calculator suites
-    @urls << { loc: suite_home_buying_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
-    @urls << { loc: suite_fitness_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
-    @urls << { loc: suite_business_startup_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
-
-    # Comparison pages
-    @urls << { loc: compare_mortgage_terms_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
-    @urls << { loc: compare_bmi_vs_body_fat_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
-    @urls << { loc: compare_stocks_vs_crypto_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
-    @urls << { loc: compare_keto_vs_macros_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
-    @urls << { loc: compare_simple_vs_compound_url, changefreq: "monthly", priority: "0.7", lastmod: Date.current.beginning_of_month.to_s }
-
-    # All calculators from every category.
-    # Exclude noindexed Tier 4 pages so the sitemap doesn't send mixed signals
-    # (sitemap inclusion + noindex is the canonical "mixed signal" that Search
-    # Console flags). See lib/seo/noindex_list.rb.
-    CalculatorRegistry::ALL_CATEGORIES.each_value do |category|
-      category[:calculators].each do |calc|
-        url_helper = calc[:path].to_s.sub(/_path\z/, "_url")
-        loc = send(url_helper)
-        next if Seo::NoindexList.include?(URI.parse(loc).path)
-        @urls << { loc: loc, changefreq: "monthly", priority: "0.8", lastmod: Date.current.beginning_of_month.to_s }
-      end
-    end
-
-    # Programmatic SEO pages (only indexable/high-quality pages)
-    ProgrammaticSeo::Registry.all_pages.each do |page|
-      next unless page[:indexable]
-      @urls << { loc: send("#{page[:route_name]}_url"), changefreq: "monthly", priority: "0.7", lastmod: ProgrammaticSeo::Registry.lastmod_for(page[:slug]) }
-    end
-
-    # Blog posts
-    BlogPost.published.recent.pluck(:slug, :updated_at).each do |slug, updated_at|
-      @urls << { loc: blog_post_url(slug), changefreq: "monthly", priority: "0.6", lastmod: updated_at.to_date.to_s }
-    end
-
-    # Static pages
-    @urls << { loc: blog_url, changefreq: "weekly", priority: "0.7", lastmod: Date.current.to_s }
-    @urls << { loc: about_url, changefreq: "monthly", priority: "0.5", lastmod: Date.current.beginning_of_month.to_s }
-    @urls << { loc: privacy_policy_url, changefreq: "yearly", priority: "0.3", lastmod: Date.current.beginning_of_month.to_s }
-    @urls << { loc: terms_of_service_url, changefreq: "yearly", priority: "0.3", lastmod: Date.current.beginning_of_month.to_s }
-    @urls << { loc: contact_url, changefreq: "yearly", priority: "0.4", lastmod: Date.current.beginning_of_month.to_s }
-    @urls << { loc: disclaimer_url, changefreq: "yearly", priority: "0.3", lastmod: Date.current.beginning_of_month.to_s }
+    @urls = SitemapBuilder.new(self).build
 
     respond_to do |format|
       format.xml
