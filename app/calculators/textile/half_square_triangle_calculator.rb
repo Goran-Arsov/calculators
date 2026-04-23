@@ -2,9 +2,12 @@
 
 module Textile
   class HalfSquareTriangleCalculator
+    INCHES_TO_CM = 2.54
+
     attr_reader :errors
 
     METHODS = %w[2_at_a_time 4_at_a_time 8_at_a_time].freeze
+    UNIT_SYSTEMS = %w[imperial metric].freeze
 
     METHOD_DESCRIPTIONS = {
       "2_at_a_time" => "Two at a time — cut squares and sew on both sides of the diagonal",
@@ -18,8 +21,14 @@ module Textile
       "8_at_a_time" => 8
     }.freeze
 
-    def initialize(finished_size_in:, method: "2_at_a_time")
-      @finished_size_in = finished_size_in.to_f
+    def initialize(finished_size_in: nil, finished_size_cm: nil, method: "2_at_a_time", unit_system: nil)
+      @unit_system = pick_unit_system(unit_system, finished_size_in, finished_size_cm)
+      @finished_size_in =
+        if @unit_system == "metric"
+          (finished_size_cm || finished_size_in).to_f / INCHES_TO_CM
+        else
+          (finished_size_in || finished_size_cm).to_f
+        end
       @method = method.to_s
       @errors = []
     end
@@ -28,43 +37,39 @@ module Textile
       validate!
       return { valid: false, errors: @errors } if @errors.any?
 
-      all_methods = {
-        "2_at_a_time" => cut_size_for("2_at_a_time"),
-        "4_at_a_time" => cut_size_for("4_at_a_time"),
-        "8_at_a_time" => cut_size_for("8_at_a_time")
-      }
-
+      all_methods = METHODS.to_h { |m| [ m, cut_size_for(m) ] }
       cut = all_methods[@method]
 
       {
         valid: true,
+        unit_system: @unit_system,
         finished_size_in: @finished_size_in,
+        finished_size_cm: (@finished_size_in * INCHES_TO_CM).round(2),
         method: @method,
         method_description: METHOD_DESCRIPTIONS[@method],
         cut_size_in: cut.round(4),
+        cut_size_cm: (cut * INCHES_TO_CM).round(2),
         cut_size_fraction: to_eighth_fraction(cut),
         num_hsts_per_pair: HSTS_PER_PAIR[@method],
-        all_methods: {
-          "2_at_a_time" => {
-            cut_size_in: all_methods["2_at_a_time"].round(4),
-            cut_size_fraction: to_eighth_fraction(all_methods["2_at_a_time"]),
-            num_hsts_per_pair: 2
-          },
-          "4_at_a_time" => {
-            cut_size_in: all_methods["4_at_a_time"].round(4),
-            cut_size_fraction: to_eighth_fraction(all_methods["4_at_a_time"]),
-            num_hsts_per_pair: 4
-          },
-          "8_at_a_time" => {
-            cut_size_in: all_methods["8_at_a_time"].round(4),
-            cut_size_fraction: to_eighth_fraction(all_methods["8_at_a_time"]),
-            num_hsts_per_pair: 8
-          }
-        }
+        all_methods: METHODS.to_h do |m|
+          [ m, {
+            cut_size_in: all_methods[m].round(4),
+            cut_size_cm: (all_methods[m] * INCHES_TO_CM).round(2),
+            cut_size_fraction: to_eighth_fraction(all_methods[m]),
+            num_hsts_per_pair: HSTS_PER_PAIR[m]
+          } ]
+        end
       }
     end
 
     private
+
+    def pick_unit_system(explicit, in_value, cm_value)
+      return explicit if UNIT_SYSTEMS.include?(explicit.to_s)
+      return "metric" if cm_value && !in_value
+
+      "imperial"
+    end
 
     def cut_size_for(method)
       case method

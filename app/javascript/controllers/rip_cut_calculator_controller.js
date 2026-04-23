@@ -1,16 +1,54 @@
 import { Controller } from "@hotwired/stimulus"
 
+const INCHES_TO_MM = 25.4
+
 export default class extends Controller {
   static targets = [
-    "boardWidth", "ripWidth", "kerfWidth",
+    "unitSystem", "boardWidth", "ripWidth", "kerfWidth",
+    "boardLabel", "ripLabel", "kerfLabel", "kerfHint",
     "resultNumStrips", "resultMaterialUsed", "resultKerfWaste",
     "resultLeftover", "resultEfficiency"
   ]
 
+  unitChanged() {
+    const metric = this.isMetric()
+    const pairs = [
+      [this.boardWidthTarget, 12, 305],
+      [this.ripWidthTarget, 2.5, 64],
+      [this.kerfWidthTarget, 0.125, 3.2]
+    ]
+
+    for (const [el, impDefault, metricDefault] of pairs) {
+      const current = parseFloat(el.value) || 0
+      if (current > 0) {
+        el.value = metric
+          ? (current * INCHES_TO_MM).toFixed(1)
+          : (current / INCHES_TO_MM).toFixed(3)
+      } else {
+        el.value = metric ? metricDefault : impDefault
+      }
+    }
+
+    if (this.hasBoardLabelTarget) {
+      const unit = metric ? "mm" : "inches"
+      this.boardLabelTarget.textContent = `Board Width (${unit})`
+      this.ripLabelTarget.textContent = `Rip Width (${unit})`
+      this.kerfLabelTarget.textContent = `Kerf Width (${unit})`
+      this.kerfHintTarget.textContent = metric
+        ? "Thin-kerf: 2.4 mm, Standard: 3.2 mm, Full-kerf: 4.0 mm"
+        : `Thin-kerf: 0.094 (3/32"), Standard: 0.125 (1/8"), Full-kerf: 0.156 (5/32")`
+    }
+
+    this.calculate()
+  }
+
   calculate() {
-    const boardWidth = parseFloat(this.boardWidthTarget.value) || 0
-    const ripWidth = parseFloat(this.ripWidthTarget.value) || 0
-    const kerfWidth = parseFloat(this.kerfWidthTarget.value) || 0
+    const metric = this.isMetric()
+    const toIn = (v) => (metric ? v / INCHES_TO_MM : v)
+
+    const boardWidth = toIn(parseFloat(this.boardWidthTarget.value) || 0)
+    const ripWidth = toIn(parseFloat(this.ripWidthTarget.value) || 0)
+    const kerfWidth = toIn(parseFloat(this.kerfWidthTarget.value) || 0)
 
     if (boardWidth <= 0 || ripWidth <= 0 || kerfWidth < 0) {
       this.clearResults()
@@ -19,9 +57,9 @@ export default class extends Controller {
 
     if (ripWidth > boardWidth) {
       this.resultNumStripsTarget.textContent = "0"
-      this.resultMaterialUsedTarget.textContent = this.inches(0)
-      this.resultKerfWasteTarget.textContent = this.inches(0)
-      this.resultLeftoverTarget.textContent = this.inches(boardWidth)
+      this.resultMaterialUsedTarget.textContent = this.fmt(0)
+      this.resultKerfWasteTarget.textContent = this.fmt(0)
+      this.resultLeftoverTarget.textContent = this.fmt(boardWidth)
       this.resultEfficiencyTarget.textContent = "0.0%"
       return
     }
@@ -34,17 +72,21 @@ export default class extends Controller {
     const efficiency = (numStrips * ripWidth) / boardWidth * 100
 
     this.resultNumStripsTarget.textContent = numStrips.toString()
-    this.resultMaterialUsedTarget.textContent = this.inches(materialUsed)
-    this.resultKerfWasteTarget.textContent = this.inches(kerfWaste)
-    this.resultLeftoverTarget.textContent = this.inches(leftover)
+    this.resultMaterialUsedTarget.textContent = this.fmt(materialUsed)
+    this.resultKerfWasteTarget.textContent = this.fmt(kerfWaste)
+    this.resultLeftoverTarget.textContent = this.fmt(leftover)
     this.resultEfficiencyTarget.textContent = `${efficiency.toFixed(1)}%`
+  }
+
+  isMetric() {
+    return this.hasUnitSystemTarget && this.unitSystemTarget.value === "metric"
   }
 
   clearResults() {
     this.resultNumStripsTarget.textContent = "0"
-    this.resultMaterialUsedTarget.textContent = this.inches(0)
-    this.resultKerfWasteTarget.textContent = this.inches(0)
-    this.resultLeftoverTarget.textContent = this.inches(0)
+    this.resultMaterialUsedTarget.textContent = this.fmt(0)
+    this.resultKerfWasteTarget.textContent = this.fmt(0)
+    this.resultLeftoverTarget.textContent = this.fmt(0)
     this.resultEfficiencyTarget.textContent = "0.0%"
   }
 
@@ -53,8 +95,8 @@ export default class extends Controller {
     navigator.clipboard.writeText(text)
   }
 
-  inches(n) {
-    const v = Number(n)
-    return `${v.toFixed(4)}" (${(v * 25.4).toFixed(1)} mm)`
+  fmt(inches) {
+    const v = Number(inches)
+    return `${v.toFixed(4)}" (${(v * INCHES_TO_MM).toFixed(1)} mm)`
   }
 }

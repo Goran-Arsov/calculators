@@ -102,4 +102,37 @@ class Textile::HalfSquareTriangleCalculatorTest < ActiveSupport::TestCase
     calc = Textile::HalfSquareTriangleCalculator.new(finished_size_in: 3)
     assert_equal [], calc.errors
   end
+
+  # --- Metric support ---
+
+  test "finished_size_cm input produces same cut as equivalent inch input" do
+    metric = Textile::HalfSquareTriangleCalculator.new(finished_size_cm: 7.62).call
+    imperial = Textile::HalfSquareTriangleCalculator.new(finished_size_in: 3).call
+
+    assert_in_delta imperial[:cut_size_in], metric[:cut_size_in], 0.001
+    assert_equal "metric", metric[:unit_system]
+    assert_equal "imperial", imperial[:unit_system]
+  end
+
+  test "metric result exposes cut_size_cm on top result and every method variant" do
+    result = Textile::HalfSquareTriangleCalculator.new(finished_size_cm: 10, method: "2_at_a_time").call
+    assert_in_delta result[:cut_size_in] * 2.54, result[:cut_size_cm], 0.01
+
+    result[:all_methods].each_value do |m|
+      assert m.key?(:cut_size_cm), "metric cut size missing from #{m.inspect}"
+    end
+  end
+
+  test "imperial result still exposes cut_size_cm for cross-unit reference" do
+    result = Textile::HalfSquareTriangleCalculator.new(finished_size_in: 3).call
+    assert_in_delta 3.875 * 2.54, result[:cut_size_cm], 0.01
+  end
+
+  test "explicit unit_system wins over the input-key heuristic" do
+    result = Textile::HalfSquareTriangleCalculator.new(
+      finished_size_in: 3, finished_size_cm: 99, unit_system: "imperial"
+    ).call
+    assert_equal "imperial", result[:unit_system]
+    assert_equal 3.875, result[:cut_size_in]
+  end
 end

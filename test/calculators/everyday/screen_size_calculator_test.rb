@@ -93,4 +93,36 @@ class Everyday::ScreenSizeCalculatorTest < ActiveSupport::TestCase
     calc = Everyday::ScreenSizeCalculator.new(diagonal: 27, aspect_width: 16, aspect_height: 9)
     assert_equal [], calc.errors
   end
+
+  # --- Metric output ---
+
+  test "27 inch 16:9 produces metric equivalents" do
+    result = Everyday::ScreenSizeCalculator.new(diagonal: 27, aspect_width: 16, aspect_height: 9).call
+    # 23.53 in * 2.54 ≈ 59.8 cm
+    assert_in_delta 59.8, result[:width_cm], 0.2
+    assert_in_delta 33.6, result[:height_cm], 0.2
+    # 27 in ≈ 68.6 cm
+    assert_in_delta 68.6, result[:diagonal_cm], 0.2
+  end
+
+  test "area in cm² uses the 2.54² conversion" do
+    result = Everyday::ScreenSizeCalculator.new(diagonal: 24, aspect_width: 16, aspect_height: 9).call
+    # area_cm2 must equal area * 2.54 * 2.54
+    assert_in_delta result[:area] * 2.54 * 2.54, result[:area_cm2], 1.0
+  end
+
+  test "width_cm and height_cm rounded to one decimal" do
+    result = Everyday::ScreenSizeCalculator.new(diagonal: 27, aspect_width: 16, aspect_height: 9).call
+    # The rounded value must equal itself after re-rounding (no extra precision)
+    assert_equal result[:width_cm], result[:width_cm].round(1)
+    assert_equal result[:height_cm], result[:height_cm].round(1)
+  end
+
+  test "PPI remains unchanged (pixels-per-inch is the industry standard)" do
+    result = Everyday::ScreenSizeCalculator.new(
+      diagonal: 27, aspect_width: 16, aspect_height: 9,
+      resolution_h: 2560, resolution_v: 1440
+    ).call
+    assert_in_delta 108.8, result[:ppi], 0.5
+  end
 end

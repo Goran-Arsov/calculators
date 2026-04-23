@@ -1,18 +1,57 @@
 import { Controller } from "@hotwired/stimulus"
-import { SQFT_TO_SQM, CUFT_TO_CUM } from "../utils/units"
+import { SQFT_TO_SQM, CUFT_TO_CUM, FT_TO_M, IN_TO_CM } from "../utils/units"
 
 const CUBIC_FEET_PER_YARD = 27.0
 const BAG_CUBIC_FEET = 2.0
+const IMPERIAL_DEFAULTS = { length: 20, width: 5, depth: 3 }
+const METRIC_DEFAULTS = { length: 6, width: 1.5, depth: 7.5 }
 
 export default class extends Controller {
-  static targets = ["length", "width", "depth", "resultCubicYards", "resultCubicFeet", "resultBags", "resultArea"]
+  static targets = [
+    "unitSystem", "length", "width", "depth",
+    "lengthLabel", "widthLabel", "depthLabel",
+    "resultCubicYards", "resultCubicFeet", "resultBags", "resultArea"
+  ]
 
   connect() { this.calculate() }
 
+  unitChanged() {
+    const metric = this.isMetric()
+    const inputs = [
+      [this.lengthTarget, IMPERIAL_DEFAULTS.length, METRIC_DEFAULTS.length, FT_TO_M],
+      [this.widthTarget, IMPERIAL_DEFAULTS.width, METRIC_DEFAULTS.width, FT_TO_M],
+      [this.depthTarget, IMPERIAL_DEFAULTS.depth, METRIC_DEFAULTS.depth, IN_TO_CM]
+    ]
+
+    for (const [el, impDefault, metricDefault, factor] of inputs) {
+      const current = parseFloat(el.value) || 0
+      if (current > 0) {
+        el.value = metric ? (current * factor).toFixed(2) : (current / factor).toFixed(2)
+      } else {
+        el.value = metric ? metricDefault : impDefault
+      }
+    }
+
+    if (this.hasLengthLabelTarget) {
+      this.lengthLabelTarget.textContent = metric ? "Length (m)" : "Length (ft)"
+      this.widthLabelTarget.textContent = metric ? "Width (m)" : "Width (ft)"
+      this.depthLabelTarget.textContent = metric ? "Depth (cm)" : "Depth (inches)"
+    }
+
+    this.calculate()
+  }
+
   calculate() {
-    const length = parseFloat(this.lengthTarget.value)
-    const width = parseFloat(this.widthTarget.value)
-    const depth = parseFloat(this.depthTarget.value)
+    const metric = this.isMetric()
+    const length = metric
+      ? (parseFloat(this.lengthTarget.value) || 0) / FT_TO_M
+      : (parseFloat(this.lengthTarget.value) || 0)
+    const width = metric
+      ? (parseFloat(this.widthTarget.value) || 0) / FT_TO_M
+      : (parseFloat(this.widthTarget.value) || 0)
+    const depth = metric
+      ? (parseFloat(this.depthTarget.value) || 0) / IN_TO_CM
+      : (parseFloat(this.depthTarget.value) || 0)
 
     if (!Number.isFinite(length) || length <= 0 ||
         !Number.isFinite(width) || width <= 0 ||
@@ -31,6 +70,10 @@ export default class extends Controller {
     this.resultCubicFeetTarget.textContent = `${cubicFeet.toFixed(2)} cu ft (${cubicMeters.toFixed(2)} m³)`
     this.resultCubicYardsTarget.textContent = `${cubicYards.toFixed(2)} cu yd (${cubicMeters.toFixed(2)} m³)`
     this.resultBagsTarget.textContent = `${bags}`
+  }
+
+  isMetric() {
+    return this.hasUnitSystemTarget && this.unitSystemTarget.value === "metric"
   }
 
   clear() {

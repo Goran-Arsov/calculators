@@ -2,6 +2,8 @@
 
 module Everyday
   class ScreenSizeCalculator
+    INCHES_TO_CM = 2.54
+
     attr_reader :errors
 
     def initialize(diagonal:, aspect_width:, aspect_height:, resolution_h: 0, resolution_v: 0)
@@ -28,12 +30,23 @@ module Everyday
 
       area = width * height
 
+      # Metric equivalents — 1 inch = 2.54 cm exactly, so sq-in → cm²
+      # multiplies by 2.54² = 6.4516.
+      width_cm = width * INCHES_TO_CM
+      height_cm = height * INCHES_TO_CM
+      area_cm2 = area * INCHES_TO_CM**2
+      diagonal_cm = @diagonal * INCHES_TO_CM
+
       result = {
         valid: true,
         width: width.round(2),
         height: height.round(2),
         area: area.round(2),
+        width_cm: width_cm.round(1),
+        height_cm: height_cm.round(1),
+        area_cm2: area_cm2.round(1),
         diagonal: @diagonal,
+        diagonal_cm: diagonal_cm.round(1),
         aspect_ratio: "#{@aspect_w.to_i}:#{@aspect_h.to_i}"
       }
 

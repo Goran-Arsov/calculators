@@ -2,15 +2,20 @@
 
 module Gardening
   class MulchCalculator
+    include GardenDimensionInput
+
     attr_reader :errors
 
     CUBIC_FEET_PER_YARD = 27.0
     BAG_CUBIC_FEET = 2.0
 
-    def initialize(length_ft:, width_ft:, depth_in:)
-      @length_ft = length_ft.to_f
-      @width_ft = width_ft.to_f
-      @depth_in = depth_in.to_f
+    def initialize(length_ft: nil, width_ft: nil, depth_in: nil,
+                   length_m: nil, width_m: nil, depth_cm: nil,
+                   unit_system: nil)
+      @unit_system = detect_unit_system(unit_system, length_m, width_m, depth_cm)
+      @length_ft = to_feet(length_ft, length_m)
+      @width_ft = to_feet(width_ft, width_m)
+      @depth_in = to_inches(depth_in, depth_cm)
       @errors = []
     end
 
@@ -20,16 +25,15 @@ module Gardening
 
       area_sqft = @length_ft * @width_ft
       cubic_feet = area_sqft * (@depth_in / 12.0)
-      cubic_yards = cubic_feet / CUBIC_FEET_PER_YARD
-      bags_2cf = (cubic_feet / BAG_CUBIC_FEET).ceil
 
-      {
+      with_metric_dimensions(
         valid: true,
+        unit_system: @unit_system,
         area_sqft: area_sqft.round(2),
         cubic_feet: cubic_feet.round(2),
-        cubic_yards: cubic_yards.round(2),
-        bags_2cf: bags_2cf
-      }
+        cubic_yards: (cubic_feet / CUBIC_FEET_PER_YARD).round(2),
+        bags_2cf: (cubic_feet / BAG_CUBIC_FEET).ceil
+      )
     end
 
     private
