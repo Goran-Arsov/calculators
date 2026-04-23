@@ -9,7 +9,13 @@ export default class extends Controller {
       this.dateValue = new Date().toISOString().split("T")[0]
     }
     this.datePickerTarget.value = this.dateValue
+    this.pillsVisible = this.loadPillsVisible()
     this.render()
+  }
+
+  disconnect() {
+    if (this.toastTimeoutId) clearTimeout(this.toastTimeoutId)
+    if (this.toastEl) this.toastEl.remove()
   }
 
   changeDate() {
@@ -126,8 +132,60 @@ export default class extends Controller {
 
   // --- Catalog of previously-entered foods ---
 
+  loadHiddenPills() {
+    try {
+      return new Set(JSON.parse(localStorage.getItem("calchammer_calorie_log_hidden_pills") || "[]"))
+    } catch { return new Set() }
+  }
+
+  saveHiddenPills(set) {
+    localStorage.setItem("calchammer_calorie_log_hidden_pills", JSON.stringify([...set]))
+  }
+
+  hidePill(event) {
+    event.stopPropagation()
+    const name = event.currentTarget.dataset.name
+    if (!name) return
+    const lower = name.toLowerCase()
+    const hidden = this.loadHiddenPills()
+    hidden.add(lower)
+    this.saveHiddenPills(hidden)
+    this.render()
+    this.showUndoToast(`Removed "${name}" from suggestions`, () => {
+      const h = this.loadHiddenPills()
+      h.delete(lower)
+      this.saveHiddenPills(h)
+      this.render()
+    })
+  }
+
+  restoreHiddenPills() {
+    localStorage.removeItem("calchammer_calorie_log_hidden_pills")
+    this.render()
+  }
+
+  loadPillsVisible() {
+    const defaults = { night: false, morning: false, day: false, evening: false }
+    try {
+      const stored = JSON.parse(localStorage.getItem("calchammer_calorie_log_pills_visible") || "{}")
+      return { ...defaults, ...stored }
+    } catch { return defaults }
+  }
+
+  savePillsVisible() {
+    localStorage.setItem("calchammer_calorie_log_pills_visible", JSON.stringify(this.pillsVisible))
+  }
+
+  togglePills(event) {
+    const section = event.currentTarget.dataset.section
+    this.pillsVisible[section] = !this.pillsVisible[section]
+    this.savePillsVisible()
+    this.render()
+  }
+
   buildCatalog() {
     const all = this.loadAll()
+    const hidden = this.loadHiddenPills()
     const sortedDates = Object.keys(all).sort().reverse()
     const byName = {}
     for (const date of sortedDates) {
@@ -138,6 +196,7 @@ export default class extends Controller {
           const cal = parseFloat(entry.calories) || 0
           if (!name || cal <= 0) continue
           const lower = name.toLowerCase()
+          if (hidden.has(lower)) continue
           if (byName[lower]) {
             byName[lower].count += 1
           } else {
@@ -170,24 +229,55 @@ export default class extends Controller {
       html += this.renderSection(s, entries, subtotal)
     })
 
+    const hiddenCount = this.loadHiddenPills().size
+    if (hiddenCount > 0) {
+      html += `
+        <div class="flex justify-end mt-1 mb-2">
+          <button data-action="click->calorie-tracker#restoreHiddenPills"
+                  class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Restore ${hiddenCount} hidden suggestion${hiddenCount === 1 ? "" : "s"}
+          </button>
+        </div>
+      `
+    }
+
     this.sectionsTarget.innerHTML = html
     this.basalInputTarget.value = dayData.basal || ""
     this.updateTotals()
   }
 
   renderSection(section, entries, subtotal) {
-    const pillStrip = (this.catalogList && this.catalogList.length > 0) ? `
-      <div class="flex flex-wrap gap-1.5 mb-4 pb-3 border-b border-gray-100 dark:border-gray-800">
-        ${this.catalogList.map(f => `
-          <button data-section="${section.key}"
-                  data-name="${this.escapeAttr(f.name)}"
-                  data-amount="${this.escapeAttr(f.amount)}"
-                  data-calories="${f.calories}"
-                  data-action="click->calorie-tracker#quickAdd"
-                  class="text-xs px-2.5 py-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-400 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-colors cursor-pointer whitespace-nowrap">
-            + ${this.escapeAttr(f.name)} <span class="text-gray-400 dark:text-gray-500">${f.amount ? `· ${this.escapeAttr(f.amount)} ` : ""}· ${f.calories}</span>
-          </button>
-        `).join("")}
+    const hasCatalog = this.catalogList && this.catalogList.length > 0
+    const pillsOpen = !!this.pillsVisible[section.key]
+    const pillItems = hasCatalog ? this.catalogList.map(f => `
+      <span class="inline-flex items-stretch text-xs rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 transition-colors overflow-hidden">
+        <button data-section="${section.key}"
+                data-name="${this.escapeAttr(f.name)}"
+                data-amount="${this.escapeAttr(f.amount)}"
+                data-calories="${f.calories}"
+                data-action="click->calorie-tracker#quickAdd"
+                class="pl-2.5 py-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer whitespace-nowrap">
+          + ${this.escapeAttr(f.name)} <span class="text-gray-400 dark:text-gray-500">${f.amount ? `· ${this.escapeAttr(f.amount)} ` : ""}· ${f.calories}</span>
+        </button>
+        <button data-name="${this.escapeAttr(f.name)}"
+                data-action="click->calorie-tracker#hidePill"
+                class="pl-1 pr-2 py-1 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 transition-colors cursor-pointer"
+                title="Remove from suggestions" aria-label="Remove ${this.escapeAttr(f.name)} from suggestions">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </span>
+    `).join("") : ""
+
+    const pillStrip = hasCatalog ? `
+      <div class="mb-4 pb-3 border-b border-gray-100 dark:border-gray-800">
+        <button data-section="${section.key}" data-action="click->calorie-tracker#togglePills"
+                class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer ${pillsOpen ? 'mb-2' : ''}"
+                aria-expanded="${pillsOpen}">
+          <svg class="w-3.5 h-3.5 transition-transform ${pillsOpen ? 'rotate-90' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          ${pillsOpen ? 'Hide' : 'Show'} suggestions (${this.catalogList.length})
+        </button>
+        ${pillsOpen ? `<div class="flex flex-wrap gap-1.5">${pillItems}</div>` : ""}
       </div>
     ` : ""
 
@@ -302,6 +392,37 @@ export default class extends Controller {
   }
 
   // --- Helpers ---
+
+  showUndoToast(message, onUndo) {
+    if (this.toastTimeoutId) clearTimeout(this.toastTimeoutId)
+    if (this.toastEl) this.toastEl.remove()
+
+    const toast = document.createElement("div")
+    toast.setAttribute("role", "status")
+    toast.className = "fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 rounded-lg bg-gray-900 text-white text-sm shadow-lg border border-gray-700"
+    const msgEl = document.createElement("span")
+    msgEl.textContent = message
+    const undoBtn = document.createElement("button")
+    undoBtn.type = "button"
+    undoBtn.textContent = "Undo"
+    undoBtn.className = "font-semibold text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+    undoBtn.addEventListener("click", () => {
+      if (this.toastTimeoutId) clearTimeout(this.toastTimeoutId)
+      toast.remove()
+      this.toastEl = null
+      this.toastTimeoutId = null
+      onUndo()
+    })
+    toast.append(msgEl, undoBtn)
+
+    document.body.appendChild(toast)
+    this.toastEl = toast
+    this.toastTimeoutId = setTimeout(() => {
+      toast.remove()
+      this.toastEl = null
+      this.toastTimeoutId = null
+    }, 5000)
+  }
 
   escapeAttr(str) {
     if (!str) return ""
