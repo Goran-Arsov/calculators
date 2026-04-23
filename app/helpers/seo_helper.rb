@@ -143,8 +143,8 @@ module SeoHelper
     tag.script(schema.to_json.html_safe, type: "application/ld+json")
   end
 
-  LOCALE_NAMES = { "de" => "Deutsch", "fr" => "Fran\u00e7ais", "es" => "Espa\u00f1ol", "pt" => "Portugu\u00eas", "mk" => "Македонски" }.freeze
-  SUPPORTED_LOCALES = %w[de fr es pt mk].freeze
+  LOCALE_NAMES = Localization::TranslatableRegistry::LOCALE_NAMES
+  SUPPORTED_LOCALES = Localization::TranslatableRegistry::SUPPORTED_LOCALES
 
   def hreflang_tags
     return "" unless translatable_tool_page?
@@ -179,34 +179,8 @@ module SeoHelper
     links
   end
 
-  TRANSLATABLE_CONTROLLER_PATHS = %w[everyday/calculators finance/calculators health/calculators].freeze
-
-  # These lists MUST stay in sync with the localized route scopes in
-  # config/routes.rb — only actions that actually have translations should
-  # emit hreflang tags, otherwise Google follows the alternate links to
-  # non-existent URLs and reports "Not found (404)" in Search Console.
-  TRANSLATABLE_EVERYDAY_ACTIONS = %w[
-    base64_encoder url_encoder html_formatter css_formatter js_formatter
-    json_validator json_to_yaml curl_to_code json_to_typescript html_to_jsx
-    hex_ascii http_status_reference robots_txt htaccess_generator regex_explainer
-    og_preview svg_to_png
-  ].freeze
-  TRANSLATABLE_FINANCE_ACTIONS = %w[mortgage compound_interest loan investment retirement invoice_generator detailed_invoice_generator].freeze
-  TRANSLATABLE_HEALTH_ACTIONS = %w[bmi calorie body_fat tdee macro].freeze
-
   private def translatable_tool_page?
-    return false unless params[:action].present?
-
-    case controller_path
-    when "everyday/calculators"
-      TRANSLATABLE_EVERYDAY_ACTIONS.include?(params[:action])
-    when "finance/calculators"
-      TRANSLATABLE_FINANCE_ACTIONS.include?(params[:action])
-    when "health/calculators"
-      TRANSLATABLE_HEALTH_ACTIONS.include?(params[:action])
-    else
-      false
-    end
+    Localization::TranslatableRegistry.translatable?(controller_path, params[:action])
   end
 
   public

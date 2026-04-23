@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
 
   private
 
-  SUPPORTED_LOCALES = %w[de fr es pt mk].freeze
+  SUPPORTED_LOCALES = Localization::TranslatableRegistry::SUPPORTED_LOCALES
 
   def set_locale
     locale = params[:locale]

@@ -1,11 +1,18 @@
 # frozen_string_literal: true
 
 module Math
+  # Numerically computes the limit of a function as x approaches a target value
+  # from the left, the right, or both sides. Uses an epsilon-shrinking sampling
+  # strategy for finite targets and a growing-magnitude sampling strategy for
+  # +/- infinity targets.
   class LimitCalculator
     APPROACH_DIRECTIONS = %w[both left right].freeze
     EPSILON_START = 1e-2
     EPSILON_MIN = 1e-12
     EPSILON_FACTOR = 0.1
+    INFINITY_PROBE_MAGNITUDES = [ 1e2, 1e4, 1e6, 1e8, 1e10 ].freeze
+    CONVERGENCE_SAMPLE_SIZE = 3
+    CLOSE_ENOUGH_TOLERANCE = 1e-6
 
     attr_reader :errors
 
@@ -23,79 +30,16 @@ module Math
       target = parse_approach_value(@approach_value)
       ast = Parser.new(@expression).parse
 
-      left_limit = nil
-      right_limit = nil
+      left_limit = compute_side(ast, target, :left) if side_needed?(:left)
+      right_limit = compute_side(ast, target, :right) if side_needed?(:right)
 
-      if @direction == "both" || @direction == "left"
-        left_limit = compute_limit(ast, target, :left)
-      end
-
-      if @direction == "both" || @direction == "right"
-        right_limit = compute_limit(ast, target, :right)
-      end
-
-      if @direction == "both"
-        if left_limit && right_limit
-          if close_enough?(left_limit, right_limit)
-            limit_value = (left_limit + right_limit) / 2.0
-            {
-              valid: true,
-              expression: @expression,
-              approach_value: @approach_value,
-              direction: @direction,
-              limit: format_result(limit_value),
-              limit_numeric: limit_value,
-              left_limit: format_result(left_limit),
-              right_limit: format_result(right_limit),
-              exists: true
-            }
-          else
-            {
-              valid: true,
-              expression: @expression,
-              approach_value: @approach_value,
-              direction: @direction,
-              limit: "Does not exist",
-              left_limit: format_result(left_limit),
-              right_limit: format_result(right_limit),
-              exists: false
-            }
-          end
-        else
-          {
-            valid: true,
-            expression: @expression,
-            approach_value: @approach_value,
-            direction: @direction,
-            limit: "Does not exist (diverges)",
-            left_limit: left_limit ? format_result(left_limit) : "diverges",
-            right_limit: right_limit ? format_result(right_limit) : "diverges",
-            exists: false
-          }
-        end
-      else
-        one_sided = @direction == "left" ? left_limit : right_limit
-        if one_sided
-          {
-            valid: true,
-            expression: @expression,
-            approach_value: @approach_value,
-            direction: @direction,
-            limit: format_result(one_sided),
-            limit_numeric: one_sided,
-            exists: true
-          }
-        else
-          {
-            valid: true,
-            expression: @expression,
-            approach_value: @approach_value,
-            direction: @direction,
-            limit: "Diverges",
-            exists: false
-          }
-        end
-      end
+      ResultBuilder.call(
+        expression: @expression,
+        approach_value: @approach_value,
+        direction: @direction,
+        left_limit: left_limit,
+        right_limit: right_limit
+      )
     rescue ParseError => e
       @errors << "Invalid expression: #{e.message}"
       { valid: false, errors: @errors }
@@ -112,6 +56,10 @@ module Math
       @errors << "Direction must be 'both', 'left', or 'right'" unless APPROACH_DIRECTIONS.include?(@direction)
     end
 
+    def side_needed?(side)
+      @direction == "both" || @direction == side.to_s
+    end
+
     def parse_approach_value(val)
       case val.downcase
       when "infinity", "inf", "+infinity", "+inf" then Float::INFINITY
@@ -122,80 +70,60 @@ module Math
       end
     end
 
-    def compute_limit(ast, target, side)
-      if target.infinite?
-        return compute_limit_at_infinity(ast, target)
-      end
+    def compute_side(ast, target, side)
+      return compute_limit_at_infinity(ast, target) if target.infinite?
 
+      compute_limit_near(ast, target, side)
+    end
+
+    def compute_limit_near(ast, target, side)
       values = []
       epsilon = EPSILON_START
       while epsilon >= EPSILON_MIN
         x = side == :left ? target - epsilon : target + epsilon
-        begin
-          val = Evaluator.evaluate(ast, x)
-          if val.finite?
-            values << val
-          else
-            return nil if values.empty?
-          end
-        rescue StandardError
-          return nil if values.empty?
+        val = safe_evaluate(ast, x)
+        if val && val.finite?
+          values << val
+        elsif values.empty?
+          return nil
         end
         epsilon *= EPSILON_FACTOR
       end
-
-      return nil if values.empty?
-
-      # Check convergence
-      last_values = values.last(3)
-      return nil if last_values.length < 2
-
-      if last_values.all? { |v| close_enough?(v, last_values.last) }
-        last_values.last
-      else
-        nil
-      end
+      converged_value(values)
     end
 
     def compute_limit_at_infinity(ast, target)
       sign = target > 0 ? 1.0 : -1.0
-      values = []
-      [ 1e2, 1e4, 1e6, 1e8, 1e10 ].each do |n|
-        x = sign * n
-        begin
-          val = Evaluator.evaluate(ast, x)
-          values << val if val.finite?
-        rescue StandardError
-          next
-        end
+      values = INFINITY_PROBE_MAGNITUDES.filter_map do |n|
+        val = safe_evaluate(ast, sign * n)
+        val if val && val.finite?
       end
+      return nil if values.length < CONVERGENCE_SAMPLE_SIZE
 
-      return nil if values.length < 3
+      converged_value(values)
+    end
 
-      last_values = values.last(3)
-      if last_values.all? { |v| close_enough?(v, last_values.last) }
-        last_values.last
-      else
-        nil
-      end
+    def safe_evaluate(ast, x)
+      Evaluator.evaluate(ast, x)
+    rescue StandardError
+      nil
+    end
+
+    def converged_value(values)
+      return nil if values.empty?
+
+      last = values.last(CONVERGENCE_SAMPLE_SIZE)
+      return nil if last.length < 2
+
+      last.all? { |v| close_enough?(v, last.last) } ? last.last : nil
     end
 
     def close_enough?(a, b)
       return true if a == b
+
       diff = (a - b).abs
       magnitude = [ a.abs, b.abs, 1.0 ].max
-      diff / magnitude < 1e-6
-    end
-
-    def format_result(value)
-      return "0" if value.abs < 1e-12
-      if value == value.to_i.to_f && value.abs < 1e15
-        value.to_i.to_s
-      elsif value.abs >= 1e6 || (value.abs > 0 && value.abs < 1e-4)
-        value.to_f.round(8).to_s
-      else
-        ("%.8g" % value)
-      end
+      diff / magnitude < CLOSE_ENOUGH_TOLERANCE
     end
 
     class ParseError < StandardError; end
@@ -359,48 +287,6 @@ module Math
           @pos += 1
         end
         { type: :ident, value: @input[start...@pos] }
-      end
-    end
-
-    module Evaluator
-      module_function
-
-      def evaluate(node, x)
-        case node[0]
-        when :num then node[1]
-        when :var then x
-        when :neg then -evaluate(node[1], x)
-        when :binop
-          a = evaluate(node[2], x)
-          b = evaluate(node[3], x)
-          case node[1]
-          when "+" then a + b
-          when "-" then a - b
-          when "*" then a * b
-          when "/"
-            raise MathError, "Division by zero" if b.zero?
-            a / b
-          when "^" then a**b
-          end
-        when :func
-          arg = evaluate(node[2], x)
-          case node[1]
-          when "sin" then ::Math.sin(arg)
-          when "cos" then ::Math.cos(arg)
-          when "tan" then ::Math.tan(arg)
-          when "asin" then ::Math.asin(arg)
-          when "acos" then ::Math.acos(arg)
-          when "atan" then ::Math.atan(arg)
-          when "sinh" then ::Math.sinh(arg)
-          when "cosh" then ::Math.cosh(arg)
-          when "tanh" then ::Math.tanh(arg)
-          when "ln", "log" then ::Math.log(arg)
-          when "log10" then ::Math.log10(arg)
-          when "exp" then ::Math.exp(arg)
-          when "sqrt" then ::Math.sqrt(arg)
-          when "abs" then arg.abs
-          end
-        end
       end
     end
   end

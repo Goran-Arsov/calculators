@@ -1,0 +1,164 @@
+    <div data-controller="cron-builder-calculator ad-engagement" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200/80 dark:border-gray-800 p-6 md:p-8 mb-8">
+
+      <%# Preset buttons %>
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Quick Presets</h3>
+        <div class="flex flex-wrap gap-2">
+          <% [
+            ["Every minute", "* * * * *"],
+            ["Every 5 min", "*/5 * * * *"],
+            ["Every 15 min", "*/15 * * * *"],
+            ["Hourly", "0 * * * *"],
+            ["Daily at midnight", "0 0 * * *"],
+            ["Daily at 9 AM", "0 9 * * *"],
+            ["Weekly (Mon)", "0 0 * * 1"],
+            ["Monthly (1st)", "0 0 1 * *"],
+            ["Weekdays at 8 AM", "0 8 * * 1,2,3,4,5"]
+          ].each do |label, expr| %>
+            <button data-action="click->cron-builder-calculator#preset" data-expression="<%= expr %>"
+                    class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors">
+              <%= label %>
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="space-y-5">
+
+        <%# Minute field %>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Minute <span class="text-gray-400 font-normal">(0-59)</span></label>
+            <select data-cron-builder-calculator-target="minuteMode" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="every">Every minute (*)</option>
+              <option value="step">Every Nth minute</option>
+              <option value="specific">Specific minute</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Every N minutes</label>
+            <input type="number" inputmode="decimal" min="1" max="59" value="5" data-cron-builder-calculator-target="minuteStep" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm" placeholder="5">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Specific minute</label>
+            <input type="text" value="0" data-cron-builder-calculator-target="minuteValue" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="0 or 0,15,30,45">
+          </div>
+        </div>
+
+        <%# Hour field %>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Hour <span class="text-gray-400 font-normal">(0-23)</span></label>
+            <select data-cron-builder-calculator-target="hourMode" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="every">Every hour (*)</option>
+              <option value="step">Every Nth hour</option>
+              <option value="specific">Specific hour</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Every N hours</label>
+            <input type="number" inputmode="decimal" min="1" max="23" value="2" data-cron-builder-calculator-target="hourStep" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm" placeholder="2">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Specific hour</label>
+            <input type="text" value="0" data-cron-builder-calculator-target="hourValue" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="0 or 8,12,18">
+          </div>
+        </div>
+
+        <%# Day of month field %>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Day of Month <span class="text-gray-400 font-normal">(1-31)</span></label>
+            <select data-cron-builder-calculator-target="domMode" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="every">Every day (*)</option>
+              <option value="step">Every Nth day</option>
+              <option value="specific">Specific day(s)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Every N days</label>
+            <input type="number" inputmode="decimal" min="1" max="31" value="2" data-cron-builder-calculator-target="domStep" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm" placeholder="2">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Specific day(s)</label>
+            <input type="text" value="1" data-cron-builder-calculator-target="domValue" class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm font-mono" placeholder="1 or 1,15">
+          </div>
+        </div>
+
+        <%# Month field %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div class="flex flex-wrap items-center gap-4 mb-3">
+            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Month <span class="text-gray-400 font-normal">(1-12)</span></label>
+            <select data-cron-builder-calculator-target="monthMode" class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="every">Every month (*)</option>
+              <option value="specific">Specific months</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
+            <% %w[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec].each_with_index do |name, i| %>
+              <label class="flex items-center gap-1.5 cursor-pointer text-sm">
+                <input type="checkbox" value="<%= i + 1 %>" data-cron-builder-calculator-target="monthValues"
+                       class="w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                <span class="text-gray-600 dark:text-gray-400"><%= name %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <%# Day of week field %>
+        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div class="flex flex-wrap items-center gap-4 mb-3">
+            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Day of Week <span class="text-gray-400 font-normal">(0-6)</span></label>
+            <select data-cron-builder-calculator-target="dowMode" class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-sm">
+              <option value="every">Every day (*)</option>
+              <option value="specific">Specific days</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
+            <% %w[Sun Mon Tue Wed Thu Fri Sat].each_with_index do |name, i| %>
+              <label class="flex items-center gap-1.5 cursor-pointer text-sm">
+                <input type="checkbox" value="<%= i %>" data-cron-builder-calculator-target="dowValues"
+                       class="w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                <span class="text-gray-600 dark:text-gray-400"><%= name %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <%# Build button %>
+        <button data-action="click->cron-builder-calculator#build"
+                class="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-semibold">
+          Build Cron Expression
+        </button>
+      </div>
+
+      <%# Results %>
+      <div aria-live="polite" aria-atomic="true" class="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Result</h2>
+
+        <div class="mb-4">
+          <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Cron Expression</label>
+          <div class="flex gap-2">
+            <input type="text" readonly data-cron-builder-calculator-target="resultExpression"
+                   class="flex-1 font-mono text-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-gray-900 dark:text-white focus:outline-none"
+                   placeholder="* * * * *">
+            <button data-action="click->cron-builder-calculator#copy"
+                    class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-sm font-medium">
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Description</label>
+          <p class="text-gray-900 dark:text-white font-medium" data-cron-builder-calculator-target="resultDescription">--</p>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">Next 5 Run Times</label>
+          <div data-cron-builder-calculator-target="resultNextRuns">
+            <p class="text-gray-400 text-sm">Click "Build" to see next run times</p>
+          </div>
+        </div>
+      </div>
+    </div>

@@ -201,4 +201,57 @@ class SitemapControllerTest < ActionDispatch::IntegrationTest
     get "/sitemap-xx.xml"
     assert_response :not_found
   end
+
+  # === URL Contract Guards ===
+  # These guard against accidental regression when adding categories or
+  # programmatic SEO pages — sitemap completeness directly affects indexation.
+
+  test "main sitemap includes every registered category" do
+    get "/sitemap-main.xml"
+
+    CalculatorRegistry::ALL_CATEGORIES.each_key do |category|
+      assert_includes response.body, category_url(category),
+        "Expected main sitemap to include category URL for #{category}"
+    end
+  end
+
+  test "main sitemap excludes noindexed calculator paths" do
+    get "/sitemap-main.xml"
+    domain = URI.parse(root_url).origin
+
+    Seo::NoindexList::PATHS.first(5).each do |path|
+      refute_includes response.body, "<loc>#{domain}#{path}</loc>",
+        "Noindexed path #{path} must not appear in sitemap (mixed signal)"
+    end
+  end
+
+  test "main sitemap includes programmatic SEO pages when indexable" do
+    indexable_page = ProgrammaticSeo::Registry.all_pages.find { |p| p[:indexable] }
+    skip "no indexable programmatic SEO pages registered" unless indexable_page
+
+    get "/sitemap-main.xml"
+    url = url_for(controller: "programmatic", action: "show", only_path: false,
+                  programmatic_slug: indexable_page[:slug])
+    assert_includes response.body, url
+  end
+
+  test "locale sitemap includes finance and health localized URLs" do
+    get "/sitemap-fr.xml"
+
+    assert_includes response.body, "/fr/finance/mortgage-calculator"
+    assert_includes response.body, "/fr/finance/invoice-generator"
+    assert_includes response.body, "/fr/health/bmi-calculator"
+    assert_includes response.body, "/fr/health/macro-calculator"
+  end
+
+  test "locale sitemap entry count matches registry" do
+    expected = Localization::TranslatableRegistry.all_entries.count
+
+    %w[de fr es pt mk].each do |locale|
+      get "/sitemap-#{locale}.xml"
+      actual = response.body.scan(%r{<url>}).size
+      assert_equal expected, actual,
+        "sitemap-#{locale}.xml should have one <url> per registry entry"
+    end
+  end
 end
